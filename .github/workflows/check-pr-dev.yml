@@ -5,7 +5,7 @@ on:
       - dev  # Se activa solo cuando el destino es 'dev'
 
 jobs:
-  enforce-branch-source:
+  dev-branch-source:
     runs-on: ubuntu-latest
     steps:
       - name: Verify source branch name
