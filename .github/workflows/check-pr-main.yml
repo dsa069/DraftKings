@@ -5,7 +5,7 @@ on:
       - main  # Solo se activa cuando apuntan a main
 
 jobs:
-  check_source:
+  main_check_source:
     runs-on: ubuntu-latest
     steps:
       - name: Verify that branch is 'dev'
