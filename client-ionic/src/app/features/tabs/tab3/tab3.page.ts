@@ -5,12 +5,12 @@ import {
   IonTitle,
   IonContent,
 } from '@ionic/angular/standalone';
-import { ExploreContainerComponent } from '../../shared/components/explore-container/explore-container.component.js';
+import { ExploreContainerComponent } from '../../../shared/components/explore-container/explore-container.component.js';
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss'],
+  selector: 'app-tab3',
+  templateUrl: 'tab3.page.html',
+  styleUrls: ['tab3.page.scss'],
   imports: [
     IonHeader,
     IonToolbar,
@@ -19,6 +19,6 @@ import { ExploreContainerComponent } from '../../shared/components/explore-conta
     ExploreContainerComponent,
   ],
 })
-export class Tab2Page {
+export class Tab3Page {
   constructor() {}
 }
