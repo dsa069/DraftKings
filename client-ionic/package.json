@@ -9,10 +9,13 @@
     "start": "ionic serve --host=0.0.0.0",
     "build": "ionic build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "test:ci": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
     "lint": "ng lint",
-    "lint:json": "mkdir -p coverage && eslint . -f json -o coverage/eslint-result.json"
+    "lint:json": "mkdir -p coverage && eslint . -f json -o coverage/eslint-result.json",
+    "test": "cypress open",
+    "test:comp": "cypress open --component",
+    "test:e2e": "cypress open --e2e",
+    "test:comp:hl": "cypress run --component",
+    "test:e2e:hl": "cypress run --e2e"
   },
   "private": true,
   "dependencies": {
