@@ -1,5 +1,5 @@
-import { mount } from '@cypress/angular';
 import { TabsPage } from './tabs.page';
+
 import {
   IonTabs,
   IonTabBar,
@@ -10,7 +10,7 @@ import {
 
 describe('TabsPage Component', () => {
   it('should render tab bar', () => {
-    mount(TabsPage, {
+    cy.mount(TabsPage, {
       imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
     });
 
@@ -18,7 +18,7 @@ describe('TabsPage Component', () => {
   });
 
   it('should render exactly three tab buttons', () => {
-    mount(TabsPage, {
+    cy.mount(TabsPage, {
       imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
     });
 
