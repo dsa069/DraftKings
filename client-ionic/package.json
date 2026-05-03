@@ -11,10 +11,10 @@
     "watch": "ng build --watch --configuration development",
     "lint": "ng lint",
     "lint:json": "mkdir -p coverage && eslint . -f json -o coverage/eslint-result.json",
-    "test": "cypress open",
-    "test:comp": "cypress open --component",
+    "test": "rm -rf .angular/cache && cypress open",
+    "test:comp": "rm -rf .angular/cache && cypress open --component",
     "test:e2e": "cypress open --e2e",
-    "test:comp:hl": "cypress run --component",
+    "test:comp:hl": "rm -rf .angular/cache && cypress run --component",
     "test:e2e:hl": "cypress run --e2e"
   },
   "private": true,
@@ -38,7 +38,7 @@
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
+    "zone.js": "^0.16.1"
   },
   "devDependencies": {
     "@angular-eslint/builder": "^20.0.0",
