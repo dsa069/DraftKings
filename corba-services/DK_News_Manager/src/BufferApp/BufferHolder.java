@@ -4,7 +4,7 @@ package BufferApp;
 * BufferApp/BufferHolder.java .
 * Error!  A message was requested which does not exist.  The messages file does not contain the key: toJavaProlog1
 * Error!  A message was requested which does not exist.  The messages file does not contain the key: toJavaProlog2
-* lunes, 4 de mayo de 2026, 20:33:42 (hora de verano de Europa central)
+* lunes, 4 de mayo de 2026, 20:46:01 (hora de verano de Europa central)
 */
 
 public final class BufferHolder implements org.omg.CORBA.portable.Streamable
