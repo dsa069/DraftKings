@@ -5,7 +5,7 @@ services:
     working_dir: /workspace
     volumes:
       - ..:/workspace
-      - ../../.git:/workspace/.git
+
     ports:
       - "3000:3000"
     environment:
