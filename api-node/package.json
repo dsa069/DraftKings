@@ -3,17 +3,31 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "ts-node --transpile-only ./bin/www.ts",
+    "build": "tsc",
+    "test": "jest"
   },
   "dependencies": {
-    "cookie-parser": "~1.4.4",
-    "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
-    "morgan": "~1.9.1",
-    "pug": "2.0.0-beta11"
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.6.0",
+    "axios": "^1.16.0",
+    "cookie-parser": "^1.4.7",
+    "debug": "^4.4.3",
+    "express": "^5.2.1",
+    "http-errors": "^2.0.1",
+    "mongoose": "^9.6.1",
+    "morgan": "^1.10.1",
+    "pug": "^3.0.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@types/express": "^5.0.6"
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "jest-environment-node": "^30.3.0",
+    "jest-junit": "^17.0.0",
+    "ts-jest": "^29.4.9"
   }
 }
