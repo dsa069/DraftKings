@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getHome } from "../controllers/dsashboard";
+import { getHome } from "../controllers/dashboard";
 
 const router = Router();
 
