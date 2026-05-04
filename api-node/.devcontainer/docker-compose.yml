@@ -1,0 +1,39 @@
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/typescript-node:4-24-trixie
+    container_name: api-node
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://dsa069:dsa069@mongodb:27017/admin
+    depends_on:
+      - mongodb
+    command: sleep infinity
+    stdin_open: true
+    tty: true
+    networks:
+      - api-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: DK_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: dsa069
+      MONGO_INITDB_ROOT_PASSWORD: dsa069
+    networks:
+      - api-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  api-network:
+    driver: bridge
