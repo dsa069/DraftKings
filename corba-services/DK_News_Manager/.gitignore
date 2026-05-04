@@ -15,3 +15,6 @@
 .DS_Store
 Thumbs.db
 *~
+
+# Buffer files
+/src/BufferApp
