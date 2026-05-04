@@ -31,3 +31,29 @@ Donde:
 - Estilo: Usar la función inject() para dependencias,
   evitar constructores.
 - Sintaxis: Usar nuevo Control Flow (@if, @for).
+
+//////API_NODE//////
+- Framework: Express 4+.
+- Estructura: Separar rutas, controladores y servicios en carpetas distintas.
+- Middleware: Usar middleware para JWT.
+- OJO: Se utiliza TypeScript, no JavaScript. Asegúrate de configurar el proyecto correctamente para usar TypeScript.
+- Documentación: Usar Swagger para la documentación de la API.
+- Pruebas: Escribir pruebas unitarias con Jest para asegurar la calidad del código.
+
+//////API_SPRING//////
+- Framework: Spring Boot 3+.
+- JAVA 17.
+- Gestión de dependencias: Usar Maven para la gestión de dependencias y construcción del proyecto.
+- Estructura: Seguir la arquitectura tradicional de Spring (Controladores, Servicios, Repositorios).
+- Servicios: Se utilizara Feign para los microservicios, Eureka para el descubrimiento de servicios, Gateway para la gestión de rutas y Config Server para la gestión de configuraciones.
+- Pruebas: Escribir pruebas unitarias con JUnit 5 y Mockito para asegurar la calidad del código.
+- Documentación: Usar Swagger para la documentación de la API.
+- Configuración: Utilizar archivos de configuración YAML para gestionar las propiedades de la aplicación.
+- Manejo de errores: Implementar un manejo de errores personalizado con RestHandler para proporcionar respuestas de error consistentes y claras.
+
+//////CORBA_SERVER//////
+- Lenguaje: Java.
+- Java: 8.
+- Estructura: Seguir la arquitectura tradicional de Java (Paquetes para interfaces, implementaciones, etc.).
+- Comunicación: Usar IDL para definir las interfaces de comunicación entre el cliente y el servidor.
+- Pruebas: Escribir pruebas unitarias con JUnit 5 y Mockito para asegurar la calidad del código.
