@@ -1,0 +1,1 @@
+"/c/Program Files (x86)/Java/jdk-1.8/bin/orbd" -ORBInitialPort 1050 -ORBInitialHost localhost
