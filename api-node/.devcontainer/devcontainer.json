@@ -22,7 +22,7 @@
   // "forwardPorts": [3000, 27017],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "npm i",
+  "postCreateCommand": "cd /workspace/api-node && npm i",
 
   // Configure tool-specific properties.
   "customizations": {
@@ -41,10 +41,10 @@
         "js/ts.tsdk": "node_modules/typescript/lib"
       }
     }
-  }
+  },
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  // "remoteUser": "root"
+  "remoteUser": "root"
 
   //TEMAPLATE CREATION:
   //express --view=pug

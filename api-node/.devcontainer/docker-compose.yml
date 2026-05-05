@@ -4,7 +4,7 @@ services:
     container_name: api-node
     working_dir: /workspace
     volumes:
-      - ..:/workspace
+      - ../../:/workspace
 
     ports:
       - "3000:3000"
