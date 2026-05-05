@@ -5,9 +5,11 @@
   "image": "eclipse-temurin:8-jdk",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
-      "packages": "maven"
-    }
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "8",
+      "installMaven": "true",
+      "mavenVersion": "latest"
+    },
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
@@ -15,14 +17,13 @@
     1050
   ],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "java -version && mvn --version",
+  "postCreateCommand": "java -version && mvn --version && mvn clean install",
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
       "extensions": [
-        "redhat.java",
+        "vscjava.extension-pack-for-java",
         "vscjava.vscode-maven",
-        "vscjava.vscode-java-debug",
         "github.copilot",
         "github.copilot-chat"
       ],
