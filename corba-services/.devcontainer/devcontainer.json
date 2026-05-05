@@ -22,6 +22,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "redhat.java",
         "vscjava.extension-pack-for-java",
         "vscjava.vscode-maven",
         "github.copilot",
