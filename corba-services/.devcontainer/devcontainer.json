@@ -17,7 +17,7 @@
     1050
   ],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "java -version && mvn --version && mvn clean install",
+  "postCreateCommand": "java -version && mvn --version",
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
