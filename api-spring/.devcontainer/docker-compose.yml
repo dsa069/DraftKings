@@ -12,6 +12,8 @@ services:
       - "8081:8081"
       - "5000:5000"
       - "8761:8761"
+      - "30000-39999:30000-39999"
+      
     environment:
       JAVA_TOOL_OPTIONS: "-Xmx2048m -Xms1024m"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/draftkings
