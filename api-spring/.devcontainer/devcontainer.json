@@ -17,11 +17,12 @@
   // Ports are already defined in docker-compose.yml
   // "forwardPorts": [8080, 5432],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "cd /workspace/api-spring && java -version && mvn --version",
+  "postCreateCommand": "cd /workspace/api-spring && java -version && mvn --version && bash setup-aliases.sh",
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
       "extensions": [
+        "redhat.java",
         "vscjava.extension-pack-for-java",
         "pivotal.vscode-spring-boot",
         "vscjava.vscode-maven",
