@@ -1,3 +1,14 @@
 spring:
-  application:
-    name: eureka.server
+ application:
+  name: eureka-server
+ config:
+  import: "optional:configserver:http://localhost:8888"
+server:
+ port: 8761
+eureka:
+ server:
+  # True en production, false en desarrollo para evitar problemas de auto-preservación
+  enable-self-preservation: false
+ client:
+  register-with-eureka: false
+  fetch-registry: false
