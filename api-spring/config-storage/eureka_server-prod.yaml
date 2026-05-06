@@ -1,13 +1,8 @@
-spring:
- application:
-  name: eureka_server
- config:
-  import: "optional:configserver:http://localhost:8888"
 server:
  port: 8761
 eureka:
  server:
-  enable-self-preservation: false
+  enable-self-preservation: true
  client:
   register-with-eureka: false
   fetch-registry: false
@@ -23,5 +18,5 @@ eureka:
 info:
   application:
     name: ${spring.application.name}
-    description: Eureka server
+    description: Eureka server en produccion
     version: '@project.version@'
