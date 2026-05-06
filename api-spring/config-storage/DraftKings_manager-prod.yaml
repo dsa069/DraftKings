@@ -1,10 +1,5 @@
-spring:
-  application:
-    name: DraftKings_manager
-  config:
-    import: "optional:configserver:http://localhost:8888"
 server:
-  port: 8081
+  port: ${PORT:${SERVER_PORT:0}}
 eureka:
   client:
     service-url:
@@ -23,5 +18,5 @@ management:
 info:
   application:
     name: ${spring.application.name}
-    description: DraftKings manager microservice
+    description: DraftKings manager microservice en produccion
     version: '@project.version@'
