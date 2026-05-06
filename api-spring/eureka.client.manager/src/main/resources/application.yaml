@@ -1,8 +1,33 @@
 spring:
   application:
-    name: eureka.client.manager
-
-
-
-
+    name: DraftKings-manager
+  config:
+    import: "optional:configserver:http://localhost:8888"
+server:
  # port: ${PORT:${SERVER_PORT:0}} Esto pa produccion
+  port: 8081
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761
+  instance:
+    hostname: localhost
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+info:
+  application:
+    name: ${spring.application.name}
+    description: DraftKings manager microservice
+    version: '@project.version@'
+
+
+
+
+
