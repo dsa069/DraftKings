@@ -2,14 +2,34 @@ server:
   port: 8888
 spring:
   application:
-    name: config_server
+    name: configServer
   cloud:
     config:
       server:
         git:
           uri: https://github.com/dsa069/DraftKings.git
-          branch: dev
-          searchPaths: api-spring/config-storage
+          searchPaths: /api-spring/config-storage
+          default-label: dev
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761
+  instance:
+    hostname: localhost
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+info:
+  application:
+    name: ${spring.application.name}
+    description: Config Server for DraftKings microservices
+    version: '@project.version@'
 ---
 spring:
   config:
@@ -19,4 +39,4 @@ spring:
     config:
       server:
         git:
-          branch: main
+          default-label: main
