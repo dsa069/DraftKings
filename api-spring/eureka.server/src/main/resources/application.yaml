@@ -12,14 +12,14 @@ eureka:
   register-with-eureka: false
   fetch-registry: false
 
-  management:
+management:
   info:
     env:
       enabled: true
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,refresh
 info:
   application:
     name: ${spring.application.name}
