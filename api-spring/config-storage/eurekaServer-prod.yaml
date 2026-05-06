@@ -1,13 +1,11 @@
 server:
  port: 8761
 eureka:
- server:
-  enable-self-preservation: true
  client:
   register-with-eureka: false
   fetch-registry: false
 
-  management:
+management:
   info:
     env:
       enabled: true
