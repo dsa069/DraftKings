@@ -28,7 +28,8 @@
         "vscjava.vscode-maven",
         "github.copilot",
         "github.copilot-chat",
-        "cweijan.vscode-postgresql-client2"
+        "cweijan.vscode-postgresql-client2",
+        "echoapi.echoapi-for-vscode"
       ],
       "settings": {
         "java.configuration.updateBuildConfiguration": "automatic",
