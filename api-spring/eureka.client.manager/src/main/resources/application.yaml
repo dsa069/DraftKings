@@ -1,3 +1,8 @@
 spring:
   application:
     name: eureka.client.manager
+
+
+
+
+ # port: ${PORT:${SERVER_PORT:0}} Esto pa produccion
