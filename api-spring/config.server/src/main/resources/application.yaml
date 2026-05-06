@@ -1,3 +1,22 @@
+server:
+  port: 8888
 spring:
   application:
-    name: config.server
+    name: config_server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/dsa069/DraftKings.git
+          branch: dev
+          searchPaths: api-spring/config-storage
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  cloud:
+    config:
+      server:
+        git:
+          branch: main

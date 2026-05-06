@@ -1,10 +1,6 @@
 server:
-  port: 8090
-spring:
-  application:
-    name: Player_ms
-  config:
-    import: "optional:configserver:http://localhost:8888"
+  port: 8080             
+
 eureka:
   instance:
     hostname: localhost
@@ -21,8 +17,9 @@ management:
     web:
       exposure:
         include: health,info
+
 info:
   application:
     name: ${spring.application.name}
-    description: Player microservice
+    description: This is the API Gateway that centralizes access to all microservices usando config server
     version: '@project.version@'
