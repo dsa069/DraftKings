@@ -16,9 +16,6 @@ jobs:
     defaults:
       run:
         working-directory: ./client-ionic
-    strategy:
-      matrix:
-        browser: [chrome, firefox]
 
     steps:
       - uses: actions/checkout@v6.0.2
@@ -60,6 +57,32 @@ jobs:
           name: eslint-report
           path: client-ionic/coverage/eslint-result.json
 
+  cypress-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      checks: write
+    defaults:
+      run:
+        working-directory: ./client-ionic
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Component Tests (Cypress) 🧪
         uses: cypress-io/github-action@v7
         with:
@@ -81,12 +104,12 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: cypress-artifacts
+          name: cypress-artifacts-${{ matrix.browser }}
           path: |
             client-ionic/cypress/screenshots
             client-ionic/cypress/videos
 
-  reporting:
+  lint-report:
     needs: build
     runs-on: ubuntu-latest
     permissions:
