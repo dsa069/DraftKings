@@ -2,6 +2,7 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+//ALMACENAR SECRETOS EN EL SISTEMA DE SECRETOS DE GITHUB
 export const environment = {
   production: false
 };

@@ -35,7 +35,7 @@ jobs:
         continue-on-error: true
 
       - name: Build
-        run: npx ionic build --prod #En desarrollo, puedes usar solo "npx ionic build"
+        run: npx ionic build #En producción, usar --prod
 
       - name: Upload Artifacts (Build)
         uses: actions/upload-artifact@v7.0.1
