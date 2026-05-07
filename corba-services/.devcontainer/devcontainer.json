@@ -33,7 +33,8 @@
         "editor.formatOnSave": true
       }
     }
-  }
+  },
+  "remoteUser": "root"
 }
 // Para sincronizar repo con github
 // cd /workspaces/DraftKings/corba-services && git config --global credential.helper gh && git config --global url."https://github.com/".insteadOf git@github.com:
