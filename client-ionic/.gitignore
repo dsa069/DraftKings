@@ -73,10 +73,6 @@ Thumbs.db
 /android
 /ios
 
-# Environment files
-/src/environments/
-*.env
-
 # Cypress
 /screenshots
 /coverage
