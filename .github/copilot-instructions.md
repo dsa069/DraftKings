@@ -12,6 +12,7 @@ Donde:
   - "refactor/": para cambios que no corrigen errores ni agregan funcionalidades, pero mejoran la estructura del código.
   - "test/": para agregar o corregir pruebas.
   - "chore/": para tareas de mantenimiento que no afectan el código fuente ni las pruebas.
+  - "ci/": para cambios relacionados con la integración continua y la configuración del entorno de desarrollo.
   
 - `<subrepo>`: Especifica el subrepositorio o módulo al que se refiere el cambio:
   - "ionic": para cambios relacionados con el cliente Ionic.

@@ -1,0 +1,106 @@
+name: CI Ionic
+
+on:
+  push:
+    #branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Save Code Linting Report JSON
+        run: npm run lint:json
+        continue-on-error: true
+
+      - name: Test
+        run: npm run test:ci
+
+      - name: Build
+        run: npx ionic build --prod
+
+      - name: Upload Artifacts (Build)
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: www
+          path: www/
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: test-report
+          path: coverage/test.results.xml
+
+      - name: Upload ESLint Report
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: eslint-report
+          path: coverage/eslint-result.json
+
+      #.Resultado de la ejecución del workflow de Ionic
+      #image::github-action-ionic-test.png[role="thumb", align="center"]
+
+      - name: E2E Tests (Cypress) 🧪
+        uses: cypress-io/github-action@v7.1.9
+        with:
+          start: npx ionic serve
+          wait-on: "http://localhost:8100"
+          browser: chrome
+
+      - name: Upload Cypress Screenshots/Videos
+        if: failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/screenshots
+            cypress/videos
+  reporting:
+      needs: build
+      runs-on: ubuntu-latest
+      permissions:
+        checks: write
+        pull-requests: write
+        contents: write
+      steps:
+        - uses: actions/checkout@v6.0.2
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v6.3.0
+          with:
+            node-version: "24"
+            cache: "npm"
+
+        - name: Install dependencies
+          run: npm ci
+
+        - name: Download Reports
+          uses: actions/download-artifact@v8.0.1
+          with:
+            pattern: "*-report"
+            merge-multiple: true
+
+        - name: Annotate Code Linting Results
+          uses: ataylorme/eslint-annotate-action@v4
+          with:
+            github-token: "${{ secrets.GITHUB_TOKEN }}"
+            report-json: "eslint-result.json"
