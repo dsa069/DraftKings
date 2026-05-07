@@ -58,9 +58,10 @@ jobs:
           path: client-ionic/coverage/eslint-result.json
 
       - name: E2E Tests (Cypress) 🧪
-        uses: cypress-io/github-action@v7.1.9
+        uses: cypress-io/github-action@v7.3.0
         with:
           working-directory: client-ionic
+          component: true
           start: npx ionic serve
           wait-on: "http://localhost:8100"
           browser: chrome
