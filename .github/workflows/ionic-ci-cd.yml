@@ -77,7 +77,8 @@ jobs:
         run: npm install
 
       - name: Add Component Header
-        run: echo "Cypress: Component Tests"
+        run: | 
+          echo "Cypress: Component Tests"
 
       - name: Component Tests (Cypress)
         uses: cypress-io/github-action@v7
@@ -89,7 +90,8 @@ jobs:
           browser: ${{ matrix.browser }}
 
       - name: Add E2E Header
-        run: echo "Cypress: E2E Tests"
+        run: |
+          echo "Cypress: E2E Tests"
 
       - name: E2E Tests (Cypress)
         uses: cypress-io/github-action@v7
