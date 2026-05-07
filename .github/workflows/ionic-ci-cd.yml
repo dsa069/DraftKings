@@ -43,13 +43,6 @@ jobs:
           name: www
           path: client-ionic/www/
 
-      - name: Upload Test Report
-        if: always()
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: test-report
-          path: client-ionic/coverage/test.results.xml
-
       - name: Upload ESLint Report
         if: always()
         uses: actions/upload-artifact@v7.0.1
@@ -83,7 +76,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Component Tests (Cypress) 🧪
+      - name: Add Component Header
+        run: echo "## 🧩 Cypress: Component Tests" >> $GITHUB_STEP_SUMMARY
+
+      - name: Component Tests (Cypress)
         uses: cypress-io/github-action@v7
         with:
           working-directory: client-ionic
@@ -92,7 +88,10 @@ jobs:
           wait-on: "http://localhost:8100"
           browser: ${{ matrix.browser }}
 
-      - name: E2E Tests (Cypress) 🧪
+      - name: Add E2E Header
+        run: echo "## 🧪 Cypress: E2E Tests" >> $GITHUB_STEP_SUMMARY
+
+      - name: E2E Tests (Cypress)
         uses: cypress-io/github-action@v7
         with:
           working-directory: client-ionic
