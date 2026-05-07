@@ -215,7 +215,7 @@ jobs:
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
-          service: 'DraftKings' # Nombre del servicio
+          service: 'draftkings' # Nombre del servicio
           region: 'us-east1'
           image: 'us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:latest'
           # Si es una web pública, añade esto (producción):
