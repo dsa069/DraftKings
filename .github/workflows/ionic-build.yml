@@ -2,7 +2,7 @@ name: CI Ionic
 
 on:
   push:
-    #branches: [main, dev]
+    branches: [main, dev]
   pull_request:
     branches: [main, dev]
 
@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: "24"
           cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
 
       - name: Install dependencies
         run: npm install
@@ -43,28 +44,26 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         with:
           name: www
-          path: www/
+          path: client-ionic/www/  # Asegúrate de incluir el prefijo de la carpeta
 
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v7.0.1
         with:
           name: test-report
-          path: coverage/test.results.xml
+          path: client-ionic/coverage/test.results.xml
 
       - name: Upload ESLint Report
         if: always()
         uses: actions/upload-artifact@v7.0.1
         with:
           name: eslint-report
-          path: coverage/eslint-result.json
-
-      #.Resultado de la ejecución del workflow de Ionic
-      #image::github-action-ionic-test.png[role="thumb", align="center"]
+          path: client-ionic/coverage/eslint-result.json
 
       - name: E2E Tests (Cypress) 🧪
         uses: cypress-io/github-action@v7.1.9
         with:
+          working-directory: client-ionic
           start: npx ionic serve
           wait-on: "http://localhost:8100"
           browser: chrome
@@ -77,36 +76,38 @@ jobs:
           path: |
             client-ionic/cypress/screenshots
             client-ionic/cypress/videos
+
   reporting:
-      needs: build
-      runs-on: ubuntu-latest
-      permissions:
-        checks: write
-        pull-requests: write
-        contents: write
-      defaults:
-        run:
-          working-directory: ./client-ionic
-      steps:
-        - uses: actions/checkout@v6.0.2
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+    defaults:
+      run:
+        working-directory: ./client-ionic
+    steps:
+      - uses: actions/checkout@v6.0.2
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v6.3.0
-          with:
-            node-version: "24"
-            cache: "npm"
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
 
-        - name: Install dependencies
-          run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-        - name: Download Reports
-          uses: actions/download-artifact@v8.0.1
-          with:
-            pattern: "*-report"
-            merge-multiple: true
+      - name: Download Reports
+        uses: actions/download-artifact@v8.0.1
+        with:
+          pattern: "*-report"
+          merge-multiple: true
 
-        - name: Annotate Code Linting Results
-          uses: ataylorme/eslint-annotate-action@v4
-          with:
-            github-token: "${{ secrets.GITHUB_TOKEN }}"
-            report-json: "eslint-result.json"
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v4
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          report-json: "eslint-result.json"
