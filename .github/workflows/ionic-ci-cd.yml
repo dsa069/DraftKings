@@ -50,7 +50,7 @@ jobs:
           name: eslint-report
           path: client-ionic/coverage/eslint-result.json
 
-  cypress-tests:
+  cypress-component-tests:
     runs-on: ubuntu-latest
     needs: build
     permissions:
@@ -89,6 +89,41 @@ jobs:
           wait-on: "http://localhost:8100"
           browser: ${{ matrix.browser }}
 
+      - name: Upload Cypress Screenshots/Videos
+        if: failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: cypress-component-artifacts-${{ matrix.browser }}
+          path: |
+            client-ionic/cypress/screenshots
+            client-ionic/cypress/videos
+
+  cypress-e2e-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      checks: write
+    defaults:
+      run:
+        working-directory: ./client-ionic
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Add E2E Header
         run: |
           echo "## 🧪 Cypress: E2E Tests" >> $GITHUB_STEP_SUMMARY
@@ -105,7 +140,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: cypress-artifacts-${{ matrix.browser }}
+          name: cypress-e2e-artifacts-${{ matrix.browser }}
           path: |
             client-ionic/cypress/screenshots
             client-ionic/cypress/videos
