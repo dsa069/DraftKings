@@ -13,6 +13,9 @@ jobs:
       contents: write
       checks: write
       pull-requests: write
+    defaults:
+      run:
+        working-directory: ./client-ionic
 
     steps:
       - uses: actions/checkout@v6.0.2
@@ -72,8 +75,8 @@ jobs:
         with:
           name: cypress-artifacts
           path: |
-            cypress/screenshots
-            cypress/videos
+            client-ionic/cypress/screenshots
+            client-ionic/cypress/videos
   reporting:
       needs: build
       runs-on: ubuntu-latest
@@ -81,6 +84,9 @@ jobs:
         checks: write
         pull-requests: write
         contents: write
+      defaults:
+        run:
+          working-directory: ./client-ionic
       steps:
         - uses: actions/checkout@v6.0.2
 
