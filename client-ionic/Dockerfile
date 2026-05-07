@@ -1,18 +1,9 @@
-FROM node:24-alpine
+FROM nginx:alpine
 
-# Crear directorio de la app
-WORKDIR /usr/src/app
+COPY www /usr/share/nginx/html
 
-# Copiar dependencias
-COPY package*.json ./
+RUN echo 'server { listen 8080; location / { root /usr/share/nginx/html; try_files $uri $uri/ /index.html; } }' > /etc/nginx/conf.d/default.conf
 
-RUN npm install
-# Para producción, puedes usar:
-# RUN npm ci --only=production
+EXPOSE 8080
 
-# Copiar el resto del código
-COPY . .
-
-EXPOSE 8100
-
-CMD [ "ionic", "serve" ]
+CMD ["nginx", "-g", "daemon off;"]
