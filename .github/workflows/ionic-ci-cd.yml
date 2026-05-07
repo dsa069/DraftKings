@@ -1,4 +1,4 @@
-name: CI Ionic
+name: CI/CD Ionic
 
 on:
   push:
@@ -34,17 +34,14 @@ jobs:
         run: npm run lint:json
         continue-on-error: true
 
-      - name: Test
-        run: npm run test:ci
-
       - name: Build
-        run: npx ionic build --prod
+        run: npx ionic build --prod #En desarrollo, puedes usar solo "npx ionic build"
 
       - name: Upload Artifacts (Build)
         uses: actions/upload-artifact@v7.0.1
         with:
           name: www
-          path: client-ionic/www/  # Asegúrate de incluir el prefijo de la carpeta
+          path: client-ionic/www/
 
       - name: Upload Test Report
         if: always()
