@@ -16,6 +16,9 @@ jobs:
     defaults:
       run:
         working-directory: ./client-ionic
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
 
     steps:
       - uses: actions/checkout@v6.0.2
@@ -57,14 +60,22 @@ jobs:
           name: eslint-report
           path: client-ionic/coverage/eslint-result.json
 
-      - name: E2E Tests (Cypress) 🧪
-        uses: cypress-io/github-action@v7.3.0
+      - name: Component Tests (Cypress) 🧪
+        uses: cypress-io/github-action@v7
         with:
           working-directory: client-ionic
           component: true
           start: npx ionic serve
           wait-on: "http://localhost:8100"
-          browser: chrome
+          browser: ${{ matrix.browser }}
+
+      - name: E2E Tests (Cypress) 🧪
+        uses: cypress-io/github-action@v7
+        with:
+          working-directory: client-ionic
+          start: npx ionic serve
+          wait-on: "http://localhost:8100"
+          browser: ${{ matrix.browser }}
 
       - name: Upload Cypress Screenshots/Videos
         if: failure()
