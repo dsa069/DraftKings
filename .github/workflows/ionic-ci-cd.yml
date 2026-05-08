@@ -92,8 +92,11 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release.keystore.b64
+
       - name: Build APK (Debug)
-        run: npx cap build android
+        run: npx cap build android --androidreleasetype AppBundle --keystorepath release-key.jks --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} --keystorealias ${{ secrets.KEY_ALIAS }} --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
 
       - name: Locate APK
         id: locate_apk
