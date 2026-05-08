@@ -1,6 +1,4 @@
 name: CI/CD Corba
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 on:
   push:
@@ -147,6 +145,6 @@ jobs:
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
-          service: 'corba-news-dev'
+          service: 'dk-corba-dev'
           region: 'us-east1'
           image: 'us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest'
