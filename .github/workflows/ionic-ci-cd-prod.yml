@@ -97,11 +97,18 @@ jobs:
 
       - name: Build APK (Release)
         run: | 
-          npx cap build android --androidreleasetype APK \
-          --keystorepath release-key.jks \
-          --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          --keystorealias ${{ secrets.KEY_ALIAS }} \
-          --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
+          # 1. Construir con Capacitor (esto genera el unsigned)
+          npx cap build android --androidreleasetype APK
+          
+          # 2. Firmar usando apksigner (incluye V2/V3 automáticamente)
+          # Usamos las variables del SDK que ya están configuradas en el entorno
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
+            --ks android/app/release-key.jks \
+            --ks-key-alias ${{ secrets.KEY_ALIAS }} \
+            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
+            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+            --out android/app/build/outputs/apk/release/DraftKings.apk \
+            android/app/build/outputs/apk/release/app-release-unsigned.apk
           cd android
           mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
       
