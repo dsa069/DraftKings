@@ -61,12 +61,21 @@ jobs:
           min-coverage-changed-files: 60
           comment-type: both
 
-      - name: Run Checkstyle
+      - name: Run Checkstyle Full Report
         uses: dbelyaev/action-checkstyle@v3.10.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           checkstyle_config: google_checks.xml
           reporter: github-pr-check
+
+      - name: Checkstyle PR Review
+        if: github.event_name == 'pull_request'
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review 
+          filter_mode: added        
+          level: error               
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v3.0.0
