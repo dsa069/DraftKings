@@ -102,7 +102,7 @@ jobs:
           --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} \
           --keystorealias ${{ secrets.KEY_ALIAS }} \
           --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
-          mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
+          mv android/app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
       
       - name: Locate APK
         id: locate_apk
