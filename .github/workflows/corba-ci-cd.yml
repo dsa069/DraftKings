@@ -41,7 +41,7 @@ jobs:
       # Build, Compile, and Test in a single Maven command
       # Phases executed in order: generate-sources (idlj) → compile → test
       - name: Build with Maven
-        run: mvn clean compile test
+        run: mvn -B clean verify
 
       # Upload Test Results (for visibility in PR checks)
       - name: Upload Test Results
@@ -54,12 +54,12 @@ jobs:
       - name: Add coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
-        if: github.event_name == 'pull_request'
         with:
-          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          paths: corba-services/DK_News_Manager/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 60
           min-coverage-changed-files: 60
+          comment-type: both
 
       - name: Run Checkstyle
         uses: dbelyaev/action-checkstyle@v3.10.0
