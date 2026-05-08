@@ -97,11 +97,10 @@ jobs:
 
       - name: Build APK (Release)
         run: | 
-          # 1. Construir con Capacitor (esto genera el unsigned)
-          npx cap build android --androidreleasetype APK
+          cd android
+          ./gradlew assembleRelease
           
-          # 2. Firmar usando apksigner (incluye V2/V3 automáticamente)
-          # Usamos las variables del SDK que ya están configuradas en el entorno
+          # 3. Firmar con apksigner (La firma que Android sí acepta)
           $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
             --ks android/app/release-key.jks \
             --ks-key-alias ${{ secrets.KEY_ALIAS }} \
@@ -109,7 +108,6 @@ jobs:
             --key-pass pass:${{ secrets.KEY_PASSWORD }} \
             --out android/app/build/outputs/apk/release/DraftKings.apk \
             android/app/build/outputs/apk/release/app-release-unsigned.apk
-          cd android
           mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
       
       - name: Locate APK
