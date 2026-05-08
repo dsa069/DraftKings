@@ -73,6 +73,7 @@ Thumbs.db
 /android
 /ios
 release.keystore
+release.keystore.b64
 
 # Cypress
 cypress/screenshots
