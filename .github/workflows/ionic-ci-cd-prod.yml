@@ -102,7 +102,7 @@ jobs:
           
           # 3. Firmar con apksigner (La firma que Android sí acepta)
           $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
-            --ks android/app/release-key.jks \
+            --ks android/release-key.jks \
             --ks-key-alias ${{ secrets.KEY_ALIAS }} \
             --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
             --key-pass pass:${{ secrets.KEY_PASSWORD }} \
