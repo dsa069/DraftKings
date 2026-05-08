@@ -34,6 +34,21 @@ public class BufferServer {
            }else {
         	   System.out.println("Servidor Buffer finalizado.");
            }
+                      if(true) {
+        	   int x = 1/0; // para probar el catch
+           }else {
+        	   System.out.println("Servidor Buffer finalizado.");
+           }
+                      if(true) {
+        	   int x = 1/0; // para probar el catch
+           }else {
+        	   System.out.println("Servidor Buffer finalizado.");
+           }
+                      if(true) {
+        	   int x = 1/0; // para probar el catch
+           }else {
+        	   System.out.println("Servidor Buffer finalizado.");
+           }
        } catch(Exception e) {
                    System.err.println("ERROR: " + e);
                    e.printStackTrace(System.out);
