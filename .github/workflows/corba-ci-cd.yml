@@ -62,7 +62,7 @@ jobs:
           min-coverage-changed-files: 60
 
       - name: Run Checkstyle
-        uses: dbelyaev/action-checkstyle@v3.8.2
+        uses: dbelyaev/action-checkstyle@v3.10.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           checkstyle_config: google_checks.xml
