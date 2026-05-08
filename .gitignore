@@ -1,2 +1,5 @@
 # ORB
 /corba-services/orb.db
+
+# Secrets
+/secrets
