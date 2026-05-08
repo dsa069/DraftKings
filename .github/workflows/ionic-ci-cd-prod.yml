@@ -98,7 +98,7 @@ jobs:
       - name: Build APK (Release)
         run: | 
           npx cap build android --androidreleasetype APK --keystorepath release-key.jks --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} --keystorealias ${{ secrets.KEY_ALIAS }} --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
-          mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
+          #mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
       - name: Locate APK
         id: locate_apk
         # Buscamos el APK y limpiamos la ruta para que no tenga './'
