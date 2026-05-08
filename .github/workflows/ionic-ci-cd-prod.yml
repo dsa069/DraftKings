@@ -108,7 +108,6 @@ jobs:
             --key-pass pass:${{ secrets.KEY_PASSWORD }} \
             --out app/build/outputs/apk/release/DraftKings.apk \
             app/build/outputs/apk/release/app-release-unsigned.apk
-          #mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
       
       - name: Locate APK
         id: locate_apk
@@ -117,6 +116,11 @@ jobs:
           RAW_PATH=$(find android/app/build/outputs/apk/release -name "DraftKings.apk" -type f | head -1)
           CLEAN_PATH=$(echo $RAW_PATH | sed 's|^\./||')
           echo "apk_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
+
+      - name: Verify APK Signature
+        run: |
+          echo "### 🔐 Reporte de Firma" >> $GITHUB_STEP_SUMMARY
+          $ANDROID_HOME/build-tools/34.0.0/apksigner verify --print-certs ${{ steps.locate_apk.outputs.apk_path }} >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v7.0.1
