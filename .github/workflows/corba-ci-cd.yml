@@ -15,7 +15,7 @@ jobs:
       pull-requests: write
     defaults:
       run:
-        working-directory: ./corba-services
+        working-directory: ./corba-services/DK_News_Manager
 
     steps:
       # Checkout the repository
