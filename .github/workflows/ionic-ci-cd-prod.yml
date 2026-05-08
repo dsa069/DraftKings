@@ -102,13 +102,13 @@ jobs:
           --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} \
           --keystorealias ${{ secrets.KEY_ALIAS }} \
           --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
-          #mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
+          mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
       
       - name: Locate APK
         id: locate_apk
         # Buscamos el APK y limpiamos la ruta para que no tenga './'
         run: |
-          RAW_PATH=$(find android/app/build/outputs/apk/release -name "**signed.apk" -type f | head -1)
+          RAW_PATH=$(find android/app/build/outputs/apk/release -name "DraftKings.apk" -type f | head -1)
           CLEAN_PATH=$(echo $RAW_PATH | sed 's|^\./||')
           echo "apk_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
 
