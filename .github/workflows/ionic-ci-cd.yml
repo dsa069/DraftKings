@@ -93,7 +93,7 @@ jobs:
         run: npx cap sync android
 
       - name: Decode Keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release.keystore.b64
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release-key.jks
 
       - name: Build APK (Debug)
         run: npx cap build android --androidreleasetype APK --keystorepath release-key.jks --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} --keystorealias ${{ secrets.KEY_ALIAS }} --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
