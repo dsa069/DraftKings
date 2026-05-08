@@ -1,0 +1,294 @@
+name: CI/CD Ionic Production
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./client-ionic
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Save Code Linting Report JSON
+        run: npm run lint:json
+        continue-on-error: true
+
+      - name: Build
+        run: npx ionic build --prod
+
+      - name: Upload Artifacts (Build)
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: www
+          path: client-ionic/www/
+
+      - name: Upload ESLint Report
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: eslint-report
+          path: client-ionic/coverage/eslint-result.json
+
+  build-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ./client-ionic
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
+
+      - name: Set up Java
+        uses: actions/setup-java@v5.2.0
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4.0.1
+        with:
+          api-level: 34
+          build-tools-version: 34.0.0
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build web assets
+        run: npx ionic build --prod
+
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ./android/release-key.jks
+
+      - name: Build APK (Release)
+        run: | 
+          npx cap build android --androidreleasetype APK --keystorepath release-key.jks --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} --keystorealias ${{ secrets.KEY_ALIAS }} --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
+          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/DraftKings.apk
+      - name: Locate APK
+        id: locate_apk
+        # Buscamos el APK y limpiamos la ruta para que no tenga './'
+        run: |
+          RAW_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" -type f | head -1)
+          CLEAN_PATH=$(echo $RAW_PATH | sed 's|^\./||')
+          echo "apk_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: DraftKings-apk
+          path: client-ionic/${{ steps.locate_apk.outputs.apk_path }}
+          if-no-files-found: error
+
+  tests-components:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      checks: write
+    defaults:
+      run:
+        working-directory: ./client-ionic
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Add Component Header
+        run: | 
+          echo "## 🧩 Cypress: Component Tests - ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Component Tests (Cypress)
+        uses: cypress-io/github-action@v7
+        with:
+          working-directory: client-ionic
+          component: true
+          start: npx ionic serve
+          wait-on: "http://localhost:8100"
+          browser: ${{ matrix.browser }}
+
+      - name: Upload Cypress Screenshots/Videos
+        if: failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: cypress-component-artifacts-${{ matrix.browser }}
+          path: |
+            client-ionic/cypress/screenshots
+            client-ionic/cypress/videos
+
+  tests-e2e:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      checks: write
+    defaults:
+      run:
+        working-directory: ./client-ionic
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Add E2E Header
+        run: |
+          echo "## 🧪 Cypress: E2E Tests - ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: E2E Tests (Cypress)
+        uses: cypress-io/github-action@v7
+        with:
+          working-directory: client-ionic
+          start: npx ionic serve
+          wait-on: "http://localhost:8100"
+          browser: ${{ matrix.browser }}
+
+      - name: Upload Cypress Screenshots/Videos
+        if: failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: cypress-e2e-artifacts-${{ matrix.browser }}
+          path: |
+            client-ionic/cypress/screenshots
+            client-ionic/cypress/videos
+
+  lint-report:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+    defaults:
+      run:
+        working-directory: ./client-ionic
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: client-ionic/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Reports
+        uses: actions/download-artifact@v8.0.1
+        with:
+          pattern: "*-report"
+          merge-multiple: true
+
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v4
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          report-json: "eslint-result.json"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - tests-components
+      - tests-e2e
+      - lint-report
+    defaults:
+      run:
+        working-directory: ./client-ionic
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: www
+          path: client-ionic/www
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Docker login to Artifact Registry
+        uses: docker/login-action@v4.1.0
+        with:
+          registry: us-east1-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_SA_KEY }}
+
+      # Que la imagen se suba con el tag actual cuando se etnga el actions del tag
+      - name: Build Docker image
+        run: |
+          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:0.0.1 .
+
+      - name: Push Docker image to Artifact Registry
+        run: |
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:0.0.1
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: 'draftkings-'
+          region: 'us-east1'
+          image: 'us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:0.0.1'
+          flags: '--allow-unauthenticated'
+
+          # Habría que proteger el back desplegado (general)
