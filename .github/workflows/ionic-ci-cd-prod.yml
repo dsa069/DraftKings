@@ -98,7 +98,7 @@ jobs:
       - name: Build APK (Release)
         run: | 
           npx cap build android --androidreleasetype APK --keystorepath release-key.jks --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} --keystorealias ${{ secrets.KEY_ALIAS }} --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
-          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/DraftKings.apk
+          mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
       - name: Locate APK
         id: locate_apk
         # Buscamos el APK y limpiamos la ruta para que no tenga './'
@@ -286,7 +286,7 @@ jobs:
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
-          service: 'draftkings-'
+          service: 'draftkings'
           region: 'us-east1'
           image: 'us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:0.0.1'
           flags: '--allow-unauthenticated'
