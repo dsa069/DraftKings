@@ -1,6 +1,6 @@
 name: CI/CD Ionic
 
-on:
+#on:
   #push:
     #branches: [main, dev]
   #pull_request:
