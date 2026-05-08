@@ -109,13 +109,15 @@ jobs:
             APK_PATH=$(find . -name "*.apk" -type f | head -1)
             cd ..
           fi
-          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
-          echo "APK encontrado en: $APK_PATH"
+          # Eliminamos el ./ inicial si existe
+          CLEAN_PATH=$(echo $APK_PATH | sed 's|^\./||')
+          echo "apk_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
+          echo "APK encontrado en: $CLEAN_PATH"
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: android-apk
+          name: DraftKings-apk
           path: client-ionic/${{ steps.locate_apk.outputs.apk_path }}
           if-no-files-found: warn
 
