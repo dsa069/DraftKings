@@ -51,6 +51,23 @@ jobs:
           name: test-results
           path: corba-services/DK_News_Manager/target/surefire-reports/*.xml
 
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        if: github.event_name == 'pull_request'
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 60
+          min-coverage-changed-files: 60
+
+      - name: Run Checkstyle
+        uses: dbelyaev/action-checkstyle@v3.8.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: google_checks.xml
+          reporter: github-pr-review
+
       - name: Publish Test Results
         uses: dorny/test-reporter@v3.0.0
         with:
