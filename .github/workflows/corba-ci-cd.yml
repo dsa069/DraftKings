@@ -1,0 +1,70 @@
+name: CI/CD Corba
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./corba-services
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      # Set up Java 8 - CRITICAL: CORBA requires Java 8 (removed from Java 11+)
+      - name: Set up JDK 8
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: maven
+
+      # Verify Java version
+      - name: Verify Java Version
+        run: java -version
+
+      # Verify idlj compiler is available (part of JDK)
+      - name: Verify idlj Compiler
+        run: which idlj || echo "idlj is included in JDK, will be invoked by Maven"
+
+      # Build, Compile, and Test in a single Maven command
+      # Phases executed in order: generate-sources (idlj) → compile → test
+      - name: Build with Maven
+        run: mvn clean compile test
+
+      # Upload Test Results (for visibility in PR checks)
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v7
+        if: success() || failure()
+        with:
+          name: test-results
+          path: target/surefire-reports/*.xml
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v3.0.0
+        with:
+          artifact: test-results
+          name: JUnit Tests
+          path: '*.xml'
+          reporter: java-junit
+
+      # (Optional) Create a summary of the build
+      - name: Build Summary
+        if: always()
+        run: |
+          echo "## CORBA Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: $([ $? -eq 0 ] && echo 'Success' || echo 'Failed')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Java Version**: $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Generated CORBA Code**: target/generated-sources/corba/BufferApp/" >> $GITHUB_STEP_SUMMARY
+          echo "- **Test Report**: target/surefire-reports/" >> $GITHUB_STEP_SUMMARY
