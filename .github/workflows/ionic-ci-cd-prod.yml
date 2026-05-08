@@ -93,17 +93,22 @@ jobs:
         run: npx cap sync android
 
       - name: Decode Keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ./android/release-key.jks
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/release-key.jks
 
       - name: Build APK (Release)
         run: | 
-          npx cap build android --androidreleasetype APK --keystorepath release-key.jks --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} --keystorealias ${{ secrets.KEY_ALIAS }} --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
+          npx cap build android --androidreleasetype APK \
+          --keystorepath release-key.jks \
+          --keystorepass ${{ secrets.KEYSTORE_PASSWORD }} \
+          --keystorealias ${{ secrets.KEY_ALIAS }} \
+          --keystorealiaspass ${{ secrets.KEY_PASSWORD }}
           #mv app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/DraftKings.apk
+      
       - name: Locate APK
         id: locate_apk
         # Buscamos el APK y limpiamos la ruta para que no tenga './'
         run: |
-          RAW_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" -type f | head -1)
+          RAW_PATH=$(find android/app/build/outputs/apk/release -name "**signed.apk" -type f | head -1)
           CLEAN_PATH=$(echo $RAW_PATH | sed 's|^\./||')
           echo "apk_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
 
