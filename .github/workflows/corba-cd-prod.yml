@@ -1,113 +1,20 @@
-name: CI/CD Corba
+name: CD Corba Production
 
 on:
-  push:
-    branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
+  workflow_run:
+    workflows: ["CI Corba"]
+    types:
+      - completed
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-    permissions:
-      contents: read
-      checks: write
-      pull-requests: write
-    defaults:
-      run:
-        working-directory: ./corba-services/DK_News_Manager
-
-    steps:
-      # Checkout the repository
-      - name: Checkout Code
-        uses: actions/checkout@v6.0.2
-
-      # Set up Java 8 - CRITICAL: CORBA requires Java 8 (removed from Java 11+)
-      - name: Set up JDK 8
-        uses: actions/setup-java@v5.2.0
-        with:
-          java-version: '8'
-          distribution: 'temurin'
-          cache: maven
-
-      # Verify Java version
-      - name: Verify Java Version
-        run: java -version
-
-      # Verify idlj compiler is available (part of JDK)
-      - name: Verify idlj Compiler
-        run: which idlj || echo "idlj is included in JDK, will be invoked by Maven"
-
-      # Build, Compile, and Test in a single Maven command
-      # Phases executed in order: generate-sources (idlj) → compile → test
-      - name: Build with Maven
-        run: mvn -B clean verify
-
-      - name: Upload JAR Artifact
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: corba-jar
-          path: corba-services/DK_News_Manager/target/*-jar-with-dependencies.jar
-          if-no-files-found: error
-
-      # Upload Test Results (for visibility in PR checks)
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v7.0.1
-        if: success() || failure()
-        with:
-          name: test-results
-          path: corba-services/DK_News_Manager/target/surefire-reports/*.xml
-
-      - name: Add coverage to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.7.2
-        with:
-          paths: corba-services/DK_News_Manager/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 60
-          min-coverage-changed-files: 60
-          comment-type: both
-
-      - name: Run Checkstyle Full Report
-        uses: dbelyaev/action-checkstyle@v3.10.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          checkstyle_config: google_checks.xml
-          reporter: github-pr-check
-
-      - name: Checkstyle PR Review
-        if: github.event_name == 'pull_request'
-        uses: dbelyaev/action-checkstyle@v3.10.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review 
-          filter_mode: added        
-          level: error               
-
-      - name: Publish Test Results
-        uses: dorny/test-reporter@v3.0.0
-        with:
-          artifact: test-results
-          name: JUnit Tests
-          path: '*.xml'
-          reporter: java-junit
-
-      # (Optional) Create a summary of the build
-      - name: Build Summary
-        if: always()
-        run: |
-          echo "## CORBA Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status**: $([ $? -eq 0 ] && echo 'Success' || echo 'Failed')" >> $GITHUB_STEP_SUMMARY
-          echo "- **Java Version**: $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Generated CORBA Code**: target/generated-sources/corba/BufferApp/" >> $GITHUB_STEP_SUMMARY
-          echo "- **Test Report**: target/surefire-reports/" >> $GITHUB_STEP_SUMMARY
-
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      (
+        (github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main') ||
+        (github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.pull_requests[0].base.ref == 'main')
+      )
     defaults:
       run:
         working-directory: ./corba-services/DK_News_Manager
@@ -136,11 +43,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest .
+          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:0.0.1 .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:0.0.1
 
       # 1. Instalar la llave ANTES de comprobar la conexión
       - name: Install SSH Key
@@ -166,7 +73,7 @@ jobs:
             
             echo "Esperando a que el puerto SSH (22) responda..."
             for i in {1..24}; do
-              if nc -z dk-corba-dev.cnsa-2026-dsa069.tech 22; then
+              if nc -z dk-corba.cnsa-2026-dsa069.tech 22; then
                 echo "¡SSH disponible!"
                 break
               fi
@@ -222,7 +129,7 @@ jobs:
       - name: Wait for VM and SSH to be ready
         if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
         env:
-          VM_HOST: dk-corba-dev.cnsa-2026-dsa069.tech
+          VM_HOST: dk-corba.cnsa-2026-dsa069.tech
           VM_USER: ubuntu
         run: |
           echo "Esperando a que la MV inicie y acepte conexiones SSH..."
@@ -248,7 +155,7 @@ jobs:
           # Eliminar el archivo si existe para empezar de cero y evitar el error "invalid line"
           rm -f ~/.ssh/known_hosts
           # Escanear la IP/Host de la nueva máquina
-          ssh-keyscan -H dk-corba-dev.cnsa-2026-dsa069.tech >> ~/.ssh/known_hosts
+          ssh-keyscan -H dk-corba.cnsa-2026-dsa069.tech >> ~/.ssh/known_hosts
 
       # =================================================================
       # FIN DEL BLOQUE DE RESILIENCIA Y TERRAFORM
@@ -258,9 +165,9 @@ jobs:
       # En Cloud Run: El servidor está detrás de un Proxy Inverso. El IOR que genera el servidor CORBA suele contener una IP interna de la red de Google (tipo 10.x.x.x). Cuando el cliente recibe ese IOR e intenta conectar a esa IP 10.x.x.x, falla, porque esa IP no existe fuera de Google.
       - name: Deploy to VM
         env:
-          VM_HOST: dk-corba-dev.cnsa-2026-dsa069.tech
+          VM_HOST: dk-corba.cnsa-2026-dsa069.tech
           VM_USER: ubuntu
-          IMAGE: us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest
+          IMAGE: us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:0.0.1
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           ssh "${VM_USER}@${VM_HOST}" 'bash -se' <<EOF
@@ -297,5 +204,5 @@ jobs:
         run: |
           echo "### LOGS COMBINADOS (ORBD y Servidor)" >> "$GITHUB_STEP_SUMMARY"
           echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
-          ssh ubuntu@dk-corba-dev.cnsa-2026-dsa069.tech "sudo docker logs corba-news-manager" >> "$GITHUB_STEP_SUMMARY"
+          ssh ubuntu@dk-corba.cnsa-2026-dsa069.tech "sudo docker logs corba-news-manager" >> "$GITHUB_STEP_SUMMARY"
           echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
