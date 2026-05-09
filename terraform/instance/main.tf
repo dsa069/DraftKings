@@ -32,7 +32,7 @@ resource "google_compute_instance" "vm_instance" {
 
   # Add SSH access to the Compute Engine instance
   metadata = {
-    ssh-keys = "ubuntu:${file("/workspaces/DraftKings/terraform/credentials/ssh/id_ed25519.pub")}"
+    ssh-keys = "ubuntu:${file("${path.module}/../credentials/ssh/id_ed25519.pub")}"  
   }
 
   # Startup script
