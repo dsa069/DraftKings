@@ -39,6 +39,11 @@ module "corba-deploy-vm" {
 
 resource "null_resource" "provision-deploy-vm" {
 
+  triggers = {
+    instance_id = module.corba-deploy-vm.instance_ip_addr # O mejor si el modulo devuelve el instance_id
+    always_run  = "${timestamp()}" # ESTA LÍNEA FUERZA LA EJECUCIÓN SIEMPRE
+  }
+
   provisioner "remote-exec" {
     connection {
       host        = module.corba-deploy-vm.instance_ip_addr
