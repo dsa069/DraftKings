@@ -50,7 +50,7 @@ resource "null_resource" "provision-deploy-vm" {
     ## Script inicialización corba-deploy-vm
     inline = [
       "sudo apt-get update -y",
-      "sudo apt-get install -y docker.io", # Instala el motor de Docker
+      "sudo apt install -y docker.io", # Instala el motor de Docker
       "sudo systemctl start docker",       # Levanta el servicio
       "sudo systemctl enable docker",      # Asegura que arranque tras reinicios
       "sudo usermod -aG docker ubuntu"     # Permite al usuario usar docker"
