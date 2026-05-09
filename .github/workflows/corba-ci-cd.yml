@@ -142,16 +142,78 @@ jobs:
         run: |
           docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest
 
-      # Install SSH Key
+      # 1. Instalar la llave ANTES de comprobar la conexión
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2.8.1
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: 'placeholder'
 
-      # Add host to known_hosts
-      - name: Add Known Hosts
-        run: ssh-keyscan -H dk-corba-dev.cnsa-2026-dsa069.tech >> ~/.ssh/known_hosts
+      # =================================================================
+      # INICIO DEL BLOQUE DE RESILIENCIA Y TERRAFORM
+      # =================================================================
+
+      # 2. Comprobar si la MV está viva
+      - name: Check SSH Connection
+        id: ssh_check
+        env:
+          VM_HOST: dk-corba-dev.cnsa-2026-dsa069.tech
+          VM_USER: ubuntu
+        run: |
+          echo "Comprobando conexión con la máquina..."
+          # Usamos BatchMode para que no se quede colgado pidiendo contraseña y ConnectTimeout de 5 seg
+          if ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no "${VM_USER}@${VM_HOST}" 'echo "La maquina responde"'; then
+            echo "STATUS=up" >> $GITHUB_OUTPUT
+            echo "La máquina está encendida y accesible."
+          else
+            echo "STATUS=down" >> $GITHUB_OUTPUT
+            echo "La máquina NO responde. Se requerirá Terraform."
+          fi
+
+      # 3. Lanzar Terraform SOLO si la conexión falló
+      - name: Deploy Infrastructure with Terraform
+        if: steps.ssh_check.outputs.STATUS == 'down'
+        # IMPORTANTE: Cambia 'directorio_terraform' a la ruta donde tengas tus archivos .tf
+        working-directory: ./terraform
+        run: |
+          echo "Iniciando despliegue con Terraform..."
+          terraform init
+          terraform apply -auto-approve
+
+      # 4. Esperar a que la MV levante el servicio SSH (Si se ejecutó Terraform)
+      - name: Wait for VM and SSH to be ready
+        if: steps.ssh_check.outputs.STATUS == 'down'
+        env:
+          VM_HOST: dk-corba-dev.cnsa-2026-dsa069.tech
+          VM_USER: ubuntu
+        run: |
+          echo "Esperando a que la MV inicie y acepte conexiones SSH..."
+          MAX_RETRIES=15
+          RETRY_COUNT=0
+          
+          # Bucle que intenta conectar cada 10 segundos
+          until ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no "${VM_USER}@${VM_HOST}" 'echo "SSH Listo"'; do
+            RETRY_COUNT=$((RETRY_COUNT+1))
+            if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+              echo "ERROR CRÍTICO: La máquina se creó en Terraform pero no responde por SSH tras varios intentos."
+              exit 1
+            fi
+            echo "Intento $RETRY_COUNT fallido. Esperando 10 segundos..."
+            sleep 10
+          done
+          echo "¡Máquina virtual lista y operativa!"
+
+      # 5. Escanear la huella (Siempre se ejecuta, haya habido Terraform o no)
+      - name: Update Known Hosts
+        run: |
+          # Borramos la huella antigua por si Terraform recreó la máquina con la misma IP
+          ssh-keygen -R dk-corba-dev.cnsa-2026-dsa069.tech || true
+          # Escaneamos la nueva huella de forma segura
+          ssh-keyscan -H dk-corba-dev.cnsa-2026-dsa069.tech >> ~/.ssh/known_hosts
+
+      # =================================================================
+      # FIN DEL BLOQUE DE RESILIENCIA Y TERRAFORM
+      # =================================================================
 
       # REEMPLAZAR CLOUD RUN POR MV: Cuando un servidor CORBA se registra, genera un "pasaporte" llamado IOR. Este archivo contiene la IP y el puerto exactos donde el servidor está escuchando.
       # En Cloud Run: El servidor está detrás de un Proxy Inverso. El IOR que genera el servidor CORBA suele contener una IP interna de la red de Google (tipo 10.x.x.x). Cuando el cliente recibe ese IOR e intenta conectar a esa IP 10.x.x.x, falla, porque esa IP no existe fuera de Google.
