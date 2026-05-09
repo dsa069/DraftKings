@@ -175,13 +175,22 @@ jobs:
         if: steps.ssh_check.outputs.STATUS == 'down'
         uses: hashicorp/setup-terraform@v4
 
-      # 4. Crear el archivo de credenciales temporalmente para que Terraform lo encuentre
-      - name: Create Credentials File
+      # 4. Crear el archivo de credenciales y las llaves SSH SOLO si la conexión falló (Terraform las necesita para crear la MV)
+      - name: Create Credentials and SSH Files
         if: steps.ssh_check.outputs.STATUS == 'down'
         working-directory: ./terraform
         run: |
+          # 1. Crear el JSON de GCP
           mkdir -p credentials
           echo '${{ secrets.GCP_SA_KEY }}' > ./credentials/gc-dk.json
+
+          # 2. Crear las llaves SSH (Privada y Pública)
+          mkdir -p credentials/ssh
+          echo '${{ secrets.SSH_PRIVATE_KEY }}' > ./credentials/ssh/id_ed25519
+          echo '${{ secrets.SSH_PUBLIC_KEY }}' > ./credentials/ssh/id_ed25519.pub
+          
+          # 3. Dar permisos correctos a la llave privada (importante para SSH)
+          chmod 600 ./credentials/ssh/id_ed25519
 
       # 5. Lanzar Terraform SOLO si la conexión falló
       - name: Deploy Infrastructure with Terraform
