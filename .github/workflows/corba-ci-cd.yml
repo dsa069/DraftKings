@@ -275,7 +275,7 @@ jobs:
               "${IMAGE}"
             
             # Esperar un poco para que los logs se generen
-            sleep 8
+            sleep 15
           EOF
 
       - name: Display Combined Logs (ORBD + Server)
