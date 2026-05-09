@@ -175,7 +175,15 @@ jobs:
         if: steps.ssh_check.outputs.STATUS == 'down'
         uses: hashicorp/setup-terraform@v4
 
-      # 4. Lanzar Terraform SOLO si la conexión falló
+      # 4. Crear el archivo de credenciales temporalmente para que Terraform lo encuentre
+      - name: Create Credentials File
+        if: steps.ssh_check.outputs.STATUS == 'down'
+        working-directory: ./terraform
+        run: |
+          mkdir -p credentials
+          echo '${{ secrets.GCP_SA_KEY }}' > ./credentials/gc-dk.json
+
+      # 5. Lanzar Terraform SOLO si la conexión falló
       - name: Deploy Infrastructure with Terraform
         if: steps.ssh_check.outputs.STATUS == 'down'
         working-directory: ./terraform 
@@ -187,7 +195,7 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      # 5. Esperar a que la MV levante el servicio SSH (Si se ejecutó Terraform)
+      # 6. Esperar a que la MV levante el servicio SSH (Si se ejecutó Terraform)
       - name: Wait for VM and SSH to be ready
         if: steps.ssh_check.outputs.STATUS == 'down'
         env:
@@ -210,7 +218,7 @@ jobs:
           done
           echo "¡Máquina virtual lista y operativa!"
 
-      # 6. Escanear la huella (Siempre se ejecuta, haya habido Terraform o no)
+      # 7. Escanear la huella (Siempre se ejecuta, haya habido Terraform o no)
       - name: Update Known Hosts
         run: |
           # Borramos la huella antigua por si Terraform recreó la máquina con la misma IP

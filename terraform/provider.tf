@@ -8,9 +8,8 @@ terraform {
 }
 
 provider "google" {
-  credentials = file("./credentials/gc-dk.json")
-
-  project = var.gcp_project
-  region  = "us-east1"
-  zone    = "us-east1-c"
+  project     = var.gcp_project
+  region      = "us-east1"
+  # Usamos la variable en lugar de una ruta fija
+  credentials = file(var.credentials_file)
 }
