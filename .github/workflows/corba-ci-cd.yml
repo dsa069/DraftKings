@@ -186,12 +186,12 @@ jobs:
 
       # 3. Configurar Terraform SOLO si la conexión falló
       - name: Setup Terraform
-        if: steps.ssh_check.outputs.STATUS == 'down'
+        if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
         uses: hashicorp/setup-terraform@v4
 
       # 4. Crear el archivo de credenciales y las llaves SSH SOLO si la conexión falló (Terraform las necesita para crear la MV)
       - name: Create Credentials and SSH Files
-        if: steps.ssh_check.outputs.STATUS == 'down'
+        if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
         working-directory: ./terraform
         run: |
           # 1. Crear el JSON de GCP
@@ -208,7 +208,7 @@ jobs:
 
       # 5. Lanzar Terraform SOLO si la conexión falló
       - name: Deploy Infrastructure with Terraform
-        if: steps.ssh_check.outputs.STATUS == 'down'
+        if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
         working-directory: ./terraform 
         env:
           # Inyectamos las variables que Terraform está pidiendo
@@ -220,7 +220,7 @@ jobs:
 
       # 6. Esperar a que la MV levante el servicio SSH (Si se ejecutó Terraform)
       - name: Wait for VM and SSH to be ready
-        if: steps.ssh_check.outputs.STATUS == 'down'
+        if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
         env:
           VM_HOST: dk-corba-dev.cnsa-2026-dsa069.tech
           VM_USER: ubuntu
