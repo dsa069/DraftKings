@@ -142,6 +142,8 @@ jobs:
         run: |
           docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest
 
+      # REEMPLAZAR CLOUD RUN POR MV: Cuando un servidor CORBA se registra, genera un "pasaporte" llamado IOR. Este archivo contiene la IP y el puerto exactos donde el servidor está escuchando.
+      # En Cloud Run: El servidor está detrás de un Proxy Inverso. El IOR que genera el servidor CORBA suele contener una IP interna de la red de Google (tipo 10.x.x.x). Cuando el cliente recibe ese IOR e intenta conectar a esa IP 10.x.x.x, falla, porque esa IP no existe fuera de Google.
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
