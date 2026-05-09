@@ -152,12 +152,12 @@ jobs:
       # =================================================================
       # INICIO DEL BLOQUE DE RESILIENCIA Y TERRAFORM
       # =================================================================
-
-      # 2. Comprobar si la MV está viva
+      # 2. Comprobar estado y encender o marcar para creación
       - name: Ensure VM is Running
         id: vm_status
         run: |
-          STATUS=$(gcloud compute instances describe corba-deploy-vm-tf --zone=us-east1-c --format='get(status)')
+          # Capturamos el error de gcloud redirigiéndolo y usando '|| true' para que no rompa el script
+          STATUS=$(gcloud compute instances describe corba-deploy-vm-tf --zone=us-east1-c --format='get(status)' 2>/dev/null || echo "NOT_FOUND")
           echo "La instancia está en estado: $STATUS"
           
           if [ "$STATUS" = "TERMINATED" ]; then
@@ -165,7 +165,6 @@ jobs:
             gcloud compute instances start corba-deploy-vm-tf --zone=us-east1-c
             
             echo "Esperando a que el puerto SSH (22) responda..."
-            # Intentar conectar cada 5 segundos hasta que el puerto esté abierto (máximo 2 min)
             for i in {1..24}; do
               if nc -z dk-corba-dev.cnsa-2026-dsa069.tech 22; then
                 echo "¡SSH disponible!"
@@ -174,13 +173,14 @@ jobs:
               echo "Aún no responde... (intento $i)"
               sleep 5
             done
-          fi
-          
-          # Refrescamos el estado para el output
-          FINAL_STATUS=$(gcloud compute instances describe corba-deploy-vm-tf --zone=us-east1-c --format='get(status)')
-          if [ "$FINAL_STATUS" = "RUNNING" ]; then
             echo "MACHINE_EXISTS=true" >> $GITHUB_OUTPUT
+          
+          elif [ "$STATUS" = "RUNNING" ]; then
+            echo "La máquina ya está encendida."
+            echo "MACHINE_EXISTS=true" >> $GITHUB_OUTPUT
+          
           else
+            echo "La máquina no existe (o no se pudo encontrar)."
             echo "MACHINE_EXISTS=false" >> $GITHUB_OUTPUT
           fi
 
