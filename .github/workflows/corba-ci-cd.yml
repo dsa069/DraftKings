@@ -142,11 +142,46 @@ jobs:
         run: |
           docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest
 
+      # Install SSH Key
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2.8.1
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: 'placeholder'
+
+      # Add host to known_hosts
+      - name: Add Known Hosts
+        run: ssh-keyscan -H dk-corba-dev.cnsa-2026-dsa069.tech >> ~/.ssh/known_hosts
+
       # REEMPLAZAR CLOUD RUN POR MV: Cuando un servidor CORBA se registra, genera un "pasaporte" llamado IOR. Este archivo contiene la IP y el puerto exactos donde el servidor está escuchando.
       # En Cloud Run: El servidor está detrás de un Proxy Inverso. El IOR que genera el servidor CORBA suele contener una IP interna de la red de Google (tipo 10.x.x.x). Cuando el cliente recibe ese IOR e intenta conectar a esa IP 10.x.x.x, falla, porque esa IP no existe fuera de Google.
-      - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v3
-        with:
-          service: 'dk-corba-dev'
-          region: 'us-east1'
-          image: 'us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest'
+      - name: Deploy to VM
+        env:
+          VM_HOST: dk-corba-dev.cnsa-2026-dsa069.tech
+          VM_USER: ubuntu
+          IMAGE: us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          ssh "${VM_USER}@${VM_HOST}" 'bash -se' <<EOF
+            set -euo pipefail
+
+            if ! command -v docker >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y docker.io
+              sudo systemctl enable --now docker
+            fi
+
+            printf '%s' '${GCP_SA_KEY}' | sudo docker login -u _json_key --password-stdin https://us-east1-docker.pkg.dev
+            sudo docker pull "${IMAGE}"
+            sudo docker stop corba-news-manager || true
+            sudo docker rm corba-news-manager || true
+            sudo docker run -d --restart unless-stopped --name corba-news-manager -p 8080:8080 "${IMAGE}"
+          EOF
+
+              # Optional: Display logs from the server
+
+      - name: Display Server Logs
+        if: always()
+        run: |
+          echo "### CORBA Server Log" >> "$GITHUB_STEP_SUMMARY"
+          ssh ubuntu@dk-corba-dev.cnsa-2026-dsa069.tech "tail -20 ~/corba-news-manager.log || echo 'No log found yet'" >> "$GITHUB_STEP_SUMMARY"
