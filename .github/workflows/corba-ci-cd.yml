@@ -170,22 +170,24 @@ jobs:
             echo "La máquina NO responde. Se requerirá Terraform."
           fi
 
-      # 2.5 Configurar Terraform SOLO si la conexión falló
+      # 3. Configurar Terraform SOLO si la conexión falló
       - name: Setup Terraform
         if: steps.ssh_check.outputs.STATUS == 'down'
         uses: hashicorp/setup-terraform@v4
 
-      # 3. Lanzar Terraform SOLO si la conexión falló
+      # 4. Lanzar Terraform SOLO si la conexión falló
       - name: Deploy Infrastructure with Terraform
         if: steps.ssh_check.outputs.STATUS == 'down'
-        # IMPORTANTE: Cambia 'directorio_terraform' a la ruta donde tengas tus archivos .tf
-        working-directory: ./terraform
+        working-directory: ./terraform 
+        env:
+          # Inyectamos las variables que Terraform está pidiendo
+          TF_VAR_gcp_project: "cnsa-2026"
+          TF_VAR_dns_managed_zone: "cnsa-2026-dsa069-dns"
         run: |
-          echo "Iniciando despliegue con Terraform..."
           terraform init
           terraform apply -auto-approve
 
-      # 4. Esperar a que la MV levante el servicio SSH (Si se ejecutó Terraform)
+      # 5. Esperar a que la MV levante el servicio SSH (Si se ejecutó Terraform)
       - name: Wait for VM and SSH to be ready
         if: steps.ssh_check.outputs.STATUS == 'down'
         env:
@@ -208,7 +210,7 @@ jobs:
           done
           echo "¡Máquina virtual lista y operativa!"
 
-      # 5. Escanear la huella (Siempre se ejecuta, haya habido Terraform o no)
+      # 6. Escanear la huella (Siempre se ejecuta, haya habido Terraform o no)
       - name: Update Known Hosts
         run: |
           # Borramos la huella antigua por si Terraform recreó la máquina con la misma IP
