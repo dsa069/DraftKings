@@ -165,30 +165,36 @@ jobs:
           ssh "${VM_USER}@${VM_HOST}" 'bash -se' <<EOF
             set -euo pipefail
 
-            # 1. Averiguar IP pública para el IOR
+            # 1. Obtener la IP pública actual
             PUBLIC_IP=\$(curl -s https://api.ipify.org)
-            
-            # 2. Login y Pull
+            echo "Desplegando en IP: \$PUBLIC_IP"
+
+            # 2. Login y actualización de imagen
             printf '%s' '${GCP_SA_KEY}' | sudo docker login -u _json_key --password-stdin https://us-east1-docker.pkg.dev
             sudo docker pull "${IMAGE}"
 
-            # 3. Limpiar contenedor anterior
+            # 3. Limpieza total de contenedores previos
             sudo docker stop corba-news-manager || true
             sudo docker rm corba-news-manager || true
 
-            # 4. Ejecutar el "Todo en Uno"
-            # Mapeamos AMBOS puertos hacia afuera
+            # 4. Ejecución del contenedor único
+            # -p 3000:3000 -> Para el Naming Service
+            # -p 8080:8080 -> Para el Servidor (Acceso externo)
             sudo docker run -d --restart unless-stopped \
               --name corba-news-manager \
               -p 3000:3000 \
-              -p 8081:8080 \
-              -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP" \
+              -p 8080:8080 \
+              -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP -Dcom.sun.corba.se.ORBServerPort=8080" \
               "${IMAGE}"
+            
+            # Esperar un poco para que los logs se generen
+            sleep 8
           EOF
 
-      # 9. Mostrar los logs de Java para verificar que arrancó bien
-      - name: Display Server Logs
+      - name: Display Combined Logs (ORBD + Server)
         if: always()
         run: |
-          echo "### CORBA Server Logs (Docker)" >> "$GITHUB_STEP_SUMMARY"
-          ssh ubuntu@dk-corba-dev.cnsa-2026-dsa069.tech "sudo docker logs --tail 50 corba-news-manager" >> "$GITHUB_STEP_SUMMARY"
+          echo "### LOGS COMBINADOS (ORBD y Servidor)" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
+          ssh ubuntu@dk-corba-dev.cnsa-2026-dsa069.tech "sudo docker logs corba-news-manager" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
