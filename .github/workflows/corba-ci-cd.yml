@@ -154,20 +154,23 @@ jobs:
       # =================================================================
 
       # 2. Comprobar si la MV está viva
-      - name: Check SSH Connection
-        id: ssh_check
-        env:
-          VM_HOST: dk-corba-dev.cnsa-2026-dsa069.tech
-          VM_USER: ubuntu
+      - name: Ensure VM is Running
+        id: vm_status
         run: |
-          echo "Comprobando conexión con la máquina..."
-          # Usamos BatchMode para que no se quede colgado pidiendo contraseña y ConnectTimeout de 5 seg
-          if ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no "${VM_USER}@${VM_HOST}" 'echo "La maquina responde"'; then
-            echo "STATUS=up" >> $GITHUB_OUTPUT
-            echo "La máquina está encendida y accesible."
+          STATUS=$(gcloud compute instances describe corba-deploy-vm-tf --zone=us-east1-c --format='get(status)')
+          echo "La instancia está en estado: $STATUS"
+          
+          if [ "$STATUS" = "TERMINATED" ]; then
+            echo "Encendiendo la máquina..."
+            gcloud compute instances start corba-deploy-vm-tf --zone=us-east1-c
+            echo "Esperando a que arranque..."
+            sleep 20
+          fi
+          
+          if [ "$STATUS" = "RUNNING" ] || [ "$STATUS" = "PROVISIONING" ]; then
+            echo "MACHINE_EXISTS=true" >> $GITHUB_OUTPUT
           else
-            echo "STATUS=down" >> $GITHUB_OUTPUT
-            echo "La máquina NO responde. Se requerirá Terraform."
+            echo "MACHINE_EXISTS=false" >> $GITHUB_OUTPUT
           fi
 
       # 3. Configurar Terraform SOLO si la conexión falló
@@ -275,7 +278,7 @@ jobs:
               "${IMAGE}"
             
             # Esperar un poco para que los logs se generen
-            sleep 15
+            sleep 8
           EOF
 
       - name: Display Combined Logs (ORBD + Server)
