@@ -170,6 +170,11 @@ jobs:
             echo "La máquina NO responde. Se requerirá Terraform."
           fi
 
+      # 2.5 Configurar Terraform SOLO si la conexión falló
+      - name: Setup Terraform
+        if: steps.ssh_check.outputs.STATUS == 'down'
+        uses: hashicorp/setup-terraform@v4
+
       # 3. Lanzar Terraform SOLO si la conexión falló
       - name: Deploy Infrastructure with Terraform
         if: steps.ssh_check.outputs.STATUS == 'down'
