@@ -1,20 +1,23 @@
-# Cambiamos a JDK porque el JRE no incluye el binario 'orbd'
+# Usamos JDK (no JRE) porque necesitamos el binario 'orbd'
 FROM eclipse-temurin:8-jdk
-
-# Exponemos el puerto del Naming Service (3000) y del Servidor (8080)
-EXPOSE 3000 8080
 
 WORKDIR /app
 
+# Copiamos el JAR
 COPY target/*-jar-with-dependencies.jar /app/corba-server.jar
 
-# Script para ejecutar AMBOS: ORBD en segundo plano y luego el Servidor
-RUN echo '#!/bin/sh' > /app/start-all.sh && \
-    echo 'echo "Iniciando Naming Service (ORBD) en puerto 3000..." ' >> /app/start-all.sh && \
-    echo 'orbd -ORBInitialPort 3000 -ORBInitialHost localhost & ' >> /app/start-all.sh && \
-    echo 'sleep 3' >> /app/start-all.sh && \
-    echo 'echo "Iniciando Servidor CORBA..." ' >> /app/start-all.sh && \
-    echo 'exec java -Dcom.sun.corba.se.ORBServerPort=8080 -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 3000 -ORBInitialHost localhost "$@"' >> /app/start-all.sh && \
-    chmod +x /app/start-all.sh
+# Creamos un script que lanza el ORB y luego el Servidor
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Naming Service (ORBD) en puerto 3000..." ' >> /app/start.sh && \
+    # Lanzamos orbd en segundo plano (&) y redirigimos su salida a la consola
+    echo 'orbd -ORBInitialPort 3000 -ORBInitialHost localhost & ' >> /app/start.sh && \
+    echo 'sleep 5' >> /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Buffer Server en puerto 8080..." ' >> /app/start.sh && \
+    # El servidor se conecta al ORB interno (localhost)
+    echo 'exec java -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 3000 -ORBInitialHost localhost "$@"' >> /app/start.sh && \
+    chmod +x /app/start.sh
 
-ENTRYPOINT ["/app/start-all.sh"]
+# Exponemos ambos puertos: 3000 (Naming) y 8080 (Servidor)
+EXPOSE 3000 8080
+
+ENTRYPOINT ["/app/start.sh"]
