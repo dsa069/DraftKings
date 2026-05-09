@@ -5,6 +5,10 @@ terraform {
       version = "7.22.0"
     }
   }
+    backend "gcs" {
+    bucket  = "dk-tfstate-corba-dev"
+    prefix  = "terraform/state"
+  }
 }
 
 provider "google" {
