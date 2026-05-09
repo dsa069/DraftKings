@@ -165,23 +165,39 @@ jobs:
           ssh "${VM_USER}@${VM_HOST}" 'bash -se' <<EOF
             set -euo pipefail
 
-            if ! command -v docker >/dev/null 2>&1; then
-              sudo apt-get update
-              sudo apt-get install -y docker.io
-              sudo systemctl enable --now docker
-            fi
+            # A) Averiguar la IP pública de la MV automáticamente
+            PUBLIC_IP=\$(curl -s https://api.ipify.org)
+            echo "IP Pública detectada: \$PUBLIC_IP"
 
+            # B) Login en Docker (dentro de la MV) usando la clave de Google
             printf '%s' '${GCP_SA_KEY}' | sudo docker login -u _json_key --password-stdin https://us-east1-docker.pkg.dev
+            
+            # C) Bajar la imagen recién subida
             sudo docker pull "${IMAGE}"
+
+            # D) Limpiar el contenedor si ya existía
             sudo docker stop corba-news-manager || true
             sudo docker rm corba-news-manager || true
-            sudo docker run -d --restart unless-stopped --name corba-news-manager -p 8080:8080 "${IMAGE}"
+
+            # E) Crear la red si no existe (para conectar con ORBD)
+            sudo docker network create corba-net >/dev/null 2>&1 || true
+
+            # F) Ejecutar el servidor
+            # Mapeamos al puerto 8081 para evitar conflictos si el 8080 está ocupado
+            # Usamos -Dcom.sun.corba.se.ORBServerHost con la IP detectada
+            sudo docker run -d --restart unless-stopped \
+              --name corba-news-manager \
+              --network corba-net \
+              -p 8081:8080 \
+              -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP" \
+              "${IMAGE}" \
+              -ORBInitialHost corba-orbd \
+              -ORBInitialPort 3000
           EOF
 
-              # Optional: Display logs from the server
-
+      # 9. Mostrar los logs de Java para verificar que arrancó bien
       - name: Display Server Logs
         if: always()
         run: |
-          echo "### CORBA Server Log" >> "$GITHUB_STEP_SUMMARY"
-          ssh ubuntu@dk-corba-dev.cnsa-2026-dsa069.tech "tail -20 ~/corba-news-manager.log || echo 'No log found yet'" >> "$GITHUB_STEP_SUMMARY"
+          echo "### CORBA Server Logs (Docker)" >> "$GITHUB_STEP_SUMMARY"
+          ssh ubuntu@dk-corba-dev.cnsa-2026-dsa069.tech "sudo docker logs --tail 50 corba-news-manager" >> "$GITHUB_STEP_SUMMARY"
