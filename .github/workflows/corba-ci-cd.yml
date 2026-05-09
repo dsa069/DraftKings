@@ -228,11 +228,12 @@ jobs:
           echo "¡Máquina virtual lista y operativa!"
 
       # 7. Escanear la huella (Siempre se ejecuta, haya habido Terraform o no)
-      - name: Update Known Hosts
+      - name: Refresh SSH Known Hosts
         run: |
-          # Borramos la huella antigua por si Terraform recreó la máquina con la misma IP
-          ssh-keygen -R dk-corba-dev.cnsa-2026-dsa069.tech || true
-          # Escaneamos la nueva huella de forma segura
+          mkdir -p ~/.ssh
+          # Eliminar el archivo si existe para empezar de cero y evitar el error "invalid line"
+          rm -f ~/.ssh/known_hosts
+          # Escanear la IP/Host de la nueva máquina
           ssh-keyscan -H dk-corba-dev.cnsa-2026-dsa069.tech >> ~/.ssh/known_hosts
 
       # =================================================================
