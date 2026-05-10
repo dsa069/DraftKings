@@ -49,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           test-command: "npm run coverage"
-          working-directory: ./api-node/coverage/jest.results.json
+          working-directory: api-node/coverage
 
       - name: Upload Test Results and Coverage
         if: success() || failure()
