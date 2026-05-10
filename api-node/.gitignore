@@ -67,3 +67,4 @@ dist/
 /reports
 /data
 junit.xml
+jest.results.json
