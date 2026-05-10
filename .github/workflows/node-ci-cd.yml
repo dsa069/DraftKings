@@ -48,8 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          #test-script: npm run coverage
-
+          test-script: npm run coverage
           output: report-markdown, comment
           working-directory: api-node
 
@@ -73,5 +72,5 @@ jobs:
         with:
           artifact: test-results
           name: JEST Tests
-          path: "api-node/coverage/test.results.xml"
+          path: "test.results.xml"
           reporter: jest-junit
