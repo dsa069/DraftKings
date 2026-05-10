@@ -15,7 +15,7 @@ module.exports = {
     [
       "jest-junit",
       {
-        outputDirectory: "api-node/coverage",
+        outputDirectory: "coverage",
         outputName: "test.results.xml",
       },
     ],
