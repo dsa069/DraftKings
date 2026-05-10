@@ -3,14 +3,14 @@
 
 # Create the mynetwork network
 resource "google_compute_network" "mynetwork" {
-  name                    = "draftkings-tf"
+  name                    = "${var.prefix_name}-net"
   auto_create_subnetworks = "true"
   project                 = var.gcp_project
 }
 
 # Add a firewall rule to allow HTTP, SSH, RDP, and ICMP traffic on mynetwork
 resource "google_compute_firewall" "mynetwork-allow-http-ssh-rdp-icmp" {
-  name    = "draftkings-tf-allow-http-ssh-rdp-icmp"
+  name    = "${var.prefix_name}-allow-http-ssh-rdp-icmp"
   network = google_compute_network.mynetwork.name
   allow {
     protocol = "tcp"
@@ -28,7 +28,7 @@ resource "google_compute_firewall" "mynetwork-allow-http-ssh-rdp-icmp" {
 # Create the corba-deploy-vm" instance
 module "corba-deploy-vm" {
   source          = "./instance"
-  instance_name   = var.machine_name
+  instance_name   = "${var.prefix_name}-vm-tf"
   instance_region = "us-east1"
   instance_zone   = "us-east1-c"
   instance_type   = "e2-medium"

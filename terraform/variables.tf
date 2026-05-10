@@ -13,15 +13,15 @@ variable "credentials_file" {
   default     = "./credentials/gc-dk.json" # Tu ruta local
 }
 
-variable "machine_name" {
-  description = "Nombre de la instancia de Compute Engine"
+variable "prefix_name" {
+  description = "Prefijo para el nombre de la instancia de Compute Engine"
   type        = string
-  default = "dk-corba-dev-vm-tf"
+  default = "dk-corba-dev"
 }
 
 variable "dns_name" {
   description = "Nombre del registro DNS"
   type        = string
-  default = "dk-corba-dev.cnsa-2026-dsa069.tech"
+  default = "dk-corba-dev.cnsa-2026-dsa069.tech."
 }
 
