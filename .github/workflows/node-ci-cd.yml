@@ -60,9 +60,7 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         with:
           name: test-results
-          path: |
-            ./api-node/coverage/test.results.xml
-            ./api-node/coverage/
+          path: api-node/coverage/
 
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
