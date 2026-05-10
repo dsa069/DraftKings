@@ -6,7 +6,10 @@
     "start": "ts-node --transpile-only ./bin/www.ts",
     "start:prod": "NODE_ENV=prod ts-node --transpile-only ./bin/www.ts",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --reporters=default --reporters=jest-junit --coverage --coverageReporters=text --coverageReporters=html --coverageDirectory=./coverage/",
+    "lint": "eslint src/**/*.js -f checkstyle -o coverage/eslint-result.xml",
+    "lint:json": "eslint src/**/*.js --format json -o coverage/eslint-result.json"
   },
   "dependencies": {
     "@types/morgan": "^1.9.10",
