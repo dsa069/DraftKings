@@ -49,6 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           test-command: "npm run coverage"
+          results-file: ./api-node/coverage/jest.results.json
 
       - name: Upload Test Results and Coverage
         if: success() || failure()
