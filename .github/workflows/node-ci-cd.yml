@@ -43,9 +43,6 @@ jobs:
         run: npm run lint:json
         continue-on-error: true
 
-      - name: Manual Coverage Report Generation
-        run: npm run coverage
-
       - name: Test
         uses: ArtiomTr/jest-coverage-report-action@v2.3.1
         env:
@@ -54,25 +51,9 @@ jobs:
           test-script: npm run coverage
           output: report-markdown, comment
           working-directory: api-node
-          skip-step: base
-
-      - name: Upload Test Results and Coverage
-        if: success() || failure()
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: test-results
-          path: api-node/coverage/
 
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           report-json: "./api-node/coverage/eslint-result.json"
-
-      - name: Test Report
-        uses: dorny/test-reporter@v3.0.0
-        with:
-          artifact: test-results
-          name: JEST Tests
-          path: "test.results.xml"
-          reporter: jest-junit
