@@ -51,19 +51,6 @@ jobs:
           test-command: "npm run coverage"
           working-directory: "api-node"
 
-      # --- ESTE ES EL PASO DE DEBUG ---
-      - name: Debug - List Files (Ver dónde están los reportes)
-        if: success() || failure()
-        run: |
-          echo "Contenido de la carpeta api-node:"
-          ls -la
-          echo "-----------------------------------"
-          echo "Buscando archivos .xml en todo el proyecto:"
-          find . -name "*.xml"
-          echo "-----------------------------------"
-          echo "Contenido de api-node/coverage (si existe):"
-          ls -R coverage/ || echo "La carpeta coverage no existe en este nivel"
-
       - name: Upload Test Results and Coverage
         if: success() || failure()
         uses: actions/upload-artifact@v7.0.1
@@ -86,3 +73,10 @@ jobs:
           name: JEST Tests
           path: "junit.xml"
           reporter: jest-junit
+
+      - name: Add Coverage to Summary
+        run: |
+          echo "## 📊 Reporte de Cobertura" >> $GITHUB_STEP_SUMMARY
+          echo "Los tests se ejecutaron exitosamente." >> $GITHUB_STEP_SUMMARY
+          # Esto lee el resumen de texto que genera jest y lo pega en el Summary de GitHub
+          npx jest-coverage-ratchet --coverageDirectory=api-node/coverage >> $GITHUB_STEP_SUMMARY
