@@ -1,10 +1,10 @@
-name: CD Corba
+name: CI/CD Corba
 
 on:
-  workflow_run:
-      workflows: ['CI Corba']
-      types:
-        - completed
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
 
 jobs:
   deploy:
