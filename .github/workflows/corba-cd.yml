@@ -12,7 +12,7 @@ jobs:
         contents: read
         checks: write
         pull-requests: write
-    uses: ./.github/workflows/corba-ci.yml@dev
+    uses: ./.github/workflows/corba-ci.yml
     secrets: inherit
   deploy:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
       # =================================================================
       # INICIO DEL BLOQUE DE RESILIENCIA Y TERRAFORM
       # =================================================================
-      
+
       # 2. Comprobar estado y encender o marcar para creación
       - name: Ensure VM is Running
         id: vm_status

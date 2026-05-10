@@ -12,7 +12,7 @@ jobs:
         contents: read
         checks: write
         pull-requests: write
-    uses: ./.github/workflows/corba-ci.yml@main
+    uses: ./.github/workflows/corba-ci.yml
     secrets: inherit
   deploy:
     runs-on: ubuntu-latest
