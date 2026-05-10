@@ -49,6 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           #test-script: npm run coverage
+
           output: report-markdown, comment
           working-directory: api-node
 
