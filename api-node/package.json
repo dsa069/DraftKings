@@ -1,6 +1,7 @@
 {
   "name": "api-node",
   "version": "0.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "start": "ts-node --transpile-only ./bin/www.ts",
@@ -8,8 +9,8 @@
     "build": "tsc",
     "test": "jest",
     "coverage": "jest --reporters=default --reporters=jest-junit --coverage --coverageReporters=text --coverageReporters=html --coverageDirectory=./coverage/",
-    "lint": "eslint src/**/*.js -f checkstyle -o coverage/eslint-result.xml",
-    "lint:json": "eslint src/**/*.js --format json -o coverage/eslint-result.json"
+    "lint": "eslint src/**/*.ts -f checkstyle -o coverage/eslint-result.xml",
+    "lint:json": "eslint src/**/*.ts --format json -o coverage/eslint-result.json"
   },
   "dependencies": {
     "@types/morgan": "^1.9.10",
