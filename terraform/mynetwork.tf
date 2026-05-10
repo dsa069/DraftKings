@@ -28,7 +28,7 @@ resource "google_compute_firewall" "mynetwork-allow-http-ssh-rdp-icmp" {
 # Create the corba-deploy-vm" instance
 module "corba-deploy-vm" {
   source          = "./instance"
-  instance_name   = "corba-deploy-vm-tf"
+  instance_name   = var.machine_name
   instance_region = "us-east1"
   instance_zone   = "us-east1-c"
   instance_type   = "e2-medium"
@@ -71,7 +71,7 @@ resource "null_resource" "provision-deploy-vm" {
 
 # Registro A que apunta automáticamente el dominio a la IP estática de la VM
 resource "google_dns_record_set" "corba_deploy_vm" {
-  name         = "dk-corba-dev.cnsa-2026-dsa069.tech."
+  name         = var.dns_name
   managed_zone = var.dns_managed_zone
   project      = var.gcp_project
   type         = "A"

@@ -122,10 +122,14 @@ jobs:
         working-directory: ./terraform 
         env:
           # Inyectamos las variables que Terraform está pidiendo
+          ENTORNO: "dev"
           TF_VAR_gcp_project: "cnsa-2026"
           TF_VAR_dns_managed_zone: "cnsa-2026-dsa069-dns"
+          TF_VAR_machine_name: "dk-corba-dev-vm-tf"
+          TF_VAR_dns_name: "dk-corba-dev.cnsa-2026-dsa069.tech."
         run: |
-          terraform init
+          terraform init -backend-config="prefix=terraform/state/$ENTORNO"  
+          terraform workspace select $ENTORNO || terraform workspace new $ENTORNO
           terraform apply -auto-approve
 
       # 6. Esperar a que la MV levante el servicio SSH (Si se ejecutó Terraform)
