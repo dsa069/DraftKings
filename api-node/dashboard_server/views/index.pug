@@ -3,3 +3,9 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  p#greeting-box= welcomeMessage
+  
+  // Si quieres usarla en un script de cliente
+  script.
+    const messageFromServer = "#{welcomeMessage}";
+    console.log("Mensaje recibido:", messageFromServer);
