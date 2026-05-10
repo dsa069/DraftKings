@@ -3,6 +3,11 @@ import express, { Application, Request, Response, NextFunction } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import dotenv from "dotenv";
+
+const envFile = process.env.NODE_ENV === "prod" ? "env.prod" : "env";
+
+dotenv.config({ path: path.resolve(__dirname, "enviroments", envFile) });
 
 import indexRouter from "./dashboard_server/routes/index";
 import usersRouter from "./dashboard_server/routes/users";
