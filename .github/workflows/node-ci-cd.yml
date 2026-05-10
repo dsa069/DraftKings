@@ -44,24 +44,32 @@ jobs:
         continue-on-error: true
 
       - name: Test
-        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
+        uses: mattallty/jest-github-action@v1.0.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          output: report-markdown, comment
-          working-directory: api-node
-          skip-step: all
-          coverage-file: report.json
-          base-coverage-file: report.json
+          test-command: "npm run coverage"
+          working-directory: "api-node"
 
-      - name: Post Summary
-        if: always()
-        run: |
-          echo "## 📊 Reporte Completo de Cobertura" >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.coverage_report.outputs.report }}" >> $GITHUB_STEP_SUMMARY
+      - name: Upload Test Results and Coverage
+        if: success() || failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: test-results
+          path: |
+            ./api-node/coverage/test.results.xml
+            ./api-node/coverage/
 
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           report-json: "./api-node/coverage/eslint-result.json"
+
+      - name: Test Report
+        uses: dorny/test-reporter@v3.0.0
+        with:
+          artifact: test-results
+          name: JEST Tests
+          path: "test.results.xml"
+          reporter: jest-junit
