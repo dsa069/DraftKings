@@ -7,8 +7,13 @@ on:
     branches: [main]
 
 jobs:
-  call-build-logic:
-      uses: ./.github/workflows/corba-ci.yml
+  build:
+    permissions:
+        contents: read
+        checks: write
+        pull-requests: write
+    uses: ./.github/workflows/corba-ci.yml@main
+    secrets: inherit
   deploy:
     runs-on: ubuntu-latest
     if: >-
