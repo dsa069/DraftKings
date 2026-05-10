@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6.3.0
         with:
-          node-version: "16"
+          node-version: "24"
           cache: "npm"
           cache-dependency-path: api-node/package-lock.json
 
@@ -44,12 +44,12 @@ jobs:
         continue-on-error: true
 
       - name: Test
-        uses: mattallty/jest-github-action@v1.0.3
+        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          test-command: "npm run coverage"
-          working-directory: "api-node"
+          output: report-markdown, comment
+          working-directory: api-node
 
       - name: Upload Test Results and Coverage
         if: success() || failure()
