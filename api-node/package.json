@@ -27,6 +27,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/debug": "^4.1.13",
     "@types/dotenv": "^8.2.3",
@@ -36,6 +37,7 @@
     "jest": "^30.3.0",
     "jest-environment-node": "^30.3.0",
     "jest-junit": "^17.0.0",
-    "ts-jest": "^29.4.9"
+    "ts-jest": "^29.4.9",
+    "typescript-eslint": "^8.59.2"
   }
 }
