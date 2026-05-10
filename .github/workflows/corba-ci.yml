@@ -1,12 +1,11 @@
 name: CI Corba
 
 on:
-  push:
-    branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
+  workflow_call:
 
 jobs:
+  call-build-logic:
+      uses: ./.github/workflows/corba-ci.yml
   build:
     runs-on: ubuntu-latest
     env:

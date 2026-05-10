@@ -1,12 +1,14 @@
 name: CD Corba Production
 
 on:
-  workflow_run:
-    workflows: ["CI Corba"]
-    types:
-      - completed
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
+  call-build-logic:
+      uses: ./.github/workflows/corba-ci.yml
   deploy:
     runs-on: ubuntu-latest
     if: >-
