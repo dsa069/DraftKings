@@ -1,7 +1,6 @@
 {
   "name": "api-node",
   "version": "0.0.0",
-  "type": "module",
   "private": true,
   "scripts": {
     "start": "ts-node --transpile-only ./bin/www.ts",
