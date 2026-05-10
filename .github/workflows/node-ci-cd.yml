@@ -48,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          test-script: npm run coverage
+          #test-script: npm run coverage
           output: report-markdown, comment
           working-directory: api-node
 
@@ -58,19 +58,19 @@ jobs:
         with:
           name: test-results
           path: |
-            ./coverage/test.results.xml
-            ./coverage/
+            ./api-node/coverage/test.results.xml
+            ./api-node/coverage/
 
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          report-json: "./coverage/eslint-result.json"
+          report-json: "./api-node/coverage/eslint-result.json"
 
       - name: Test Report
         uses: dorny/test-reporter@v3.0.0
         with:
           artifact: test-results
           name: JEST Tests
-          path: "test.results.xml"
+          path: "api-node/coverage/test.results.xml"
           reporter: jest-junit

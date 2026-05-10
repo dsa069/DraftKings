@@ -9,7 +9,7 @@
     "test": "jest",
     "coverage": "jest --reporters=default --reporters=jest-junit --coverage --coverageReporters=text --coverageReporters=html --coverageDirectory=./coverage/ --json --outputFile=jest.results.json",
     "lint": "eslint src/**/*.ts -f checkstyle -o coverage/eslint-result.xml",
-    "lint:json": "eslint src/**/*.ts --format json -o coverage/eslint-result.json"
+    "lint:json": "mkdir -p coverage && eslint src/**/*.ts --format json -o coverage/eslint-result.json"
   },
   "dependencies": {
     "@types/morgan": "^1.9.10",
