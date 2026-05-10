@@ -4,8 +4,6 @@ on:
   workflow_call:
 
 jobs:
-  call-build-logic:
-      uses: ./.github/workflows/corba-ci.yml
   build:
     runs-on: ubuntu-latest
     env:

@@ -1,4 +1,4 @@
-name: CI/CD Corba
+name: CD Corba
 
 on:
   push:
@@ -7,6 +7,8 @@ on:
     branches: [main, dev]
 
 jobs:
+  call-build-logic:
+      uses: ./.github/workflows/corba-ci.yml
   deploy:
     runs-on: ubuntu-latest
     defaults:
