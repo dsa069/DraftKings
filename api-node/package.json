@@ -39,9 +39,5 @@
     "jest-junit": "^17.0.0",
     "ts-jest": "^29.4.9",
     "typescript-eslint": "^8.59.2"
-  },
-  "jest-junit": {
-    "outputDirectory": "api-node/coverage",
-    "outputName": "test.results.xml"
   }
 }
