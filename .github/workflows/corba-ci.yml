@@ -1,4 +1,4 @@
-name: CI/CD Corba
+name: CI Corba
 
 on:
   workflow_call:

@@ -7,7 +7,7 @@ on:
     branches: [main, dev]
 
 jobs:
-  build:
+  jar:
     permissions:
         contents: read
         checks: write
@@ -17,9 +17,9 @@ jobs:
     
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: jar
     env:
-      machine_name: "dk-corba-vm-tf"
+      prefix_name: "dk-corba"
       dns_name: "dk-corba.cnsa-2026-dsa069.tech"
     defaults:
       run:
@@ -70,12 +70,12 @@ jobs:
         id: vm_status
         run: |
           # Capturamos el error de gcloud redirigiéndolo y usando '|| true' para que no rompa el script
-          STATUS=$(gcloud compute instances describe ${{ env.machine_name }} --zone=us-east1-c --format='get(status)' 2>/dev/null || echo "NOT_FOUND")
+          STATUS=$(gcloud compute instances describe ${{ env.prefix_name }}-vm-tf --zone=us-east1-c --format='get(status)' 2>/dev/null || echo "NOT_FOUND")
           echo "La instancia está en estado: $STATUS"
           
           if [ "$STATUS" = "TERMINATED" ]; then
             echo "Encendiendo la máquina..."
-            gcloud compute instances start ${{ env.machine_name }} --zone=us-east1-c
+            gcloud compute instances start ${{ env.prefix_name }}-vm-tf --zone=us-east1-c
             
             echo "Esperando a que el puerto SSH (22) responda..."
             for i in {1..24}; do
@@ -127,7 +127,7 @@ jobs:
           ENTORNO: "prod"
           TF_VAR_gcp_project: "cnsa-2026"
           TF_VAR_dns_managed_zone: "cnsa-2026-dsa069-dns"
-          TF_VAR_machine_name: ${{ env.machine_name }}
+          TF_VAR_prefix_name: ${{ env.prefix_name }}
           TF_VAR_dns_name: ${{ env.dns_name }}.
         run: |
           terraform init -backend-config="prefix=terraform/state/$ENTORNO"  
