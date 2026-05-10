@@ -54,6 +54,7 @@ jobs:
           test-script: npm run coverage
           output: report-markdown, comment
           working-directory: api-node
+          skip-step: base
 
       - name: Upload Test Results and Coverage
         if: success() || failure()
