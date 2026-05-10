@@ -73,10 +73,3 @@ jobs:
           name: JEST Tests
           path: "junit.xml"
           reporter: jest-junit
-
-      - name: Add Coverage to Summary
-        run: |
-          echo "## 📊 Reporte de Cobertura" >> $GITHUB_STEP_SUMMARY
-          echo "Los tests se ejecutaron exitosamente." >> $GITHUB_STEP_SUMMARY
-          # Esto lee el resumen de texto que genera jest y lo pega en el Summary de GitHub
-          npx jest-coverage-ratchet --coverageDirectory=api-node/coverage >> $GITHUB_STEP_SUMMARY
