@@ -50,6 +50,15 @@ jobs:
         with:
           output: report-markdown, comment
           working-directory: api-node
+          skip-step: all
+          coverage-file: report.json
+          base-coverage-file: report.json
+
+      - name: Post Summary
+        if: always()
+        run: |
+          echo "## 📊 Reporte Completo de Cobertura" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.coverage_report.outputs.report }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
