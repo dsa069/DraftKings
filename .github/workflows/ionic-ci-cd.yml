@@ -1,4 +1,4 @@
-name: CI/CD Ionic
+name: CI/CD Ionic Development
 
 on:
   push:

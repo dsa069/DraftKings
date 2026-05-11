@@ -1,23 +1,11 @@
-name: CI/CD Corba Production
+name: CD Corba Production
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_call:
 
 jobs:
-  jar:
-    permissions:
-        contents: read
-        checks: write
-        pull-requests: write
-    uses: ./.github/workflows/corba-ci.yml
-    secrets: inherit
-    
   deploy:
     runs-on: ubuntu-latest
-    needs: jar
     env:
       prefix_name: "dk-corba"
       dns_name: "dk-corba.cnsa-2026-dsa069.tech"
