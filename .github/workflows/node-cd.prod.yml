@@ -4,13 +4,6 @@ on:
   workflow_call:
 
 jobs:
-  dist:
-    permissions:
-      contents: write
-      checks: write
-      pull-requests: write
-    uses: ./.github/workflows/node-ci.yml
-    secrets: inherit
   deploy:
     runs-on: ubuntu-latest
     defaults:
