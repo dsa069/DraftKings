@@ -97,6 +97,15 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
+      # Este paso crea o actualiza el secreto en Google Cloud usando el Secret de GitHub
+      - name: Create or Update Secret in GCP
+        run: |
+          if gcloud secrets describe NODE_ENV_DEV > /dev/null 2>&1; then
+            echo "${{ secrets.NODE_ENV_DEV }}" | gcloud secrets versions add NODE_ENV_DEV --data-file=-
+          else
+            echo "${{ secrets.NODE_ENV_DEV }}" | gcloud secrets create NODE_ENV_DEV --replication-policy="automatic" --data-file=-
+          fi
+
       - name: Docker login to Artifact Registry
         uses: docker/login-action@v4.1.0
         with:
@@ -119,4 +128,4 @@ jobs:
           region: "us-east1"
           image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:latest"
           secrets: |
-            /app/enviroments/env=${{ secrets.NODE_ENV_DEV }}:latest
+            /app/enviroments/env=NODE_ENV_DEV:latest
