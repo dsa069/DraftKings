@@ -115,7 +115,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:latest .
+          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:latest ./api-node
 
       - name: Push Docker image to Artifact Registry
         run: |
