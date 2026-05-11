@@ -13,7 +13,9 @@ RUN npm ci
 
 # Copiar código fuente
 COPY dist/ ./dist/
+COPY dashboard_server/views/ ./dist/dashboard_server/views/
+COPY public/ ./dist/public/
 
 EXPOSE 8080
 
-CMD ls -R /app/dist && node dist/bin/www.js
+CMD [ "node", "dist/bin/www.js" ]
