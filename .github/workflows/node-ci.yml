@@ -4,7 +4,6 @@ on:
   workflow_call:
 
 jobs:
-  # Job principal de construcción
   build:
     runs-on: ubuntu-latest
     permissions:
@@ -14,8 +13,10 @@ jobs:
     defaults:
       run:
         working-directory: ./api-node
+
     steps:
       - uses: actions/checkout@v6.0.2
+
       - name: Set up Node.js
         uses: actions/setup-node@v6.3.0
         with:
@@ -38,65 +39,37 @@ jobs:
             api-node/public/
             api-node/dashboard_server/views/
 
-  # Job separado para Tests para que aparezca el cuadradito
-  test-and-reports:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      pull-requests: write
-    defaults:
-      run:
-        working-directory: ./api-node
-    steps:
-      - uses: actions/checkout@v6.0.2
-      - name: Set up Node.js
-        uses: actions/setup-node@v6.3.0
-        with:
-          node-version: "24"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Test
-        uses: mattallty/jest-github-action@v1.0.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          test-command: "npm run coverage"
-          working-directory: "api-node"
-
-      - name: Test Report
-        uses: dorny/test-reporter@v3.0.0
-        if: always()
-        with:
-          name: JEST Tests
-          path: "api-node/junit.xml"
-          reporter: jest-junit
-
-  # Job separado para Linting
-  lint:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-    defaults:
-      run:
-        working-directory: ./api-node
-    steps:
-      - uses: actions/checkout@v6.0.2
-      - name: Set up Node.js
-        uses: actions/setup-node@v6.3.0
-        with:
-          node-version: "24"
-      - run: npm install
-
       - name: Save Code Linting Report JSON
         run: npm run lint:json
         continue-on-error: true
 
+      - name: Test
+        uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          test-command: "npm run coverage"
+          working-directory: "api-node"
+
+      - name: Upload Test Results and Coverage
+        if: success() || failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: test-results
+          path: |
+            ./api-node/junit.xml
+            ./api-node/coverage/
+
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: "${{ github.token }}"
           report-json: "./api-node/coverage/eslint-result.json"
+
+      - name: Test Report
+        uses: dorny/test-reporter@v3.0.0
+        with:
+          artifact: test-results
+          name: JEST Tests
+          path: "junit.xml"
+          reporter: jest-junit
