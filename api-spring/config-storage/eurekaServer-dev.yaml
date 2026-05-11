@@ -16,5 +16,5 @@ management:
 info:
   application:
     name: ${spring.application.name}
-    description: Eureka server en produccion
+    description: Eureka server en desarrollo
     version: '@project.version@'
