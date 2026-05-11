@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import dotenv from "dotenv";
 
+// Solo para simular "produccion" en local
 const envFile = process.env.NODE_ENV === "prod" ? "env.prod" : "env";
 
 dotenv.config({
