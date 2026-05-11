@@ -89,22 +89,3 @@ jobs:
           path: '*.xml'
           reporter: java-junit
 
-  deploy-dev:
-    needs: build
-    if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
-    permissions:
-      contents: write
-      checks: write
-      pull-requests: write
-    uses: ./.github/workflows/corba-cd.yml
-    secrets: inherit
-
-  deploy-prod:
-    needs: build
-    if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
-    permissions:
-      contents: write
-      checks: write
-      pull-requests: write
-    uses: ./.github/workflows/corba-cd.prod.yml
-    secrets: inherit
