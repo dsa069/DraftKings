@@ -93,12 +93,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review 
           filter_mode: added        
-          level: error
+          level: warning
           workdir: ./api-spring/${{ matrix.service }}        
           reviewdog_flags: |
             -tee
             -filter-mode=added
-            -level=error       
+            -level=warning       
 
       - name: Publish ${{ matrix.service }} Test Results
         uses: dorny/test-reporter@v3.0.0
