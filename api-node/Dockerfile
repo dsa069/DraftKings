@@ -16,4 +16,4 @@ COPY dist/ ./dist/
 
 EXPOSE 8080
 
-CMD [ "node", "dist/bin/www.js" ]
+CMD ls -R /app/dist && node dist/bin/www.js
