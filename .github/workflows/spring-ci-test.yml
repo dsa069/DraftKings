@@ -38,7 +38,7 @@ jobs:
 
       # Build, Compile, and Test in a single Maven command
       - name: Build with Maven
-        run: mvn -B clean package -DskipTests
+        run: mvn -B clean package
 
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v7.0.1
