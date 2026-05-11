@@ -1,7 +1,10 @@
-name: CI Corba
+name: CI/CD Corba
 
 on:
-  workflow_call:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
 
 jobs:
   build:
@@ -100,3 +103,22 @@ jobs:
           echo "- **Java Version**: $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
           echo "- **Generated CORBA Code**: target/generated-sources/corba/BufferApp/" >> $GITHUB_STEP_SUMMARY
           echo "- **Test Report**: target/surefire-reports/" >> $GITHUB_STEP_SUMMARY
+
+  deploy-dev:
+    needs: build
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/corba-cd.yml
+    secrets: inherit
+
+  deploy-prod:
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/corba-cd.prod.yml
+    secrets: inherit

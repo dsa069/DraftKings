@@ -1,20 +1,9 @@
-name: CI/CD Corba
+name: CD Corba
 
 on:
-  push:
-    branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
+  workflow_call:
 
 jobs:
-  jar:
-    permissions:
-        contents: read
-        checks: write
-        pull-requests: write
-    uses: ./.github/workflows/corba-ci.yml
-    secrets: inherit
-    
   deploy:
     runs-on: ubuntu-latest
     needs: jar
