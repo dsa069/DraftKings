@@ -34,16 +34,16 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.server:latest .
+          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka-server:latest .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.server:latest
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka-server:latest
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
-          service: "eureka.server-dev"
+          service: "eureka-server-dev"
           region: "us-east1"
-          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.server:latest"
+          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka-server:latest"
           flags: "--allow-unauthenticated"
