@@ -12,8 +12,8 @@ COPY package*.json ./
 RUN npm ci
 
 # Copiar código fuente
-COPY dist ./dist
+COPY . .
 
 EXPOSE 8080
 
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "dist/bin/www.js" ]

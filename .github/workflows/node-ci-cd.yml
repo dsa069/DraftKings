@@ -37,7 +37,10 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         with:
           name: dist
-          path: api-node/dist/
+          path: |
+            api-node/dist/
+            api-node/public/
+            api-node/dashboard_server/views/
 
       - name: Save Code Linting Report JSON
         run: npm run lint:json
@@ -115,3 +118,5 @@ jobs:
           service: "dk-node-dev"
           region: "us-east1"
           image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:latest"
+          secrets: |
+            /app/enviroments/env=${{ secrets.NODE_ENV_DEV }}:latest
