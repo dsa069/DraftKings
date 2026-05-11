@@ -95,7 +95,7 @@ jobs:
           filter_mode: added        
           level: error
           workdir: ./api-spring/${{ matrix.service }}    
-        continues-on-error: true    
+        continue-on-error: true    
 
 
       - name: Publish ${{ matrix.service }} Test Results
