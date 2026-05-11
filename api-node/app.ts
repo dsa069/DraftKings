@@ -7,7 +7,12 @@ import dotenv from "dotenv";
 
 const envFile = process.env.NODE_ENV === "prod" ? "env.prod" : "env";
 
-dotenv.config({ path: path.resolve(__dirname, "enviroments", envFile) });
+dotenv.config({
+  path: [
+    "/app/enviroments/env", // 1º Prioridad: Secreto en Cloud Run
+    path.resolve(__dirname, "enviroments", envFile), // 2º Prioridad: Local para desarrollo
+  ],
+});
 
 import indexRouter from "./dashboard_server/routes/index";
 import usersRouter from "./dashboard_server/routes/users";
