@@ -94,7 +94,12 @@ jobs:
           reporter: github-pr-review 
           filter_mode: added        
           level: error
-          workdir: ./api-spring/${{ matrix.service }}               
+          workdir: ./api-spring/${{ matrix.service }}        
+          reviewdog_flags: |
+            -tee 
+            -max-errors=10
+            -filter-mode=added
+            -level=error       
 
       - name: Publish ${{ matrix.service }} Test Results
         uses: dorny/test-reporter@v3.0.0
