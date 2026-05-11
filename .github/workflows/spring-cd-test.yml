@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./api-spring/eureka.client.player
+        working-directory: ./api-spring/eureka.server
     steps:
       # Checkout the repository
       - name: Checkout Code
@@ -17,8 +17,8 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v8.0.1
         with:
-          name: eureka.client.player-jar
-          path: api-spring/eureka.client.player/target
+          name: eureka.server-jar
+          path: api-spring/eureka.server/target
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
@@ -34,16 +34,16 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.client.player:latest .
+          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.server:latest .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.client.player:latest
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.server:latest
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
-          service: "eureka.client.player-dev"
+          service: "eureka.server-dev"
           region: "us-east1"
-          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.client.player:latest"
+          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.server:latest"
           flags: "--allow-unauthenticated"
