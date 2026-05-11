@@ -1,0 +1,49 @@
+name: CD SpringBoot
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./api-spring/eureka.client.player
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: eureka.client.player-jar
+          path: api-spring/eureka.client.player/target
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Docker login to Artifact Registry
+        uses: docker/login-action@v4.1.0
+        with:
+          registry: us-east1-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.client.player:latest .
+
+      - name: Push Docker image to Artifact Registry
+        run: |
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.client.player:latest
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: "eureka.client.player-dev"
+          region: "us-east1"
+          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka.client.player:latest"
+          flags: "--allow-unauthenticated"
