@@ -14,7 +14,7 @@ RUN npm ci
 # Copiar código fuente
 COPY dist/ ./dist/
 COPY dashboard_server/views/ ./dist/dashboard_server/views/
-COPY public/ ./dist/public/
+COPY public/ ./public/
 
 EXPOSE 8080
 
