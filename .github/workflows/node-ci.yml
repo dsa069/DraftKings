@@ -78,6 +78,7 @@ jobs:
           reporter: jest-junit
 
   deploy-dev:
+    needs: build
     permissions:
       contents: write
       checks: write
@@ -86,6 +87,7 @@ jobs:
     secrets: inherit
 
   deploy-prod:
+    needs: build
     #if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
     permissions:
       contents: write
