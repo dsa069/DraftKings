@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         with:
           name: client-player-jar
-          path: ./api-spring/eureka.client.player/target/*-jar-with-dependencies.jar
+          path: ./api-spring/eureka.client.player/target/eureka.client.player*.jar
           if-no-files-found: error
 
       # Upload Test Results (for visibility in PR checks)

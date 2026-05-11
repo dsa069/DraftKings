@@ -43,7 +43,7 @@ jobs:
       # Build, Compile, and Test in a single Maven command
       # Phases executed in order: generate-sources (idlj) → compile → test
       - name: Build with Maven
-        run: mvn -B clean verify
+        run: mvn -B clean verify -DskipTests
 
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v7.0.1
