@@ -3,9 +3,9 @@ server:
 eureka:
   client:
     service-url:
-      default-zone: http://dk-spring-eureka.cnsa-2026-dsa069.tech:8080
+      default-zone: http://dk-spring-eureka-dev.cnsa-2026-dsa069.tech:8080
   instance:
-    hostname: dk-spring-eureka.cnsa-2026-dsa069.tech
+    hostname: dk-spring-eureka-dev.cnsa-2026-dsa069.tech
 
 management:
   info:
@@ -18,5 +18,5 @@ management:
 info:
   application:
     name: ${spring.application.name}
-    description: DraftKings manager microservice en produccion
+    description: DraftKings manager microservice en desarrollo
     version: '@project.version@'
