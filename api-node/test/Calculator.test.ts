@@ -1,4 +1,4 @@
-import { Calculator } from "../delete/utils/Calculator";
+import { Calculator } from "../src/utils/Calculator";
 
 describe("Calculator simple tests", () => {
   const calc = new Calculator();
