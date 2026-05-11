@@ -9,7 +9,7 @@ on:
 jobs:
   dist:
     permissions:
-      contents: read
+      contents: write
       checks: write
       pull-requests: write
     uses: ./.github/workflows/node-ci.yml
