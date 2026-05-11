@@ -1,6 +1,6 @@
 FROM node:24-alpine
 
-ENV NODE_ENV=prod
+ENV NODE_ENV=production
 
 # Crear directorio de la app
 WORKDIR /app
