@@ -1,0 +1,19 @@
+FROM node:24-alpine
+
+ENV NODE_ENV=prod
+
+# Crear directorio de la app
+WORKDIR /app
+
+# Copiar dependencias
+COPY package*.json ./
+
+# Instalar solo dependencias de producción
+RUN npm ci --only=production
+
+# Copiar código fuente
+COPY dist ./dist
+
+EXPOSE 8080
+
+CMD [ "node", "dist/index.js" ]
