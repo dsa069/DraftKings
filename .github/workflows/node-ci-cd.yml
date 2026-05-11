@@ -127,7 +127,7 @@ jobs:
           service: "dk-node-dev"
           region: "us-east1"
           image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:latest"
-          flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com"
+          flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated"
           env_vars: |
             MY_CONFIG_DATA=NODE_ENV_DEV:latest
           #secrets: |
