@@ -1,0 +1,110 @@
+name: CI/CD SpringBoot
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./api-spring/eureka.client.player
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      # Set up Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # Verify Java version
+      - name: Verify Java Version
+        run: java -version
+
+      # Build, Compile, and Test in a single Maven command
+      - name: Build with Maven
+        run: mvn -B clean verify
+
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: client-player-jar
+          path: ./api-spring/eureka.client.player/target/*-jar-with-dependencies.jar
+          if-no-files-found: error
+
+      # Upload Test Results (for visibility in PR checks)
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v7.0.1
+        if: success() || failure()
+        with:
+          name: test-results
+          path: ./api-spring/eureka.client.player/target/surefire-reports/*.xml
+
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: ./api-spring/eureka.client.player/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 60
+          min-coverage-changed-files: 60
+          comment-type: both
+
+      - name: Run Checkstyle Full Report
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: google_checks.xml
+          reporter: github-pr-check
+
+      - name: Checkstyle PR Review
+        if: github.event_name == 'pull_request'
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review 
+          filter_mode: added        
+          level: error               
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v3.0.0
+        with:
+          artifact: test-results
+          name: JUnit Tests
+          path: '*.xml'
+          reporter: java-junit
+
+  deploy-dev:
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/corba-cd.yml
+    secrets: inherit
+
+  deploy-prod:
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/corba-cd.prod.yml
+    secrets: inherit
