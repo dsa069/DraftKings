@@ -15,9 +15,22 @@ jobs:
       contents: read
       checks: write
       pull-requests: write
+    strategy:
+      # Matrix: Aquí defines tus 6 microservicios
+      matrix:
+        service: [
+          'eureka.server',
+          'config.server',
+          'gateway',
+          'eureka.client.player',
+          'eureka.client.review',
+          'eureka.client.manager'
+          ]
+      # Si un servicio falla, los demás siguen corriendo
+      fail-fast: false
     defaults:
       run:
-        working-directory: ./api-spring/eureka.client.player
+        working-directory: ./api-spring/${{ matrix.service }}
 
     steps:
       # Checkout the repository
@@ -37,43 +50,43 @@ jobs:
         run: java -version
 
       # Build, Compile, and Test in a single Maven command
-      - name: Build with Maven
+      - name: Build ${{ matrix.service }} with Maven
         run: mvn -B clean package
 
-      - name: Upload JAR Artifact
+      - name: Upload ${{ matrix.service }} JAR Artifact
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: client-player-jar
-          path: ./api-spring/eureka.client.player/target/eureka.client.player*.jar
+          name: ${{ matrix.service }}-jar
+          path: ./api-spring/${{ matrix.service }}/target/${{ matrix.service }}*.jar
           if-no-files-found: error
 
       # Upload Test Results (for visibility in PR checks)
-      - name: Upload Test Results
+      - name: Upload ${{ matrix.service }} Test Results
         uses: actions/upload-artifact@v7.0.1
         if: success() || failure()
         with:
-          name: test-results
-          path: ./api-spring/eureka.client.player/target/surefire-reports/*.xml
+          name: ${{ matrix.service }}-test-results
+          path: ./api-spring/${{ matrix.service }}/target/surefire-reports/*.xml
 
-      - name: Add coverage to PR
+      - name: Add ${{ matrix.service }} coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
         with:
-          paths: ./api-spring/eureka.client.player/target/site/jacoco/jacoco.xml
+          paths: ./api-spring/${{ matrix.service }}/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 60
           min-coverage-changed-files: 60
           comment-type: both
 
-      - name: Run Checkstyle Full Report
+      - name: Run ${{ matrix.service }} Checkstyle Full Report
         uses: dbelyaev/action-checkstyle@v3.10.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           checkstyle_config: google_checks.xml
           reporter: github-pr-check
-          workdir: ./api-spring/eureka.client.player   
+          workdir: ./api-spring/${{ matrix.service }}   
 
-      - name: Checkstyle PR Review
+      - name: Checkstyle ${{ matrix.service }} PR Review
         if: github.event_name == 'pull_request'
         uses: dbelyaev/action-checkstyle@v3.10.0
         with:
@@ -81,12 +94,12 @@ jobs:
           reporter: github-pr-review 
           filter_mode: added        
           level: error
-          workdir: ./api-spring/eureka.client.player               
+          workdir: ./api-spring/${{ matrix.service }}               
 
-      - name: Publish Test Results
+      - name: Publish ${{ matrix.service }} Test Results
         uses: dorny/test-reporter@v3.0.0
         with:
-          artifact: test-results
+          artifact: ${{ matrix.service }}-test-results
           name: JUnit Tests
           path: '*.xml'
           reporter: java-junit
