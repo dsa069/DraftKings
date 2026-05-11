@@ -122,5 +122,5 @@ jobs:
       contents: write
       checks: write
       pull-requests: write
-    uses: ./.github/workflows/spring-cd.prod.yml
+    uses: ./.github/workflows/spring-cd-test.yml
     secrets: inherit
