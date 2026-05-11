@@ -66,4 +66,4 @@ jobs:
           image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:0.0.1"
           flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated"
           secrets: |
-            MY_CONFIG_DATA=NODE_ENV_PROD:latest
+            NODE_ENV=NODE_ENV_PROD:latest
