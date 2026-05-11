@@ -18,4 +18,4 @@ COPY public/ ./dist/public/
 
 EXPOSE 8080
 
-CMD [ "node", "dist/bin/www.js" ]
+CMD ls -R /app/public && node dist/bin/www.js
