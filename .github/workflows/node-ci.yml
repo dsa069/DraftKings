@@ -1,7 +1,10 @@
-name: CI Node
+name: CI/CD Node
 
 on:
-  workflow_call:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
 
 jobs:
   build:
@@ -46,7 +49,7 @@ jobs:
       - name: Test
         uses: mattallty/jest-github-action@v1.0.3
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           test-command: "npm run coverage"
           working-directory: "api-node"
@@ -63,7 +66,7 @@ jobs:
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
         with:
-          github-token: "${{ github.token }}"
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
           report-json: "./api-node/coverage/eslint-result.json"
 
       - name: Test Report
@@ -73,3 +76,20 @@ jobs:
           name: JEST Tests
           path: "junit.xml"
           reporter: jest-junit
+
+  deploy-dev:
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/node-cd.yaml
+    secrets: inherit
+
+  deploy-prod:
+    #if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/node-cd.prod.yml
+    secrets: inherit
