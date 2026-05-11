@@ -46,15 +46,6 @@ jobs:
         run: npm run lint:json
         continue-on-error: true
 
-      - name: Test
-        if: false() # Ignorar esta etapa en el flujo de trabajo principal
-        uses: mattallty/jest-github-action@v1.0.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          test-command: "npm run coverage"
-          working-directory: "api-node"
-
       - name: Upload Test Results and Coverage
         if: success() || failure()
         uses: actions/upload-artifact@v7.0.1
