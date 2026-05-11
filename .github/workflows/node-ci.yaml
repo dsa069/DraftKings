@@ -63,6 +63,12 @@ jobs:
             ./api-node/junit.xml
             ./api-node/coverage/
 
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v4
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          report-json: "./api-node/coverage/eslint-result.json"
+
       - name: Test Report
         uses: dorny/test-reporter@v3.0.0
         with:
