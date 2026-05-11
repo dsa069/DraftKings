@@ -38,7 +38,7 @@ jobs:
         with:
           name: dist
           path: |
-            api-node/dist/
+            api-node/dist/**
             api-node/public/
             api-node/dashboard_server/views/
 
