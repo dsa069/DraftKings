@@ -25,3 +25,22 @@ info:
     name: ${spring.application.name}
     description: Eureka server
     version: '@project.version@'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import: "optional:configserver:http://dk-config-server-dev:8080"
+
+server:
+  port: 8080
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import: "optional:configserver:http://dk-config-server:8080"
+server:
+  port: 8080
