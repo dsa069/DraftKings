@@ -12,7 +12,9 @@ COPY package*.json ./
 RUN npm ci
 
 # Copiar código fuente
-COPY . .
+COPY dist/ ./dist/
+COPY dashboard_server/views/ ./dashboard_server/views/
+COPY public/ ./public/
 
 EXPOSE 8080
 

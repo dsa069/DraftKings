@@ -10,7 +10,7 @@ const envFile = process.env.NODE_ENV === "prod" ? "env.prod" : "env";
 dotenv.config({
   path: [
     "/app/enviroments/env", // 1º Prioridad: Secreto en Cloud Run
-    path.resolve(__dirname, "enviroments", envFile), // 2º Prioridad: Local para desarrollo
+    path.resolve(process.cwd(), "enviroments", envFile), // 2º Prioridad: Local para desarrollo
   ],
 });
 
