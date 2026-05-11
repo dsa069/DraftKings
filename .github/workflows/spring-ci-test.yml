@@ -71,6 +71,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           checkstyle_config: google_checks.xml
           reporter: github-pr-check
+          workdir: ./api-spring/eureka.client.player   
 
       - name: Checkstyle PR Review
         if: github.event_name == 'pull_request'
@@ -79,7 +80,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review 
           filter_mode: added        
-          level: error               
+          level: error
+          workdir: ./api-spring/eureka.client.player               
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v3.0.0
