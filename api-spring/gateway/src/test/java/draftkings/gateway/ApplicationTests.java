@@ -1,4 +1,4 @@
-package draftkings.config.server;
+package draftkings.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,11 +10,11 @@ class ApplicationTests {
 
 	@Test
 	void contextLoads() {
-		assertTrue(true, "Config Server debe cargar el contexto correctamente");
+		assertTrue(true, "Gateway context debe cargar correctamente");
 	}
 
 	@Test
-	void configServerApplicationLoads() {
-		assertTrue(true, "La aplicación Config Server debe iniciarse sin errores");
+	void gatewayApplicationStartsSuccessfully() {
+		assertTrue(true, "La aplicación gateway debe iniciarse sin errores");
 	}
 }
