@@ -96,8 +96,6 @@ jobs:
           level: error
           workdir: ./api-spring/${{ matrix.service }}        
           reviewdog_flags: |
-            -tee 
-            -max-errors=10
             -filter-mode=added
             -level=error       
 
