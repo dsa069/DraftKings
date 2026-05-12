@@ -79,5 +79,6 @@ jobs:
           flags: |
             --allow-unauthenticated
             --ingress=all
+            --service-account=draftkings@cnsa-2026.iam.gserviceaccount.com
           secrets: |
             ${{ steps.secret.outputs.db_secret }}
