@@ -54,7 +54,7 @@ spring:
     config:
       server:
         git:
-          default-label: dev
+          default-label: main
 eureka:
   client:
     service-url:
