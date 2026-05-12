@@ -32,6 +32,10 @@ spring:
     activate:
       on-profile: dev
     import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech"
+  cloud:
+    config:
+      # Aunque sea opcional, reducimos el tiempo de espera a 2-3 segundos
+      request-connect-timeout: 200
 
 server:
   port: ${PORT:8080}
