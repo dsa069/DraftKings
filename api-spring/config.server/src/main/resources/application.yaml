@@ -39,7 +39,7 @@ spring:
 eureka:
   client:
     service-url:
-      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka
+      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech:443
   instance:
     hostname: dk-spring-config-dev.cnsa-2026-dsa069.tech
 server:
