@@ -35,6 +35,11 @@ spring:
     activate:
       on-profile: dev
 eureka:
+  instance:
+      # IMPORTANTE: En Cloud Run el hostname es dinámico. 
+      # Forzamos un ID único para que aparezca en la lista.
+      instance-id: ${spring.application.name}:${random.uuid}
+      prefer-ip-address: true
   client:
     service-url:
       default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
