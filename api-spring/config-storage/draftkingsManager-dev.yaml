@@ -3,9 +3,7 @@ server:
 eureka:
   client:
     service-url:
-      default-zone: http://dk-spring-eureka-dev.cnsa-2026-dsa069.tech:8080
-  instance:
-    hostname: dk-spring-eureka-dev.cnsa-2026-dsa069.tech
+      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
 
 management:
   info:
