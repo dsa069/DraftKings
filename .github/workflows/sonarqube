@@ -10,7 +10,6 @@ on:
 jobs:
   sonar-analysis:
     runs-on: ubuntu-latest
-    container: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v6.0.2
