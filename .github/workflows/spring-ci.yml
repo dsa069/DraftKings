@@ -148,11 +148,11 @@ jobs:
   
   deploy-clients-prod:
     if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'dev'
-    needs: deploy-config.prod
+    needs: deploy-config-prod
     strategy:
       matrix:
         service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.manager']
-    uses: ./.github/workflows/spring-cd-prod.yml
+    uses: ./.github/workflows/spring-cd.prod.yml
     with:
       service_name: ${{ matrix.service }}
     secrets: inherit
