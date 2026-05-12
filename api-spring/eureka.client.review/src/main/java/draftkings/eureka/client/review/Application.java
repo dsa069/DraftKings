@@ -9,9 +9,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 public class Application {
 
 	public static void main(String[] args) {
+		System.out.println("DEBUG - DB Pass Length: " + System.getenv("DB_SQL_PASS_DEV").length());
+
 		SpringApplication.run(Application.class, args);
 		// Solo para probar, borra esto después
-		System.out.println("DEBUG - DB Pass Length: " + System.getenv("DB_SQL_PASS_DEV").length());
 	}
 
 }
