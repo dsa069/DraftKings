@@ -44,6 +44,9 @@ eureka:
     hostname: dk-spring-eureka-dev.cnsa-2026-dsa069.tech
 server:
   port: 8080
+info:
+  application:
+    description: Config Server for DraftKings microservices in dev profile
 
 ---
 spring:
@@ -63,3 +66,6 @@ eureka:
     hostname: dk-spring-eureka.cnsa-2026-dsa069.tech
 server:
   port: 8080
+info:
+  application:
+    description: Config Server for DraftKings microservices in prod profile
