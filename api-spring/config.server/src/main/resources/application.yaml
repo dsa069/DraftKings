@@ -39,9 +39,18 @@ spring:
 eureka:
   client:
     service-url:
-      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech
+      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech:443
+    # REGLA 2: Forzar a que use HTTPS para comunicarse
+    fetch-registry: true
+    register-with-eureka: true
   instance:
     hostname: dk-spring-eureka-dev.cnsa-2026-dsa069.tech
+    # REGLA 4: Indicar que el puerto no es el 8080, sino el 443 (HTTPS)
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    secure-port: 443
+    # Esto ayuda a que Eureka use el hostname en lugar de la IP interna (que no sirve en Cloud Run)
+    prefer-ip-address: false
 server:
   port: 8080
 info:
