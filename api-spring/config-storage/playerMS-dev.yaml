@@ -13,6 +13,11 @@ spring:
     username: postgres.ixbdoxfxxlymwjuyfdiq
     password: ${DB_SQL_PASS_DEV}
     driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update # O 'none' si no quieres que toque las tablas
+    show-sql: true
 
 management:
   info:
