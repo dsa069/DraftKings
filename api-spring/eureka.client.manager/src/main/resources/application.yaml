@@ -31,16 +31,16 @@ spring:
   config:
     activate:
       on-profile: dev
-    import: "optional:configserver:http://dk-config-server-dev:8080"
+    import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
 eureka:
   client:
     service-url:
-      default-zone: http://dk-spring-eureka-dev.cnsa-2026-dsa069.tech:8080
-  instance:
-    hostname: dk-spring-eureka-dev.cnsa-2026-dsa069.tech
-server:
-  port: 8080
+      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
 
+server:
+  port: ${PORT:8080}
+info:
+  application:
 ---
 spring:
   config:
