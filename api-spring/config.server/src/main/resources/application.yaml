@@ -39,16 +39,9 @@ spring:
 eureka:
   client:
     service-url:
-      default-zone: https://eureka-server-dev-223788394742.us-east1.run.app
-    # REGLA 2: Forzar a que use HTTPS para comunicarse
-    fetch-registry: true
-    register-with-eureka: true
+      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka
   instance:
-    hostname: eureka-server-dev-223788394742.us-east1.run.app
-    # REGLA 4: Indicar que el puerto no es el 8080, sino el 443 (HTTPS)
-    non-secure-port-enabled: false
-    secure-port-enabled: true
-    secure-port: 443
+    hostname: dk-spring-config-dev.cnsa-2026-dsa069.tech
 server:
   port: 8080
 info:
