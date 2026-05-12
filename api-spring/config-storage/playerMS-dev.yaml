@@ -7,6 +7,13 @@ eureka:
     service-url:
       default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
 
+spring:
+  datasource:
+    url:postgresql://postgres:${DB_SQL_PASS_DEV}@db.ixbdoxfxxlymwjuyfdiq.supabase.co:5432/postgres
+    username: postgres
+    password: ${DB_SQL_PASS_DEV}
+    driver-class-name: org.postgresql.Driver
+
 management:
   info:
     env:

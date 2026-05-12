@@ -43,6 +43,15 @@ jobs:
           CLEAN_NAME=$(echo "${{ inputs.service_name }}" | sed 's/\./-/g')
           echo "service_slug=$CLEAN_NAME" >> $GITHUB_OUTPUT
 
+      - name: Create or Update Secret in GCP
+        if: ${{ inputs.service_name == 'eureka.client.player' }} || ${{ inputs.service_name == 'eureka.client.review' }}
+        run: |
+          if gcloud secrets describe DB_SQL_PASS_PROD > /dev/null 2>&1; then
+            echo "${{ secrets.DB_SQL_PASS_PROD }}" | gcloud secrets versions add DB_SQL_PASS_PROD --data-file=-
+          else
+            echo "${{ secrets.DB_SQL_PASS_PROD }}" | gcloud secrets create DB_SQL_PASS_PROD --replication-policy="automatic" --data-file=-
+          fi
+
       - name: Build Docker image
         run: |
           docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:0.0.1 .
@@ -60,3 +69,6 @@ jobs:
           flags: |
             --allow-unauthenticated
             --ingress=all
+          if: ${{ inputs.service_name == 'eureka.client.player' }} || ${{ inputs.service_name == 'eureka.client.review' }}
+          secrets: |
+            DB_SQL_PASS_PROD=DB_SQL_PASS_PROD:latest
