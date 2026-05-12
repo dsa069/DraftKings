@@ -21,9 +21,6 @@ jobs:
         env:
           SONAR_HOST_URL: http://sonarqube.cnsa-2026-dsa069.tech:9000
         run: |
-          set -euo pipefail
-          apt-get update
-          apt-get install -y curl ca-certificates
           echo "Checking ${SONAR_HOST_URL}/api/system/status"
           curl --fail --show-error --silent --location "${SONAR_HOST_URL}/api/system/status"
 
