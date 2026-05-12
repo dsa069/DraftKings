@@ -16,6 +16,8 @@ jobs:
           # Disabling shallow clones is recommended for improving the relevancy of reporting
           fetch-depth: 0
 
+      # Para un analisis mas preciso de Java hay que compilar
+
       - name: Diagnose SonarQube connectivity
         shell: bash
         env:
@@ -33,3 +35,4 @@ jobs:
           args: >
             -Dsonar.projectKey=DraftKings
             -Dsonar.sources=.
+            -Dsonar.java.binaries=.
