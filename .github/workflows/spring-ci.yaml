@@ -125,6 +125,7 @@ jobs:
     strategy:
       matrix:
         service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.manager']
+      fail-fast: false
     uses: ./.github/workflows/spring-cd.yml
     with:
       service_name: ${{ matrix.service }}
@@ -152,6 +153,7 @@ jobs:
     strategy:
       matrix:
         service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.manager']
+      fail-fast: false
     uses: ./.github/workflows/spring-cd.prod.yml
     with:
       service_name: ${{ matrix.service }}
