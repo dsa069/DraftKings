@@ -108,14 +108,14 @@ jobs:
 
   deploy-eureka-dev:
     needs: build
-    uses: ./.github/workflows/spring-cd-test.yml
+    uses: ./.github/workflows/spring-cd.yml
     with:
       service_name: 'eureka.server'
     secrets: inherit
 
   deploy-config-dev:
     needs: deploy-eureka-dev
-    uses: ./.github/workflows/spring-cd-test.yml
+    uses: ./.github/workflows/spring-cd.yml
     with:
       service_name: 'config.server'
     secrets: inherit
@@ -125,7 +125,7 @@ jobs:
     strategy:
       matrix:
         service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.manager']
-    uses: ./.github/workflows/spring-cd-test.yml
+    uses: ./.github/workflows/spring-cd.yml
     with:
       service_name: ${{ matrix.service }}
     secrets: inherit
@@ -133,7 +133,7 @@ jobs:
   deploy-eureka-prod:
     if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'dev'
     needs: build
-    uses: ./.github/workflows/spring-cd-prod-test.yml
+    uses: ./.github/workflows/spring-cd.prod.yml
     with:
       service_name: 'eureka.server'
     secrets: inherit
@@ -141,18 +141,18 @@ jobs:
   deploy-config-prod:
     if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'dev'
     needs: deploy-eureka-prod
-    uses: ./.github/workflows/spring-cd-prod-test.yml
+    uses: ./.github/workflows/spring-cd.prod.yml
     with:
       service_name: 'config.server'
     secrets: inherit
   
   deploy-clients-prod:
     if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'dev'
-    needs: deploy-config-prod
+    needs: deploy-config.prod
     strategy:
       matrix:
         service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.manager']
-    uses: ./.github/workflows/spring-cd-prod-test.yml
+    uses: ./.github/workflows/spring-cd-prod.yml
     with:
       service_name: ${{ matrix.service }}
     secrets: inherit

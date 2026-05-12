@@ -54,13 +54,12 @@ spring:
     config:
       server:
         git:
-          default-label: main
+          default-label: dev
 eureka:
   client:
     service-url:
-      default-zone: http://dk-spring-eureka.cnsa-2026-dsa069.tech:8080
-  instance:
-    hostname: dk-spring-eureka.cnsa-2026-dsa069.tech
+      default-zone: https://dk-spring-eureka.cnsa-2026-dsa069.tech/eureka/
+
 server:
   port: ${PORT:8080}
 info:
