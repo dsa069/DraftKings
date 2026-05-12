@@ -2,11 +2,10 @@ server:
   port: ${PORT:${SERVER_PORT:0}}
 eureka:
   instance:
-    hostname: dk-spring-eureka-dev.cnsa-2026-dsa069.tech
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
-      default-zone: http://dk-spring-eureka-dev.cnsa-2026-dsa069.tech:8080
+      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
 
 management:
   info:

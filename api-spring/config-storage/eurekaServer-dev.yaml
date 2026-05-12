@@ -1,6 +1,8 @@
 server:
  port: ${PORT:8080}
 eureka:
+ server:
+  enable-self-preservation: false
  client:
   register-with-eureka: false
   fetch-registry: false
@@ -12,9 +14,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,refresh
 info:
   application:
     name: ${spring.application.name}
-    description: Eureka server en desarrollo
+    description: Eureka server usando config server
     version: '@project.version@'

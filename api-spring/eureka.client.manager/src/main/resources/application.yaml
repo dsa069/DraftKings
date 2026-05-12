@@ -32,26 +32,21 @@ spring:
     activate:
       on-profile: dev
     import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
-eureka:
-  client:
-    service-url:
-      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
 
 server:
   port: ${PORT:8080}
 info:
   application:
+    description: DraftKings manager microservice in dev profile
 ---
 spring:
   config:
     activate:
       on-profile: prod
-  import: "optional:configserver:http://dk-config-server:8080"
-eureka:
-  client:
-    service-url:
-      default-zone: http://dk-spring-eureka.cnsa-2026-dsa069.tech:8080
-  instance:
-    hostname: dk-spring-eureka.cnsa-2026-dsa069.tech
+    import: "optional:configserver:https://dk-spring-config.cnsa-2026-dsa069.tech/"
+
 server:
-  port: 8080
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings manager microservice in prod profile
