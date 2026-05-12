@@ -32,9 +32,14 @@ spring:
     activate:
       on-profile: dev
     import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
+  cloud:
+    config:
+      fail-fast: false # No rompas el arranque si el config server falla
+      request-connect-timeout: 2000 # 2 segundos para conectar
+      request-read-timeout: 3000    # 3 segundos para leer datos
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 info:
   application:
@@ -49,4 +54,4 @@ spring:
       on-profile: prod
     import: "optional:configserver:http://dk-config-server:8080"
 server:
-  port: 8080
+  port: ${PORT:8080}
