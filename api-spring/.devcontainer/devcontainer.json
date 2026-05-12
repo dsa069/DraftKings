@@ -44,6 +44,26 @@
             "password": "postgres",
             "database": "draftkings",
             "group": "DraftKings"
+          },
+          {
+            "name": "DraftKings Dev",
+            "type": "PostgreSQL",
+            "host": "db.ixbdoxfxxlymwjuyfdiq.supabase.co",
+            "port": 5432,
+            "user": "postgres",
+            "password": "",
+            "database": "DraftKings-dev-bd",
+            "group": "DraftKings"
+          },
+          {
+            "name": "DraftKings Prod",
+            "type": "PostgreSQL",
+            "host": "db.vopcpjecorghtrqpvqtc.supabase.co",
+            "port": 5432,
+            "user": "postgres",
+            "password": "",
+            "database": "DraftKings-bd",
+            "group": "DraftKings"
           }
         ]
       }
