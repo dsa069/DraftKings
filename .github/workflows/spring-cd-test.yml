@@ -50,6 +50,7 @@ jobs:
 
   deploy-config:
     runs-on: ubuntu-latest
+    needs: deploy
     defaults:
       run:
         working-directory: ./api-spring/config.server
