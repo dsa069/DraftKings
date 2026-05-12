@@ -35,18 +35,18 @@ spring:
 
 server:
   port: ${PORT:8080}
-
 info:
   application:
-    name: ${spring.application.name}
-    description: Eureka server en dev profile
-    version: '@project.version@'
-
+    description: DraftKings manager microservice in dev profile
 ---
 spring:
   config:
     activate:
       on-profile: prod
-    import: "optional:configserver:http://dk-config-server:8080"
+    import: "optional:configserver:https://dk-spring-config.cnsa-2026-dsa069.tech/"
+
 server:
   port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings manager microservice in prod profile
