@@ -4,7 +4,7 @@ spring:
  config:
   import: "optional:configserver:http://localhost:8888"
 server:
- port: 8761
+ port: ${PORT:8761}
 eureka:
  server:
   enable-self-preservation: false
@@ -34,7 +34,7 @@ spring:
     import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech"
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 ---
 spring:
@@ -43,4 +43,4 @@ spring:
       on-profile: prod
     import: "optional:configserver:http://dk-config-server:8080"
 server:
-  port: 8080
+  port: ${PORT:8080}
