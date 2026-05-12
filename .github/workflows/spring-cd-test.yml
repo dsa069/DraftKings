@@ -44,7 +44,8 @@ jobs:
           echo "service_slug=$CLEAN_NAME" >> $GITHUB_OUTPUT
 
       - name: Create or Update Secret in GCP
-        if: ${{ inputs.service_name == 'eureka.client.player' || inputs.service_name == 'eureka.client.review' }}        run: |
+        if: ${{ inputs.service_name == 'eureka.client.player' || inputs.service_name == 'eureka.client.review' }}        
+        run: |
           if gcloud secrets describe DB_SQL_PASS_DEV > /dev/null 2>&1; then
             echo "${{ secrets.DB_SQL_PASS_DEV }}" | gcloud secrets versions add DB_SQL_PASS_DEV --data-file=-
           else
