@@ -60,6 +60,15 @@ jobs:
         run: |
           docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:0.0.1
 
+      - name: Set Secret Placeholder
+        id: secret
+        run: |
+          if [[ "${{ inputs.service_name }}" == "eureka.client.player" ]] || [[ "${{ inputs.service_name }}" == "eureka.client.review" ]]; then
+            echo "db_secret=DB_SQL_PASS_PROD=DB_SQL_PASS_PROD:latest" >> $GITHUB_OUTPUT
+          else
+            echo "db_secret=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
@@ -69,6 +78,5 @@ jobs:
           flags: |
             --allow-unauthenticated
             --ingress=all
-          if: ${{ inputs.service_name == 'eureka.client.player' }} || ${{ inputs.service_name == 'eureka.client.review' }}
           secrets: |
-            DB_SQL_PASS_PROD=DB_SQL_PASS_PROD:latest
+            ${{ steps.secret.outputs.db_secret }}
