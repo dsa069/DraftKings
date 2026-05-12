@@ -34,6 +34,12 @@ spring:
       on-profile: dev
     import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
 
+  datasource:
+    url: jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
+    username: postgres.ixbdoxfxxlymwjuyfdiq
+    password: ${DB_SQL_PASS_DEV}
+    driver-class-name: org.postgresql.Driver
+
 server:
   port: ${PORT:8080}
 info:
@@ -45,6 +51,12 @@ spring:
     activate:
       on-profile: prod
     import: "optional:configserver:https://dk-spring-config.cnsa-2026-dsa069.tech/"
+
+  datasource:
+    url: jdbc:postgresql://aws-0-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
+    username: postgres.vopcpjecorghtrqpvqtc
+    password: ${DB_SQL_PASS_PROD}
+    driver-class-name: org.postgresql.Driver
 
 server:
   port: ${PORT:8080}
