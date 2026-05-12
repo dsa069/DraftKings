@@ -46,7 +46,9 @@ jobs:
           service: "eureka-server-dev"
           region: "us-east1"
           image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/eureka-server:latest"
-          flags: "--allow-unauthenticated"
+          flags: |
+            --allow-unauthenticated
+            --ingress=all
 
   deploy-config:
     runs-on: ubuntu-latest
@@ -91,4 +93,6 @@ jobs:
           service: "config-server-dev"
           region: "us-east1"
           image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/config-server:latest"
-          flags: "--allow-unauthenticated"
+          flags: |
+            --allow-unauthenticated
+            --ingress=all
