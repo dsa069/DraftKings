@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:${SERVER_PORT:0}}
+  port: ${PORT:8080}
 eureka:
   instance:
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
@@ -9,7 +9,7 @@ eureka:
 
 spring:
   datasource:
-    url:postgresql://postgres:${DB_SQL_PASS_DEV}@db.ixbdoxfxxlymwjuyfdiq.supabase.co:5432/postgres
+    url: jdbc:postgresql://postgres:${DB_SQL_PASS_DEV}@db.ixbdoxfxxlymwjuyfdiq.supabase.co:5432/postgres
     username: postgres
     password: ${DB_SQL_PASS_DEV}
     driver-class-name: org.postgresql.Driver

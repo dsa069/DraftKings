@@ -1,5 +1,5 @@
 server:
- port: ${PORT:${SERVER_PORT:0}}
+ port: ${PORT:8080}
 eureka:
   instance:
     hostname: dk-spring-eureka.cnsa-2026-dsa069.tech
@@ -10,7 +10,7 @@ eureka:
 
 spring:
   datasource:
-    url: postgresql://postgres:${DB_SQL_PASS_PROD}@db.vopcpjecorghtrqpvqtc.supabase.co:5432/postgres
+    url: jdbc:postgresql://postgres:${DB_SQL_PASS_PROD}@db.vopcpjecorghtrqpvqtc.supabase.co:5432/postgres
     username: postgres
     password: ${DB_SQL_PASS_PROD}
     driver-class-name: org.postgresql.Driver
