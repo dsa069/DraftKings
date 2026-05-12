@@ -9,8 +9,8 @@ eureka:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:${DB_SQL_PASS_DEV}@db.ixbdoxfxxlymwjuyfdiq.supabase.co:5432/postgres
-    username: postgres
+    url: jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
+    username: postgres.ixbdoxfxxlymwjuyfdiq
     password: ${DB_SQL_PASS_DEV}
     driver-class-name: org.postgresql.Driver
 
