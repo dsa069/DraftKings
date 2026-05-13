@@ -7,8 +7,6 @@ import {
 } from '@angular/forms';
 import {
   IonContent,
-  IonCard,
-  IonCardContent,
   IonInput,
   IonItem,
   IonLabel,
@@ -24,6 +22,7 @@ import {
   eyeOffOutline,
 } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
+import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 
 @Component({
   selector: 'app-login',
@@ -33,13 +32,12 @@ import { NavController } from '@ionic/angular';
   imports: [
     ReactiveFormsModule,
     IonContent,
-    IonCard,
-    IonCardContent,
     IonInput,
     IonItem,
     IonLabel,
     IonButton,
     IonIcon,
+    LoginCardComponent,
   ],
 })
 export class LoginPage implements OnInit {
