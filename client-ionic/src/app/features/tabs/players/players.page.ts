@@ -8,9 +8,9 @@ import {
 import { ExploreContainerComponent } from '../../../shared/components/explore-container/explore-container.component.js';
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss'],
+  selector: 'app-players',
+  templateUrl: 'players.page.html',
+  styleUrls: ['players.page.scss'],
   imports: [
     IonHeader,
     IonToolbar,
@@ -19,6 +19,6 @@ import { ExploreContainerComponent } from '../../../shared/components/explore-co
     ExploreContainerComponent,
   ],
 })
-export class Tab2Page {
+export class PlayersPage {
   constructor() {}
 }
