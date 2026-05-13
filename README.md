@@ -531,8 +531,6 @@ El deployment de CORBA es **más complejo** que otros servicios debido a infraes
 
 ### Pasos
 1. **Clonar el repositorio:**
-   ```bash
-   git clone [https://github.com/tu-usuario/draftkings.git](https://github.com/tu-usuario/draftkings.git)
 
 ## 🎨 Estilo Visual y Navegación
 - **Estilo:** Moderno, deportivo, con alto contraste. Limpio y funcional.
