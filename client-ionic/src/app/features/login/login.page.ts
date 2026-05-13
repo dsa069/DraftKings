@@ -1,21 +1,82 @@
-import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, inject } from '@angular/core';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
+  IonCard,
+  IonCardContent,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonButton,
+  IonIcon,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  mailOutline,
+  lockClosedOutline,
+  arrowForwardOutline,
+  eyeOutline,
+  eyeOffOutline,
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule],
+  imports: [
+    ReactiveFormsModule,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonInput,
+    IonItem,
+    IonLabel,
+    IonButton,
+    IonIcon,
+  ],
 })
 export class LoginPage implements OnInit {
-  constructor() {}
+  loginForm!: FormGroup;
+  showPassword: boolean = false;
 
-  ngOnInit() {}
+  private readonly formBuilder = inject(FormBuilder);
+
+  constructor() {
+    addIcons({
+      'mail-outline': mailOutline,
+      'lock-closed-outline': lockClosedOutline,
+      'arrow-forward-outline': arrowForwardOutline,
+      'eye-outline': eyeOutline,
+      'eye-off-outline': eyeOffOutline,
+    });
+  }
+
+  ngOnInit(): void {
+    this.initializeForm();
+  }
+
+  private initializeForm(): void {
+    this.loginForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  onLogin(): void {
+    if (this.loginForm.valid) {
+      const credentials = this.loginForm.value;
+      console.log('Login attempt:', credentials);
+      // TODO: Implementar lógica de autenticación
+    }
+  }
 }
