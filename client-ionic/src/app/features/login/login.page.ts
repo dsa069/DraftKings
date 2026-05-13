@@ -84,6 +84,6 @@ export class LoginPage implements OnInit {
   }
 
   gotoSignUp(): void {
-    this.navCtrl.navigateForward(['/sign-in']);
+    this.navCtrl.navigateForward(['/sign-up']);
   }
 }

@@ -12,9 +12,9 @@ export const routes: Routes = [
       import('./features/login/login.page').then((m) => m.LoginPage),
   },
   {
-    path: 'sign-in',
+    path: 'sign-up',
     loadComponent: () =>
-      import('./features/sign-in/sign-in.page').then((m) => m.SignInPage),
+      import('./features/sign-up/sign-up.page').then((m) => m.SignUpPage),
   },
   {
     path: 'new-player',
