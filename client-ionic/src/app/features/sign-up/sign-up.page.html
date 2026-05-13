@@ -5,107 +5,95 @@
       <p class="login-subtitle">Enter the arena. Manage your squad.</p>
     </header>
 
-    <ion-card class="login-card">
-      <ion-card-content class="login-form-wrapper">
-        <form (ngSubmit)="onRegister()" [formGroup]="signUpForm">
-          <!-- Full Name Input -->
-          <div class="form-group">
-            <ion-label class="form-label">Full Name</ion-label>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="person-outline"></ion-icon>
-              <ion-input
-                formControlName="fullName"
-                type="text"
-                placeholder="Enter your coach name"
-                class="form-input"
-              ></ion-input>
-            </ion-item>
-          </div>
-          <!-- Email Input -->
-          <div class="form-group">
-            <ion-label class="form-label">Email Address</ion-label>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="mail-outline"></ion-icon>
-              <ion-input
-                formControlName="email"
-                type="email"
-                placeholder="coach@example.com"
-                class="form-input"
-              ></ion-input>
-            </ion-item>
-          </div>
+    <app-login-card
+      footerText="Already on the roster?"
+      footerActionText="Log In"
+      (footerActionClick)="gotoLogin()"
+    >
+      <form (ngSubmit)="onRegister()" [formGroup]="signUpForm">
+        <div class="form-group">
+          <ion-label class="form-label">Full Name</ion-label>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="person-outline"></ion-icon>
+            <ion-input
+              formControlName="fullName"
+              type="text"
+              placeholder="Enter your coach name"
+              class="form-input"
+            ></ion-input>
+          </ion-item>
+        </div>
 
-          <!-- Password Input -->
-          <div class="form-group">
-            <div class="form-label-row">
-              <ion-label class="form-label">Secure Password</ion-label>
-            </div>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-              <ion-input
-                #passwordInput
-                formControlName="password"
-                [type]="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
-                class="form-input"
-              ></ion-input>
-              <ion-button
-                slot="end"
-                fill="clear"
-                (click)="togglePasswordVisibility()"
-                class="password-toggle"
-              >
-                <ion-icon
-                  [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
-                ></ion-icon>
-              </ion-button>
-            </ion-item>
+        <div class="form-group">
+          <ion-label class="form-label">Email Address</ion-label>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="mail-outline"></ion-icon>
+            <ion-input
+              formControlName="email"
+              type="email"
+              placeholder="coach@example.com"
+              class="form-input"
+            ></ion-input>
+          </ion-item>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <ion-label class="form-label">Secure Password</ion-label>
           </div>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+            <ion-input
+              #passwordInput
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="••••••••"
+              class="form-input"
+            ></ion-input>
+            <ion-button
+              slot="end"
+              fill="clear"
+              (click)="togglePasswordVisibility()"
+              class="password-toggle"
+            >
+              <ion-icon
+                [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
+              ></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
 
-          <!-- Password Input -->
-          <div class="form-group">
-            <div class="form-label-row">
-              <ion-label class="form-label">Repeat Password</ion-label>
-            </div>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-              <ion-input
-                #passwordInput
-                formControlName="confirmPassword"
-                [type]="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
-                class="form-input"
-              ></ion-input>
-              <ion-button
-                slot="end"
-                fill="clear"
-                (click)="togglePasswordVisibility()"
-                class="password-toggle"
-              >
-                <ion-icon
-                  [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
-                ></ion-icon>
-              </ion-button>
-            </ion-item>
+        <div class="form-group">
+          <div class="form-label-row">
+            <ion-label class="form-label">Repeat Password</ion-label>
           </div>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+            <ion-input
+              #passwordInput
+              formControlName="confirmPassword"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="••••••••"
+              class="form-input"
+            ></ion-input>
+            <ion-button
+              slot="end"
+              fill="clear"
+              (click)="togglePasswordVisibility()"
+              class="password-toggle"
+            >
+              <ion-icon
+                [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
+              ></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
 
-          <!-- Submit Button -->
-          <ion-button type="submit" expand="block" class="login-button">
-            Enter the Draft
-            <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
-          </ion-button>
-        </form>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Sign Up Link -->
-    <div class="signup-section">
-      <p class="signup-text">
-        Already on the roster?
-        <ion-button fill="clear" class="signup-link" (click)="gotoLogin()">
-          Log In
+        <ion-button type="submit" expand="block" class="login-button">
+          Enter the Draft
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
         </ion-button>
-      </p>
-    </div>
+      </form>
+    </app-login-card>
   </div>
 </ion-content>

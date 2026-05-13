@@ -7,8 +7,6 @@ import {
 } from '@angular/forms';
 import {
   IonContent,
-  IonCard,
-  IonCardContent,
   IonInput,
   IonItem,
   IonLabel,
@@ -25,6 +23,7 @@ import {
   eyeOutline,
   eyeOffOutline,
 } from 'ionicons/icons';
+import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 
 @Component({
   selector: 'app-sign-up',
@@ -34,13 +33,12 @@ import {
   imports: [
     ReactiveFormsModule,
     IonContent,
-    IonCard,
-    IonCardContent,
     IonInput,
     IonItem,
     IonLabel,
     IonButton,
     IonIcon,
+    LoginCardComponent,
   ],
 })
 export class SignUpPage implements OnInit {

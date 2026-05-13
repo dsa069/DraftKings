@@ -1,0 +1,14 @@
+<ion-card class="login-card">
+  <ion-card-content class="login-form-wrapper">
+    <ng-content></ng-content>
+  </ion-card-content>
+</ion-card>
+
+<div class="signup-section">
+  <p class="signup-text">
+    {{ footerText }}
+    <ion-button fill="clear" class="signup-link" (click)="onFooterAction()">
+      {{ footerActionText }}
+    </ion-button>
+  </p>
+</div>

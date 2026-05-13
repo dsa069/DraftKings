@@ -5,74 +5,59 @@
       <p class="login-subtitle">Enter the arena. Manage your squad.</p>
     </header>
 
-    <ion-card class="login-card">
-      <ion-card-content class="login-form-wrapper">
-        <form (ngSubmit)="onLogin()" [formGroup]="loginForm">
-          <!-- Email Input -->
-          <div class="form-group">
-            <ion-label class="form-label">Email Address</ion-label>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="mail-outline"></ion-icon>
-              <ion-input
-                formControlName="email"
-                type="email"
-                placeholder="coach@example.com"
-                class="form-input"
-              ></ion-input>
-            </ion-item>
+    <app-login-card
+      footerText="New to the game?"
+      footerActionText="Create an account"
+      (footerActionClick)="gotoSignUp()"
+    >
+      <form (ngSubmit)="onLogin()" [formGroup]="loginForm">
+        <div class="form-group">
+          <ion-label class="form-label">Email Address</ion-label>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="mail-outline"></ion-icon>
+            <ion-input
+              formControlName="email"
+              type="email"
+              placeholder="coach@example.com"
+              class="form-input"
+            ></ion-input>
+          </ion-item>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <ion-label class="form-label">Password</ion-label>
+            <ion-button fill="clear" class="forgot-link" (click)="gotoSignUp()"
+              >Forgot?</ion-button
+            >
           </div>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+            <ion-input
+              #passwordInput
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="••••••••"
+              class="form-input"
+            ></ion-input>
+            <ion-button
+              slot="end"
+              fill="clear"
+              (click)="togglePasswordVisibility()"
+              class="password-toggle"
+            >
+              <ion-icon
+                [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
+              ></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
 
-          <!-- Password Input -->
-          <div class="form-group">
-            <div class="form-label-row">
-              <ion-label class="form-label">Password</ion-label>
-              <ion-button
-                fill="clear"
-                class="forgot-link"
-                (click)="gotoSignUp()"
-              >
-                Forgot?
-              </ion-button>
-            </div>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-              <ion-input
-                #passwordInput
-                formControlName="password"
-                [type]="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
-                class="form-input"
-              ></ion-input>
-              <ion-button
-                slot="end"
-                fill="clear"
-                (click)="togglePasswordVisibility()"
-                class="password-toggle"
-              >
-                <ion-icon
-                  [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
-                ></ion-icon>
-              </ion-button>
-            </ion-item>
-          </div>
-
-          <!-- Submit Button -->
-          <ion-button type="submit" expand="block" class="login-button">
-            Login
-            <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
-          </ion-button>
-        </form>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Sign Up Link -->
-    <div class="signup-section">
-      <p class="signup-text">
-        New to the game?
-        <ion-button fill="clear" class="signup-link" (click)="gotoSignUp()">
-          Create an account
+        <ion-button type="submit" expand="block" class="login-button">
+          Login
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
         </ion-button>
-      </p>
-    </div>
+      </form>
+    </app-login-card>
   </div>
 </ion-content>
