@@ -77,7 +77,8 @@ form {
 .form-label-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center; /* Alinea verticalmente el texto "Password" con el botón "Forgot?" */
+  margin-bottom: 4px;
 }
 .form-item {
   --background: var(--ion-color-surface-container-low);
@@ -146,36 +147,57 @@ ion-icon {
     color: var(--ion-color-on-primary-fixed);
   }
 }
-.forgot-link,
-.signup-link {
-  font-family: var(--font-family-label-bold);
-  font-size: var(--font-size-label-bold);
-  font-weight: var(--font-weight-label-bold);
-  color: var(--ion-color-primary);
-  text-decoration: none;
-  transition: color 200ms ease-in-out;
-  &:hover {
-    color: var(--ion-color-pitch-green);
-  }
-  &:focus {
-    outline: none;
-    text-decoration: underline;
-  }
-}
+
 .signup-section {
   text-align: center;
-  margin-top: var(--spacing-stack-sm);
+  margin-top: var(--spacing-stack-md);
 }
+
 .signup-text {
   font-family: var(--font-family-body-md);
   font-size: var(--font-size-body-md);
   color: var(--ion-color-on-surface-variant);
   margin: 0;
-  display: inline;
-  .signup-link {
-    margin-left: 4px;
+  display: flex; /* Usamos flex para alinear texto y botón perfectamente */
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap; /* Por si la pantalla es muy pequeña, que baje de línea */
+}
+.forgot-link,
+.signup-link {
+  /* Anulamos dimensiones de botón */
+  margin: 0 0 0 5px; /* Un pequeño margen a la izquierda del texto */
+  padding: 0;
+  height: auto;
+  min-height: 20px;
+  --border-radius: 0 !important;
+
+  /* Tipografía exacta al texto base */
+  font-family: var(--font-family-label-bold);
+  font-size: var(
+    --font-size-body-md
+  ); /* Que use el mismo tamaño que el texto de "New to..." */
+  font-weight: var(--font-weight-label-bold);
+  color: var(--ion-color-primary);
+
+  /* Variables internas de Ionic para limpiar el botón */
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --margin-top: 0;
+  --margin-bottom: 0;
+  --ripple-color: transparent; /* Opcional: quita el efecto de click si quieres que sea muy "link" */
+
+  text-transform: none;
+  vertical-align: baseline;
+
+  &:hover {
+    color: var(--ion-color-pitch-green);
+    text-decoration: underline; /* Estilo clásico de link al pasar el mouse */
   }
 }
+
 @media (max-width: 480px) {
   .login-wrapper {
     max-width: 100%;

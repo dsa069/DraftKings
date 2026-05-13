@@ -26,7 +26,13 @@
           <div class="form-group">
             <div class="form-label-row">
               <ion-label class="form-label">Password</ion-label>
-              <a class="forgot-link">Forgot?</a>
+              <ion-button
+                fill="clear"
+                class="forgot-link"
+                (click)="gotoSignUp()"
+              >
+                Forgot?
+              </ion-button>
             </div>
             <ion-item class="form-item" lines="none">
               <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
@@ -63,7 +69,9 @@
     <div class="signup-section">
       <p class="signup-text">
         New to the game?
-        <a class="signup-link">Create an account</a>
+        <ion-button fill="clear" class="signup-link" (click)="gotoSignUp()">
+          Create an account
+        </ion-button>
       </p>
     </div>
   </div>

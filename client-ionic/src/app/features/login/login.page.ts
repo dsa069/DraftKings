@@ -82,4 +82,8 @@ export class LoginPage implements OnInit {
     }
     this.navCtrl.navigateRoot(['/tabs/players']);
   }
+
+  gotoSignUp(): void {
+    this.navCtrl.navigateForward(['/sign-in']);
+  }
 }
