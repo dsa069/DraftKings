@@ -23,6 +23,7 @@ import {
   eyeOutline,
   eyeOffOutline,
 } from 'ionicons/icons';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -46,6 +47,7 @@ export class LoginPage implements OnInit {
   showPassword: boolean = false;
 
   private readonly formBuilder = inject(FormBuilder);
+  private readonly navCtrl = inject(NavController);
 
   constructor() {
     addIcons({
@@ -78,5 +80,6 @@ export class LoginPage implements OnInit {
       console.log('Login attempt:', credentials);
       // TODO: Implementar lógica de autenticación
     }
+    this.navCtrl.navigateRoot(['/tabs/players']);
   }
 }

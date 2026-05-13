@@ -11,7 +11,7 @@
           <!-- Email Input -->
           <div class="form-group">
             <ion-label class="form-label">Email Address</ion-label>
-            <ion-item class="form-item">
+            <ion-item class="form-item" lines="none">
               <ion-icon slot="start" name="mail-outline"></ion-icon>
               <ion-input
                 formControlName="email"
@@ -26,9 +26,9 @@
           <div class="form-group">
             <div class="form-label-row">
               <ion-label class="form-label">Password</ion-label>
-              <a href="#" class="forgot-link">Forgot?</a>
+              <a class="forgot-link">Forgot?</a>
             </div>
-            <ion-item class="form-item">
+            <ion-item class="form-item" lines="none">
               <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
               <ion-input
                 #passwordInput
@@ -63,7 +63,7 @@
     <div class="signup-section">
       <p class="signup-text">
         New to the game?
-        <a href="#" class="signup-link">Create an account</a>
+        <a class="signup-link">Create an account</a>
       </p>
     </div>
   </div>
