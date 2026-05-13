@@ -1,4 +1,4 @@
-import { SignInPage } from './sign-in.page';
+import { SignUpPage } from './sign-up.page';
 
 import {
   IonContent,
@@ -7,9 +7,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 
-describe('SignInPage', () => {
+describe('SignUpPage', () => {
   it('should render title', () => {
-    cy.mount(SignInPage, {
+    cy.mount(SignUpPage, {
       imports: [IonContent, IonHeader, IonTitle, IonToolbar],
     });
 
