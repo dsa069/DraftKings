@@ -1,4 +1,4 @@
-import { MyTeamPage } from './my-team.page';
+import { LoginPage } from './login.page';
 
 import {
   IonContent,
@@ -7,9 +7,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 
-describe('MyTeamPage', () => {
+describe('LoginPage', () => {
   it('should render title', () => {
-    cy.mount(MyTeamPage, {
+    cy.mount(LoginPage, {
       imports: [IonContent, IonHeader, IonTitle, IonToolbar],
     });
 
