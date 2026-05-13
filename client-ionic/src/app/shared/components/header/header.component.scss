@@ -1,0 +1,98 @@
+// Header Container
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  width: 100%;
+
+  ion-toolbar {
+    --padding-start: var(--spacing-margin-mobile, 16px);
+    --padding-end: var(--spacing-margin-mobile, 16px);
+    --min-height: 3.5rem; // h-14 equivalent (56px)
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+// Title Styling
+.app-title {
+  font-family: var(--font-family-display-lg, "Lexend"), sans-serif;
+  font-size: var(--font-size-display-lg, 32px);
+  font-weight: 700;
+  letter-spacing: -0.02em; // tracking-tighter equivalent
+  color: var(--ion-color-primary, #4dfd85);
+  text-align: center;
+  flex-grow: 1;
+  margin: 0;
+
+  // Ionic title default styling override
+  --color: var(--ion-color-primary, #4dfd85);
+}
+
+// Logo Styling
+.logo {
+  width: 40px !important;
+  height: 40px !important;
+  max-width: 40px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+// Icon Button Styling
+.icon-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --color: var(--ion-color-primary-variant-dark);
+  min-width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition:
+    opacity 200ms ease-in-out,
+    transform 200ms ease-in-out;
+
+  // Icon styling inside button
+  .icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    color: var(--ion-color-primary-variant-dark);
+  }
+
+  // Hover state (opacity-80 equivalent)
+  &:hover {
+    opacity: 0.8;
+  }
+
+  // Active state (scale-95 equivalent)
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Ensure proper layout distribution
+ion-toolbar {
+  ion-buttons {
+    flex: 0 0 auto;
+  }
+
+  ion-buttons[slot="start"] {
+    margin-inline-end: auto;
+  }
+
+  ion-buttons[slot="end"] {
+    margin-inline-start: auto;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 480px) {
+  .app-title {
+    font-size: clamp(24px, 5vw, 32px);
+  }
+}
