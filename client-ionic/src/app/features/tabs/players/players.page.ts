@@ -5,19 +5,12 @@ import {
   IonTitle,
   IonContent,
 } from '@ionic/angular/standalone';
-import { ExploreContainerComponent } from '../../../shared/components/explore-container/explore-container.component.js';
 
 @Component({
   selector: 'app-players',
   templateUrl: 'players.page.html',
   styleUrls: ['players.page.scss'],
-  imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    ExploreContainerComponent,
-  ],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent],
 })
 export class PlayersPage {
   constructor() {}
