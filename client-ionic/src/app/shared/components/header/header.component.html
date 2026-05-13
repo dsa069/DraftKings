@@ -2,14 +2,23 @@
   <ion-toolbar color="surface">
     <ion-buttons slot="start">
       <ion-button class="icon-button" fill="clear">
-        <ion-img class="logo" src="assets/icon/DK-logo.png" alt="DraftKings Logo"></ion-img>
+        <ion-img
+          class="logo"
+          src="assets/icon/DK-logo.png"
+          alt="DraftKings Logo"
+        ></ion-img>
       </ion-button>
     </ion-buttons>
 
     <ion-title class="app-title">DRAFTKINGS</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button class="icon-button" fill="clear">
+      <ion-button
+        (click)="goToLogin()"
+        aria-label="Log In"
+        class="icon-button"
+        fill="clear"
+      >
         <ion-icon
           slot="icon-only"
           name="log-in-outline"

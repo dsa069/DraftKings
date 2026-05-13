@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -8,7 +8,7 @@ import {
   IonIcon,
   IonImg,
 } from '@ionic/angular/standalone';
-
+import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { logInOutline, logOutOutline, footballOutline } from 'ionicons/icons';
 
@@ -28,11 +28,18 @@ import { logInOutline, logOutOutline, footballOutline } from 'ionicons/icons';
   ],
 })
 export class HeaderComponent {
+  private readonly navCtrl = inject(NavController);
+
   constructor() {
     addIcons({
       'log-in-outline': logInOutline,
       'log-out-outline': logOutOutline,
       'football-outline': footballOutline,
     });
+  }
+
+  goToLogin(): void {
+    //Si cierra sesión se limpia el stack
+    this.navCtrl.navigateRoot(['/login']);
   }
 }
