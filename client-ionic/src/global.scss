@@ -89,3 +89,9 @@ ion-content {
   color: var(--ion-color-on-surface-variant);
   margin: var(--spacing-stack-sm) 0 0 0;
 }
+
+@media (max-width: 480px) {
+  .login-wrapper {
+    max-width: 100%;
+  }
+}
