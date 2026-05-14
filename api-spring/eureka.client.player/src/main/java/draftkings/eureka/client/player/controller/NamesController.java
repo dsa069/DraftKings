@@ -20,6 +20,11 @@ public class NamesController {
     @Autowired
     NamesService namesService;
 
+    /**
+     * POST /names
+     * Obtiene y valida el nombre del jugador y la reseña.
+     * Body: {"playerName": "Juan", "reviewName": "Review1"}
+     */
     @PostMapping("/names")
     public ResponseEntity<String> insertName(@RequestBody String requestBody) {
         try {
@@ -29,6 +34,7 @@ public class NamesController {
             String playerName = jsonNode.has("playerName") ? jsonNode.get("playerName").asText() : null;
             String reviewName = jsonNode.has("reviewName") ? jsonNode.get("reviewName").asText() : null;
 
+            // Delegar lógica de negocio al servicio
             String playerResult = playerName != null ? namesService.getPlayerName(playerName) : null;
             String reviewResult = reviewName != null ? namesService.getReviewName(reviewName) : null;
 
@@ -46,7 +52,8 @@ public class NamesController {
     @GetMapping("/check")
     public ResponseEntity<String> checkPlayer(@RequestParam String playerName) {
         // Respuesta estática, sin llamadas a API
-        return new ResponseEntity<>("El jugador " + playerName + " existe en el sistema (respuesta estática)",
+        String playerResult = namesService.getPlayerName(playerName);
+        return new ResponseEntity<>("El jugador " + playerResult + " existe en el sistema (respuesta estática)",
                 HttpStatus.OK);
     }
 }

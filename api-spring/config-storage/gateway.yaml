@@ -3,6 +3,7 @@ server:
 
 eureka:
   instance:
+  # Rutas microservicios: http://localhost:8080/<microservice-name>/actuator/info
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
