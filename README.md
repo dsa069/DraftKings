@@ -105,20 +105,22 @@ El backend de Spring Boot implementa una arquitectura de microservicios distribu
   - CRUD completo de jugadores (Create, Read, Update, Delete)
   - Filtros avanzados (por posición, equipo, rendimiento, etc.)
   - Gestión de datos deportivos (estadísticas, goles, asistencias)
+  - **Control de comentarios en jugadores:** Relación 1:N con tabla `comments` se encarga de la comunicación con el micorservicio de reseñas y gestiona sus comentarios dado un jugador(comentarios específicos de jugadores)
+  - Cálculo de promedios de valoraciones para jugadores
   - Conexión directa a Base de Datos SQL (tabla: `players`)
 
 - **Dependencias:**
   - ✅ Se conecta a **Eureka** para registrarse
   - ✅ Se conecta a **Config Server** para obtener conexión a BD
-  - ✅ Se comunica con **Review MS** (cuando necesita datos de reseñas)
+  - ✅ Se comunica con **Review MS** (cuando necesita datos de reseñas de un jugador)
 
 #### **5. Review Microservice (Sistema de Reseñas y Valoraciones)**
 
-**Función:** Gestiona comentarios, valoraciones y reseñas de jugadores.
+**Función:** Gestiona reseñas generales, valoraciones y comentarios independientes del contexto de jugadores.
 
 - **Responsabilidades:**
-  - CRUD de comentarios y valoraciones (0-5 estrellas)
-  - Asociar reseñas a jugadores específicos
+  - CRUD de valoraciones generales (0-5 estrellas)
+  - Gestión de reseñas y comentarios independientes
   - Calcular promedio de valoraciones
   - Ordenar por más recientes, mejor valoradas, etc.
   - Conexión directa a Base de Datos SQL (tabla: `reviews`)
@@ -126,25 +128,7 @@ El backend de Spring Boot implementa una arquitectura de microservicios distribu
 - **Dependencias:**
   - ✅ Se conecta a **Eureka** para registrarse
   - ✅ Se conecta a **Config Server** para obtener conexión a BD
-  - ✅ Se comunica con **Player MS** (para validar que el jugador existe)
-
-#### **6. Manager Microservice (Orquestador de Operaciones Complejas)**
-
-**Función:** Orquesta operaciones complejas que requieren comunicación entre múltiples microservicios.
-
-- **Responsabilidades:**
-  - Gestión del "Equipo Ideal" (composición táctica)
-  - Valida la disponibilidad de jugadores consultando Player MS
-  - Verifica comenatrios consultando Review MS
-  - Realiza operaciones transaccionales entre servicios
-  - Implementa lógica de negocio de nivel superior
-
-- **Dependencias (críticas):**
-  - ✅ Se conecta a **Eureka** para registrarse
-  - ✅ Se conecta a **Config Server**
-  - ✅ **COMUNICA CON PLAYER MS** (obtener datos de jugadores)
-  - ✅ **COMUNICA CON REVIEW MS** (obtener valoraciones)
-  - Usa **Feign Client** para comunicación inter-microservicios y balancear la carga
+  - ✅ Se comunica con **Player MS** (para validar contextos de jugadores si aplica)
 
 ---
 
@@ -156,33 +140,26 @@ El backend de Spring Boot implementa una arquitectura de microservicios distribu
 
 ```
 1. Frontend (Ionic) → Gateway
-   GET /api/strategy/team/123
+   GET /api/gateway:8080/player/id/123/comentarios/234
 
 2. Gateway → Eureka
-   "¿Dónde está Manager MS?"
-   Respuesta: 192.168.1.5:8081
-
-3. Gateway → Manager MS
-   GET /strategy/team/123
-
-4. Manager MS → Eureka
    "¿Dónde está Player MS?"
-   Respuesta: 192.168.1.6:8082
+   Respuesta: 192.168.1.5:8090
 
-5. Manager MS → Player MS (via Feign)
-   GET /players/batch (IDs de los 11 jugadores)
-   Respuesta: Datos detallados de los jugadores
+3. Gateway → Player MS
+   GET /player/id/123/comentarios/234
+   Respuesta: Jugador Identificado
 
-6. Manager MS → Eureka
+4. Player MS → Eureka
    "¿Dónde está Review MS?"
-   Respuesta: 192.168.1.7:8083
+   Respuesta: 192.168.1.7:8091
 
-7. Manager MS → Review MS (via Feign)
-   GET /reviews/average/batch (promedio de valoraciones)
-   Respuesta: Puntuaciones de los 11 jugadores
+5. Player MS → Review MS (via Feign)
+   GET /comentarios/234 (Comentario del jugador)
+   Respuesta: Datos detallados del comentario del jugador
 
-8. Manager MS → Frontend (vía Gateway)
-   Respuesta completa: Equipo Ideal + Datos Jugadores + Valoraciones
+6. Player MS → Frontend (vía Gateway)
+   Respuesta completa: Comentario de un jugador específico
 ```
 
 ### **Ventajas de esta Arquitectura:**
@@ -323,7 +300,6 @@ La arquitectura de integración y despliegue continuo está diseñada para garan
 3. gateway                    → API Gateway para enrutamiento
 4. eureka.client.player       → Microservicio de Jugadores (con DB)
 5. eureka.client.review       → Microservicio de Reseñas (con DB)
-6. eureka.client.manager      → Microservicio de Administración
 ```
 
 **Flujo de Integración Continua (CI):**
