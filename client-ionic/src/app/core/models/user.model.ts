@@ -1,8 +1,7 @@
-export interface Player {
+export interface User {
   id: string;
   nombre: string;
-  equipo: string;
-  imagenUrl: string;
+  email: string;
   fechaAlta: Date;
   coordenadas?: {
     lat: number;
