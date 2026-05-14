@@ -35,7 +35,6 @@
         "java.configuration.updateBuildConfiguration": "automatic",
         "editor.formatOnSave": true,
         "vscode-postgresql-client.connections": [
-          //TO DO: Que se agregen automaticmante
           {
             "name": "DraftKings Local",
             "type": "PostgreSQL",
