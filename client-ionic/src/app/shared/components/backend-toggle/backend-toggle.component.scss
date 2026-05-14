@@ -1,0 +1,59 @@
+.selector-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.option-card {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--ion-color-surface-container-low);
+  border: 1px solid var(--ion-color-outline);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-align: center;
+
+  .option-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    color: var(--ion-color-on-surface-variant);
+  }
+
+  .option-title {
+    font-family: var(--font-family-label-bold);
+    font-size: 14px;
+    color: var(--ion-color-on-surface);
+    margin-bottom: 2px;
+  }
+
+  .option-description {
+    font-size: 9px;
+    font-family: var(--font-family-body-md);
+    color: var(--ion-color-on-surface-variant);
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  /* Estado Activo */
+  &.active {
+    border-color: var(--ion-color-pitch-green);
+    background: rgba(var(--ion-color-pitch-green-rgb, 77, 253, 133), 0.05);
+    box-shadow: 0 0 0 1px var(--ion-color-pitch-green);
+
+    .option-icon,
+    .option-title {
+      color: var(--ion-color-pitch-green);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}

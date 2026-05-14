@@ -1,0 +1,21 @@
+<div class="selector-container">
+  <div
+    class="option-card"
+    [class.active]="selected === 'node'"
+    (click)="select('node')"
+  >
+    <ion-icon name="logo-nodejs" class="option-icon"></ion-icon>
+    <span class="option-title">Node.js</span>
+    <span class="option-description">Fast JS Runtime</span>
+  </div>
+
+  <div
+    class="option-card"
+    [class.active]="selected === 'springboot'"
+    (click)="select('springboot')"
+  >
+    <ion-icon name="leaf-outline" class="option-icon"></ion-icon>
+    <span class="option-title">Spring Boot</span>
+    <span class="option-description">Robust Java API</span>
+  </div>
+</div>

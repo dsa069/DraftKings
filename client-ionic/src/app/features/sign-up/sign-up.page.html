@@ -137,6 +137,15 @@
             </ion-button>
           </ion-item>
         </div>
+
+        <!-- Backend Selector -->
+        <app-backend-toggle
+          [selected]="selectedBackend"
+          (selectionChange)="selectedBackend = $event"
+        >
+        </app-backend-toggle>
+
+        <!-- Submit Button -->
         <ion-button type="submit" expand="block" class="login-button">
           Enter the Draft
           <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
