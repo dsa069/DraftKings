@@ -3,7 +3,6 @@ server:
 
 eureka:
   instance:
-    hostname: localhost
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
