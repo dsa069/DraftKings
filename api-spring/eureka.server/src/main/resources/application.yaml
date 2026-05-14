@@ -37,7 +37,7 @@ server:
   port: ${PORT:8080}
 info:
   application:
-    description: DraftKings manager microservice in dev profile
+    description: DraftKings eureka server microservice in dev profile
 ---
 spring:
   config:
@@ -49,4 +49,4 @@ server:
   port: ${PORT:8080}
 info:
   application:
-    description: DraftKings manager microservice in prod profile
+    description: DraftKings eureka server microservice in prod profile
