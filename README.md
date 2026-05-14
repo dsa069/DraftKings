@@ -482,7 +482,7 @@ El deployment de CORBA es **más complejo** que otros servicios debido a infraes
 
 ---
 
-## �📱 Flujo de Pantallas y Componentes
+## 📱 Flujo de Pantallas y Componentes
 
 ### 1. Autenticación (Sin Tab Bar)
 - **Vista Login:** Formulario de acceso con logo, campos de email/password y botón de acción. Enlace a registro.
@@ -518,6 +518,31 @@ El deployment de CORBA es **más complejo** que otros servicios debido a infraes
     - Switch/Toggle para cambio de Idioma Español/Ingles.
     - Switch/Toggle para Modo Claro / Modo Oscuro.
 
+---
+## 🏭 Implementación Patrones Factory/Strategy
+
+Para garantizar la escalabilidad y permitir que la aplicación conmute entre diferentes orígenes de datos (Backend en **Node.js** o **Spring Boot**), se ha implementado una arquitectura desacoplada basada en patrones de diseño clásicos y reactividad moderna.
+
+### Arquitectura de Capas
+
+El flujo de datos sigue una jerarquía estricta para asegurar el principio de responsabilidad única:
+
+1.  **Vistas (Pages/Components):** Consumen el servicio a través de una **clase abstracta**. No conocen si los datos vienen de Node o Spring.
+2.  **ConfigService:** Es la "fuente de verdad". Gestiona la preferencia del usuario mediante **Signals** de Angular y persiste la elección en `localStorage`.
+3.  **Factories:** Funciones puras encargadas de la instanciación. Deciden qué implementación crear basándose en el estado del `ConfigService`.
+4.  **Clase Abstracta (Contrato):** Define la estructura de los métodos (CRUD) y centraliza la lógica común, utilizando la función `inject()` para la gestión de dependencias.
+5.  **Implementaciones (Estrategias):** Clases específicas que heredan de la abstracta y definen detalles particulares como la `apiUrl`.
+
+
+
+### Flujo de Ejecución
+
+El proceso de cambio de backend se realiza de forma atómica para mantener la integridad de los datos:
+
+* **Selección:** El usuario elige el backend en el `BackendToggleComponent` (dentro de Login o Registro).
+* **Confirmación:** Al pulsar el botón de acción (Login/Register), se invoca al `ConfigService`.
+* **Persistencia y Reset:** Si el backend ha cambiado, el servicio guarda la nueva configuración y dispara un `window.location.reload()`.
+* **Inyección Dinámica:** Al reiniciar la app, el motor de **Inyección de Dependencias** de Angular ejecuta la **Factory** en el `main.ts`, la cual provee la implementación correcta a toda la aplicación.
 ---
 
 ## 📦 Instalación y Configuración
