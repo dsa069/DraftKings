@@ -10,6 +10,7 @@
 # Eclipse / Java IDE metadata
 /.settings/
 *.launch
+.project
 
 # OS / editor noise
 .DS_Store
