@@ -12,6 +12,7 @@ import {
   IonLabel,
   IonButton,
   IonIcon,
+  IonBackButton,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -20,8 +21,10 @@ import {
   mailOutline,
   lockClosedOutline,
   arrowForwardOutline,
+  arrowBack,
   eyeOutline,
   eyeOffOutline,
+  gameController,
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 
@@ -38,6 +41,7 @@ import { LoginCardComponent } from '../../shared/components/login-card/login-car
     IonLabel,
     IonButton,
     IonIcon,
+    IonBackButton,
     LoginCardComponent,
   ],
 })
@@ -54,8 +58,10 @@ export class SignUpPage implements OnInit {
       mailOutline,
       lockClosedOutline,
       arrowForwardOutline,
+      arrowBack,
       eyeOutline,
       eyeOffOutline,
+      gameController,
     });
   }
 
@@ -76,12 +82,14 @@ export class SignUpPage implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  onRegister() {
-    // Handle registration logic here
+  onRegister(): void {
+    if (this.signUpForm.valid) {
+      // Handle registration logic here
+    }
     this.navCtrl.navigateRoot('/tabs/players');
   }
 
-  gotoLogin() {
+  gotoLogin(): void {
     this.navCtrl.navigateRoot('/login');
   }
 }
