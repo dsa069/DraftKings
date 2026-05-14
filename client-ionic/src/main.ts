@@ -13,7 +13,7 @@ import {
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 
 import { PlayerService } from './app/core/services/implementations/player.service';
 import { playerFactory } from './app/core/services/factory/player.factory';
@@ -37,17 +37,17 @@ bootstrapApplication(AppComponent, {
     {
       provide: PlayerService, // Cuando un componente pida la clase abstracta...
       useFactory: playerFactory, // ...Angular ejecutará esta función...
-      deps: [HttpClient, ConfigService], // ...pasándole lo que necesita.
+      deps: [ConfigService], // ...pasándole lo que necesita.
     },
     {
       provide: ReviewService,
       useFactory: reviewFactory,
-      deps: [HttpClient, ConfigService],
+      deps: [ConfigService],
     },
     {
       provide: AuthService,
       useFactory: authFactory,
-      deps: [HttpClient, ConfigService],
+      deps: [ConfigService],
     },
   ],
 });

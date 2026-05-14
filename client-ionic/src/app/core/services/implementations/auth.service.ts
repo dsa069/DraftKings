@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../../models/user.model';
+import { Injectable, inject } from '@angular/core';
 
+@Injectable()
 export abstract class AuthService {
   protected abstract apiUrl: string; // Cada hijo dirá su URL
 
-  constructor(protected http: HttpClient) {}
+  protected http = inject(HttpClient);
 
   getUser(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/users`);
