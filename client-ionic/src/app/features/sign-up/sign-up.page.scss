@@ -30,20 +30,23 @@
 .hero-gradient-vertical {
   position: absolute;
   inset: 0;
+  /* Fundimos a sólido justo al 75% para que coincida con el margen negativo (-64px) de tu contenido */
   background: linear-gradient(
-    to top,
-    var(--ion-color-surface) 0%,
-    rgba(var(--ion-color-surface-rgb), 0.8) 50%,
-    transparent 100%
+    to bottom,
+    transparent 0%,
+    transparent 10%,
+    var(--ion-color-surface) 75%,
+    var(--ion-color-surface) 100%
   );
 }
 
 .hero-gradient-horizontal {
   position: absolute;
   inset: 0;
+  /* Evitamos el uso de -rgb aquí también por seguridad usando color-mix (soportado nativamente) */
   background: linear-gradient(
     to right,
-    rgba(var(--ion-color-surface-rgb), 0.5) 0%,
+    color-mix(in srgb, var(--ion-color-surface) 50%, transparent) 0%,
     transparent 100%
   );
 }
