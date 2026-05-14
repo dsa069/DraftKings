@@ -1,23 +1,30 @@
-.selector-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.selector-grid {
   margin: 16px 0;
 }
 
-.option-card {
+.option-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  margin: 0;
+  width: 100%;
   aspect-ratio: 1 / 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
+  height: auto;
+
+  // Contenedor visual (simulando la card de antes)
   background: var(--ion-color-surface-container-low);
-  border: 1px solid var(--ion-color-outline);
+  border: 2px solid var(--ion-color-outline);
   border-radius: var(--border-radius-lg);
-  cursor: pointer;
   transition: all 0.2s ease-in-out;
-  text-align: center;
+
+  .button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
 
   .option-icon {
     font-size: 32px;
@@ -26,6 +33,7 @@
   }
 
   .option-title {
+    display: block;
     font-family: var(--font-family-label-bold);
     font-size: 14px;
     color: var(--ion-color-on-surface);
@@ -33,6 +41,7 @@
   }
 
   .option-description {
+    display: block;
     font-size: 9px;
     font-family: var(--font-family-body-md);
     color: var(--ion-color-on-surface-variant);
@@ -51,9 +60,5 @@
     .option-title {
       color: var(--ion-color-pitch-green);
     }
-  }
-
-  &:active {
-    transform: scale(0.96);
   }
 }

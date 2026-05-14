@@ -1,26 +1,43 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonIcon } from '@ionic/angular/standalone';
+import {
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonButton,
+  IonIcon,
+  IonLabel,
+  IonText,
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { logoNodejs, leafOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-backend-toggle',
   standalone: true,
-  imports: [CommonModule, IonIcon],
+  imports: [
+    CommonModule,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonButton,
+    IonIcon,
+    IonLabel,
+    IonText,
+  ],
   templateUrl: './backend-toggle.component.html',
   styleUrls: ['./backend-toggle.component.scss'],
 })
 export class BackendToggleComponent {
-  @Input() selected: 'node' | 'springboot' = 'node';
-  @Output() selectionChange = new EventEmitter<'node' | 'springboot'>();
+  @Input() isNodeSelected: boolean = true;
+  @Output() selectionChange = new EventEmitter<boolean>();
 
   constructor() {
     addIcons({ logoNodejs, leafOutline });
   }
 
-  select(option: 'node' | 'springboot') {
-    this.selected = option;
-    this.selectionChange.emit(option);
+  select(value: boolean) {
+    this.isNodeSelected = value;
+    this.selectionChange.emit(value);
   }
 }

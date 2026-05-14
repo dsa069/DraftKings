@@ -53,6 +53,14 @@
           </ion-item>
         </div>
 
+        <!-- Backend Selector -->
+        <app-backend-toggle
+          [isNodeSelected]="isNodeSelected"
+          (selectionChange)="isNodeSelected = $event"
+        >
+        </app-backend-toggle>
+
+        <!-- Submit Button -->
         <ion-button type="submit" expand="block" class="login-button">
           Login
           <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>

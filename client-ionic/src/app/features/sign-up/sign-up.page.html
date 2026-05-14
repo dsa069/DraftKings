@@ -140,8 +140,8 @@
 
         <!-- Backend Selector -->
         <app-backend-toggle
-          [selected]="selectedBackend"
-          (selectionChange)="selectedBackend = $event"
+          [isNodeSelected]="isNodeSelected"
+          (selectionChange)="isNodeSelected = $event"
         >
         </app-backend-toggle>
 
