@@ -25,5 +25,8 @@ import { HeaderComponent } from '../../shared/components/header/header.component
 export class PlayerDetailPage implements OnInit {
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Temporal para que el linter no de error
+    console.log('PlayerDetailPage inicializado');
+  }
 }

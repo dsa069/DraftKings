@@ -8,11 +8,11 @@ import {
 } from '@ionic/angular/standalone';
 
 describe('LoginCardComponent', () => {
-  it('should render title', () => {
+  it('should render card', () => {
     cy.mount(LoginCardComponent, {
       imports: [IonContent, IonHeader, IonTitle, IonToolbar],
     });
 
-    cy.get('ion-title').should('exist');
+    cy.get('ion-card').should('exist');
   });
 });
