@@ -26,7 +26,7 @@ import {
   gameControllerOutline,
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
-
+import { BackendToggleComponent } from '../../shared/components/backend-toggle/backend-toggle.component';
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.page.html',
@@ -42,11 +42,13 @@ import { LoginCardComponent } from '../../shared/components/login-card/login-car
     IonIcon,
     IonBackButton,
     LoginCardComponent,
+    BackendToggleComponent,
   ],
 })
 export class SignUpPage implements OnInit {
   showPassword: boolean = false;
   signUpForm!: FormGroup;
+  selectedBackend: 'node' | 'springboot' = 'node';
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly navCtrl = inject(NavController);
