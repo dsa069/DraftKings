@@ -1,149 +1,189 @@
 @use "../../../theme/variables.scss" as *;
 
-/* ==========================================================================
-   1. CONTENEDOR Y CABECERA (HERO / BRANDING)
-   ========================================================================== */
-.sign-up-container {
+.sign-up-page {
   --background: var(--ion-color-surface);
-  --padding-top: 0;
-  --padding-bottom: var(--spacing-stack-lg);
-  --padding-left: 0;
-  --padding-right: 0;
-  -webkit-font-smoothing: antialiased;
-  color: var(--ion-color-on-surface);
-  overflow-x: hidden;
-
-  ::selection {
-    background-color: var(--ion-color-primary);
-    opacity: 0.3;
-    color: var(--ion-color-sideline-black);
-  }
+  font-family: var(--font-family-sans);
 }
 
-.sign-up-header {
+/* 1. Hero Section */
+.hero-container {
   position: relative;
-  height: 14rem;
+  height: 224px; // h-56
   width: 100%;
   background-color: var(--ion-color-surface-container-lowest);
   overflow: hidden;
-  flex-shrink: 0;
-  z-index: 1;
 
   @media (min-width: 768px) {
-    height: 18rem;
+    height: 288px; // h-72
   }
 }
 
-.header-background {
+.hero-image {
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  background-blend-mode: screen;
-  background-image: var(--header-bg-image);
+  filter: saturate(0.5); // mix-blend-luminosity aproximado
 }
 
-.header-gradient-top,
-.header-gradient-side {
+.hero-gradient-vertical {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  background: linear-gradient(
+    to top,
+    var(--ion-color-surface) 0%,
+    rgba(var(--ion-color-surface-rgb), 0.8) 50%,
+    transparent 100%
+  );
 }
 
-.header-back-button {
+.hero-gradient-horizontal {
   position: absolute;
-  top: var(--spacing-stack-md);
-  left: var(--spacing-stack-md);
-  z-index: 3;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(var(--ion-color-surface-rgb), 0.5) 0%,
+    transparent 100%
+  );
+}
 
-  .back-btn {
-    --background: rgba(35, 44, 35, 0.6);
-    --background-hover: var(--ion-color-surface-container-highest);
-    --background-activated: var(--ion-color-surface-container-highest);
-    --color: var(--ion-color-chalk-white);
-    --color-hover: var(--ion-color-primary);
-    --color-activated: var(--ion-color-primary);
-    --border-radius: 9999px;
-    --padding-start: 10px;
-    --padding-end: 10px;
-    --padding-top: 10px;
-    --padding-bottom: 10px;
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(60, 74, 60, 0.3);
-    backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
+/* 2. Botón Back Circular */
+.back-button-container {
+  position: absolute;
+  top: var(--spacing-margin-mobile);
+  left: var(--spacing-margin-mobile);
+  z-index: 20;
+}
 
-    ion-icon {
-      font-size: 20px;
-    }
+.circular-back-btn {
+  --background: rgba(var(--ion-color-surface-container-high-rgb), 0.6);
+  --color: var(--ion-color-chalk-white);
+  --border-radius: 50%;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: rgba(var(--ion-color-outline-variant-rgb), 0.3);
+  backdrop-filter: blur(12px);
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  transition: all 0.2s ease;
 
-    &:active {
-      transform: scale(0.95);
-    }
+  &::part(native) {
+    padding: 0;
+  }
+
+  &:hover {
+    --color: var(--ion-color-primary);
+    --background: var(--ion-color-surface-container-highest);
   }
 }
 
-/* ==========================================================================
-   2. ENVOLTORIO PRINCIPAL Y TEXTOS (FUERA DE LA TARJETA)
-   ========================================================================== */
-.sign-up-wrapper {
-  padding: 0 var(--spacing-margin-mobile);
-}
-
-.branding-section {
+/* 3. Branding & Layout */
+.registration-main {
+  position: relative;
+  z-index: 10;
+  margin-top: -64px; // -mt-16
+  padding: 0 var(--spacing-margin-mobile) var(--spacing-stack-lg);
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-stack-sm);
-  margin-top: var(--spacing-stack-md);
+
+  @media (min-width: 768px) {
+    margin-top: -96px; // -mt-24
+  }
+}
+
+.branding-header {
   margin-bottom: var(--spacing-stack-lg);
 }
 
-.draft-badge {
+.badge-draft {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: rgba(
-    var(--ion-color-primary-rgb, 0, 255, 0),
-    0.1
-  ); /* Fallback si falla la var rgb */
-  padding: 4px 8px;
-  border-radius: var(--border-radius-sm);
-  width: fit-content;
+  gap: 8px;
+  background: rgba(var(--ion-color-surface-container-high-rgb), 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  margin-bottom: var(--spacing-stack-sm);
 
-  ion-icon {
+  .badge-icon {
     color: var(--ion-color-primary);
     font-size: 14px;
   }
 
   .badge-text {
-    color: var(--ion-color-primary);
-    font-size: 12px;
+    font-family: var(--font-family-label-bold);
+    font-size: 10px;
     font-weight: bold;
+    color: var(--ion-color-on-surface);
     text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
 }
 
-.sign-up-title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: var(--ion-color-on-surface);
-  margin: 0;
-  line-height: 1.2;
+.hero-title {
+  font-family: var(--font-family-display-lg);
+  font-size: var(--font-size-display-lg);
+  color: var(--ion-color-chalk-white);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 0 0 4px 0;
 
-  .highlight-text {
+  .hero-title-highlight {
     color: var(--ion-color-primary);
+    filter: drop-shadow(0 0 12px rgba(77, 253, 133, 0.3));
   }
 }
 
-.sign-up-subtitle {
-  font-size: 0.9rem;
+.hero-description {
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
   color: var(--ion-color-on-surface-variant);
+  max-width: 280px;
   margin: 0;
-  line-height: 1.4;
 }
 
+/* 4. Estilos específicos para el formulario dentro de la Card */
+.main-submit-btn {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-on-primary);
+  --border-radius: var(--border-radius-lg);
+  font-family: var(--font-family-label-bold);
+  margin-top: var(--spacing-stack-md);
+  height: 56px;
+  text-transform: none;
+}
+
+.field-wrapper {
+  margin-bottom: var(--spacing-stack-md);
+
+  .field-label {
+    font-family: var(--font-family-label-bold);
+    color: var(--ion-color-on-surface);
+    font-size: 12px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .field-item {
+    --background: var(--ion-color-surface-container);
+    --border-radius: var(--border-radius-md);
+    --padding-start: 12px;
+    --inner-padding-end: 12px;
+
+    ion-icon {
+      color: var(--ion-color-on-surface-variant);
+      margin-right: 8px;
+    }
+  }
+}
 /* ==========================================================================
    3. REQUISITOS DE CONTRASEÑA (ÚNICO ESTILO PERMITIDO PARA EL FORM)
    ========================================================================== */
