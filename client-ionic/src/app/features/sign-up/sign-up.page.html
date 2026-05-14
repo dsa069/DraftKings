@@ -1,41 +1,38 @@
-<ion-content class="login-container">
-  <!-- Hero Header Section -->
-  <div class="sign-up-header">
+<ion-content class="sign-up-page">
+  <div class="hero-container">
     <div
-      class="header-background"
-      data-alt="A dramatic, high-contrast, low-light photograph of a professional sports stadium at night. The floodlights cast intense beams through a slight mist, illuminating the vibrant green turf of the pitch. Deep shadows create a moody, high-stakes, competitive atmosphere, aligning with a modern sports technology aesthetic. The color palette relies heavily on deep, pitch blacks, stadium greys, and striking accents of neon turf green."
+      class="hero-image"
+      style="background-image: url(&quot;assets/stadium-bg.jpg&quot;)"
     ></div>
 
-    <!-- Gradient overlays for seamless blend -->
-    <div class="header-gradient-top"></div>
-    <div class="header-gradient-side"></div>
+    <div class="hero-gradient-vertical"></div>
+    <div class="hero-gradient-horizontal"></div>
 
-    <!-- Back Button -->
-    <div class="header-back-button">
-      <ion-back-button class="back-btn" defaultHref="/"></ion-back-button>
+    <div class="back-button-container">
+      <ion-back-button
+        defaultHref="/"
+        class="circular-back-btn"
+      ></ion-back-button>
     </div>
   </div>
 
-  <!-- Main Content -->
-  <div class="login-wrapper">
-    <!-- Branding Section -->
-    <div class="branding-section">
-      <div class="draft-badge">
-        <ion-icon name="game-controller"></ion-icon>
+  <main class="registration-main">
+    <div class="branding-header">
+      <div class="badge-draft">
+        <ion-icon name="game-controller-outline" class="badge-icon"></ion-icon>
         <span class="badge-text">New Player Draft</span>
       </div>
 
-      <h1 class="sign-up-title">
+      <h1 class="hero-title">
         Build Your<br />
-        <span class="highlight-text">Squad</span>
+        <span class="hero-title-highlight">Squad</span>
       </h1>
 
-      <p class="sign-up-subtitle">
+      <p class="hero-description">
         Create your DraftKings account to manage rosters, track stats, and
         dominate the league.
       </p>
     </div>
-
     <!-- Registration Card -->
     <app-login-card
       footerText="Already on the roster?"
@@ -146,5 +143,5 @@
         </ion-button>
       </form>
     </app-login-card>
-  </div>
+  </main>
 </ion-content>
