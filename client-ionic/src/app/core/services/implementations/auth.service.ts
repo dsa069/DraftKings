@@ -1,0 +1,14 @@
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { User } from '../../models/user.model';
+
+export abstract class AuthService {
+  protected abstract apiUrl: string; // Cada hijo dirá su URL
+
+  constructor(protected http: HttpClient) {}
+
+  getUser(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/users`);
+  }
+  // ... el resto de métodos CRUD aquí una sola vez
+}
