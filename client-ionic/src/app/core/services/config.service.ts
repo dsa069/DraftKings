@@ -1,18 +1,32 @@
-// src/app/core/services/config.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, signal, Signal } from '@angular/core';
 
-export type BackendType = 'NODE' | 'SPRING'; //| 'FIREBASE' | 'MOCK'; // Preparado para el futuro
+export type BackendType = 'node' | 'springboot';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
   private readonly BACKEND_KEY = 'selected_backend';
 
-  getBackendType(): BackendType {
+  // 1. Señal privada con el valor inicial del localStorage
+  private _selectedBackend = signal<BackendType>(this.getSavedBackend());
+
+  // 2. Vista pública readonly para los componentes
+  public selectedBackend: Signal<BackendType> =
+    this._selectedBackend.asReadonly();
+
+  private getSavedBackend(): BackendType {
     const type = localStorage.getItem(this.BACKEND_KEY) as BackendType;
-    return type || 'NODE'; // 'NODE' como valor por defecto
+    return type || 'node';
   }
 
-  setBackendType(type: BackendType): void {
-    localStorage.setItem(this.BACKEND_KEY, type);
+  /**
+   * Solo guarda y reinicia si el backend elegido es distinto al actual.
+   */
+  applyBackendChange(newType: BackendType): void {
+    if (newType !== this._selectedBackend()) {
+      localStorage.setItem(this.BACKEND_KEY, newType);
+      console.log(`Backend cambiado a ${newType}, recargando aplicación...`);
+      // No actualizamos la señal aquí porque el reload reiniciará todo el estado de la app
+      window.location.reload();
+    }
   }
 }

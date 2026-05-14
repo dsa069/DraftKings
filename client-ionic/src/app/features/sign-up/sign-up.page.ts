@@ -26,6 +26,8 @@ import {
   gameControllerOutline,
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
+import { ConfigService, BackendType } from '../../core/services/config.service';
+
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.page.html',
@@ -44,12 +46,13 @@ import { LoginCardComponent } from '../../shared/components/login-card/login-car
   ],
 })
 export class SignUpPage implements OnInit {
-  showPassword: boolean = false;
-  signUpForm!: FormGroup;
-  selectedBackend: 'node' | 'springboot' = 'node';
-
   private readonly formBuilder = inject(FormBuilder);
   private readonly navCtrl = inject(NavController);
+  private readonly configService = inject(ConfigService);
+
+  showPassword: boolean = false;
+  signUpForm!: FormGroup;
+  selectedBackend: BackendType = this.configService.selectedBackend();
 
   constructor() {
     addIcons({
@@ -82,9 +85,14 @@ export class SignUpPage implements OnInit {
 
   onRegister(): void {
     if (this.signUpForm.valid) {
-      // Handle registration logic here
+      // Confirmamos la elección del backend al registrarse
+      this.configService.applyBackendChange(this.selectedBackend);
+
+      console.log('Registro completado en:', this.selectedBackend);
+      this.navCtrl.navigateRoot('/tabs/players');
+    } else {
+      console.log('Formulario de registro no válido');
     }
-    this.navCtrl.navigateRoot('/tabs/players');
   }
 
   gotoLogin(): void {

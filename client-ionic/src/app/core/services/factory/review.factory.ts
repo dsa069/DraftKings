@@ -3,14 +3,14 @@ import { ReviewNodeService } from '../abstract/review-node.service';
 import { ReviewSpringService } from '../abstract/review-spring.service';
 
 export function reviewFactory(config: ConfigService) {
-  const selected = config.getBackendType();
+  // CORRECCIÓN: Usar la señal pública
+  const selected = config.selectedBackend();
 
   switch (selected) {
-    case 'SPRING':
+    case 'springboot': // Asegúrate de que coincida con tu BackendType
       return new ReviewSpringService();
-    //case 'FIREBASE':
-    // return new ReviewFirebaseService(); <-- Fácil de añadir
-    case 'NODE':
+    // case 'firebase': // Si en el futuro quieres agregar Firebase, aquí iría el caso
+    case 'node':
     default:
       return new ReviewNodeService();
   }
