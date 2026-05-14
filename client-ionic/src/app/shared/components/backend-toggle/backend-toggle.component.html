@@ -4,8 +4,8 @@
       <ion-button
         fill="none"
         class="option-button"
-        [class.active]="isNodeSelected"
-        (click)="select(true)"
+        [class.active]="selectedBackend === 'node'"
+        (click)="select('node')"
       >
         <ion-label class="button-content">
           <ion-icon name="logo-nodejs" class="option-icon"></ion-icon>
@@ -19,8 +19,8 @@
       <ion-button
         fill="none"
         class="option-button"
-        [class.active]="!isNodeSelected"
-        (click)="select(false)"
+        [class.active]="selectedBackend === 'springboot'"
+        (click)="select('springboot')"
       >
         <ion-label class="button-content">
           <ion-icon name="leaf-outline" class="option-icon"></ion-icon>

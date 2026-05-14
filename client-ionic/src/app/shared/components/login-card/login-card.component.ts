@@ -33,13 +33,13 @@ export class LoginCardComponent {
   @Input() footerText: string = '';
   @Input() footerActionText: string = '';
 
-  // Nuevos Inputs para abstracción
-  @Input() isNodeSelected: boolean = true;
+  // Backend selection abstraction
+  @Input() selectedBackend: 'node' | 'springboot' = 'node';
   @Input() submitText: string = 'Confirm';
   @Input() formId: string = ''; // ID del formulario en el padre
 
   @Output() footerActionClick = new EventEmitter<void>();
-  @Output() backendChange = new EventEmitter<boolean>();
+  @Output() backendChange = new EventEmitter<'node' | 'springboot'>();
 
   constructor() {
     addIcons({ arrowForwardOutline });
@@ -49,7 +49,7 @@ export class LoginCardComponent {
     this.footerActionClick.emit();
   }
 
-  onBackendChange(val: boolean) {
+  onBackendChange(val: 'node' | 'springboot') {
     this.backendChange.emit(val);
   }
 }

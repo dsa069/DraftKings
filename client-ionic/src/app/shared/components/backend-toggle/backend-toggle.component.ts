@@ -29,15 +29,15 @@ import { logoNodejs, leafOutline } from 'ionicons/icons';
   styleUrls: ['./backend-toggle.component.scss'],
 })
 export class BackendToggleComponent {
-  @Input() isNodeSelected: boolean = true;
-  @Output() selectionChange = new EventEmitter<boolean>();
+  @Input() selectedBackend: 'node' | 'springboot' = 'node';
+  @Output() selectionChange = new EventEmitter<'node' | 'springboot'>();
 
   constructor() {
     addIcons({ logoNodejs, leafOutline });
   }
 
-  select(value: boolean) {
-    this.isNodeSelected = value;
-    this.selectionChange.emit(value);
+  select(backend: 'node' | 'springboot') {
+    this.selectedBackend = backend;
+    this.selectionChange.emit(backend);
   }
 }
