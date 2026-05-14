@@ -48,7 +48,7 @@ import { BackendToggleComponent } from '../../shared/components/backend-toggle/b
 export class SignUpPage implements OnInit {
   showPassword: boolean = false;
   signUpForm!: FormGroup;
-  selectedBackend: 'node' | 'springboot' = 'node';
+  isNodeSelected: boolean = true;
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly navCtrl = inject(NavController);
