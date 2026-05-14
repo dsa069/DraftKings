@@ -23,6 +23,7 @@ import {
 } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
+import { ConfigService, BackendType } from '../../core/services/config.service';
 
 @Component({
   selector: 'app-login',
@@ -41,12 +42,13 @@ import { LoginCardComponent } from '../../shared/components/login-card/login-car
   ],
 })
 export class LoginPage implements OnInit {
-  loginForm!: FormGroup;
-  showPassword: boolean = false;
-  selectedBackend: 'node' | 'springboot' = 'node';
-
   private readonly formBuilder = inject(FormBuilder);
   private readonly navCtrl = inject(NavController);
+  private readonly configService = inject(ConfigService);
+
+  loginForm!: FormGroup;
+  showPassword: boolean = false;
+  selectedBackend: BackendType = this.configService.selectedBackend();
 
   constructor() {
     addIcons({
@@ -75,11 +77,15 @@ export class LoginPage implements OnInit {
 
   onLogin(): void {
     if (this.loginForm.valid) {
-      const credentials = this.loginForm.value;
-      console.log('Login attempt:', credentials);
-      // TODO: Implementar lógica de autenticación
+      // 1. Aplicamos el cambio de backend (esto disparará el reload si ha cambiado)
+      this.configService.applyBackendChange(this.selectedBackend);
+
+      // 2. Si no hay reload (porque ya era ese backend), procedemos con la lógica
+      console.log('Procediendo con login en:', this.selectedBackend);
+      this.navCtrl.navigateRoot(['/tabs/players']);
+    } else {
+      console.log('Formulario de login no válido');
     }
-    this.navCtrl.navigateRoot(['/tabs/players']);
   }
 
   gotoSignUp(): void {
