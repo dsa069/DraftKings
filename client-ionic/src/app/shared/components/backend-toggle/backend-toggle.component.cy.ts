@@ -8,11 +8,11 @@ import {
 } from '@ionic/angular/standalone';
 
 describe('BackendToggleComponent', () => {
-  it('should render title', () => {
+  it('should render button', () => {
     cy.mount(BackendToggleComponent, {
       imports: [IonContent, IonHeader, IonTitle, IonToolbar],
     });
 
-    cy.get('ion-title').should('exist');
+    cy.get('ion-button').should('exist');
   });
 });
