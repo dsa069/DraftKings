@@ -37,11 +37,11 @@
     <app-login-card
       footerText="Already on the roster?"
       footerActionText="Log In"
-      [isNodeSelected]="isNodeSelected"
+      [selectedBackend]="selectedBackend"
       [submitText]="'Enter the Draft'"
       [formId]="'signUpFormId'"
       (footerActionClick)="gotoLogin()"
-      (backendChange)="isNodeSelected = $event"
+      (backendChange)="selectedBackend = $event"
     >
       <form
         [formGroup]="signUpForm"

@@ -8,11 +8,11 @@
     <app-login-card
       footerText="New to the game?"
       footerActionText="Create an account"
-      [isNodeSelected]="isNodeSelected"
+      [selectedBackend]="selectedBackend"
       [submitText]="'Login'"
       [formId]="'loginFormId'"
       (footerActionClick)="gotoSignUp()"
-      (backendChange)="isNodeSelected = $event"
+      (backendChange)="selectedBackend = $event"
     >
       <form (ngSubmit)="onLogin()" [formGroup]="loginForm" id="loginFormId">
         <div class="form-group">

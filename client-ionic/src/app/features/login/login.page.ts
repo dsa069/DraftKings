@@ -43,7 +43,7 @@ import { LoginCardComponent } from '../../shared/components/login-card/login-car
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;
   showPassword: boolean = false;
-  isNodeSelected: boolean = true;
+  selectedBackend: 'node' | 'springboot' = 'node';
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly navCtrl = inject(NavController);
