@@ -8,11 +8,11 @@ import {
 } from '@ionic/angular/standalone';
 
 describe('PlayerDetailPage', () => {
-  it('should render app login card', () => {
+  it('should render title', () => {
     cy.mount(PlayerDetailPage, {
       imports: [IonContent, IonHeader, IonTitle, IonToolbar],
     });
 
-    cy.get('app-login-card').should('exist');
+    cy.get('ion-title').should('exist');
   });
 });
