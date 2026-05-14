@@ -9,14 +9,17 @@ public class NamesServiceImpl implements NamesService {
     @Autowired
     private ReviewClient reviewClient;
 
+    @Override
     public String getPlayerName(String playerName) {
         try {
-            return null; // Placeholder implementation
+            // Devolver el nombre tal como se recibe (testing mode)
+            return playerName;
         } catch (Exception e) {
             return null;
         }
     }
 
+    @Override
     public String getReviewName(String reviewName) {
         try {
             return reviewClient.checkReview(reviewName);
