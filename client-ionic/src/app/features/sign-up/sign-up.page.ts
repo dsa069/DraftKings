@@ -21,10 +21,9 @@ import {
   mailOutline,
   lockClosedOutline,
   arrowForwardOutline,
-  arrowBack,
   eyeOutline,
   eyeOffOutline,
-  gameController,
+  gameControllerOutline,
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 
@@ -58,10 +57,9 @@ export class SignUpPage implements OnInit {
       mailOutline,
       lockClosedOutline,
       arrowForwardOutline,
-      arrowBack,
       eyeOutline,
       eyeOffOutline,
-      gameController,
+      gameControllerOutline,
     });
   }
 
