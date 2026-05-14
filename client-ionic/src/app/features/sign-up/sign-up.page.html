@@ -1,16 +1,49 @@
-<ion-content class="login-container">
-  <div class="login-wrapper">
-    <header class="login-header">
-      <h1 class="login-title">DRAFTKINGS</h1>
-      <p class="login-subtitle">Enter the arena. Manage your squad.</p>
-    </header>
+<ion-content class="sign-up-container">
+  <!-- Hero Header Section -->
+  <div class="sign-up-header">
+    <div
+      class="header-background"
+      data-alt="A dramatic, high-contrast, low-light photograph of a professional sports stadium at night. The floodlights cast intense beams through a slight mist, illuminating the vibrant green turf of the pitch. Deep shadows create a moody, high-stakes, competitive atmosphere, aligning with a modern sports technology aesthetic. The color palette relies heavily on deep, pitch blacks, stadium greys, and striking accents of neon turf green."
+    ></div>
 
+    <!-- Gradient overlays for seamless blend -->
+    <div class="header-gradient-top"></div>
+    <div class="header-gradient-side"></div>
+
+    <!-- Back Button -->
+    <div class="header-back-button">
+      <ion-back-button class="back-btn" defaultHref="/"></ion-back-button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="sign-up-wrapper">
+    <!-- Branding Section -->
+    <div class="branding-section">
+      <div class="draft-badge">
+        <ion-icon name="game-controller"></ion-icon>
+        <span class="badge-text">New Player Draft</span>
+      </div>
+
+      <h1 class="sign-up-title">
+        Build Your<br />
+        <span class="highlight-text">Squad</span>
+      </h1>
+
+      <p class="sign-up-subtitle">
+        Create your DraftKings account to manage rosters, track stats, and
+        dominate the league.
+      </p>
+    </div>
+
+    <!-- Registration Card -->
     <app-login-card
       footerText="Already on the roster?"
       footerActionText="Log In"
       (footerActionClick)="gotoLogin()"
     >
       <form (ngSubmit)="onRegister()" [formGroup]="signUpForm">
+        <!-- Full Name Field -->
         <div class="form-group">
           <ion-label class="form-label">Full Name</ion-label>
           <ion-item class="form-item" lines="none">
@@ -24,6 +57,7 @@
           </ion-item>
         </div>
 
+        <!-- Email Field -->
         <div class="form-group">
           <ion-label class="form-label">Email Address</ion-label>
           <ion-item class="form-item" lines="none">
@@ -37,6 +71,7 @@
           </ion-item>
         </div>
 
+        <!-- Password Field -->
         <div class="form-group">
           <div class="form-label-row">
             <ion-label class="form-label">Secure Password</ion-label>
@@ -62,6 +97,8 @@
             </ion-button>
           </ion-item>
         </div>
+
+        <!-- Password Requirements -->
         <div class="password-requirements-container">
           <div class="requirement-item">
             <div class="requirement-dot"></div>
@@ -77,6 +114,7 @@
           </div>
         </div>
 
+        <!-- Confirm Password Field -->
         <div class="form-group">
           <div class="form-label-row">
             <ion-label class="form-label">Repeat Password</ion-label>
