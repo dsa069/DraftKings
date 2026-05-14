@@ -26,7 +26,6 @@ import {
   gameControllerOutline,
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
-import { BackendToggleComponent } from '../../shared/components/backend-toggle/backend-toggle.component';
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.page.html',
@@ -42,7 +41,6 @@ import { BackendToggleComponent } from '../../shared/components/backend-toggle/b
     IonIcon,
     IonBackButton,
     LoginCardComponent,
-    BackendToggleComponent,
   ],
 })
 export class SignUpPage implements OnInit {

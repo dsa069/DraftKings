@@ -37,9 +37,17 @@
     <app-login-card
       footerText="Already on the roster?"
       footerActionText="Log In"
+      [isNodeSelected]="isNodeSelected"
+      [submitText]="'Enter the Draft'"
+      [formId]="'signUpFormId'"
       (footerActionClick)="gotoLogin()"
+      (backendChange)="isNodeSelected = $event"
     >
-      <form (ngSubmit)="onRegister()" [formGroup]="signUpForm">
+      <form
+        [formGroup]="signUpForm"
+        (ngSubmit)="onRegister()"
+        id="signUpFormId"
+      >
         <!-- Full Name Field -->
         <div class="form-group">
           <ion-label class="form-label">Full Name</ion-label>
@@ -137,19 +145,6 @@
             </ion-button>
           </ion-item>
         </div>
-
-        <!-- Backend Selector -->
-        <app-backend-toggle
-          [isNodeSelected]="isNodeSelected"
-          (selectionChange)="isNodeSelected = $event"
-        >
-        </app-backend-toggle>
-
-        <!-- Submit Button -->
-        <ion-button type="submit" expand="block" class="login-button">
-          Enter the Draft
-          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
-        </ion-button>
       </form>
     </app-login-card>
   </main>
