@@ -1,6 +1,22 @@
 <ion-card class="login-card">
   <ion-card-content class="login-form-wrapper">
     <ng-content></ng-content>
+
+    <app-backend-toggle
+      [isNodeSelected]="isNodeSelected"
+      (selectionChange)="onBackendChange($event)"
+    >
+    </app-backend-toggle>
+
+    <ion-button
+      type="submit"
+      [attr.form]="formId"
+      expand="block"
+      class="login-button"
+    >
+      {{ submitText }}
+      <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+    </ion-button>
   </ion-card-content>
 </ion-card>
 

@@ -23,7 +23,6 @@ import {
 } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
-import { BackendToggleComponent } from '../../shared/components/backend-toggle/backend-toggle.component';
 
 @Component({
   selector: 'app-login',
@@ -39,7 +38,6 @@ import { BackendToggleComponent } from '../../shared/components/backend-toggle/b
     IonButton,
     IonIcon,
     LoginCardComponent,
-    BackendToggleComponent,
   ],
 })
 export class LoginPage implements OnInit {
