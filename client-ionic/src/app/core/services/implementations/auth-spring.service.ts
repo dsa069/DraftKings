@@ -7,7 +7,8 @@ import {
   getIdToken,
   signOut,
 } from '@angular/fire/auth';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+import { User } from '../../models/user.model';
 
 @Injectable()
 export class AuthSpringService extends AuthService {
@@ -49,5 +50,10 @@ export class AuthSpringService extends AuthService {
 
   async logout(): Promise<void> {
     await signOut(this.firebaseAuth);
+  }
+
+  getProfile(): Observable<User> {
+    // El Interceptor adjuntará automáticamente el token de Firebase
+    return this.http.get<User>(`${this.apiUrl}/api/auth/me`);
   }
 }

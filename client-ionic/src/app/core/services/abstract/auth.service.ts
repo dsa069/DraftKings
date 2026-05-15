@@ -12,6 +12,7 @@ export abstract class AuthService {
   abstract register(email: string, pass: string, extraData?: any): Promise<any>;
   abstract getToken(): Promise<string | null>;
   abstract logout(): Promise<void>;
+  abstract getProfile(): Observable<User>;
 
   getUser(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/users`);
