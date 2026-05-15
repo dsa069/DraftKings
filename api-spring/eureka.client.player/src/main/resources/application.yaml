@@ -17,6 +17,7 @@ spring:
     show-sql: true
 eureka:
   instance:
+    hostname: localhost
     # Ayuda a distinguir instancias si hay varias corriendo del mismo microservicio en el mismo host
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
