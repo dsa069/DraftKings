@@ -1,6 +1,7 @@
 package draftkings.eureka.client.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +37,14 @@ public class AuthController {
         userRepository.save(newUser);
 
         return "Usuario registrado en PostgreSQL con éxito";
+    }
+
+    @GetMapping("/api/auth/me")
+    public ResponseEntity<User> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
+        // El 'sub' del JWT es el UID de Firebase
+        String uid = jwt.getSubject();
+
+        return userRepository.findByFirebaseUid(uid) != null ? ResponseEntity.ok(userRepository.findByFirebaseUid(uid))
+                : ResponseEntity.notFound().build();
     }
 }
