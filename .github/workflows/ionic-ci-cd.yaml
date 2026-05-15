@@ -1,5 +1,5 @@
 name: CI/CD Ionic Development
-
+# TO DO: Que cloud run coja las variables de entorno de firebase
 on:
   push:
     branches: [main, dev]

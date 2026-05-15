@@ -12,6 +12,7 @@ alias run-config="cd /workspace/api-spring/config.server && ./mvnw spring-boot:r
 alias run-gateway="cd /workspace/api-spring/gateway && ./mvnw spring-boot:run"
 alias run-player="cd /workspace/api-spring/eureka.client.player && ./mvnw spring-boot:run"
 alias run-review="cd /workspace/api-spring/eureka.client.review && ./mvnw spring-boot:run"
+alias run-user="cd /workspace/api-spring/eureka.client.user && ./mvnw spring-boot:run"
 
 # --- Aliases Producción (-PROD) ---
 alias run-eureka-prod="cd /workspace/api-spring/eureka.server && ./mvnw spring-boot:run -Dspring-boot.run.profiles=prod"
@@ -19,11 +20,12 @@ alias run-config-prod="cd /workspace/api-spring/config.server && ./mvnw spring-b
 alias run-gateway-prod="cd /workspace/api-spring/gateway && ./mvnw spring-boot:run -Dspring-boot.run.profiles=prod"
 alias run-player-prod="cd /workspace/api-spring/eureka.client.player && ./mvnw spring-boot:run -Dspring-boot.run.profiles=prod"
 alias run-review-prod="cd /workspace/api-spring/eureka.client.review && ./mvnw spring-boot:run -Dspring-boot.run.profiles=prod"
+alias run-user-prod="cd /workspace/api-spring/eureka.client.user && ./mvnw spring-boot:run -Dspring-boot.run.profiles=prod"
 
 # --- Master Shortcuts (Ejecutar todo a la vez) ---
 # Nota: Se usa '&' para que corran en segundo plano en la misma terminal
-alias run-all="run-eureka & sleep 10 && run-config & sleep 10 && run-gateway & run-player & run-review"
-alias run-all-prod="run-eureka-prod & sleep 10 && run-config-prod & sleep 10 && run-gateway-prod & run-player-prod & run-review-prod"
+alias run-all="run-eureka & sleep 10 && run-config & sleep 10 && run-gateway & run-player & run-review & run-user"
+alias run-all-prod="run-eureka-prod & sleep 10 && run-config-prod & sleep 10 && run-gateway-prod & run-player-prod & run-review-prod & run-user-prod"
 
 EOF
 
@@ -37,10 +39,12 @@ echo "  - run-config"
 echo "  - run-gateway"
 echo "  - run-player"
 echo "  - run-review"
+echo "  - run-user"
 echo "  - run-eureka-prod"
 echo "  - run-config-prod"
 echo "  - run-gateway-prod"
 echo "  - run-player-prod"
 echo "  - run-review-prod"
+echo "  - run-user-prod"
 echo "  - run-all (Ejecuta todo en modo Dev)"
 echo "  - run-all-prod (Ejecuta todo en modo Prod)"
