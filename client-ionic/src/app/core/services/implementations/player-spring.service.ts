@@ -1,6 +1,6 @@
 //Patron Strategy
 import { Injectable } from '@angular/core';
-import { PlayerService } from '../implementations/player.service';
+import { PlayerService } from '../abstract/player.service';
 
 @Injectable()
 export class PlayerSpringService extends PlayerService {

@@ -1,6 +1,6 @@
 import { ConfigService } from '../config.service';
-import { ReviewNodeService } from '../abstract/review-node.service';
-import { ReviewSpringService } from '../abstract/review-spring.service';
+import { ReviewNodeService } from '../implementations/review-node.service';
+import { ReviewSpringService } from '../implementations/review-spring.service';
 
 export function reviewFactory(config: ConfigService) {
   // CORRECCIÓN: Usar la señal pública

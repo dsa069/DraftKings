@@ -1,10 +1,10 @@
 import { ConfigService } from '../config.service';
-import { AuthSpringService } from '../abstract/auth-spring.service';
-import { AuthNodeService } from '../abstract/auth-node.service';
+import { AuthSpringService } from '../implementations/auth-spring.service';
+import { AuthNodeService } from '../implementations/auth-node.service';
 
 export function authFactory(config: ConfigService) {
   // CORRECCIÓN: Usar la señal pública
-  const selected = config.selectedBackend(); 
+  const selected = config.selectedBackend();
 
   switch (selected) {
     case 'springboot': // Asegúrate de que coincida con tu BackendType
