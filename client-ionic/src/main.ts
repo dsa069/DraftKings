@@ -28,6 +28,11 @@ import { authFactory } from './app/core/services/factory/auth.factory';
 import { ConfigService } from './app/core/services/config.service';
 import { environment } from './environments/environment';
 
+console.log('🚀 Configuración cargada:', {
+  produccion: environment.production,
+  proyectoId: environment.firebaseConfig?.projectId,
+});
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
