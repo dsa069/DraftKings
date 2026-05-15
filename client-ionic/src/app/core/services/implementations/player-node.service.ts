@@ -1,8 +1,8 @@
 //Patron Strategy
 import { Injectable } from '@angular/core';
-import { ReviewService } from '../implementations/review.service';
+import { PlayerService } from '../abstract/player.service';
 
 @Injectable()
-export class ReviewNodeService extends ReviewService {
+export class PlayerNodeService extends PlayerService {
   protected apiUrl = 'http://localhost:3000';
 }

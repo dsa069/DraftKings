@@ -1,6 +1,6 @@
 import { ConfigService } from '../config.service';
-import { PlayerSpringService } from '../abstract/player-spring.service';
-import { PlayerNodeService } from '../abstract/player-node.service';
+import { PlayerSpringService } from '../implementations/player-spring.service';
+import { PlayerNodeService } from '../implementations/player-node.service';
 
 export function playerFactory(config: ConfigService) {
   // CORRECCIÓN: Usar la señal pública

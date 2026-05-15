@@ -14,14 +14,19 @@ import {
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient } from '@angular/common/http';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './app/core/interceptors/auth.interceptor';
 
-import { PlayerService } from './app/core/services/implementations/player.service';
+import { PlayerService } from './app/core/services/abstract/player.service';
 import { playerFactory } from './app/core/services/factory/player.factory';
-import { ReviewService } from './app/core/services/implementations/review.service';
+import { ReviewService } from './app/core/services/abstract/review.service';
 import { reviewFactory } from './app/core/services/factory/review.factory';
-import { AuthService } from './app/core/services/implementations/auth.service';
+import { AuthService } from './app/core/services/abstract/auth.service';
 import { authFactory } from './app/core/services/factory/auth.factory';
 import { ConfigService } from './app/core/services/config.service';
+import { environment } from './environments/environment';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -33,6 +38,13 @@ bootstrapApplication(AppComponent, {
       withHashLocation(),
     ),
     provideHttpClient(),
+    // 1. Inicializar Firebase
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAuth(() => getAuth()),
+    // 2. Registrar el Interceptor
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    // 3. Tus Factories actuales
+    { provide: AuthService, useFactory: authFactory, deps: [ConfigService] },
     // REGISTRO DEL PATRÓN FACTORY/STRATEGY
     {
       provide: PlayerService, // Cuando un componente pida la clase abstracta...

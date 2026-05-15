@@ -72,9 +72,9 @@ Thumbs.db
 # Capacitor
 /android
 /ios
-release.keystore
-release.keystore.b64
 
 # Cypress
 cypress/screenshots
 /coverage
+
+/src/secrets

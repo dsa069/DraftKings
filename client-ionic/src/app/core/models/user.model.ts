@@ -1,10 +1,7 @@
 export interface User {
   id: string;
-  nombre: string;
+  name: string;
   email: string;
-  fechaAlta: Date;
-  coordenadas?: {
-    lat: number;
-    lng: number;
-  };
+  role: 'ADMIN' | 'USER';
+  //password?: string; // Solo para registro, no se debe enviar al frontend
 }
