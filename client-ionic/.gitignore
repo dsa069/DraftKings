@@ -77,4 +77,6 @@ Thumbs.db
 cypress/screenshots
 /coverage
 
+# Environment variable files
 /src/secrets
+/src/environments/environment*.ts
