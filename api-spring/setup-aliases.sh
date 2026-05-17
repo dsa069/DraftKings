@@ -50,4 +50,4 @@ echo "  - run-all (Ejecuta todo en modo Dev)"
 echo "  - run-all-prod (Ejecuta todo en modo Prod)"
 
 # mvn clean install -DskipTests
-#java -Xms128m -Xmx256m -jar target/*-0.0.1-SNAPSHOT.jar
+#java -jar target/*-0.0.1-SNAPSHOT.jar

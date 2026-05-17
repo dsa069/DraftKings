@@ -16,7 +16,7 @@ services:
       - "8761:8761"
       
     environment:
-      JAVA_TOOL_OPTIONS: "-Xmx2048m -Xms1024m"
+      JAVA_TOOL_OPTIONS: "-Xmx512m -Xms256m"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/draftkings
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
