@@ -12,7 +12,7 @@ import { User } from '../../models/user.model';
 
 @Injectable()
 export class AuthSpringService extends AuthService {
-  protected apiUrl = 'http://localhost:8080'; // URL de tu Gateway de Spring
+  protected apiUrl = 'http://localhost:8080/userms'; // URL de tu Gateway de Spring
 
   // Inyectamos Firebase SOLO para la estrategia de Spring
   private firebaseAuth = inject(Auth);
