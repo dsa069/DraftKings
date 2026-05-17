@@ -61,10 +61,5 @@ bootstrapApplication(AppComponent, {
       useFactory: reviewFactory,
       deps: [ConfigService],
     },
-    {
-      provide: AuthService,
-      useFactory: authFactory,
-      deps: [ConfigService],
-    },
   ],
 });
