@@ -36,7 +36,10 @@ export class AuthSpringService extends AuthService {
     // Usamos firstValueFrom para esperar a que el backend guarde al usuario
     await firstValueFrom(
       this.http.post(`${this.apiUrl}/api/auth/sync-user`, extraData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json', // <--- AÑADE ESTA LÍNEA CRÍTICA
+        },
       }),
     );
 

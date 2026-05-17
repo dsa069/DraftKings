@@ -27,6 +27,7 @@ import {
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 import { ConfigService, BackendType } from '../../core/services/config.service';
+import { AuthService } from '../../core/services/abstract/auth.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -49,6 +50,7 @@ export class SignUpPage implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly navCtrl = inject(NavController);
   private readonly configService = inject(ConfigService);
+  private readonly authService = inject(AuthService);
 
   showPassword: boolean = false;
   signUpForm!: FormGroup;
@@ -72,7 +74,7 @@ export class SignUpPage implements OnInit {
 
   private initializeForm(): void {
     this.signUpForm = this.formBuilder.group({
-      fullName: ['', [Validators.required]],
+      userName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
@@ -83,15 +85,35 @@ export class SignUpPage implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  onRegister(): void {
-    if (this.signUpForm.valid) {
-      // Confirmamos la elección del backend al registrarse
-      this.configService.applyBackendChange(this.selectedBackend);
-
-      console.log('Registro completado en:', this.selectedBackend);
-      this.navCtrl.navigateRoot('/tabs/players');
-    } else {
+  // En sign-up.page.ts
+  async onRegister(): Promise<void> {
+    if (this.signUpForm.invalid) {
       console.log('Formulario de registro no válido');
+      return;
+    }
+
+    // 1. Verificar si hay que cambiar el backend antes de proceder
+    if (this.selectedBackend !== this.configService.selectedBackend()) {
+      this.configService.applyBackendChange(this.selectedBackend);
+      return; // El reload detendrá la ejecución aquí
+    }
+
+    const { email, password, userName } = this.signUpForm.value;
+
+    try {
+      console.log('Iniciando registro en:', this.selectedBackend);
+
+      // 2. Llamar al servicio de registro
+      // Esto ejecutará Firebase Auth y luego la sincronización con PostgreSQL
+      await this.authService.register(email, password, { userName: userName });
+
+      console.log('Registro y sincronización completados con éxito');
+
+      // 3. Solo si lo anterior fue exitoso, navegamos
+      this.navCtrl.navigateRoot('/tabs/players');
+    } catch (error) {
+      console.error('Error durante el proceso de registro:', error);
+      // Aquí podrías mostrar una alerta al usuario indicando el fallo
     }
   }
 
