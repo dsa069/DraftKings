@@ -18,7 +18,34 @@ export class AuthSpringService extends AuthService {
   private firebaseAuth = inject(Auth);
 
   async login(email: string, pass: string) {
-    return await signInWithEmailAndPassword(this.firebaseAuth, email, pass);
+    // 1. Autenticar con Firebase
+    const userCredential = await signInWithEmailAndPassword(
+      this.firebaseAuth,
+      email,
+      pass,
+    );
+
+    // 2. Obtener el token de Firebase
+    const token = await getIdToken(userCredential.user);
+
+    try {
+      // 3. Confirmar existencia en PostgreSQL llamando al nuevo endpoint
+      // Si el usuario no existe en la DB, el backend devolverá un error (404 o 401)
+      // y saltará al bloque 'catch'.
+      await firstValueFrom(
+        this.http.get(`${this.apiUrl}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      );
+
+      console.log('Login completo: Firebase y PostgreSQL confirmados');
+      return userCredential;
+    } catch (error) {
+      // Si el usuario existe en Firebase pero NO en tu DB, forzamos el logout de Firebase
+      // para que no quede una sesión a medias.
+      await this.logout();
+      throw new Error('El usuario no está registrado en el sistema local.');
+    }
   }
 
   async register(email: string, pass: string, extraData: any) {
