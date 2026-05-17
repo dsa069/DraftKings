@@ -13,18 +13,33 @@
     <ion-title class="app-title">DRAFTKINGS</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button
-        (click)="goToLogin()"
-        aria-label="Log In"
-        class="icon-button"
-        fill="clear"
-      >
-        <ion-icon
-          slot="icon-only"
-          name="log-in-outline"
-          class="icon"
-        ></ion-icon>
-      </ion-button>
+      @if (isLogged()) {
+        <ion-button
+          (click)="closeSession()"
+          aria-label="Log Out"
+          class="icon-button"
+          fill="clear"
+        >
+          <ion-icon
+            slot="icon-only"
+            name="log-out-outline"
+            class="icon"
+          ></ion-icon>
+        </ion-button>
+      } @else {
+        <ion-button
+          (click)="goToLogin()"
+          aria-label="Log In"
+          class="icon-button"
+          fill="clear"
+        >
+          <ion-icon
+            slot="icon-only"
+            name="log-in-outline"
+            class="icon"
+          ></ion-icon>
+        </ion-button>
+      }
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
