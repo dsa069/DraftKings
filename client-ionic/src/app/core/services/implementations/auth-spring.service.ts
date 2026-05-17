@@ -7,7 +7,7 @@ import {
   getIdToken,
   signOut,
 } from '@angular/fire/auth';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable, switchMap, from } from 'rxjs';
 import { User } from '../../models/user.model';
 
 @Injectable()
@@ -83,7 +83,15 @@ export class AuthSpringService extends AuthService {
   }
 
   getProfile(): Observable<User> {
-    // El Interceptor adjuntará automáticamente el token de Firebase
-    return this.http.get<User>(`${this.apiUrl}/api/auth/me`);
+    return from(this.getToken()).pipe(
+      // Convertimos la promesa del token a Observable
+      switchMap((token) => {
+        return this.http.get<User>(`${this.apiUrl}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }),
+    );
   }
 }
