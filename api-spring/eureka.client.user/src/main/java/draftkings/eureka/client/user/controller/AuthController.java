@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import draftkings.eureka.client.user.repository.UserRepository;
 import draftkings.eureka.client.user.domain.User;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,7 +17,7 @@ public class AuthController {
     private UserRepository userRepository; // Tu repositorio JPA para PostgreSQL
 
     @PostMapping("/sync-user")
-    public String syncUserToPostgres(@AuthenticationPrincipal Jwt jwt, @RequestBody User additionalData) {
+    public ResponseEntity<?> syncUserToPostgres(@AuthenticationPrincipal Jwt jwt, @RequestBody User additionalData) {
         // 1. Extraer datos del JWT validado por Spring Security
         String firebaseUid = jwt.getSubject(); // El 'subject' en Firebase es el UID
         String email = jwt.getClaimAsString("email");
@@ -24,7 +25,7 @@ public class AuthController {
         // 2. Verificar si el usuario ya existe en PostgreSQL
         User existingUser = userRepository.findByFirebaseUid(firebaseUid);
         if (existingUser != null) {
-            return "Usuario ya sincronizado";
+            return ResponseEntity.badRequest().body(Map.of("error", "Usuario ya sincronizado"));
         }
 
         // 3. Crear el usuario en Postgres con la lógica de negocio
@@ -36,7 +37,7 @@ public class AuthController {
 
         userRepository.save(newUser);
 
-        return "Usuario registrado en PostgreSQL con éxito";
+        return ResponseEntity.ok(Map.of("message", "Usuario registrado en PostgreSQL con éxito"));
     }
 
     @GetMapping("/me")

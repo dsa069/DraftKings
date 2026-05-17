@@ -20,6 +20,14 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://securetoken.google.com/draftkings-local
+  mvc:
+    cors:
+      configs:
+        '[/**]':
+          allowed-origins: "http://localhost:8100"
+          allowed-methods: "*"
+          allowed-headers: "*"
+          allow-credentials: true
 eureka:
   instance:
     hostname: localhost
