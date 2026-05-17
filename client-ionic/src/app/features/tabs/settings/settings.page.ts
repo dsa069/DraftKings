@@ -1,9 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import {
   IonContent,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonCard,
   IonCardHeader,
   IonCardTitle,
@@ -23,9 +20,6 @@ import { AuthService } from '../../../core/services/abstract/auth.service';
   templateUrl: 'settings.page.html',
   styleUrls: ['settings.page.scss'],
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonCard,
     IonCardHeader,

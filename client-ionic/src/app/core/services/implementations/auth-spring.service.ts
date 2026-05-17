@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, computed } from '@angular/core';
 import { AuthService } from '../abstract/auth.service';
 import {
   Auth,
@@ -9,6 +9,8 @@ import {
 } from '@angular/fire/auth';
 import { firstValueFrom, Observable, switchMap, from } from 'rxjs';
 import { User } from '../../models/user.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { authState } from '@angular/fire/auth';
 
 @Injectable()
 export class AuthSpringService extends AuthService {
@@ -16,6 +18,12 @@ export class AuthSpringService extends AuthService {
 
   // Inyectamos Firebase SOLO para la estrategia de Spring
   private firebaseAuth = inject(Auth);
+
+  readonly _user = toSignal(authState(this.firebaseAuth));
+
+  // 2. Implementamos la señal abstracta de forma computada
+  // Esto es independiente de la lógica interna; el componente solo verá true/false
+  public override readonly isAuthenticated = computed(() => !!this._user());
 
   async login(email: string, pass: string) {
     // 1. Autenticar con Firebase

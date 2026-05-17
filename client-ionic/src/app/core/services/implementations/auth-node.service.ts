@@ -1,5 +1,5 @@
 //Patron Strategy
-import { Injectable } from '@angular/core';
+import { Injectable, Signal } from '@angular/core';
 import { AuthService } from '../abstract/auth.service';
 import { User } from '../../models/user.model';
 import { Observable } from 'rxjs';
@@ -7,6 +7,8 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class AuthNodeService extends AuthService {
   protected apiUrl = 'http://localhost:3000';
+
+  isAuthenticated = null as any; // Implementa tu lógica de autenticación aquí
 
   async login(email: string, pass: string) {}
 

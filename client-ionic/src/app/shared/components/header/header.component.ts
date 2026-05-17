@@ -11,6 +11,7 @@ import {
 import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { logInOutline, logOutOutline, footballOutline } from 'ionicons/icons';
+import { AuthService } from '../../../core/services/abstract/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -29,6 +30,9 @@ import { logInOutline, logOutOutline, footballOutline } from 'ionicons/icons';
 })
 export class HeaderComponent {
   private readonly navCtrl = inject(NavController);
+  private readonly authService = inject(AuthService);
+
+  public readonly isLogged = this.authService.isAuthenticated;
 
   constructor() {
     addIcons({
@@ -38,8 +42,12 @@ export class HeaderComponent {
     });
   }
 
-  goToLogin(): void {
-    //Si cierra sesión se limpia el stack
+  async goToLogin(): Promise<void> {
     this.navCtrl.navigateRoot(['/login']);
+  }
+
+  async closeSession(): Promise<void> {
+    await this.authService.logout();
+    this.goToLogin();
   }
 }
