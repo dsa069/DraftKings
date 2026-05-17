@@ -3,6 +3,7 @@ package draftkings.eureka.client.user.domain;
 import jakarta.persistence.*;
 
 @Entity
+// user a secas es un nombre reservado
 @Table(name = "users")
 public class User {
     @Id
