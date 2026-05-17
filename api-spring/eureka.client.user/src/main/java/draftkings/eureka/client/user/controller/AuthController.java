@@ -39,7 +39,7 @@ public class AuthController {
         return "Usuario registrado en PostgreSQL con éxito";
     }
 
-    @GetMapping("/api/auth/me")
+    @GetMapping("/me")
     public ResponseEntity<User> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
         // El 'sub' del JWT es el UID de Firebase
         String uid = jwt.getSubject();
