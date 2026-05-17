@@ -37,6 +37,7 @@ public class AuthController {
 
         userRepository.save(newUser);
 
+        // Poner bien el mensaje de este endpoint
         return ResponseEntity.ok(Map.of("message", "Usuario registrado en PostgreSQL con éxito"));
     }
 
