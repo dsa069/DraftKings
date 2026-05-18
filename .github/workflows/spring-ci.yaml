@@ -24,6 +24,7 @@ jobs:
           'gateway',
           'eureka.client.player',
           'eureka.client.review',
+          'eureka.client.user'
           ]
       # Si un servicio falla, los demás siguen corriendo
       fail-fast: false
@@ -123,7 +124,7 @@ jobs:
     needs: deploy-config-dev
     strategy:
       matrix:
-        service: ['gateway', 'eureka.client.player', 'eureka.client.review']
+        service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.user']
       fail-fast: false
     uses: ./.github/workflows/spring-cd.yml
     with:
@@ -151,7 +152,7 @@ jobs:
     needs: deploy-config-prod
     strategy:
       matrix:
-        service: ['gateway', 'eureka.client.player', 'eureka.client.review']
+        service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.user']
       fail-fast: false
     uses: ./.github/workflows/spring-cd.prod.yml
     with:

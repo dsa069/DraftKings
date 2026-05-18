@@ -18,6 +18,15 @@ spring:
     hibernate:
       ddl-auto: update # O 'none' si no quieres que toque las tablas
     show-sql: true
+  mvc:
+    cors:
+      configs:
+        '[/**]':
+          allowed-origins: "https://draftkings-dev.cnsa-2026-dsa069.tech"
+          allowed-methods: "*"
+          allowed-headers: "*"
+          allow-credentials: true
+  
 
 management:
   info:
