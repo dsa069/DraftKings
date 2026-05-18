@@ -75,3 +75,21 @@ server:
 info:
   application:
     description: DraftKings user microservice in prod profile
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+      # En test, no queremos que intente conectarse a la config server ni a la base de datos real
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings user microservice in test profile

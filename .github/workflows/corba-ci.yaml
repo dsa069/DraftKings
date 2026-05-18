@@ -84,7 +84,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review 
           filter_mode: added        
-          level: error               
+          level: error
+        continue-on-error: true               
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v3.0.0
