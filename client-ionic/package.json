@@ -6,6 +6,7 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
+    "config": "npx ts-node src/set-env.ts",
     "start": "npx ts-node src/set-env.ts && ionic serve --host=0.0.0.0",
     "start:fake:prod": "npx ts-node src/set-env.ts && ionic serve --host=0.0.0.0 --configuration=production",
     "build": "npx ts-node src/set-env.ts && ionic build",
