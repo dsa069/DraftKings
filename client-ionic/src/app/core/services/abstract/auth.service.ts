@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   authState,
-  idToken,
+  createUserWithEmailAndPassword,
 } from '@angular/fire/auth';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
@@ -29,6 +29,10 @@ export abstract class AuthService {
     return await signInWithEmailAndPassword(this.firebaseAuth, email, pass);
   }
 
+  async registerFirebase(email: string, pass: string) {
+    return await createUserWithEmailAndPassword(this.firebaseAuth, email, pass);
+  }
+
   // 2. Lógica común: Logout
   async logout(): Promise<void> {
     await signOut(this.firebaseAuth);
@@ -42,7 +46,7 @@ export abstract class AuthService {
 
   // Métodos que CADA backend debe implementar a su manera
   abstract verifyBackend(): Promise<void>;
-  abstract register(email: string, pass: string, extraData?: any): Promise<any>;
+  abstract registerBackend(extraData: any): Promise<any>;
   abstract getProfile(): Observable<User>;
 
   // Método orquestador opcional

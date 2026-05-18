@@ -1,4 +1,4 @@
-import { Injectable, inject, computed } from '@angular/core';
+import { Injectable, computed } from '@angular/core';
 import { AuthService } from '../abstract/auth.service';
 import {
   Auth,
@@ -9,8 +9,6 @@ import {
 } from '@angular/fire/auth';
 import { firstValueFrom, Observable, switchMap, from } from 'rxjs';
 import { User } from '../../models/user.model';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { authState } from '@angular/fire/auth';
 
 @Injectable()
 export class AuthSpringService extends AuthService {
@@ -45,29 +43,19 @@ export class AuthSpringService extends AuthService {
     }
   }
 
-  async register(email: string, pass: string, extraData: any) {
-    // 1. Registrar en Firebase
-    const userCredential = await createUserWithEmailAndPassword(
-      this.firebaseAuth,
-      email,
-      pass,
-    );
+  async registerBackend(extraData: any) {
+    const token = await this.getToken();
+    if (!token) throw new Error('No hay sesión de Firebase para sincronizar');
 
-    // 2. Obtener el token recién creado
-    const token = await getIdToken(userCredential.user, true);
-
-    // 3. Sincronizar con tu backend (PostgreSQL) a través del Gateway
-    // Usamos firstValueFrom para esperar a que el backend guarde al usuario
-    await firstValueFrom(
+    // Sincronización con PostgreSQL
+    return await firstValueFrom(
       this.http.post(`${this.apiUrl}/api/auth/sync-user`, extraData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json', // <--- AÑADE ESTA LÍNEA CRÍTICA
+          'Content-Type': 'application/json',
         },
       }),
     );
-
-    return userCredential;
   }
 
   getProfile(): Observable<User> {

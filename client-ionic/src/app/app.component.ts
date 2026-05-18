@@ -8,27 +8,48 @@ import { NavController } from '@ionic/angular';
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet],
 })
-// app.component.ts
 export class AppComponent {
   private authService = inject(AuthService);
   private navCtrl = inject(NavController);
 
   constructor() {
-    // Este efecto se ejecuta cada vez que 'isAuthenticated' cambia
-    // Incluyendo el momento justo después del reload.
     effect(async () => {
       if (this.authService.isAuthenticated()) {
-        try {
-          // El "revisor" comprueba si el usuario existe en el backend actual
-          await this.authService.verifyBackend();
-          console.log('✅ Verificación post-reload exitosa');
+        // 1. Si estamos en medio de un proceso de registro activo en esta misma pantalla,
+        // no hacemos nada, dejamos que la lógica de sign-up.page termine.
+        const isRegistering = localStorage.getItem('is_registering');
 
-          // Si estamos en login, lo mandamos dentro
-          if (window.location.hash.includes('login')) {
+        // Si estamos en la página de registro y acabamos de darle al botón,
+        // el effect se dispara pero este IF lo detiene.
+        if (isRegistering && window.location.hash.includes('sign-up')) {
+          console.log('⏳ Registro en curso... Centinela en espera.');
+          return;
+        }
+
+        try {
+          const pendingData = localStorage.getItem('pending_sync_data');
+
+          if (pendingData) {
+            // Esto solo se ejecutará si hubo un RELOAD (porque el isRegistering se mantiene)
+            console.log('🔄 Sincronizando nuevo usuario tras recarga...');
+            const extraData = JSON.parse(pendingData);
+            await this.authService.registerBackend(extraData);
+            localStorage.removeItem('pending_sync_data');
+            localStorage.removeItem('is_registering');
+          } else {
+            await this.authService.verifyBackend();
+          }
+
+          if (
+            window.location.hash.includes('login') ||
+            window.location.hash.includes('sign-up')
+          ) {
             this.navCtrl.navigateRoot('/tabs/players');
           }
         } catch (error) {
-          console.error('❌ El usuario no existe en este backend');
+          console.error('❌ Error de validación');
+          localStorage.removeItem('pending_sync_data');
+          localStorage.removeItem('is_registering');
           await this.authService.logout();
           this.navCtrl.navigateRoot('/login');
         }
