@@ -344,7 +344,7 @@ jobs:
           service: 'draftkings-dev' # Nombre del servicio
           region: 'us-east1'
           image: 'us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:latest'
-          flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com"
+          flags: '--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com'
           secrets: |
             FIREBASE_CONFIG_DEV=FIREBASE_CONFIG_DEV:latest
             SPRING_API_URL_DEV=SPRING_API_URL_DEV:latest
@@ -356,4 +356,4 @@ jobs:
           # Habría que proteger el back desplegado (general)
 
           # Para ver la pagina en en cloud shell:
-          # gcloud run services proxy draftkings --region=us-east1
+          # gcloud run services proxy draftkings-dev --region=us-east1
