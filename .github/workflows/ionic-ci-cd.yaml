@@ -35,6 +35,14 @@ jobs:
         run: npm run lint:json
         continue-on-error: true
 
+      - name: Generate Environments
+        run: npm run config # <--- ESTO CREA EL ARCHIVO FISICAMENTE
+        env:
+          FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
+          SPRING_API_URL_DEV: ${{ secrets.SPRING_API_URL_DEV }}
+          NODE_API_URL_DEV: ${{ secrets.NODE_API_URL_DEV }}
+          FIREBASE_CONFIG_PROD: ""
+
       - name: Build
         run: npx ionic build #En producción, usar --prod
 
