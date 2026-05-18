@@ -83,6 +83,13 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Generate Environments
+        run: npm run config # <--- ESTO CREA EL ARCHIVO FISICAMENTE
+        env:
+          FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
+          SPRING_API_URL_DEV: ${{ secrets.SPRING_API_URL_DEV }}
+          NODE_API_URL_DEV: ${{ secrets.NODE_API_URL_DEV }}
+
       - name: Build web assets
         run: npx ionic build # --prod, en producción
 
