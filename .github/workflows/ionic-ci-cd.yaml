@@ -151,6 +151,9 @@ jobs:
           cache: "npm"
           cache-dependency-path: client-ionic/package-lock.json
 
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
       - name: Generate Environments
         run: npm run config # <--- ESTO CREA EL ARCHIVO FISICAMENTE
         env:
@@ -166,7 +169,7 @@ jobs:
         uses: cypress-io/github-action@v7
         with:
           working-directory: client-ionic
-          install-command: npm ci --legacy-peer-deps
+          install: false
           component: true
           start: npx ionic serve
           wait-on: "http://localhost:8100"
@@ -204,6 +207,9 @@ jobs:
           cache: "npm"
           cache-dependency-path: client-ionic/package-lock.json
 
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
       - name: Generate Environments
         run: npm run config # <--- ESTO CREA EL ARCHIVO FISICAMENTE
         env:
@@ -219,7 +225,7 @@ jobs:
         uses: cypress-io/github-action@v7
         with:
           working-directory: client-ionic
-          install-command: npm ci --legacy-peer-deps
+          install: false
           start: npx ionic serve
           wait-on: "http://localhost:8100"
           browser: ${{ matrix.browser }}
