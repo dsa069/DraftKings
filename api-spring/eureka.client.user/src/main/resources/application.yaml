@@ -5,29 +5,29 @@ spring:
     name: userMS
   config:
     import: "optional:configserver:http://localhost:8888"
-  datasource:
-    url: jdbc:postgresql://postgresql/draftkings
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update # O 'none' si no quieres que toque las tablas
-    show-sql: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://securetoken.google.com/draftkings-local
-  mvc:
-    cors:
-      configs:
-        '[/**]':
-          allowed-origins: "http://localhost:8100"
-          allowed-methods: "*"
-          allowed-headers: "*"
-          allow-credentials: true
+  # datasource:
+  #   url: jdbc:postgresql://postgresql/draftkings
+  #   username: postgres
+  #   password: postgres
+  #   driver-class-name: org.postgresql.Driver
+  # jpa:
+  #   database-platform: org.hibernate.dialect.PostgreSQLDialect
+  #   hibernate:
+  #     ddl-auto: update # O 'none' si no quieres que toque las tablas
+  #   show-sql: true
+  # security:
+  #   oauth2:
+  #     resourceserver:
+  #       jwt:
+  #         issuer-uri: https://securetoken.google.com/draftkings-local
+  # mvc:
+  #   cors:
+  #     configs:
+  #       '[/**]':
+  #         allowed-origins: "http://localhost:8100"
+  #         allowed-methods: "*"
+  #         allowed-headers: "*"
+  #         allow-credentials: true
 eureka:
   instance:
     hostname: localhost
