@@ -53,7 +53,6 @@ configMapping.forEach((config) => {
   nodeApiUrl: '${nodeApiUrlValue || ''}'
 };
 `;
-  console.log(`Estructura de firebaseConfig para ${config.targetPath}:`, JSON.stringify(firebaseParsed).substring(0, 30) + "...");
 
   writeFile(config.targetPath, fileContent, (err) => {
     if (err) throw err;
