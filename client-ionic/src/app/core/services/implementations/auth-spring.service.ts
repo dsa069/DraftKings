@@ -25,7 +25,7 @@ export class AuthSpringService extends AuthService {
   // Esto es independiente de la lógica interna; el componente solo verá true/false
   public override readonly isAuthenticated = computed(() => !!this._user());
 
-  async login(email: string, pass: string) {
+  async loginFirebase(email: string, pass: string): Promise<any> {
     // 1. Autenticar con Firebase
     const userCredential = await signInWithEmailAndPassword(
       this.firebaseAuth,
@@ -33,11 +33,17 @@ export class AuthSpringService extends AuthService {
       pass,
     );
 
-    // 2. Obtener el token de Firebase
-    const token = await getIdToken(userCredential.user);
+    return userCredential;
+  }
+
+  async verifyBackend(): Promise<void> {
+    // 1. Obtener el token de Firebase del usuario actual
+    const token = await this.getToken();
+
+    if (!token) throw new Error('No hay token disponible');
 
     try {
-      // 3. Confirmar existencia en PostgreSQL llamando al nuevo endpoint
+      // 2. Confirmar existencia en PostgreSQL llamando al nuevo endpoint
       // Si el usuario no existe en la DB, el backend devolverá un error (404 o 401)
       // y saltará al bloque 'catch'.
       await firstValueFrom(
@@ -46,8 +52,7 @@ export class AuthSpringService extends AuthService {
         }),
       );
 
-      console.log('Login completo: Firebase y PostgreSQL confirmados');
-      return userCredential;
+      console.log('Backend verificado: Usuario existe en PostgreSQL');
     } catch (error) {
       // Si el usuario existe en Firebase pero NO en tu DB, forzamos el logout de Firebase
       // para que no quede una sesión a medias.
