@@ -9,11 +9,18 @@ export abstract class AuthService {
   protected http = inject(HttpClient);
   public abstract readonly isAuthenticated: Signal<boolean>;
 
-  abstract login(email: string, pass: string): Promise<any>;
+  abstract loginFirebase(email: string, pass: string): Promise<any>;
+  abstract verifyBackend(): Promise<void>;
   abstract register(email: string, pass: string, extraData?: any): Promise<any>;
   abstract getToken(): Promise<string | null>;
   abstract logout(): Promise<void>;
   abstract getProfile(): Observable<User>;
+
+  // Orquestador para cuando NO hay cambio de backend
+  async login(email: string, pass: string): Promise<any> {
+    await this.loginFirebase(email, pass);
+    return await this.verifyBackend();
+  }
 
   getUser(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/users`);

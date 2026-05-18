@@ -83,29 +83,26 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    // 1. COMPROBAR CAMBIO DE BACKEND
-    // Si el usuario eligió un backend distinto al que está activo, recargamos.
-    if (this.selectedBackend !== this.configService.selectedBackend()) {
-      console.log('Cambiando backend y recargando...');
-      this.configService.applyBackendChange(this.selectedBackend);
-      return; // El código muere aquí por el window.location.reload()
-    }
-
-    // 2. LOGIN REAL (Solo llegamos aquí si el backend ya era el correcto)
     const { email, password } = this.loginForm.value;
 
+    // 1. COMPROBAR CAMBIO DE BACKEND
+    // Si el usuario eligió un backend distinto al que está activo, recargamos.
     try {
-      console.log('Autenticando en Firebase para:', this.selectedBackend);
+      // Paso 1: Logueamos en Firebase (común a todos)
+      await this.authService.loginFirebase(email!, password!);
 
-      // Llamamos a la estrategia activa (Spring o Node)
-      await this.authService.login(email!, password!);
+      // Paso 2: ¿Cambio de backend?
+      if (this.selectedBackend !== this.configService.selectedBackend()) {
+        // Si cambia, recargamos. El AppComponent terminará el trabajo al volver.
+        this.configService.applyBackendChange(this.selectedBackend);
+        return;
+      }
 
-      // 3. NAVEGACIÓN (Solo si el login fue exitoso)
-      console.log('Login exitoso');
+      // Paso 3: Si es el mismo backend, verificamos ya mismo
+      await this.authService.verifyBackend();
       this.navCtrl.navigateRoot(['/tabs/players']);
-    } catch (error: any) {
-      console.error('Error de autenticación:', error);
-      // Aquí manejas los errores (contraseña mal, usuario no existe, etc)
+    } catch (error) {
+      console.error('Login fallido:', error);
     }
   }
 
