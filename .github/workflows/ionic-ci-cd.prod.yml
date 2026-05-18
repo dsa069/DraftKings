@@ -175,9 +175,9 @@ jobs:
           FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
           SPRING_API_URL_DEV: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_DEV: ${{ secrets.NODE_API_URL_DEV }}
-          FIREBASE_PROD_CONFIG: ${{ secrets.FIREBASE_CONFIG_DEV }}
-          SPRING_PROD_API_URL: ${{ secrets.SPRING_API_URL_DEV }}
-          NODE_PROD_API_URL: ${{ secrets.NODE_API_URL_DEV }}
+          FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_DEV }} # Aunque este en desarollo y no se vaya a usar env.prod, lo generamos para evitar errores de variables no definidas
+          SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_DEV }}
+          NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_DEV }}
 
       - name: Add Component Header
         run: | 
