@@ -47,9 +47,9 @@ jobs:
         if: ${{ inputs.service_name == 'eureka.client.player' || inputs.service_name == 'eureka.client.review' || inputs.service_name == 'eureka.client.user' }}        
         run: |
           if gcloud secrets describe DB_SQL_PASS_DEV > /dev/null 2>&1; then
-            echo "${{ secrets.DB_SQL_PASS_DEV }}" | gcloud secrets versions add DB_SQL_PASS_DEV --data-file=-
+            printf %s "${{ secrets.DB_SQL_PASS_DEV }}" | gcloud secrets versions add DB_SQL_PASS_DEV --data-file=-
           else
-            echo "${{ secrets.DB_SQL_PASS_DEV }}" | gcloud secrets create DB_SQL_PASS_DEV --replication-policy="automatic" --data-file=-
+            printf %s "${{ secrets.DB_SQL_PASS_DEV }}" | gcloud secrets create DB_SQL_PASS_DEV --replication-policy="automatic" --data-file=-
           fi
 
       - name: Build Docker image
