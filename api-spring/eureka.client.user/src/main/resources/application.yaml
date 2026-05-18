@@ -75,7 +75,6 @@ server:
 info:
   application:
     description: DraftKings user microservice in prod profile
-
 ---
 spring:
   config:
