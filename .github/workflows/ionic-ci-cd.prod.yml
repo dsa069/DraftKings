@@ -286,6 +286,29 @@ jobs:
           username: _json_key
           password: ${{ secrets.GCP_SA_KEY }}
 
+      - name: Create or Update Secrets in GCP
+        run: |
+          # FIREBASE_CONFIG_PROD
+          if gcloud secrets describe FIREBASE_CONFIG_PROD > /dev/null 2>&1; then
+            echo "${{ secrets.FIREBASE_CONFIG_PROD }}" | gcloud secrets versions add FIREBASE_CONFIG_PROD --data-file=-
+          else
+            echo "${{ secrets.FIREBASE_CONFIG_PROD }}" | gcloud secrets create FIREBASE_CONFIG_PROD --replication-policy="automatic" --data-file=-
+          fi
+          
+          # SPRING_API_URL_PROD
+          if gcloud secrets describe SPRING_API_URL_PROD > /dev/null 2>&1; then
+            echo "${{ secrets.SPRING_API_URL_PROD }}" | gcloud secrets versions add SPRING_API_URL_PROD --data-file=-
+          else
+            echo "${{ secrets.SPRING_API_URL_PROD }}" | gcloud secrets create SPRING_API_URL_PROD --replication-policy="automatic" --data-file=-
+          fi
+          
+          # NODE_API_URL_PROD
+          if gcloud secrets describe NODE_API_URL_PROD > /dev/null 2>&1; then
+            echo "${{ secrets.NODE_API_URL_PROD }}" | gcloud secrets versions add NODE_API_URL_PROD --data-file=-
+          else
+            echo "${{ secrets.NODE_API_URL_PROD }}" | gcloud secrets create NODE_API_URL_PROD --replication-policy="automatic" --data-file=-
+          fi
+
       # Que la imagen se suba con el tag actual cuando se etnga el actions del tag
       - name: Build Docker image
         run: |
@@ -302,5 +325,9 @@ jobs:
           region: 'us-east1'
           image: 'us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:0.0.1'
           flags: '--allow-unauthenticated'
+          secrets: |
+            FIREBASE_CONFIG_PROD=FIREBASE_CONFIG_PROD:latest
+            SPRING_API_URL_PROD=SPRING_API_URL_PROD:latest
+            NODE_API_URL_PROD=NODE_API_URL_PROD:latest
 
           # Habría que proteger el back desplegado (general)

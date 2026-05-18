@@ -1,6 +1,8 @@
 import { writeFile } from 'node:fs';
 import * as dotenv from 'dotenv';
 
+dotenv.config();
+
 dotenv.config({ path: './src/secrets/.env' });
 
 function getEnvValue(possibleVars: string[]) {
