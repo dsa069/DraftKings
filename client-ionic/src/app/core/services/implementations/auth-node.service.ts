@@ -11,22 +11,7 @@ import { authState } from '@angular/fire/auth';
 export class AuthNodeService extends AuthService {
   protected apiUrl = 'http://localhost:3000';
 
-  private firebaseAuth = inject(Auth);
-
-  readonly _user = toSignal(authState(this.firebaseAuth));
-
   public override isAuthenticated: Signal<boolean> = signal(false); // Implementa tu lógica de autenticación aquí
-
-  async loginFirebase(email: string, pass: string): Promise<any> {
-    // 1. Autenticar con Firebase
-    const userCredential = await signInWithEmailAndPassword(
-      this.firebaseAuth,
-      email,
-      pass,
-    );
-
-    return userCredential;
-  }
 
   async verifyBackend(): Promise<void> {
     // Aquí iría la lógica para verificar el backend de Node.js
@@ -37,12 +22,6 @@ export class AuthNodeService extends AuthService {
   }
 
   async register(email: string, pass: string, extraData: any) {}
-
-  async getToken(): Promise<string | null> {
-    return null;
-  }
-
-  async logout(): Promise<void> {}
 
   getProfile(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/profile`);

@@ -16,25 +16,9 @@ import { authState } from '@angular/fire/auth';
 export class AuthSpringService extends AuthService {
   protected apiUrl = 'http://localhost:8080/userms'; // URL de tu Gateway de Spring
 
-  // Inyectamos Firebase SOLO para la estrategia de Spring
-  private firebaseAuth = inject(Auth);
-
-  readonly _user = toSignal(authState(this.firebaseAuth));
-
   // 2. Implementamos la señal abstracta de forma computada
   // Esto es independiente de la lógica interna; el componente solo verá true/false
   public override readonly isAuthenticated = computed(() => !!this._user());
-
-  async loginFirebase(email: string, pass: string): Promise<any> {
-    // 1. Autenticar con Firebase
-    const userCredential = await signInWithEmailAndPassword(
-      this.firebaseAuth,
-      email,
-      pass,
-    );
-
-    return userCredential;
-  }
 
   async verifyBackend(): Promise<void> {
     // 1. Obtener el token de Firebase del usuario actual
@@ -84,15 +68,6 @@ export class AuthSpringService extends AuthService {
     );
 
     return userCredential;
-  }
-
-  async getToken(): Promise<string | null> {
-    const user = this.firebaseAuth.currentUser;
-    return user ? await getIdToken(user) : null;
-  }
-
-  async logout(): Promise<void> {
-    await signOut(this.firebaseAuth);
   }
 
   getProfile(): Observable<User> {

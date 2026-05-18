@@ -1,29 +1,53 @@
 import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, Signal } from '@angular/core';
+import {
+  Auth,
+  signInWithEmailAndPassword,
+  signOut,
+  authState,
+  idToken,
+} from '@angular/fire/auth';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { User } from '../../models/user.model';
-import { Injectable, inject, Signal } from '@angular/core';
 
 @Injectable()
 export abstract class AuthService {
-  protected abstract apiUrl: string; // Cada hijo dirá su URL
+  protected abstract apiUrl: string;
   protected http = inject(HttpClient);
+  protected firebaseAuth = inject(Auth);
+
+  // Definimos que existirá una señal, pero no la inicializamos aquí
+  // para evitar el error de "used before initialization".
   public abstract readonly isAuthenticated: Signal<boolean>;
 
-  abstract loginFirebase(email: string, pass: string): Promise<any>;
+  // Usuario de Firebase (disponible para todos los hijos)
+  protected readonly _user = toSignal(authState(this.firebaseAuth));
+
+  // 1. Lógica común: Login en Firebase
+  async loginFirebase(email: string, pass: string): Promise<any> {
+    return await signInWithEmailAndPassword(this.firebaseAuth, email, pass);
+  }
+
+  // 2. Lógica común: Logout
+  async logout(): Promise<void> {
+    await signOut(this.firebaseAuth);
+  }
+
+  // 3. Lógica común: Obtener Token
+  async getToken(): Promise<string | null> {
+    const user = this.firebaseAuth.currentUser;
+    return user ? await user.getIdToken() : null;
+  }
+
+  // Métodos que CADA backend debe implementar a su manera
   abstract verifyBackend(): Promise<void>;
   abstract register(email: string, pass: string, extraData?: any): Promise<any>;
-  abstract getToken(): Promise<string | null>;
-  abstract logout(): Promise<void>;
   abstract getProfile(): Observable<User>;
 
-  // Orquestador para cuando NO hay cambio de backend
+  // Método orquestador opcional
   async login(email: string, pass: string): Promise<any> {
     await this.loginFirebase(email, pass);
     return await this.verifyBackend();
   }
-
-  getUser(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}/users`);
-  }
-  // ... el resto de métodos CRUD aquí una sola vez
 }
