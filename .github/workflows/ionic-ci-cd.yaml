@@ -168,6 +168,7 @@ jobs:
         uses: cypress-io/github-action@v7
         with:
           working-directory: client-ionic
+          install-command: npm ci --legacy-peer-deps
           component: true
           start: npx ionic serve
           wait-on: "http://localhost:8100"
@@ -216,6 +217,7 @@ jobs:
         uses: cypress-io/github-action@v7
         with:
           working-directory: client-ionic
+          install-command: npm ci --legacy-peer-deps
           start: npx ionic serve
           wait-on: "http://localhost:8100"
           browser: ${{ matrix.browser }}
