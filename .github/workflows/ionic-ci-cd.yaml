@@ -151,8 +151,12 @@ jobs:
           cache: "npm"
           cache-dependency-path: client-ionic/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+      - name: Generate Environments
+        run: npm run config # <--- ESTO CREA EL ARCHIVO FISICAMENTE
+        env:
+          FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_DEV }}
+          SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_DEV }}
+          NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_DEV }}
 
       - name: Add Component Header
         run: | 
@@ -200,8 +204,12 @@ jobs:
           cache: "npm"
           cache-dependency-path: client-ionic/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+      - name: Generate Environments
+        run: npm run config # <--- ESTO CREA EL ARCHIVO FISICAMENTE
+        env:
+          FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_DEV }}
+          SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_DEV }}
+          NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_DEV }}
 
       - name: Add E2E Header
         run: |
