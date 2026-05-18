@@ -3,9 +3,6 @@ import { Injectable, Signal, signal, inject } from '@angular/core';
 import { AuthService } from '../abstract/auth.service';
 import { User } from '../../models/user.model';
 import { Observable } from 'rxjs';
-import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { authState } from '@angular/fire/auth';
 
 @Injectable()
 export class AuthNodeService extends AuthService {
@@ -21,7 +18,7 @@ export class AuthNodeService extends AuthService {
     // Simulación de verificación exitosa
   }
 
-  async register(email: string, pass: string, extraData: any) {}
+  async registerBackend(extraData: any) {}
 
   getProfile(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/profile`);

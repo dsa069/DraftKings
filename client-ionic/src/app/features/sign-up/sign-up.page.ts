@@ -92,28 +92,34 @@ export class SignUpPage implements OnInit {
       return;
     }
 
-    // 1. Verificar si hay que cambiar el backend antes de proceder
-    if (this.selectedBackend !== this.configService.selectedBackend()) {
-      this.configService.applyBackendChange(this.selectedBackend);
-      return; // El reload detendrá la ejecución aquí
-    }
-
     const { email, password, userName } = this.signUpForm.value;
 
     try {
-      console.log('Iniciando registro en:', this.selectedBackend);
+      // 0. AVISAMOS AL APP.COMPONENT: "No verifiques nada, estoy registrando"
+      localStorage.setItem('is_registering', 'true');
+      localStorage.setItem('pending_sync_data', JSON.stringify({ userName }));
 
-      // 2. Llamar al servicio de registro
-      // Esto ejecutará Firebase Auth y luego la sincronización con PostgreSQL
-      await this.authService.register(email, password, { userName: userName });
+      // 1. Registro en Firebase
+      await this.authService.registerFirebase(email, password);
 
-      console.log('Registro y sincronización completados con éxito');
+      // 2. Comprobar cambio de backend
+      if (this.selectedBackend !== this.configService.selectedBackend()) {
+        this.configService.applyBackendChange(this.selectedBackend);
+        return; // El reload ocurre aquí
+      }
 
-      // 3. Solo si lo anterior fue exitoso, navegamos
+      // 3. Si no hay cambio, sincronizamos manualmente
+      await this.authService.registerBackend({ userName });
+
+      // 4. LIMPIAMOS EL FLAG: Ahora sí puede verificar
+      localStorage.removeItem('is_registering');
+      localStorage.removeItem('pending_sync_data');
+
       this.navCtrl.navigateRoot('/tabs/players');
     } catch (error) {
-      console.error('Error durante el proceso de registro:', error);
-      // Aquí podrías mostrar una alerta al usuario indicando el fallo
+      localStorage.removeItem('is_registering');
+      localStorage.removeItem('pending_sync_data');
+      console.error('Error en el registro:', error);
     }
   }
 
