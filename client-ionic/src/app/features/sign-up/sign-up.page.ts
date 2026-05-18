@@ -95,30 +95,37 @@ export class SignUpPage implements OnInit {
     const { email, password, userName } = this.signUpForm.value;
 
     try {
-      // 0. AVISAMOS AL APP.COMPONENT: "No verifiques nada, estoy registrando"
-      localStorage.setItem('is_registering', 'true');
-      localStorage.setItem('pending_sync_data', JSON.stringify({ userName }));
+      // 1. Bloqueamos al centinela temporalmente para que no interfiera en caliente
+      localStorage.setItem('bypass_centinela', 'true');
 
-      // 1. Registro en Firebase
+      // 2. Registro en Firebase (Paso común)
       await this.authService.registerFirebase(email, password);
 
-      // 2. Comprobar cambio de backend
+      // 3. ¿Hay cambio de backend?
       if (this.selectedBackend !== this.configService.selectedBackend()) {
+        // Preparamos las banderas EXCLUSIVAS para el post-reload
+        localStorage.setItem('pending_sync_data', JSON.stringify({ userName }));
+        localStorage.setItem('execute_sync_on_reload', 'true');
+
+        // Liberamos el bypass para que el centinela despierte al recargar
+        localStorage.removeItem('bypass_centinela');
+
+        // Provoca el window.location.reload()
         this.configService.applyBackendChange(this.selectedBackend);
-        return; // El reload ocurre aquí
+        return;
       }
 
-      // 3. Si no hay cambio, sincronizamos manualmente
+      // 4. Si es el mismo backend (Sin reload)
       await this.authService.registerBackend({ userName });
 
-      // 4. LIMPIAMOS EL FLAG: Ahora sí puede verificar
-      localStorage.removeItem('is_registering');
-      localStorage.removeItem('pending_sync_data');
-
+      // Limpieza total y navegación
+      localStorage.removeItem('bypass_centinela');
       this.navCtrl.navigateRoot('/tabs/players');
     } catch (error) {
-      localStorage.removeItem('is_registering');
+      // Si algo falla, limpiamos todo para no romper la app
+      localStorage.removeItem('bypass_centinela');
       localStorage.removeItem('pending_sync_data');
+      localStorage.removeItem('execute_sync_on_reload');
       console.error('Error en el registro:', error);
     }
   }

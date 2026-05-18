@@ -12,33 +12,40 @@ export class AppComponent {
   private authService = inject(AuthService);
   private navCtrl = inject(NavController);
 
+  // app.component.ts
   constructor() {
     effect(async () => {
       if (this.authService.isAuthenticated()) {
-        // 1. Si estamos en medio de un proceso de registro activo en esta misma pantalla,
-        // no hacemos nada, dejamos que la lógica de sign-up.page termine.
-        const isRegistering = localStorage.getItem('is_registering');
-
-        // Si estamos en la página de registro y acabamos de darle al botón,
-        // el effect se dispara pero este IF lo detiene.
-        if (isRegistering && window.location.hash.includes('sign-up')) {
-          console.log('⏳ Registro en curso... Centinela en espera.');
+        // PERSPECTIVA NUEVA 1: Si la página está operando en caliente, no interfieras.
+        if (localStorage.getItem('bypass_centinela') === 'true') {
+          console.log('⏳ Registro activo en pantalla. Centinela esperando...');
           return;
         }
 
         try {
-          const pendingData = localStorage.getItem('pending_sync_data');
+          // PERSPECTIVA NUEVA 2: ¿Venimos de un reload de registro?
+          if (localStorage.getItem('execute_sync_on_reload') === 'true') {
+            console.log(
+              '🔄 Detectada recarga de registro. Sincronizando en el nuevo backend...',
+            );
 
-          if (pendingData) {
-            // Esto solo se ejecutará si hubo un RELOAD (porque el isRegistering se mantiene)
-            console.log('🔄 Sincronizando nuevo usuario tras recarga...');
-            const extraData = JSON.parse(pendingData);
-            await this.authService.registerBackend(extraData);
+            const pendingData = localStorage.getItem('pending_sync_data');
+            if (pendingData) {
+              const extraData = JSON.parse(pendingData);
+              await this.authService.registerBackend(extraData);
+            }
+
+            // Sincronización exitosa: Limpiamos el rastro inmediatamente
             localStorage.removeItem('pending_sync_data');
-            localStorage.removeItem('is_registering');
-          } else {
-            await this.authService.verifyBackend();
+            localStorage.removeItem('execute_sync_on_reload');
+
+            // Forzamos salida directa a la app principal
+            this.navCtrl.navigateRoot('/tabs/players');
+            return;
           }
+
+          // --- FLUJO NORMAL (Login exitoso o F5 ordinario) ---
+          await this.authService.verifyBackend();
 
           if (
             window.location.hash.includes('login') ||
@@ -47,9 +54,10 @@ export class AppComponent {
             this.navCtrl.navigateRoot('/tabs/players');
           }
         } catch (error) {
-          console.error('❌ Error de validación');
+          console.error('❌ Error de validación/sincronización en backend');
           localStorage.removeItem('pending_sync_data');
-          localStorage.removeItem('is_registering');
+          localStorage.removeItem('execute_sync_on_reload');
+          localStorage.removeItem('bypass_centinela');
           await this.authService.logout();
           this.navCtrl.navigateRoot('/login');
         }
