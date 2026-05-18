@@ -5,6 +5,34 @@ spring:
     name: userMS
   config:
     import: "optional:configserver:http://localhost:8888"
+eureka:
+  instance:
+    hostname: localhost
+    # Ayuda a distinguir instancias si hay varias corriendo del mismo microservicio en el mismo host
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      default-zone: http://localhost:8761
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+info:
+  application:
+    name: ${spring.application.name}
+    description: User microservice
+    version: '@project.version@'
+---
+# NUEVO PERFIL PARA TRABAJAR EN TU PC SIN CONFIG SERVER
+spring:
+  config:
+    activate:
+      on-profile: local
   datasource:
     url: jdbc:postgresql://postgresql/draftkings
     username: postgres
@@ -28,28 +56,6 @@ spring:
           allowed-methods: "*"
           allowed-headers: "*"
           allow-credentials: true
-eureka:
-  instance:
-    hostname: localhost
-    # Ayuda a distinguir instancias si hay varias corriendo del mismo microservicio en el mismo host
-    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
-  client:
-    service-url:
-      default-zone: http://localhost:8761
-
-management:
-  info:
-    env:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: health,info,refresh
-info:
-  application:
-    name: ${spring.application.name}
-    description: User microservice
-    version: '@project.version@'
 
 ---
 spring:
@@ -57,24 +63,6 @@ spring:
     activate:
       on-profile: dev
     import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
-  datasource:
-    url: jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
-    username: postgres.ixbdoxfxxlymwjuyfdiq
-    password: ${DB_SQL_PASS_DEV}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update # O 'none' si no quieres que toque las tablas
-    show-sql: true
-  mvc:
-    cors:
-      configs:
-        '[/**]':
-          allowed-origins: "https://draftkings-dev.cnsa-2026-dsa069.tech"
-          allowed-methods: "*"
-          allowed-headers: "*"
-          allow-credentials: true
 
 server:
   port: ${PORT:8080}
@@ -93,6 +81,7 @@ server:
 info:
   application:
     description: DraftKings user microservice in prod profile
+
 ---
 spring:
   config:
