@@ -9,10 +9,11 @@ import {
 } from '@angular/fire/auth';
 import { firstValueFrom, Observable, switchMap, from } from 'rxjs';
 import { User } from '../../models/user.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable()
 export class AuthSpringService extends AuthService {
-  protected apiUrl = 'http://localhost:8080/userms'; // URL de tu Gateway de Spring
+  protected apiUrl = environment.springApiUrl + '/userms'; // URL de tu Gateway de Spring
 
   // 2. Implementamos la señal abstracta de forma computada
   // Esto es independiente de la lógica interna; el componente solo verá true/false

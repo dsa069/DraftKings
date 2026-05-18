@@ -31,6 +31,8 @@ import { environment } from './environments/environment';
 console.log('🚀 Configuración cargada:', {
   produccion: environment.production,
   proyectoId: environment.firebaseConfig?.projectId,
+  springApiUrl: environment.springApiUrl,
+  nodeApiUrl: environment.nodeApiUrl,
 });
 
 bootstrapApplication(AppComponent, {
