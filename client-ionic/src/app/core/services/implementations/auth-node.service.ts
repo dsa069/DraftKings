@@ -3,10 +3,11 @@ import { Injectable, Signal, signal, inject } from '@angular/core';
 import { AuthService } from '../abstract/auth.service';
 import { User } from '../../models/user.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable()
 export class AuthNodeService extends AuthService {
-  protected apiUrl = 'http://localhost:3000';
+  protected apiUrl = environment.nodeApiUrl; // URL del backend de Node.js desde environment
 
   public override isAuthenticated: Signal<boolean> = signal(false); // Implementa tu lógica de autenticación aquí
 

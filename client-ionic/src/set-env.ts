@@ -1,61 +1,66 @@
 import { writeFile } from 'node:fs';
 import * as dotenv from 'dotenv';
 
-dotenv.config();
-
 dotenv.config({ path: './src/secrets/.env' });
+
+function getEnvValue(possibleVars: string[]) {
+  for (const varName of possibleVars) {
+    if (process.env[varName]) {
+      return process.env[varName];
+    }
+  }
+  return null;
+}
 
 // Definimos la lógica de qué buscar para cada archivo
 const configMapping = [
   {
     targetPath: './src/environments/environment.ts',
     production: false,
-    // Prioridad para desarrollo: 1º DEV, 2º LOCAL
-    possibleVars: ['FIREBASE_CONFIG_DEV', 'FIREBASE_CONFIG_LOCAL'],
+    firebaseConfigVars: ['FIREBASE_CONFIG_DEV', 'FIREBASE_CONFIG_LOCAL'],
+    springApiUrlVars: ['SPRING_API_URL_DEV', 'SPRING_API_URL_LOCAL'],
+    nodeApiUrlVars: ['NODE_API_URL_DEV', 'NODE_API_URL_LOCAL'],
   },
   {
     targetPath: './src/environments/environment.prod.ts',
     production: true,
-    // Para producción solo queremos la de PROD
-    possibleVars: ['FIREBASE_CONFIG_PROD'],
+    firebaseConfigVars: ['FIREBASE_CONFIG_PROD'],
+    springApiUrlVars: ['SPRING_API_URL_PROD'],
+    nodeApiUrlVars: ['NODE_API_URL_PROD'],
   },
 ];
 
 configMapping.forEach((config) => {
-  let selectedSecret = null;
-  let varNameUsed = '';
+  const firebaseConfigValue = getEnvValue(config.firebaseConfigVars);
+  const springApiUrlValue = getEnvValue(config.springApiUrlVars);
+  const nodeApiUrlValue = getEnvValue(config.nodeApiUrlVars);
 
-  // Buscamos en orden de prioridad según la lista 'possibleVars'
-  for (const varName of config.possibleVars) {
-    if (process.env[varName]) {
-      selectedSecret = process.env[varName];
-      varNameUsed = varName;
-      break; // En cuanto encuentra uno, deja de buscar
-    }
-  }
-
-  if (selectedSecret) {
+  if (firebaseConfigValue && springApiUrlValue && nodeApiUrlValue) {
     try {
-      const firebaseConfig = JSON.parse(selectedSecret);
+      const firebaseConfig = JSON.parse(firebaseConfigValue);
 
       const fileContent = `export const environment = {
   production: ${config.production},
-  firebaseConfig: ${JSON.stringify(firebaseConfig, null, 2)}
+  firebaseConfig: ${JSON.stringify(firebaseConfig, null, 2)},
+  springApiUrl: '${springApiUrlValue}',
+  nodeApiUrl: '${nodeApiUrlValue}'
 };
 `;
 
       writeFile(config.targetPath, fileContent, (err) => {
         if (err) throw err;
-        console.log(`✅ ${config.targetPath} generado usando: ${varNameUsed}`);
+        console.log(`✅ ${config.targetPath} generado`);
       });
     } catch (e) {
-      console.error(
-        `❌ Error parseando el JSON de ${varNameUsed}. Asegúrate de que el valor en el .env sea un JSON válido.`,
-      );
+      console.error(`❌ Error parseando firebaseConfig`);
     }
   } else {
+    const missing = [];
+    if (!firebaseConfigValue) missing.push('firebaseConfig');
+    if (!springApiUrlValue) missing.push('springApiUrl');
+    if (!nodeApiUrlValue) missing.push('nodeApiUrl');
     console.log(
-      `--- Saltando ${config.targetPath}: No se encontró ninguna de estas variables: [${config.possibleVars.join(', ')}] ---`,
+      `--- Saltando ${config.targetPath}: Faltan variables para [${missing.join(', ')}] ---`,
     );
   }
 });
