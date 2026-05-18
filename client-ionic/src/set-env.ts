@@ -37,32 +37,27 @@ configMapping.forEach((config) => {
   const springApiUrlValue = getEnvValue(config.springApiUrlVars);
   const nodeApiUrlValue = getEnvValue(config.nodeApiUrlVars);
 
-  if (firebaseConfigValue && springApiUrlValue && nodeApiUrlValue) {
-    try {
-      const firebaseConfig = JSON.parse(firebaseConfigValue);
+  // Intentamos parsear Firebase si existe, si no, objeto vacío
+  let firebaseParsed = {};
+  try {
+    if (firebaseConfigValue) firebaseParsed = JSON.parse(firebaseConfigValue);
+  } catch (e) {
+    console.error(`❌ Error parseando firebaseConfig`);
+  }
 
-      const fileContent = `export const environment = {
+  // El contenido se genera SIEMPRE. Si no hay valor, se pone string vacío
+  const fileContent = `export const environment = {
   production: ${config.production},
-  firebaseConfig: ${JSON.stringify(firebaseConfig, null, 2)},
-  springApiUrl: '${springApiUrlValue}',
-  nodeApiUrl: '${nodeApiUrlValue}'
+  firebaseConfig: ${JSON.stringify(firebaseParsed, null, 2)},
+  springApiUrl: '${springApiUrlValue || ''}',
+  nodeApiUrl: '${nodeApiUrlValue || ''}'
 };
 `;
 
-      writeFile(config.targetPath, fileContent, (err) => {
-        if (err) throw err;
-        console.log(`✅ ${config.targetPath} generado`);
-      });
-    } catch (e) {
-      console.error(`❌ Error parseando firebaseConfig`);
-    }
-  } else {
-    const missing = [];
-    if (!firebaseConfigValue) missing.push('firebaseConfig');
-    if (!springApiUrlValue) missing.push('springApiUrl');
-    if (!nodeApiUrlValue) missing.push('nodeApiUrl');
+  writeFile(config.targetPath, fileContent, (err) => {
+    if (err) throw err;
     console.log(
-      `--- Saltando ${config.targetPath}: Faltan variables para [${missing.join(', ')}] ---`,
+      `✅ ${config.targetPath} generado (Producción: ${config.production})`,
     );
-  }
+  });
 });
