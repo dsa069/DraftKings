@@ -111,9 +111,18 @@ jobs:
 
       - name: Apply Custom Android Configurations
         run: |
-          echo "Aplicando recursos y configuraciones personalizadas..."
-          # Copia recursiva manteniendo la estructura de directorios
-          cp -r android.custom/* android/
+          echo "Aplicando recursos personalizados..."
+          
+          # 1. Copiar de forma segura el Manifest a su sitio exacto
+          cp android.custom/app/src/main/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
+          
+          # 2. Copiar los layouts (tu fondo de WebView activity_main.xml)
+          mkdir -p android/app/src/main/res/layout
+          cp -f android.custom/app/src/main/res/layout/* android/app/src/main/res/layout/
+          
+          # 3. Copiar tus valores personalizados (colors.xml y styles.xml)
+          mkdir -p android/app/src/main/res/values
+          cp -f android.custom/app/src/main/res/values/* android/app/src/main/res/values/
 
       - name: Sync Capacitor
         run: npx cap sync android
