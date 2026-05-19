@@ -106,15 +106,24 @@
         <!-- Password Requirements -->
         <div class="password-requirements-container">
           <div class="requirement-item">
-            <div class="requirement-dot"></div>
+            <div
+              class="requirement-dot"
+              [class.requirement-met]="isPasswordLongEnough"
+            ></div>
             <span class="requirement-text">8+ CHARACTERS</span>
           </div>
           <div class="requirement-item">
-            <div class="requirement-dot"></div>
+            <div
+              class="requirement-dot"
+              [class.requirement-met]="hasNumber"
+            ></div>
             <span class="requirement-text">1 NUMBER</span>
           </div>
           <div class="requirement-item">
-            <div class="requirement-dot"></div>
+            <div
+              class="requirement-dot"
+              [class.requirement-met]="hasSymbol"
+            ></div>
             <span class="requirement-text">1 SYMBOL</span>
           </div>
         </div>
