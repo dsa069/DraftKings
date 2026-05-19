@@ -110,8 +110,7 @@ jobs:
       - name: Generate Android Icons and Splash Screens
         run: |          
           echo "Generando iconos nativos a partir de las imágenes maestras..."
-          # Indicamos dónde están los recursos de origen y que solo apunte a android
-          npx capacitor-assets generate --android --asset-path resources
+          npx capacitor-assets generate --android
 
       - name: Apply Custom Android Configurations
         run: |
