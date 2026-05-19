@@ -129,6 +129,12 @@ jobs:
 
       - name: Build APK (Debug)
         run: |
+          echo "=== DETECTIVE DE ICONOS: ¿QUÉ HAY EN MIPMAP? ==="
+          ls -la android/app/src/main/res/mipmap-xxhdpi/
+          
+          echo "=== DETECTIVE DE MANIFEST: ¿QUÉ TIENE DENTRO? ==="
+          cat android/app/src/main/AndroidManifest.xml | grep -E "icon|roundIcon"
+          
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
