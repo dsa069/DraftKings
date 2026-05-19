@@ -107,6 +107,12 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Apply Custom Android Configurations
+        run: |
+          echo "Aplicando recursos y configuraciones personalizadas..."
+          # Copia recursiva manteniendo la estructura de directorios
+          cp -r android.custom/* android/
+
       - name: Build APK (Debug)
         run: |
           cd android
