@@ -122,7 +122,9 @@ export class SignUpPage implements OnInit {
       localStorage.removeItem('bypass_centinela');
       this.navCtrl.navigateRoot('/tabs/players');
     } catch (error) {
-      // Si algo falla, limpiamos todo para no romper la app
+      // Si falla CUALQUIER COSA de arriba, hacemos rollback y limiampos todo
+      console.error('❌ Error en el registro, iniciando ROLLBACK:', error);
+      await this.authService.deleteCurrentUser();
       localStorage.removeItem('bypass_centinela');
       localStorage.removeItem('pending_sync_data');
       localStorage.removeItem('execute_sync_on_reload');
