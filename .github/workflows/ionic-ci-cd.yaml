@@ -345,7 +345,7 @@ jobs:
           region: "us-east1"
           image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:latest"
           # Temporalmente permitimos acceso público para facilitar pruebas
-          flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated"
+          flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated --ingress=all"
           secrets: |
             FIREBASE_CONFIG_DEV=FIREBASE_CONFIG_DEV:latest
             SPRING_API_URL_DEV=SPRING_API_URL_DEV:latest

@@ -53,4 +53,4 @@ jobs:
           service: "dk-node"
           region: "us-east1"
           image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:0.0.1"
-          flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated --set-secrets=/app/enviroments/env=NODE_ENV_PROD:latest"
+          flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated --ingress=all --set-secrets=/app/enviroments/env=NODE_ENV_PROD:latest"
