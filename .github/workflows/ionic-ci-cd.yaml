@@ -104,9 +104,6 @@ jobs:
       - name: Add Android platform
         run: npx cap add android
 
-      - name: Sync Capacitor
-        run: npx cap sync android
-
       - name: Generate Android Icons and Splash Screens
         run: |          
           echo "Generando iconos nativos a partir de las imágenes maestras..."
@@ -117,6 +114,9 @@ jobs:
           echo "Aplicando recursos y configuraciones personalizadas..."
           # Copia recursiva manteniendo la estructura de directorios
           cp -r android.custom/* android/
+
+      - name: Sync Capacitor
+        run: npx cap sync android
 
       - name: Build APK (Debug)
         run: |
