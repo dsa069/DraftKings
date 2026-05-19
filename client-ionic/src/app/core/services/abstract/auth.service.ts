@@ -6,6 +6,7 @@ import {
   signOut,
   authState,
   createUserWithEmailAndPassword,
+  deleteUser,
 } from '@angular/fire/auth';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
@@ -42,6 +43,24 @@ export abstract class AuthService {
   async getToken(): Promise<string | null> {
     const user = this.firebaseAuth.currentUser;
     return user ? await user.getIdToken() : null;
+  }
+
+  // 4. NUEVO: Lógica de Rollback (Borrar cuenta si el backend falla)
+  async deleteCurrentUser(): Promise<void> {
+    const user = this.firebaseAuth.currentUser;
+    if (user) {
+      try {
+        await deleteUser(user);
+        console.log(
+          '🗑️ Rollback ejecutado: Cuenta de Firebase eliminada por fallo en el Backend',
+        );
+      } catch (error) {
+        console.error(
+          '⚠️ Error crítico en Rollback: No se pudo eliminar de Firebase',
+          error,
+        );
+      }
+    }
   }
 
   // Métodos que CADA backend debe implementar a su manera
