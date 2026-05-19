@@ -4,6 +4,9 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  ValidatorFn,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import {
   IonContent,
@@ -13,6 +16,7 @@ import {
   IonButton,
   IonIcon,
   IonBackButton,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -51,6 +55,14 @@ export class SignUpPage implements OnInit {
   private readonly navCtrl = inject(NavController);
   private readonly configService = inject(ConfigService);
   private readonly authService = inject(AuthService);
+  private readonly toastCtrl = inject(ToastController);
+  passwordMatchValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    const password = control.get('password')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  };
 
   showPassword: boolean = false;
   signUpForm!: FormGroup;
@@ -73,12 +85,26 @@ export class SignUpPage implements OnInit {
   }
 
   private initializeForm(): void {
-    this.signUpForm = this.formBuilder.group({
-      userName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
-    });
+    this.signUpForm = this.formBuilder.group(
+      {
+        userName: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
+        password: [
+          '',
+          [
+            Validators.required,
+            // 8 caracteres, 1 número y 1 símbolo
+            Validators.pattern(
+              /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/,
+            ),
+          ],
+        ],
+        confirmPassword: ['', [Validators.required]],
+      },
+      {
+        validators: [this.passwordMatchValidator],
+      },
+    );
   }
 
   togglePasswordVisibility(): void {
@@ -88,7 +114,8 @@ export class SignUpPage implements OnInit {
   // En sign-up.page.ts
   async onRegister(): Promise<void> {
     if (this.signUpForm.invalid) {
-      console.log('Formulario de registro no válido');
+      const message = this.getFormErrorMessage();
+      await this.showToast(message);
       return;
     }
 
@@ -134,5 +161,33 @@ export class SignUpPage implements OnInit {
 
   gotoLogin(): void {
     this.navCtrl.navigateRoot('/login');
+  }
+
+  // Nuevo método para identificar el error
+  private getFormErrorMessage(): string {
+    if (this.signUpForm.get('userName')?.hasError('required'))
+      return 'El nombre de usuario es obligatorio.';
+    if (this.signUpForm.get('userName')?.hasError('minlength'))
+      return 'El nombre debe tener al menos 3 caracteres.';
+    if (this.signUpForm.get('email')?.invalid)
+      return 'Formato de correo inválido.';
+    if (this.signUpForm.get('password')?.hasError('required'))
+      return 'La contraseña es obligatoria.';
+    if (this.signUpForm.get('password')?.hasError('pattern'))
+      return 'La contraseña debe tener 8 caracteres, 1 número y 1 símbolo.';
+    if (this.signUpForm.hasError('passwordMismatch'))
+      return 'Las contraseñas no coinciden.';
+    return 'Por favor, revisa que todos los campos sean correctos.';
+  }
+
+  // Nuevo método para mostrar el toast
+  private async showToast(message: string): Promise<void> {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color: 'danger',
+    });
+    await toast.present();
   }
 }
