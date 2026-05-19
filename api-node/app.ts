@@ -17,6 +17,7 @@ dotenv.config({
 
 import indexRouter from "./dashboard_server/routes/index";
 import usersRouter from "./dashboard_server/routes/users";
+import userApiRouter from "./draftKings_api/routes/user";
 
 const app = express();
 
@@ -30,8 +31,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../public")));
 
+// Rutas del Dashboard
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+
+// Rutas de la API
+app.use("/api/user", userApiRouter);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {

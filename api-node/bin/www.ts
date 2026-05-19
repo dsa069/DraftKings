@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import app from "../app";
+import { connectDB } from "../draftKings_api/config/database";
 import debug from "debug";
 import http from "http";
 
@@ -19,11 +20,6 @@ function normalizePort(val: string): number | string | false {
 
   return false;
 }
-
-const port = normalizePort(process.env.PORT || "3000");
-app.set("port", port);
-
-const server = http.createServer(app);
 
 function onError(error: NodeJS.ErrnoException): void {
   if (error.syscall !== "listen") {
@@ -52,6 +48,28 @@ function onListening(): void {
   debugLog("Listening on " + bind);
 }
 
-server.listen(port);
-server.on("error", onError);
-server.on("listening", onListening);
+const port = normalizePort(process.env.PORT || "3000");
+app.set("port", port);
+
+const server = http.createServer(app);
+
+/**
+ * Función para iniciar el servidor después de conectar a la base de datos.
+ */
+async function startServer() {
+  try {
+    // Conectar a la base de datos ANTES de que el servidor escuche peticiones.
+    await connectDB();
+
+    // Solo después de una conexión exitosa, inicia el servidor HTTP.
+    server.listen(port);
+    server.on("error", onError);
+    server.on("listening", onListening);
+  } catch (error) {
+    console.error("Error fatal al iniciar el servidor:", error);
+    process.exit(1);
+  }
+}
+
+// Iniciar el servidor
+startServer();
