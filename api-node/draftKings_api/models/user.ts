@@ -1,16 +1,18 @@
-import { Schema, model } from "mongoose";
-import { IUser } from "../types/user.types";
+import { Schema, InferSchemaType, model } from "mongoose";
 
-const UserSchema = new Schema<IUser>(
+const userSchema = new Schema(
   {
     firebaseUid: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     userName: { type: String, required: false },
-    role: { type: String, default: "usuario" }, // Soporte para control de roles del PDF (actividad 3.2)
+    role: { type: String, default: "usuario" },
     is_active: { type: Boolean, default: true },
     blocked: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
 
-export const User = model<IUser>("User", UserSchema);
+// ✅ TypeScript infiere automáticamente el tipo del schema
+type IUser = InferSchemaType<typeof userSchema>;
+
+export const User = model<IUser>("User", userSchema);
