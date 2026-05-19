@@ -107,6 +107,12 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Generate Android Icons and Splash Screens
+        run: |          
+          echo "Generando iconos nativos a partir de las imágenes maestras..."
+          # Indicamos dónde están los recursos de origen y que solo apunte a android
+          npx capacitor-assets generate --android --asset-path resources
+
       - name: Apply Custom Android Configurations
         run: |
           echo "Aplicando recursos y configuraciones personalizadas..."
