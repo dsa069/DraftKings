@@ -80,13 +80,13 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v5.2.0
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: "temurin"
+          java-version: "21"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4.0.1
         with:
-          packages: 'platforms;android-34 build-tools;34.0.0'
+          packages: "platforms;android-34 build-tools;34.0.0"
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -165,7 +165,7 @@ jobs:
           NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_DEV }}
 
       - name: Add Component Header
-        run: | 
+        run: |
           echo "## 🧩 Cypress: Component Tests - ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Component Tests (Cypress)
@@ -298,7 +298,7 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
       - name: Docker login to Artifact Registry
         uses: docker/login-action@v4.1.0
@@ -315,14 +315,14 @@ jobs:
           else
             echo "${{ secrets.FIREBASE_CONFIG_DEV }}" | gcloud secrets create FIREBASE_CONFIG_DEV --replication-policy="automatic" --data-file=-
           fi
-          
+
           # SPRING_API_URL_DEV
           if gcloud secrets describe SPRING_API_URL_DEV > /dev/null 2>&1; then
             echo "${{ secrets.SPRING_API_URL_DEV }}" | gcloud secrets versions add SPRING_API_URL_DEV --data-file=-
           else
             echo "${{ secrets.SPRING_API_URL_DEV }}" | gcloud secrets create SPRING_API_URL_DEV --replication-policy="automatic" --data-file=-
           fi
-          
+
           # NODE_API_URL_DEV
           if gcloud secrets describe NODE_API_URL_DEV > /dev/null 2>&1; then
             echo "${{ secrets.NODE_API_URL_DEV }}" | gcloud secrets versions add NODE_API_URL_DEV --data-file=-
@@ -341,10 +341,11 @@ jobs:
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
-          service: 'draftkings-dev' # Nombre del servicio
-          region: 'us-east1'
-          image: 'us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:latest'
-          flags: '--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com'
+          service: "draftkings-dev" # Nombre del servicio
+          region: "us-east1"
+          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:latest"
+          # Temporalmente permitimos acceso público para facilitar pruebas
+          flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated"
           secrets: |
             FIREBASE_CONFIG_DEV=FIREBASE_CONFIG_DEV:latest
             SPRING_API_URL_DEV=SPRING_API_URL_DEV:latest
