@@ -106,7 +106,7 @@ jobs:
           echo "- **Test Report**: target/surefire-reports/" >> $GITHUB_STEP_SUMMARY
 
   deploy-dev:
-    if: false() # Me quedo sin dinero
+    if: false # Me quedo sin dinero
     needs: build
     permissions:
       contents: write
