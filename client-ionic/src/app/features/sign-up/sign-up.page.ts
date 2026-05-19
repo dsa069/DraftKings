@@ -163,6 +163,21 @@ export class SignUpPage implements OnInit {
     this.navCtrl.navigateRoot('/login');
   }
 
+  get isPasswordLongEnough(): boolean {
+    const password = this.signUpForm.get('password')?.value || '';
+    return password.length >= 8;
+  }
+
+  get hasNumber(): boolean {
+    const password = this.signUpForm.get('password')?.value || '';
+    return /\d/.test(password);
+  }
+
+  get hasSymbol(): boolean {
+    const password = this.signUpForm.get('password')?.value || '';
+    return /[!@#$%^&*]/.test(password);
+  }
+
   // Nuevo método para identificar el error
   private getFormErrorMessage(): string {
     if (this.signUpForm.get('userName')?.hasError('required'))
