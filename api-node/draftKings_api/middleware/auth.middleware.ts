@@ -86,3 +86,58 @@ export async function authorizeRequest(
     return res.status(401).json({ message: "Petición no autorizada" });
   }
 }
+
+/**
+ * Middleware para autorizar peticiones mediante Firebase IdToken sin creación automática.
+ * Este middleware SOLO valida el JWT y busca el usuario en la DB.
+ * Si el usuario no existe, devuelve 401 Unauthorized.
+ * Úsalo en rutas de lectura/consulta donde se requiere que el usuario esté ya registrado.
+ */
+export async function authorizeRequestNoCreate(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    // 1. Obtener y normalizar la cabecera Authorization
+    const header = req.headers.authorization;
+
+    // 2. Comprobar si la cabecera existe y comienza con 'Bearer '
+    if (!header || !header.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
+    // 3. Extraer el token de la cabecera
+    const token = header.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
+    // 4. Verificar el token usando el SDK de administración de Firebase
+    const decodedToken = await authAdmin.verifyIdToken(token);
+
+    // 5. Consultar la base de datos (Mongoose) buscando por el UID de Firebase
+    const user = await User.findOne({
+      firebaseUid: decodedToken.uid,
+      is_active: true,
+      blocked: false,
+    });
+
+    // 6. Si el usuario no existe o está inactivo/bloqueado, rechazar la petición
+    if (!user) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
+    // 7. Adjuntar la información procesada al objeto de solicitud Express
+    req.user = user;
+    req.firebaseUser = decodedToken;
+
+    // 8. Continuar con la siguiente función en la cadena
+    return next();
+  } catch (error) {
+    // Control de errores de Firebase (token expirado, inválido, etc.) y errores del servidor
+    console.error("Error en el Middleware de Autorización (NoCreate):", error);
+    // Para cumplir con el requisito del PDF, cualquier fallo resulta en 401
+    return res.status(401).json({ message: "Petición no autorizada" });
+  }
+}
