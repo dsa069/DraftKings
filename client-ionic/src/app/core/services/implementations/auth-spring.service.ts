@@ -1,12 +1,6 @@
+//Patron Strategy
 import { Injectable, computed } from '@angular/core';
 import { AuthService } from '../abstract/auth.service';
-import {
-  Auth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  getIdToken,
-  signOut,
-} from '@angular/fire/auth';
 import { firstValueFrom, Observable, switchMap, from } from 'rxjs';
 import { User } from '../../models/user.model';
 import { environment } from '../../../../environments/environment';
@@ -40,7 +34,9 @@ export class AuthSpringService extends AuthService {
       // Si el usuario existe en Firebase pero NO en tu DB, forzamos el logout de Firebase
       // para que no quede una sesión a medias.
       await this.logout();
-      throw new Error('El usuario no está registrado en el sistema local.');
+      throw new Error(
+        'El usuario no está registrado en el sistema SpringBoot.',
+      );
     }
   }
 
@@ -48,21 +44,41 @@ export class AuthSpringService extends AuthService {
     const token = await this.getToken();
     if (!token) throw new Error('No hay sesión de Firebase para sincronizar');
 
-    // Sincronización con PostgreSQL
-    return await firstValueFrom(
-      this.http.post(`${this.apiUrl}/api/auth/sync-user`, extraData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }),
-    );
+    // Validar que se proporciona un userName
+    if (
+      !extraData ||
+      !extraData.userName ||
+      typeof extraData.userName !== 'string'
+    ) {
+      throw new Error('Se requiere un userName válido para registrarse');
+    }
+
+    try {
+      // Sincronización con PostgreSQL
+      const response = await firstValueFrom(
+        this.http.post(`${this.apiUrl}/api/auth/sync-user`, extraData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }),
+      );
+      console.log('Usuario sincronizado con SpringBoot backend:', response);
+      return response;
+    } catch (error) {
+      console.error('Error al sincronizar con SpringBoot:', error);
+      throw new Error('Error al sincronizar con el backend de SpringBoot');
+    }
   }
 
   getProfile(): Observable<User> {
     return from(this.getToken()).pipe(
       // Convertimos la promesa del token a Observable
       switchMap((token) => {
+        if (!token) {
+          throw new Error('No hay token disponible');
+        }
+
         return this.http.get<User>(`${this.apiUrl}/api/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
