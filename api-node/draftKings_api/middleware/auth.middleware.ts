@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { authAdmin } from "../config/firebase.config";
+import { authAdmin } from "./config/firebase.config";
 import { User } from "../models/user";
 
 /**

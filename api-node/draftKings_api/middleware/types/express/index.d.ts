@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//index.d.ts es específico para la validación JWT y autenticación. Para Jugadores y Comentarios, los obtendrías a través de endpoints normales, no anexándolos al Request.
 import { DecodedIdToken } from "firebase-admin/auth";
-import { IUser } from "../user.types"; // Asegúrate que la ruta es correcta
+import type { IUser } from "../models/user"; // Importar desde el modelo donde se infiere el tipo
 
 declare global {
   namespace Express {

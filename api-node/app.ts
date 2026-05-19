@@ -61,10 +61,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Rutas del Dashboard
 app.use("/", indexRouter);
+// Rutas de usuarios del Dashboard SOLO VISTA (POSIBLE BORRARDA)(CRUD, etc.)
 app.use("/users", usersRouter);
 
 // Rutas de la API
@@ -72,6 +73,9 @@ app.use("/api/user", userApiRouter);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.url.includes(".well-known")) {
+    return res.status(404).send(); // Responde 404 sin hacer log
+  }
   next(createError(404));
 });
 
