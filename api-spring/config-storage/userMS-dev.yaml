@@ -35,6 +35,12 @@ spring:
           allowed-headers: "*"
           allow-credentials: true
   
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: TRACE
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+  
 management:
   info:
     env:
@@ -42,7 +48,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,env
 info:
   application:
     name: ${spring.application.name}
