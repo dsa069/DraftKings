@@ -26,12 +26,6 @@ info:
     description: Eureka server
     version: '@project.version@'
 
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: TRACE
-    org.springframework.web.servlet.DispatcherServlet: DEBUG
-
 ---
 spring:
   config:
@@ -44,12 +38,7 @@ server:
 info:
   application:
     description: DraftKings eureka server microservice in dev profile
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: TRACE
-    org.springframework.web.servlet.DispatcherServlet: DEBUG
+    
 ---
 spring:
   config:
