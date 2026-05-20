@@ -3,6 +3,13 @@ server:
 eureka:
   instance:
     hostname: eureka-client-player-dev-223788394742.us-east1.run.app:443
+    # 1. Usar explícitamente el nombre de host en lugar de la IP interna de Cloud Run
+    prefer-ip-address: false 
+    
+    # 2. Desactivar el puerto HTTP no seguro y activar el puerto HTTPS seguro (443)
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    secure-port: 443
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
