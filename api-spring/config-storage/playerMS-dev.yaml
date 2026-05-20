@@ -10,6 +10,11 @@ eureka:
     non-secure-port-enabled: false
     secure-port-enabled: true
     secure-port: 443
+
+    # 3. Forzar a Eureka a usar URLs con HTTPS para los botones del panel
+    status-page-url: https://${eureka.instance.hostname}/actuator/info
+    health-check-url: https://${eureka.instance.hostname}/actuator/health
+
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
