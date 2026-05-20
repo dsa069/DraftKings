@@ -57,7 +57,7 @@ export class SignUpPage implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly toastCtrl = inject(ToastController);
   passwordMatchValidator: ValidatorFn = (
-    control: AbstractControl,
+    control: AbstractControl
   ): ValidationErrors | null => {
     const password = control.get('password')?.value;
     const confirmPassword = control.get('confirmPassword')?.value;
@@ -95,7 +95,7 @@ export class SignUpPage implements OnInit {
             Validators.required,
             // 8 caracteres, 1 número y 1 símbolo
             Validators.pattern(
-              /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/,
+              /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/
             ),
           ],
         ],
@@ -103,7 +103,7 @@ export class SignUpPage implements OnInit {
       },
       {
         validators: [this.passwordMatchValidator],
-      },
+      }
     );
   }
 
@@ -147,11 +147,13 @@ export class SignUpPage implements OnInit {
 
       // Limpieza total y navegación
       localStorage.removeItem('bypass_centinela');
+      this.showToast('Registration successful!', 'success');
       this.navCtrl.navigateRoot('/tabs/players');
     } catch (error) {
       // Si falla CUALQUIER COSA de arriba, hacemos rollback y limiampos todo
       console.error('❌ Error en el registro, iniciando ROLLBACK:', error);
       await this.authService.deleteCurrentUser();
+      this.showToast('Registration error. Please try again.');
       localStorage.removeItem('bypass_centinela');
       localStorage.removeItem('pending_sync_data');
       localStorage.removeItem('execute_sync_on_reload');
@@ -181,27 +183,28 @@ export class SignUpPage implements OnInit {
   // Nuevo método para identificar el error
   private getFormErrorMessage(): string {
     if (this.signUpForm.get('userName')?.hasError('required'))
-      return 'El nombre de usuario es obligatorio.';
+      return 'Username is required.';
     if (this.signUpForm.get('userName')?.hasError('minlength'))
-      return 'El nombre debe tener al menos 3 caracteres.';
-    if (this.signUpForm.get('email')?.invalid)
-      return 'Formato de correo inválido.';
+      return 'The username must be at least 3 characters.';
+    if (this.signUpForm.get('email')?.invalid) return 'Invalid email format.';
     if (this.signUpForm.get('password')?.hasError('required'))
-      return 'La contraseña es obligatoria.';
+      return 'Password is required.';
     if (this.signUpForm.get('password')?.hasError('pattern'))
-      return 'La contraseña debe tener 8 caracteres, 1 número y 1 símbolo.';
+      return 'Password must be at least 8 characters, include 1 number and 1 symbol.';
     if (this.signUpForm.hasError('passwordMismatch'))
-      return 'Las contraseñas no coinciden.';
-    return 'Por favor, revisa que todos los campos sean correctos.';
+      return 'Passwords do not match.';
+    return 'Please make sure all fields are correct.';
   }
 
-  // Nuevo método para mostrar el toast
-  private async showToast(message: string): Promise<void> {
+  private async showToast(
+    message: string,
+    color: string = 'danger'
+  ): Promise<void> {
     const toast = await this.toastCtrl.create({
       message,
       duration: 3000,
       position: 'bottom',
-      color: 'danger',
+      color: color,
     });
     await toast.present();
   }

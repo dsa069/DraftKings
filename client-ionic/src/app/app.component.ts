@@ -1,6 +1,10 @@
 // app.component.ts
 import { Component, effect, inject } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import {
+  IonApp,
+  IonRouterOutlet,
+  ToastController,
+} from '@ionic/angular/standalone';
 import { AuthService } from './core/services/abstract/auth.service';
 import { NavController } from '@ionic/angular';
 
@@ -12,6 +16,7 @@ import { NavController } from '@ionic/angular';
 export class AppComponent {
   private authService = inject(AuthService);
   private navCtrl = inject(NavController);
+  private toastCtrl = inject(ToastController);
 
   constructor() {
     effect(async () => {
@@ -30,7 +35,7 @@ export class AppComponent {
           // 2. ¿Venimos de un reload de registro con cambio de backend?
           if (isPostReloadSync) {
             console.log(
-              '🔄 Sincronizando nuevo usuario tras recarga de cambio de backend...',
+              '🔄 Sincronizando nuevo usuario tras recarga de cambio de backend...'
             );
 
             const pendingData = localStorage.getItem('pending_sync_data');
@@ -46,11 +51,12 @@ export class AppComponent {
               localStorage.removeItem('pending_sync_data');
               localStorage.removeItem('execute_sync_on_reload');
               this.navCtrl.navigateRoot('/tabs/players');
+              this.showToast('Registration successful!', 'success');
               return; // Terminamos ejecución exitosa
             } catch (backendError) {
               // ❌ EL NUEVO BACKEND HA FALLADO (Ej: ERR_CONNECTION_REFUSED)
               console.error(
-                '❌ El backend destino falló en la recarga. Iniciando Rollback explícito...',
+                '❌ El backend destino falló en la recarga. Iniciando Rollback explícito...'
               );
 
               // Hacemos el rollback AQUÍ, antes de que el catch de los servicios haga logout
@@ -68,6 +74,7 @@ export class AppComponent {
             window.location.hash.includes('login') ||
             window.location.hash.includes('sign-up')
           ) {
+            this.showToast('Login successful!', 'success');
             this.navCtrl.navigateRoot('/tabs/players');
           }
         } catch (error: any) {
@@ -84,21 +91,35 @@ export class AppComponent {
             isPostReloadSync
           ) {
             console.log(
-              '↩️ Rollback completado. Devolviendo al usuario a Registro (/sign-up)',
+              '↩️ Rollback completado. Devolviendo al usuario a Registro (/sign-up)'
             );
 
             // Forzamos el cierre de sesión residual por si acaso
             await this.authService.logout();
+            this.showToast('Registration failed, Please try again.');
             this.navCtrl.navigateRoot('/sign-up');
           } else {
             console.log(
-              '↩️ Validación común fallida. Devolviendo al usuario a Login (/login)',
+              '↩️ Validación común fallida. Devolviendo al usuario a Login (/login)'
             );
+            this.showToast('Login failed. Please check your credentials.');
             await this.authService.logout();
             this.navCtrl.navigateRoot('/login');
           }
         }
       }
     });
+  }
+  private async showToast(
+    message: string,
+    color: string = 'danger'
+  ): Promise<void> {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color: color,
+    });
+    await toast.present();
   }
 }
