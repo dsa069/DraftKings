@@ -3,6 +3,13 @@ server:
 eureka:
   instance:
     hostname: eureka-client-review-dev-223788394742.us-east1.run.app:443
+    prefer-ip-address: false 
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    secure-port: 443
+
+    status-page-url: https://${eureka.instance.hostname}/actuator/info
+    health-check-url: https://${eureka.instance.hostname}/actuator/health
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
