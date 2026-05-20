@@ -9,7 +9,7 @@ spring:
         git:
           uri: https://github.com/dsa069/DraftKings.git
           searchPaths: /api-spring/config-storage
-          default-label: spring-debug
+          default-label: dev
 eureka:
   instance:
     hostname: localhost
@@ -67,7 +67,7 @@ spring:
     config:
       server:
         git:
-          default-label: spring-debug
+          default-label: main
 eureka:
   instance:
     hostname: dk-spring-config.cnsa-2026-dsa069.tech
