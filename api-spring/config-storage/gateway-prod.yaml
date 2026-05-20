@@ -3,6 +3,7 @@ server:
 
 eureka:
   instance:
+    hostname: dk-spring.cnsa-2026-dsa069.tech:443
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
