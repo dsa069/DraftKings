@@ -15,7 +15,12 @@ spring:
           discovery:
             locator:
               enabled: true
-              lower-case-service-id: true                  
+              lower-case-service-id: true      
+
+app:
+  cors:
+    allowed-origins:
+      - "http://localhost:8100"            
 
 eureka:
   instance:
