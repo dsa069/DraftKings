@@ -12,15 +12,15 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    // Inyectamos la lista definida en el application.yml
-    @Value("${app.cors.allowed-origins}")
+    // El ":http://localhost:8100" es el valor por defecto si no encuentra la
+    // propiedad
+    @Value("${app.cors.allowed-origins:http://localhost:8100}")
     private List<String> allowedOrigins;
 
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
 
-        // Ahora usamos la lista dinámica
         corsConfig.setAllowedOrigins(allowedOrigins);
         corsConfig.setMaxAge(3600L);
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
