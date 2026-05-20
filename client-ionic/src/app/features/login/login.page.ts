@@ -12,6 +12,7 @@ import {
   IonLabel,
   IonButton,
   IonIcon,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -47,7 +48,7 @@ export class LoginPage implements OnInit {
   private readonly navCtrl = inject(NavController);
   private readonly configService = inject(ConfigService);
   private readonly authService = inject(AuthService);
-
+  private readonly toastCtrl = inject(ToastController);
   loginForm!: FormGroup;
   showPassword: boolean = false;
   selectedBackend: BackendType = this.configService.selectedBackend();
@@ -69,7 +70,7 @@ export class LoginPage implements OnInit {
   private initializeForm(): void {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required]],
     });
   }
 
@@ -79,7 +80,8 @@ export class LoginPage implements OnInit {
 
   async onLogin(): Promise<void> {
     if (this.loginForm.invalid) {
-      console.log('Formulario de login no válido');
+      await this.showToast('The entered email is not valid');
+      console.log('El email introducido no tiene un formato válido');
       return;
     }
 
@@ -100,13 +102,28 @@ export class LoginPage implements OnInit {
 
       // Paso 3: Si es el mismo backend, verificamos ya mismo
       await this.authService.verifyBackend();
+      await this.showToast('Login successful!', 'success');
       this.navCtrl.navigateRoot(['/tabs/players']);
     } catch (error) {
       console.error('Login fallido:', error);
+      await this.showToast('Login failed. Please check your credentials.');
     }
   }
 
   gotoSignUp(): void {
     this.navCtrl.navigateForward(['/sign-up']);
+  }
+
+  private async showToast(
+    message: string,
+    color: string = 'danger'
+  ): Promise<void> {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color: color,
+    });
+    await toast.present();
   }
 }
