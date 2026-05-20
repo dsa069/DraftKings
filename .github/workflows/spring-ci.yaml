@@ -132,7 +132,6 @@ jobs:
     secrets: inherit
 
   deploy-eureka-prod:
-    if: github.ref == 'refs/heads/main'
     needs: build
     uses: ./.github/workflows/spring-cd.prod.yml
     with:
@@ -140,7 +139,6 @@ jobs:
     secrets: inherit
 
   deploy-config-prod:
-    if: github.ref == 'refs/heads/main'
     needs: deploy-eureka-prod
     uses: ./.github/workflows/spring-cd.prod.yml
     with:
@@ -148,7 +146,6 @@ jobs:
     secrets: inherit
   
   deploy-clients-prod:
-    if: github.ref == 'refs/heads/main'
     needs: deploy-config-prod
     strategy:
       matrix:

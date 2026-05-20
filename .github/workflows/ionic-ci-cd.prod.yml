@@ -3,6 +3,8 @@ name: CI/CD Ionic Production
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [dev]
 
 jobs:
   build:
