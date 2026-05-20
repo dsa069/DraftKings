@@ -16,6 +16,23 @@ eureka:
     service-url:
       defaultZone: http://dk-spring-eureka.cnsa-2026-dsa069.tech/eureka/
 
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "https://draftkings.cnsa-2026-dsa069.tech"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
 management:
   info:
     env:
