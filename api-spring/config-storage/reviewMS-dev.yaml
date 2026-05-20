@@ -6,7 +6,7 @@ eureka:
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
-      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
+      defaultZone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
 
 spring:
   datasource:

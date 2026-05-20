@@ -42,24 +42,7 @@ spring:
   config:
     activate:
       on-profile: dev
-  datasource:
-    url: jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
-    username: postgres.ixbdoxfxxlymwjuyfdiq
-    password: ${DB_SQL_PASS_DEV}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update # O 'none' si no quieres que toque las tablas
-    show-sql: true
-
-eureka:
-  instance:
-    hostname: eureka-client-review-dev-223788394742.us-east1.run.app
-    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
-  client:
-    service-url:
-      defaultZone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
+    import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
 
 server:
   port: ${PORT:8080}

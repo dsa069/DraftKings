@@ -13,7 +13,7 @@ spring:
 eureka:
   client:
     service-url:
-      default-zone: http://localhost:8761
+      defaultZone: http://localhost:8761
   instance:
     hostname: localhost
 
@@ -39,7 +39,7 @@ spring:
 eureka:
   client:
     service-url:
-      default-zone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
+      defaultZone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
 
 server:
   port: ${PORT:8080}
@@ -60,7 +60,7 @@ spring:
 eureka:
   client:
     service-url:
-      default-zone: https://dk-spring-eureka.cnsa-2026-dsa069.tech/eureka/
+      defaultZone: https://dk-spring-eureka.cnsa-2026-dsa069.tech/eureka/
 
 server:
   port: ${PORT:8080}
