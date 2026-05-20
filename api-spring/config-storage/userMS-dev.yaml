@@ -2,7 +2,7 @@ server:
   port: ${PORT:8080}
 eureka:
   instance:
-    hostname: eureka-client-user-dev-223788394742.us-east1.run.app:443
+    hostname: eureka-client-user-dev-223788394742.us-east1.run.app
     prefer-ip-address: false 
     non-secure-port-enabled: false
     secure-port-enabled: true
