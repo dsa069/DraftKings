@@ -31,6 +31,7 @@ spring:
   config:
     activate:
       on-profile: dev
+    import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
 
 server:
   port: ${PORT:8080}
