@@ -11,6 +11,9 @@ spring:
           searchPaths: /api-spring/config-storage
           default-label: dev
 eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
       defaultZone: http://localhost:8761
@@ -37,6 +40,9 @@ spring:
     activate:
       on-profile: dev
 eureka:
+  instance:
+    hostname: dk-spring-config-dev.cnsa-2026-dsa069.tech:443
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
       defaultZone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
@@ -58,6 +64,9 @@ spring:
         git:
           default-label: main
 eureka:
+  instance:
+    hostname: dk-spring-config.cnsa-2026-dsa069.tech:443
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
       defaultZone: https://dk-spring-eureka.cnsa-2026-dsa069.tech/eureka/
