@@ -36,7 +36,12 @@ const corsOptions = {
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void,
   ) => {
-    const allowedOrigins = [process.env.FRONTEND_URL]; // FRONTEND_URL viene de environment
+    const mobileOrigins = ["https://localhost", "http://localhost"];
+
+    // Si FRONTEND_URL existe en el .env, lo añadimos a la lista de permitidos
+    const allowedOrigins = process.env.FRONTEND_URL
+      ? [process.env.FRONTEND_URL, ...mobileOrigins]
+      : [...mobileOrigins];
 
     // En desarrollo, permitir también peticiones sin origen (como Postman)
     if (!origin || allowedOrigins.includes(origin)) {
