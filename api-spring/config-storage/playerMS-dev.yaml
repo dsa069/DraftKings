@@ -2,7 +2,7 @@ server:
   port: ${PORT:8080}
 eureka:
   instance:
-    hostname: eureka-client-player-dev-223788394742.us-east1.run.app:443
+    hostname: eureka-client-player-dev-223788394742.us-east1.run.app
     # 1. Usar explícitamente el nombre de host en lugar de la IP interna de Cloud Run
     prefer-ip-address: false 
     

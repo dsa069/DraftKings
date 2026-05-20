@@ -39,7 +39,7 @@ spring:
       on-profile: dev
 eureka:
   instance:
-    hostname: dk-spring-config-dev.cnsa-2026-dsa069.tech:443
+    hostname: dk-spring-config-dev.cnsa-2026-dsa069.tech
     prefer-ip-address: false 
     non-secure-port-enabled: false
     secure-port-enabled: true
@@ -70,7 +70,7 @@ spring:
           default-label: spring-debug
 eureka:
   instance:
-    hostname: dk-spring-config.cnsa-2026-dsa069.tech:443
+    hostname: dk-spring-config.cnsa-2026-dsa069.tech
     prefer-ip-address: false 
     non-secure-port-enabled: false
     secure-port-enabled: true
