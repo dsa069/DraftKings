@@ -2,7 +2,7 @@ server:
   port: ${PORT:8080}
 eureka:
   instance:
-    hostname: eureka-client-review-dev-223788394742.us-east1.run.app
+    hostname: eureka-client-review-dev-223788394742.us-east1.run.app:443
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
