@@ -34,6 +34,12 @@ spring:
           allowed-methods: "*"
           allowed-headers: "*"
           allow-credentials: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # PEGA AQUÍ LA URL EXACTA QUE OBTUVISTE DEL "iss" EN JWT.IO
+          issuer-uri: https://securetoken.google.com/draftkings-dev-de53b
   
 logging:
   level:
