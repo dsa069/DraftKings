@@ -38,14 +38,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          # PEGA AQUÍ LA URL EXACTA QUE OBTUVISTE DEL "iss" EN JWT.IO
           issuer-uri: https://securetoken.google.com/draftkings-dev-de53b
-  
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: TRACE
-    org.springframework.web.servlet.DispatcherServlet: DEBUG
   
 management:
   info:

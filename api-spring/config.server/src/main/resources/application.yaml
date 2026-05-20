@@ -67,7 +67,7 @@ spring:
     config:
       server:
         git:
-          default-label: main
+          default-label: configServer
 eureka:
   instance:
     hostname: dk-spring-config.cnsa-2026-dsa069.tech:443
