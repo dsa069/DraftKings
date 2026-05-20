@@ -59,7 +59,7 @@ eureka:
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
-      defaultZone: https://eureka-server-dev-223788394742.us-east1.run.app/eureka/
+      defaultZone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
 
 server:
   port: ${PORT:8080}
