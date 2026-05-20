@@ -20,6 +20,8 @@ app:
   cors:
     allowed-origins:
       - "https://draftkings.cnsa-2026-dsa069.tech"
+      - "https://localhost"    # 👈 OBLIGATORIO PARA LA APK EN ANDROID
+      - "http://localhost"     # 👈 Extra por si acaso según versiones de Capacitor
 
 management:
   info:
