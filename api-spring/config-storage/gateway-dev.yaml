@@ -3,7 +3,7 @@ server:
 
 eureka:
   instance:
-    hostname: dk-spring-dev.cnsa-2026-dsa069.tech:443
+    hostname: dk-spring-dev.cnsa-2026-dsa069.tech
     prefer-ip-address: false 
     non-secure-port-enabled: false
     secure-port-enabled: true
