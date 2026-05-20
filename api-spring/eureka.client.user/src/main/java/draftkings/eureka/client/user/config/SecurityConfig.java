@@ -26,6 +26,9 @@ public class SecurityConfig {
                                                 // 3. Tu endpoint de sincronización DEBE estar expuesto aquí si se llama
                                                 // antes de estar autenticado
                                                 .requestMatchers("/api/auth/**", "/api/public/**").permitAll()
+                                                // Permitir que Eureka y cualquiera consulte la salud del servicio sin
+                                                // token
+                                                .requestMatchers("/actuator/**").permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
