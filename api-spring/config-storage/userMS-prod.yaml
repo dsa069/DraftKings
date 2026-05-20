@@ -34,6 +34,11 @@ spring:
           allowed-methods: "*"
           allowed-headers: "*"
           allow-credentials: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://securetoken.google.com/draftkings-a26c3
 
 management:
   info:
