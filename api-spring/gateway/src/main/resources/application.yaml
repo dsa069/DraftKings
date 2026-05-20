@@ -69,14 +69,3 @@ server:
 info:
   application:
     description: DraftKings gateway microservice in prod profile
-
----
-spring:
-  config:
-    activate:
-      on-profile: test
-
-app:
-  cors:
-    allowed-origins:
-      - "http://localhost:8100"  
