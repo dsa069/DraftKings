@@ -15,7 +15,7 @@ if (!dbURI) {
 const options = {
   serverSelectionTimeoutMS: 5000,
   // Estas opciones ayudan a solucionar problemas de handshake SSL en entornos restringidos
-  tls: true,
+  //tls: true,
   tlsAllowInvalidCertificates: false, // Manténlo false por seguridad
 };
 
