@@ -13,9 +13,12 @@ if (!dbURI) {
 
 // Opciones de conexión más robustas para entornos cloud
 const options = {
-  serverSelectionTimeoutMS: 5000,
+  // Subimos el timeout a 30 segundos para soportar los arranques en frío (Cold Starts)
+  serverSelectionTimeoutMS: 30000,
+
+  // Tiempo de espera para abrir el socket inicial
+  connectTimeoutMS: 30000,
   // Estas opciones ayudan a solucionar problemas de handshake SSL en entornos restringidos
-  //tls: true,
   tlsAllowInvalidCertificates: false, // Manténlo false por seguridad
 };
 
