@@ -1,3 +1,73 @@
 ion-tab-bar {
-  --background: var(--ion-color-background);
+  --background: var(--ion-color-background-soft);
+  height: 56px;
+
+  /* SEPARADOR SUPERIOR FINO */
+  border-top: 1px solid
+    var(--ion-color-surface-container-high, rgba(255, 255, 255, 0.08));
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+
+  /* CURVAR LOS BORDES SUPERIORES */
+  /* Ajusta este valor (ej. 16px, 24px) según el radio exacto que tenga el marco morado de tu app */
+  border-top-left-radius: var(--border-radius-xl, 24px);
+  border-top-right-radius: var(--border-radius-xl, 24px);
+
+  /* Máscara de recorte obligatoria para que los botones de los extremos respeten la curva */
+  overflow: hidden;
+}
+
+.custom-tab-button {
+  /* Estilos base compartidos por todos los botones */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  transition: colors 150ms ease-in-out, transform 150ms ease-in-out;
+
+  /* Resetear el fondo nativo de Ionic */
+  --background: transparent;
+  --background-focused: transparent;
+
+  /* Configuración del estado INACTIVO */
+  color: var(--ion-color-step-600, #737373);
+  opacity: 0.6;
+
+  /* Forzamos que cualquier transformación tome como eje el centro exacto */
+  transform-origin: center center;
+
+  /* Tamaño del icono clonando tus text-[24px] */
+  ion-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+    transition: transform 150ms ease;
+  }
+
+  /* Tipografía del label */
+  ion-label {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+  }
+
+  &:active {
+    ion-icon,
+    ion-label {
+      transform: scale(0.9);
+      transform-origin: center center;
+    }
+  }
+}
+
+/* --- LÓGICA DE PESTAÑA ACTIVA --- */
+.custom-tab-button.tab-selected {
+  opacity: 1;
+  color: var(--ion-color-primary);
+  font-weight: bold;
+
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
 }
