@@ -16,6 +16,10 @@ Esta aplicación combina una interfaz moderna y fluida con varias arquitecturas 
 - **Equipo Ideal:** Herramienta interactiva para que el usuario configure su propia alineación táctica.
 - **Personalización:** Soporte multi-idioma y modo claro/oscuro.
 
+### 📊 Diagrama de Casos de Uso (UCD)
+
+![Diagrama de Casos de Uso](./docs/diagrams/out/UCD.svg)
+
 ---
 
 ## 🛠️ Tecnologías Utilizadas
@@ -173,6 +177,10 @@ El backend de Spring Boot implementa una arquitectura de microservicios distribu
 | **Desacoplamiento** | Comunicación vía APIs REST, no compartición de BD |
 | **Configuración Centralizada** | Cambios sin redeploy gracias a Config Server |
 | **Discovery Automático** | Eureka maneja el registro/desregistro dinámicamente |
+
+### 📐 Diagrama Entidad-Relación (ERD)
+
+![Diagrama Entidad-Relación](./docs/diagrams/out/ERD.svg)
 
 ---
 
