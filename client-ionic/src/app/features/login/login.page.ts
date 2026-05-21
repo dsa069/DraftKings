@@ -12,6 +12,10 @@ import {
   IonLabel,
   IonButton,
   IonIcon,
+  IonGrid,
+  IonRow,
+  IonHeader,
+  IonText,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -40,6 +44,10 @@ import { AuthService } from '../../core/services/abstract/auth.service';
     IonLabel,
     IonButton,
     IonIcon,
+    IonGrid,
+    IonRow,
+    IonHeader,
+    IonText,
     LoginCardComponent,
   ],
 })
