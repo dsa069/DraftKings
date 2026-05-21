@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import dotenv from "dotenv";
 import cors from "cors";
+import dns from "dns";
 
 // Solo para simular "produccion" en local
 const envFile = process.env.NODE_ENV === "prod" ? "env.prod" : "env";
@@ -15,6 +16,11 @@ dotenv.config({
     path.resolve(process.cwd(), "enviroments", envFile), // 2º Prioridad: Local para desarrollo
   ],
 });
+
+// PARCHE PARA CLOUD RUN: Fuerza a Node a usar IPv4 para conectar con MongoDB Atlas
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder("ipv4first");
+}
 
 import indexRouter from "./dashboard_server/routes/index";
 import usersRouter from "./dashboard_server/routes/users";
