@@ -16,6 +16,10 @@ Esta aplicación combina una interfaz moderna y fluida con varias arquitecturas 
 - **Equipo Ideal:** Herramienta interactiva para que el usuario configure su propia alineación táctica.
 - **Personalización:** Soporte multi-idioma y modo claro/oscuro.
 
+### 📚 Documentación de la API
+
+- **Especificación de endpoints:** [docs/EndPoints.md](docs/EndPoints.md)
+
 ### 📊 Diagrama de Casos de Uso (UCD)
 
 ![Diagrama de Casos de Uso](./docs/diagrams/out/UCD.svg)
