@@ -95,8 +95,7 @@ ion-icon {
   }
   &:focus {
     outline: none;
-    box-shadow:
-      0 0 0 2px var(--ion-color-pitch-green),
+    box-shadow: 0 0 0 2px var(--ion-color-pitch-green),
       0 0 0 4px var(--ion-color-surface);
   }
   ion-icon {
@@ -120,6 +119,23 @@ ion-icon {
   justify-content: center;
   flex-wrap: wrap; /* Por si la pantalla es muy pequeña, que baje de línea */
 }
+ion-footer.signup-section {
+  background: transparent; /* Evita que el footer tape el fondo del contenedor */
+  margin-top: var(--spacing-stack-md);
+  display: flex;
+  justify-content: center;
+}
+
+ion-text.signup-text {
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface-variant);
+  display: flex; /* Mantiene la alineación flex original */
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap; /* Mantiene el comportamiento responsive original */
+}
+
 .forgot-link,
 .signup-link {
   /* Anulamos dimensiones de botón */
@@ -131,9 +147,7 @@ ion-icon {
 
   /* Tipografía exacta al texto base */
   font-family: var(--font-family-label-bold);
-  font-size: var(
-    --font-size-body-md
-  ); /* Que use el mismo tamaño que el texto de "New to..." */
+  font-size: var(--font-size-body-md);
   font-weight: var(--font-weight-label-bold);
   color: var(--ion-color-primary);
 
@@ -144,14 +158,14 @@ ion-icon {
   --padding-bottom: 0;
   --margin-top: 0;
   --margin-bottom: 0;
-  --ripple-color: transparent; /* Opcional: quita el efecto de click si quieres que sea muy "link" */
+  --ripple-color: transparent;
 
   text-transform: none;
   vertical-align: baseline;
 
   &:hover {
     color: var(--ion-color-pitch-green);
-    text-decoration: underline; /* Estilo clásico de link al pasar el mouse */
+    text-decoration: underline;
   }
 }
 
