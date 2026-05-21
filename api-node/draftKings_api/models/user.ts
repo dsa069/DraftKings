@@ -12,6 +12,9 @@ const userSchema = new Schema(
   { timestamps: true },
 );
 
+//* **En Node/Express/Mongoose:** Si guardas las referencias de forma bidireccional, añade el array en el esquema de usuario:
+//  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }]
+
 // ✅ TypeScript infiere automáticamente el tipo del schema
 type IUser = InferSchemaType<typeof userSchema>;
 
