@@ -1,44 +1,18 @@
 <ion-tabs>
   <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="my-team" href="/tabs/my-team">
-      <ion-icon aria-hidden="true" name="shield-half-outline"></ion-icon>
-      <ion-label>My Team</ion-label>
+    <ion-tab-button tab="my-team" class="custom-tab-button">
+      <ion-icon name="shield-half-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">My Squad</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="players" href="/tabs/players">
-      <ion-icon aria-hidden="true" name="people-outline"></ion-icon>
-      <ion-label>Players</ion-label>
+    <ion-tab-button tab="players" class="custom-tab-button">
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">Players</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="settings" href="/tabs/settings">
-      <ion-icon aria-hidden="true" name="settings-outline"></ion-icon>
-      <ion-label>Settings</ion-label>
+    <ion-tab-button tab="settings" class="custom-tab-button">
+      <ion-icon name="settings-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">Settings</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>
-
-<!-- Inactive Tab -->
-<button
-  class="flex flex-col items-center justify-center text-secondary opacity-60 hover:bg-surface-container-highest/50 transition-colors active:scale-90 duration-150 w-full h-full"
->
-  <span class="material-symbols-outlined mb-1 text-[24px]">groups</span>
-  <span class="font-label-bold text-label-bold">My Squad</span>
-</button>
-<!-- Active Tab -->
-<button
-  class="flex flex-col items-center justify-center text-primary font-bold hover:bg-surface-container-highest/50 transition-colors active:scale-90 duration-150 w-full h-full"
->
-  <span
-    class="material-symbols-outlined mb-1 text-[24px]"
-    style="font-variation-settings: &quot;FILL&quot; 1"
-    >person_search</span
-  >
-  <span class="font-label-bold text-label-bold">Players</span>
-</button>
-<!-- Inactive Tab -->
-<button
-  class="flex flex-col items-center justify-center text-secondary opacity-60 hover:bg-surface-container-highest/50 transition-colors active:scale-90 duration-150 w-full h-full"
->
-  <span class="material-symbols-outlined mb-1 text-[24px]">settings</span>
-  <span class="font-label-bold text-label-bold">Settings</span>
-</button>
