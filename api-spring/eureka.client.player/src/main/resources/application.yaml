@@ -15,6 +15,7 @@ spring:
     hibernate:
       ddl-auto: update # O 'none' si no quieres que toque las tablas
     show-sql: true
+    open-in-view: false
 eureka:
   instance:
     hostname: localhost
@@ -77,6 +78,7 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
     
 server:
   port: ${PORT:8080}

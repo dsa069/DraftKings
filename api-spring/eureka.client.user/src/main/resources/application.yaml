@@ -15,6 +15,7 @@ spring:
     hibernate:
       ddl-auto: update # O 'none' si no quieres que toque las tablas
     show-sql: true
+    open-in-view: false
   security:
     oauth2:
       resourceserver:
