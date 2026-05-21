@@ -10,6 +10,8 @@ import {
   IonCardContent,
   IonButton,
   IonIcon,
+  IonFooter,
+  IonText,
 } from '@ionic/angular/standalone';
 import { BackendToggleComponent } from '../backend-toggle/backend-toggle.component'; // Ajusta la ruta si es necesario
 import { addIcons } from 'ionicons';
@@ -25,6 +27,8 @@ import { arrowForwardOutline } from 'ionicons/icons';
     IonCardContent,
     IonButton,
     IonIcon,
+    IonFooter,
+    IonText,
     BackendToggleComponent,
   ],
   encapsulation: ViewEncapsulation.None,

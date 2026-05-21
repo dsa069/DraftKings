@@ -5,12 +5,21 @@ import {
   IonHeader,
   IonTitle,
   IonToolbar,
+  IonFooter,
+  IonText,
 } from '@ionic/angular/standalone';
 
 describe('LoginCardComponent', () => {
   it('should render card', () => {
     cy.mount(LoginCardComponent, {
-      imports: [IonContent, IonHeader, IonTitle, IonToolbar],
+      imports: [
+        IonContent,
+        IonHeader,
+        IonTitle,
+        IonToolbar,
+        IonFooter,
+        IonText,
+      ],
     });
 
     cy.get('ion-card').should('exist');
