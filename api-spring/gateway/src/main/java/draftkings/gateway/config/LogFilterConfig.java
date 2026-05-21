@@ -1,5 +1,5 @@
 package draftkings.gateway.config;
-
+/*
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -31,4 +31,4 @@ public class LogFilterConfig {
             }));
         };
     }
-}
+}*/
