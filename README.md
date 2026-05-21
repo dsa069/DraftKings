@@ -519,7 +519,577 @@ El proceso de cambio de backend se realiza de forma atómica para mantener la in
 * **Confirmación:** Al pulsar el botón de acción (Login/Register), se invoca al `ConfigService`.
 * **Persistencia y Reset:** Si el backend ha cambiado, el servicio guarda la nueva configuración y dispara un `window.location.reload()`.
 * **Inyección Dinámica:** Al reiniciar la app, el motor de **Inyección de Dependencias** de Angular ejecuta la **Factory** en el `main.ts`, la cual provee la implementación correcta a toda la aplicación.
+
 ---
+
+## 🔐 Sistema de Autenticación
+
+El sistema de autenticación implementa un flujo completo que utiliza **Firebase Authentication** como proveedor de identidad común, combinado con middleware específico en Node.js y Spring Boot para sincronizar usuarios en bases de datos locales. Este diseño garantiza seguridad, escalabilidad y la capacidad de cambiar entre backends transparentemente.
+
+### 🎯 Arquitectura General
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                    CLIENTE (Ionic/Angular)                  │
+│  - LoginPage / SignUpPage (formularios de auth)              │
+│  - AuthService (abstracta, patrón Strategy)                  │
+│  - AuthInterceptor (adjunta JWT a peticiones HTTP)           │
+└─────────────────────────────────┬──────────────────────────────┘
+                                  │
+                    ┌─────────────▼──────────────┐
+                    │   Firebase Authentication  │
+                    │  (Valida email/password)   │
+                    │   Genera JWT (ID Token)    │
+                    └─────────────┬──────────────┘
+                                  │
+         ┌────────────────────────┴────────────────────────┐
+         │                                                  │
+    ┌────▼─────────────┐                          ┌────────▼────────┐
+    │   NODE.JS API    │                          │  SPRING BOOT MS │
+    ├────────────────┤                          ├─────────────────┤
+    │ Middleware:    │                          │ Spring Security:│
+    │ - Valida JWT   │                          │ - Valida JWT    │
+    │ - Crea usuario │                          │ - Extrae claims │
+    │   automático   │                          │     │
+    ├────────────────┤                          ├─────────────────┤
+    │ MongoDB        │                          │ PostgreSQL      │
+    │ (Users)        │                          │ (Users)         │
+    └────────────────┘                          └─────────────────┘
+```
+
+**Características clave:**
+
+- **Firebase como proveedor:** Autentica credenciales y genera JWT
+- **Sincronización JIT (Just-In-Time):** Node.js crea usuarios automáticamente en primer acceso
+- **Vinculación por UID:** El Firebase UID es la clave primaria de referencia en ambas BDs
+- **Interceptor HTTP:** Adjunta JWT a todas las peticiones automáticamente
+- **CORS configurado:** Permite peticiones desde cliente Ionic
+
+---
+
+### 📝 Flujo de Registro (Sign Up)
+
+```
+1. Usuario completa formulario:
+   ├─ userName (nombre de usuario)
+   ├─ email
+   ├─ password (validado: 8 chars, 1 número, 1 símbolo)
+   └─ confirmPassword (debe coincidir)
+
+2. SignUpPage.onRegister() inicia:
+   ├─ Bloquea centinela temporalmente: localStorage['bypass_centinela'] = 'true'
+   └─ Evita interferencias mientras se registra
+
+3. AuthService.registerFirebase(email, password):
+   ├─ Firebase.createUserWithEmailAndPassword()
+   ├─ Valida credenciales
+   ├─ ✅ Si exitoso: Crea usuario en Firebase, genera JWT
+   └─ ❌ Si falla: Lanza excepción (email duplicado, etc.)
+
+4. AuthService.registerBackend({ userName }):
+   ├─ POST /api/user/sync (Node) o /userms/api/auth/sync-user (Spring)
+   ├─ AuthInterceptor agrega: Authorization: Bearer {JWT}
+   │
+   ├─── EN NODE.JS ───────────────────────────────────────┐
+   │    a) Middleware authorizeRequest:                   │
+   │       ├─ Decodifica JWT (Firebase Admin SDK)         │
+   │       ├─ Extrae: firebaseUid, email, name            │
+   │       ├─ Busca usuario en MongoDB                    │
+   │       ├─ SI NO EXISTE → Crea automáticamente         │
+   │       │  Campos: firebaseUid, email, userName,       │
+   │       │          role, is_active, blocked            │
+   │       └─ SI EXISTE → Usa documento existente         │
+   │    b) syncUser controller:                           │
+   │       ├─ Actualiza userName si se proporciona        │
+   │       ├─ FindByIdAndUpdate en MongoDB                │
+   │       └─ Devuelve 200 OK + usuario actualizado       │
+   │                                                       │
+   ├─── EN SPRING BOOT ────────────────────────────────────┤
+   │    a) Spring Security valida JWT:                    │
+   │       ├─ Decodifica contra clave pública Firebase    │
+   │       ├─ Verifica expiración                         │
+   │       ├─ Crea @AuthenticationPrincipal Jwt           │
+   │       └─ Extrae claims (sub=firebaseUid, email)      │
+   │    b) AuthController.syncUserToPostgres():           │
+   │       ├─ Busca usuario en PostgreSQL                 │
+   │       ├─ SI NO EXISTE → Crea con JPA:               │
+   │       │  Campos: firebaseUid, email, userName, role  │
+   │       │  save() a base de datos                      │
+   │       ├─ SI EXISTE → Devuelve 400 (ya sincronizado)  │
+   │       └─ Devuelve 200 OK + mensaje                   │
+   └────────────────────────────────────────────────────┘
+
+5. Si TODO es exitoso (200 OK en backend):
+   ├─ Limpia localStorage:
+   │  ├─ pending_sync_data
+   │  ├─ execute_sync_on_reload
+   │  └─ bypass_centinela
+   ├─ showToast('Registration successful!')
+   └─ navCtrl.navigateRoot('/tabs/players') ✅
+
+6. Si FALLA en backend (error en sync):
+   ├─ authService.deleteCurrentUser() → ROLLBACK Firebase
+   ├─ Limpia localStorage
+   ├─ showToast('Registration failed, please try again.')
+   └─ navCtrl.navigateRoot('/sign-up') (vuelve al formulario)
+```
+
+**Importancia del Rollback:** Garantiza que si el backend falla, el usuario NO queda registrado en Firebase. Integridad bidireccional.
+
+---
+
+### 🔑 Flujo de Login
+
+```
+1. Usuario introduce:
+   ├─ email
+   └─ password
+
+2. LoginPage.onLogin() inicia:
+   ├─ Verifica si cambió backend desde localStorage
+   └─ Si cambió → window.location.reload() (el AppComponent termina el trabajo)
+
+3. AuthService.loginFirebase(email, password):
+   ├─ Firebase.signInWithEmailAndPassword()
+   ├─ ✅ Exitoso: Genera JWT para la sesión
+   └─ ❌ Falla: Credenciales inválidas (excepción)
+
+4. AuthService.verifyBackend():
+   ├─ GET /api/user/profile (Node) o /userms/api/auth/me (Spring)
+   ├─ AuthInterceptor agrega: Authorization: Bearer {JWT}
+   │
+   ├─── EN NODE.JS ───────────────────────────────────────┐
+   │    a) Middleware authorizeRequestNoCreate:           │
+   │       ├─ Decodifica JWT (Firebase Admin SDK)         │
+   │       ├─ Extrae firebaseUid                          │
+   │       ├─ Busca usuario en MongoDB                    │
+   │       ├─ SI NO EXISTE → 401 Unauthorized (logout)    │
+   │       ├─ SI EXISTE PERO bloqueado/inactivo → 401     │
+   │       └─ SI EXISTE Y activo → req.user = documento   │
+   │    b) Retorna perfil del usuario (200 OK)            │
+   │                                                       │
+   ├─── EN SPRING BOOT ────────────────────────────────────┤
+   │    a) Spring Security valida JWT                     │
+   │    b) AuthController.getMyProfile():                 │
+   │       ├─ Extrae firebaseUid del JWT                  │
+   │       ├─ findByFirebaseUid(firebaseUid)              │
+   │       ├─ SI EXISTE → 200 OK + User entity            │
+   │       └─ SI NO EXISTE → 404 Not Found (logout)       │
+   └────────────────────────────────────────────────────┘
+
+5. Si verifyBackend() devuelve 200:
+   ├─ showToast('Login successful!', 'success')
+   └─ navCtrl.navigateRoot('/tabs/players') ✅
+
+6. Si verifyBackend() falla (401/404):
+   ├─ authService.logout() → Cierra sesión Firebase
+   ├─ Limpia localStorage
+   ├─ showToast('Login failed. Please check your credentials.')
+   └─ navCtrl.navigateRoot('/login') (vuelve al formulario)
+```
+
+**Diferencia clave:** En login, el backend NO crea usuarios. Solo valida que existan. Esto previene que usuarios no registrados accedan.
+
+---
+
+### 🛡️ Backend Node.js - Middleware de Autenticación
+
+[Ver archivo completo](api-node/draftKings_api/middleware/auth.middleware.ts)
+
+#### **Middleware `authorizeRequest` (Crea usuario si no existe)**
+
+Usado en: `POST /api/user/sync` (endpoint de sincronización)
+
+```typescript
+// Flujo paso a paso:
+1. Extrae token de header Authorization: Bearer {JWT}
+2. Valida con Firebase Admin SDK:
+   ├─ admin.auth().verifyIdToken(token)
+   ├─ Decodifica JWT
+   ├─ Verifica firma (clave pública Firebase)
+   └─ Obtiene decoded: { uid, email, name, ... }
+
+3. Busca usuario en MongoDB:
+   ├─ User.findOne({ firebaseUid: uid, is_active: true, blocked: false })
+   │
+   ├─ SI EXISTE:
+   │  └─ req.user = documento (continúa)
+   │
+   └─ SI NO EXISTE (Primer registro):
+      ├─ Crea nuevo documento:
+      │  {
+      │    firebaseUid: uid,
+      │    email: decoded.email,
+      │    userName: req.body.userName || null,
+      │    role: 'usuario',
+      │    is_active: true,
+      │    blocked: false,
+      │    createdAt: Date.now()
+      │  }
+      ├─ Guarda en MongoDB
+      └─ req.user = documento creado (continúa)
+
+4. next() → Continúa a controlador
+```
+
+**Ventaja:** Just-In-Time Provisioning. El usuario se crea automáticamente en primer acceso.
+
+#### **Middleware `authorizeRequestNoCreate` (Solo valida)**
+
+Usado en: `GET /api/user/profile` (obtener perfil)
+
+```typescript
+1. Mismos pasos 1-2 (extrae y valida JWT)
+
+2. Busca usuario en MongoDB (sin crear):
+   ├─ SI EXISTE Y está activo:
+   │  ├─ req.user = documento
+   │  └─ next() (continúa)
+   │
+   └─ SI NO EXISTE O está inactivo/bloqueado:
+      ├─ res.status(401).json({ error: 'No autorizado' })
+      └─ Detiene ejecución (no llama next())
+```
+
+#### **Modelo de Usuario en MongoDB**
+
+[user.ts](api-node/draftKings_api/models/user.ts)
+
+```typescript
+{
+  firebaseUid: String (unique, required)  ← Clave de vinculación con Firebase
+  email: String (unique, required)
+  userName: String (opcional)
+  role: String (default: 'usuario')
+  is_active: Boolean (default: true)
+  blocked: Boolean (default: false)
+  timestamps: true  ← createdAt, updatedAt automáticos
+}
+```
+
+#### **Rutas**
+
+[user.ts](api-node/draftKings_api/routes/user.ts)
+
+```typescript
+POST /api/user/sync
+  ├─ Middleware: authorizeRequest (CREA si no existe)
+  ├─ Controller: syncUser
+  └─ Actualiza userName si se proporciona en body
+
+GET /api/user/profile
+  ├─ Middleware: authorizeRequestNoCreate (NO crea)
+  ├─ Retorna: req.user directamente
+  └─ 401 si usuario no existe o está inactivo
+```
+
+---
+
+### 🏗️ Backend Spring Boot - Autenticación con OAuth2/JWT
+
+[Configuración de Seguridad](api-spring/eureka.client.user/src/main/java/draftkings/eureka/client/user/config/SecurityConfig.java)
+
+#### **SecurityConfig - Configuración de Seguridad**
+
+Cors diseñado apra permitir solo conexiones específicas
+
+#### **Flujo de Validación JWT en Spring Security**
+
+```
+Petición HTTP llega al gateway/microservicio:
+  │
+  ├─ Authorization: Bearer {JWT}
+  │
+  ▼
+Spring Security Filter Chain:
+  │
+  ├─ 1. CORS Filter: Valida origen (si es preflight, responde 200)
+  │
+  ├─ 2. OAuth2 Resource Server Filter:
+  │    ├─ Extrae JWT del header
+  │    ├─ BearerTokenAuthenticationFilter decodifica
+  │    │
+  │    ├─ JwtDecoder valida firma:
+  │    │  ├─ Obtiene clave pública desde:
+  │    │  │  issuer-uri: https://securetoken.google.com/draftkings-a26c3
+  │    │  ├─ Verifica firma HMAC/RSA
+  │    │  ├─ Valida expiración (exp claim)
+  │    │  └─ Valida audience (aud claim, si aplica)
+  │    │
+  │    ├─ Si VÁLIDO:
+  │    │  ├─ Crea Jwt object (decoded JWT)
+  │    │  ├─ JwtAuthenticationConverter extrae claims:
+  │    │  │  ├─ sub (Firebase UID) → nombre principal
+  │    │  │  ├─ email
+  │    │  │  ├─ name
+  │    │  │  └─ otros claims custom
+  │    │  ├─ Crea Authentication con roles/authorities
+  │    │  └─ SecurityContext.setAuthentication(auth)
+  │    │
+  │    └─ Si INVÁLIDO:
+  │       ├─ JwtException (token expirado, firma inválida, etc.)
+  │       └─ 401 Unauthorized
+  │
+  ├─ 3. AuthorizationFilter:
+  │    ├─ Verifica si ruta requiere autenticación
+  │    ├─ SI REQUIERE y no hay Authentication → 403 Forbidden
+  │    └─ SI REQUIERE y hay Authentication → Continúa
+  │
+  ▼
+  Controlador recibe @AuthenticationPrincipal Jwt jwt
+```
+
+#### **AuthController - Endpoints de Autenticación**
+
+[AuthController.java](api-spring/eureka.client.user/src/main/java/draftkings/eureka/client/user/controller/AuthController.java)
+
+
+#### **Modelo de Usuario en PostgreSQL**
+
+```java
+@Entity
+@Table(name = "users")
+public class User {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;  // PK auto-incremental
+    
+    @Column(unique = true, nullable = false)
+    private String firebaseUid;  // ← Clave de vinculación con Firebase
+    
+    @Column(nullable = false)
+    private String email;
+    
+    private String userName;
+    
+    private String role;
+    
+    // Getters y setters...
+}
+```
+
+#### **Configuración YAML (spring.mvc.cors y OAuth2)**
+
+[userMS-prod.yaml](api-spring/config-storage/userMS-prod.yaml)
+
+```yaml
+spring:
+  mvc:
+    cors:
+      configs:
+        '[/**]':
+          allowed-origins: "https://draftkings.cnsa-2026-dsa069.tech"
+          allowed-methods: "*"
+          allowed-headers: "*"
+          allow-credentials: true
+  
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Firebase proporciona la clave pública en este endpoint
+          issuer-uri: https://securetoken.google.com/draftkings-a26c3
+```
+
+---
+
+### 🔗 Sincronización de Usuarios - Vinculación con Firebase UID
+
+La clave del sistema es usar **Firebase UID como identificador único** en ambas bases de datos:
+
+#### **En Node.js (MongoDB)**
+```typescript
+User {
+  firebaseUid: "abc123xyz..." (unique, required)  ← Mismo UID de Firebase
+  email: "user@example.com"
+  userName: "juan_perez"
+  role: "usuario"
+}
+```
+
+#### **En Spring Boot (PostgreSQL)**
+```java
+User {
+  id: 1 (PK, auto-incremental)
+  firebaseUid: "abc123xyz..." (unique, required)  ← Mismo UID de Firebase
+  email: "user@example.com"
+  userName: "juan_perez"
+  role: "ROLE_USER"
+}
+```
+
+**Ventajas:**
+- ✅ Mismo usuario en ambas BDs sin duplicados
+- ✅ Fácil migrar de un backend a otro
+- ✅ Firebase UID es inmutable (no cambia nunca)
+- ✅ Permite auditoría y rastreo de usuarios
+
+---
+
+### 🔐 Interceptor HTTP - Adjunta JWT a Peticiones
+
+[auth.interceptor.ts](client-ionic/src/app/core/interceptors/auth.interceptor.ts)
+
+
+**Comportamiento:**
+- ✅ Obtiene token de Firebase (en SessionStorage/Memory)
+- ✅ Si existe: Clona request y añade `Authorization: Bearer {JWT}`
+- ✅ Si no existe: Envía request sin header
+- ✅ Automático para TODAS las peticiones HTTP
+
+---
+
+### 📊 Tabla Comparativa: Node.js vs Spring Boot
+
+| Aspecto | Node.js | Spring Boot |
+|---------|---------|------------|
+| **Validación JWT** | Firebase Admin SDK | Spring Security oauth2ResourceServer |
+| **Creación de Usuario** | Automática (JIT Provisioning) | Explícita (POST /sync-user) |
+| **Buscar Usuario** | MongoDB `findOne()` | JPA `findByFirebaseUid()` |
+| **Base de Datos** | MongoDB | PostgreSQL |
+| **Endpoint Sync** | POST /api/user/sync | POST /userms/api/auth/sync-user |
+| **Endpoint Verificación** | GET /api/user/profile | GET /userms/api/auth/me |
+| **Si usuario NO existe en Login** | 401 (authorizeRequestNoCreate) | 404 (Not Found) |
+| **Bloqueo de usuarios** | Campo `blocked` + `is_active` | Solo campos de Entity |
+
+---
+
+### 🔄 Centinela - Detección Automática de Cambios
+
+El `AppComponent` implementa un **Centinela** (efecto de Angular Signals) que:
+
+1. **Monitorea autenticación:** Vigila si `authService.isAuthenticated()` cambia
+2. **Sincroniza en recargas:** Si el usuario hace F5 o cierra/abre app
+3. **Detecta cambios de backend:** Si el usuario cambió backend en login/signup
+4. **Ejecuta rollback:** Si algo falla en la sincronización post-reload
+
+[Ver app.component.ts](client-ionic/src/app/app.component.ts) para detalles.
+
+---
+
+### 📋 Resumen del Flujo Completo
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      USUARIO NUEVO                           │
+│                    (FLUJO DE REGISTRO)                       │
+└─────────────────────────────────────────────────────────────┘
+
+1. SignUpPage.onRegister()
+   └─ Recolecta: userName, email, password, confirmPassword
+
+2. AuthService.registerFirebase(email, password)
+   └─ Firebase autentica → genera JWT → crea usuario Firebase
+
+3. AuthService.registerBackend({ userName })
+   ├─ POST a backend (Node o Spring) con JWT
+   │
+   ├─ NODE.JS:
+   │  ├─ Middleware authorizeRequest valida JWT
+   │  ├─ Busca usuario → NO EXISTE → CREA en MongoDB
+   │  └─ syncUser actualiza userName → 200 OK
+   │
+   └─ SPRING BOOT:
+      ├─ Spring Security valida JWT
+      ├─ Busca usuario en PostgreSQL → NO EXISTE → CREA
+      └─ Devuelve 200 OK
+
+4. Cliente recibe 200 OK
+   ├─ Limpia localStorage
+   └─ Navega a /tabs/players ✅
+
+┌─────────────────────────────────────────────────────────────┐
+│                    USUARIO EXISTENTE                         │
+│                   (FLUJO DE LOGIN)                           │
+└─────────────────────────────────────────────────────────────┘
+
+1. LoginPage.onLogin()
+   └─ Recolecta: email, password
+
+2. AuthService.loginFirebase(email, password)
+   └─ Firebase autentica → genera JWT
+
+3. AuthService.verifyBackend()
+   ├─ GET a /api/user/profile (Node) o /userms/api/auth/me (Spring)
+   │
+   ├─ NODE.JS:
+   │  ├─ Middleware authorizeRequestNoCreate valida JWT
+   │  ├─ Busca usuario → SI EXISTE → req.user
+   │  └─ Retorna perfil → 200 OK
+   │
+   └─ SPRING BOOT:
+      ├─ Spring Security valida JWT
+      ├─ Busca usuario en PostgreSQL
+      ├─ SI EXISTE → 200 OK + perfil
+      └─ SI NO EXISTE → 404 Not Found
+
+4. Cliente recibe respuesta
+   ├─ Si 200: showToast('Login successful!')
+   └─ Navega a /tabs/players ✅
+```
+
+---
+## 📱 APK Android
+
+### 🎯 Características Personalizadas
+
+La app Android incluye configuraciones nativas personalizadas que se aplican durante el build:
+
+- **Branding Personalizado:** Iconos y splash screens con el logotipo de DraftKings (corona + balón)
+- **Recursos Nativos Personalizados:** Colores, estilos y layouts específicos en `android.custom/`
+- **Firma Digital:** APK firmado con keystore para producción (release build)
+- **Capacitor Integration:** Conversión de aplicación web (Angular/Ionic) a aplicación nativa Android
+- **Manifest Personalizado:** Configuración de permisos, actividades y proveedores en `AndroidManifest.xml`
+
+### 🔨 Proceso de Build
+
+El build de la APK se realiza de forma **automatizada en CI/CD** (GitHub Actions):
+
+```bash
+# 1. Instalar dependencias
+npm ci --legacy-peer-deps
+
+# 2. Generar variables de entorno
+npm run config
+
+# 3. Compilar assets web (Ionic)
+npx ionic build --prod
+
+# 4. Agregar plataforma Android
+npx cap add android
+
+# 5. Generar iconos y splash screens nativos
+npx capacitor-assets generate --android
+
+# 6. Aplicar recursos personalizados
+cp -r android.custom/* android/
+
+# 7. Sincronizar Capacitor
+npx cap sync android
+
+# 8. Firmar APK (con keystore en base64)
+echo "$KEYSTORE_BASE64" | base64 --decode > ./android/release-key.jks
+
+# 9. Compilar APK en modo Release
+cd android && ./gradlew assembleRelease
+
+# 10. Verificar firma digital
+apksigner verify --print-certs DraftKings.apk
+```
+
+**Ubicación del APK generado:** `android/app/build/outputs/apk/release/DraftKings.apk`
+
+### 📁 Estructura de Personalizaciones
+
+```
+android.custom/
+├── app/src/main/
+│   ├── AndroidManifest.xml    (Configuración nativa)
+│   └── res/
+│       ├── values/            (Colores, strings, estilos)
+│       └── values-night/      (Tema oscuro)
+```
 
 ## 📦 Instalación y Configuración
 **Mencionar Dev Container para cada sección**
