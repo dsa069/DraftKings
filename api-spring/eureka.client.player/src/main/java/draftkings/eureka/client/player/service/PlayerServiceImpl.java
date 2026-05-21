@@ -27,11 +27,21 @@ public class PlayerServiceImpl implements PlayerService {
                 .orElseThrow(() -> new RuntimeException("Jugador no encontrado"));
 
         // 2. Traemos las reseñas consumiendo el microservicio externo vía OpenFeign
-        // Nota: Si reviewMS está caído, el fallback integrado devolverá una lista vacía
-        // de forma segura
-        List<ReviewDTO> reviews = reviewFeignClient.getReviewsByPlayerId(playerId);
+        // protegiendo la llamada
+        List<ReviewDTO> reviews;
+        try {
+            reviews = reviewFeignClient.getReviewsByPlayerId(playerId);
+            if (reviews == null) {
+                reviews = List.of(); // Si viene nulo, inicializamos lista vacía
+            }
+        } catch (Exception e) {
+            // Si reviewMS devuelve 404 porque no hay reseñas, o si está caído,
+            // capturamos el error para que NO rompa la petición del jugador
+            System.out.println("No se pudieron cargar las reseñas del jugador " + playerId + ": " + e.getMessage());
+            reviews = List.of();
+        }
 
-        // 3. Empaquetamos todo en el DTO para el frontend (Angular/Ionic)
+        // 3. Empaquetamos todo en el DTO para el frontend de forma segura
         return new PlayerDetailResponseDTO(player, reviews);
     }
 
