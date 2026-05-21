@@ -61,3 +61,25 @@ server:
 info:
   application:
     description: DraftKings review microservice in prod profile
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings review microservice in test profile
