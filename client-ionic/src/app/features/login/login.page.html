@@ -1,9 +1,11 @@
 <ion-content class="login-container">
-  <div class="login-wrapper">
-    <header class="login-header">
-      <h1 class="login-title">DRAFTKINGS</h1>
-      <p class="login-subtitle">Enter the arena. Manage your squad.</p>
-    </header>
+  <ion-grid class="login-wrapper ion-no-padding">
+    <ion-header class="login-header ion-no-border">
+      <ion-text class="login-title">DRAFTKINGS</ion-text>
+      <ion-text class="login-subtitle ion-no-margin"
+        >Enter the arena. Manage your squad.</ion-text
+      >
+    </ion-header>
 
     <app-login-card
       footerText="New to the game?"
@@ -15,7 +17,7 @@
       (backendChange)="selectedBackend = $event"
     >
       <form (ngSubmit)="onLogin()" [formGroup]="loginForm" id="loginFormId">
-        <div class="form-group">
+        <ion-row class="form-group">
           <ion-label class="form-label">Email Address</ion-label>
           <ion-item class="form-item" lines="none">
             <ion-icon slot="start" name="mail-outline"></ion-icon>
@@ -26,15 +28,19 @@
               class="form-input"
             ></ion-input>
           </ion-item>
-        </div>
+        </ion-row>
 
-        <div class="form-group">
-          <div class="form-label-row">
+        <ion-row class="form-group">
+          <ion-row class="form-label-row ion-no-padding">
             <ion-label class="form-label">Password</ion-label>
-            <ion-button fill="clear" class="forgot-link" (click)="gotoSignUp()"
+            <ion-button
+              fill="clear"
+              class="forgot-link ion-no-margin"
+              (click)="gotoSignUp()"
               >Forgot?</ion-button
             >
-          </div>
+          </ion-row>
+
           <ion-item class="form-item" lines="none">
             <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
             <ion-input
@@ -55,8 +61,8 @@
               ></ion-icon>
             </ion-button>
           </ion-item>
-        </div>
+        </ion-row>
       </form>
     </app-login-card>
-  </div>
+  </ion-grid>
 </ion-content>
