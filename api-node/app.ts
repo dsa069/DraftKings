@@ -18,7 +18,8 @@ dotenv.config({
 
 import indexRouter from "./dashboard_server/routes/index";
 import usersRouter from "./dashboard_server/routes/users";
-import userApiRouter from "./draftKings_api/routes/user";
+import userApiRouter from "./draftKings_api/routes/userRoutes";
+import playerApiRouter from "./draftKings_api/routes/playerRoutes";
 
 const app = express();
 
@@ -75,6 +76,7 @@ app.use("/users", usersRouter);
 
 // Rutas de la API
 app.use("/api/user", userApiRouter);
+app.use("/api/players", playerApiRouter);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {

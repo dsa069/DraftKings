@@ -4,7 +4,7 @@ import { PlayerService } from "../services/playerService";
 
 const playerService = new PlayerService();
 
-// 3) Obtener listado de jugadores (Directo al Modelo + Mapeo de salida en Controller)
+// 3) Obtener listado de jugadores (Directo al Modelo + Transformación automática de Mongoose)
 export const playersReadAll = async (req: Request, res: Response) => {
   try {
     const { search, team, league, startDate, page, size } = req.query;
@@ -22,20 +22,10 @@ export const playersReadAll = async (req: Request, res: Response) => {
     const players = await Player.find(queryFilter)
       .skip(pageNum * sizeNum)
       .limit(sizeNum)
-      .exec();
-
-    // Mapeo simple requerido por el JSON del listado
-    const formattedPlayers = players.map((p) => ({
-      id: p._id,
-      name: p.name,
-      position: p.position,
-      number: p.number,
-      team: p.team,
-      photoUrl: p.photoUrl,
-    }));
+      .exec(); // .exec() asegura promesas nativas reales
 
     return res.status(200).json({
-      content: formattedPlayers,
+      content: players, // Gracias al transform de toJSON, Mongoose los mapea automáticamente
       totalElements: totalItems,
       totalPages: Math.ceil(totalItems / sizeNum),
       number: pageNum,
@@ -46,7 +36,7 @@ export const playersReadAll = async (req: Request, res: Response) => {
   }
 };
 
-// 4) Obtener detalle de un jugador (Directo al Modelo + El "Mapeo" obligatorio de GeoJSON a plano)
+// 4) Obtener detalle de un jugador (Limpio y directo sin el "tochaco" de mapeo)
 export const playersReadOne = async (req: Request, res: Response) => {
   try {
     let id = req.params.id as string | string[] | undefined;
@@ -56,28 +46,8 @@ export const playersReadOne = async (req: Request, res: Response) => {
     const player = await Player.findById(id).exec();
     if (!player) return res.status(404).json({ message: "not found" });
 
-    // Aquí se realiza el return estructurado para aplanar las coordenadas de Mongo y limpiar la fecha
-    return res.status(200).json({
-      id: player._id,
-      name: player.name,
-      firstName: player.firstName,
-      lastName: player.lastName,
-      age: player.age,
-      birthdate: player.birthdate
-        ? player.birthdate.toISOString().split("T")[0]
-        : undefined,
-      nationality: player.nationality,
-      height: player.height,
-      weight: player.weight,
-      number: player.number,
-      team: player.team,
-      league: player.league,
-      position: player.position,
-      photoUrl: player.photoUrl,
-      latitude: player.coords?.coordinates[1],
-      longitude: player.coords?.coordinates[0],
-      created_at: player.created_at,
-    });
+    // Mongoose ejecuta en segundo plano 'toJSON.transform' convirtiendo el GeoJSON a campos id, latitude y longitude
+    return res.status(200).json(player);
   } catch (err: any) {
     if (err.name === "CastError")
       return res.status(400).json({ message: "Bad Request" });
@@ -85,7 +55,7 @@ export const playersReadOne = async (req: Request, res: Response) => {
   }
 };
 
-// 5) Crear un jugador -> DELEGA EN SERVICIO (Tiene lógica de negocio de conversión geoespacial)
+// 5) Crear un jugador -> DELEGA EN SERVICIO (Mantiene la lógica de construcción de GeoJSON interna)
 export const playersCreate = async (req: Request, res: Response) => {
   try {
     const savedPlayer = await playerService.createPlayer(req.body);
@@ -95,7 +65,7 @@ export const playersCreate = async (req: Request, res: Response) => {
   }
 };
 
-// 7) Editar datos de un jugador -> DELEGA EN SERVICIO (Tiene lógica condicional de parches)
+// 7) Editar datos de un jugador -> DELEGA EN SERVICIO (Mantiene la lógica condicional campo a campo)
 export const playersUpdate = async (req: Request, res: Response) => {
   try {
     let id = req.params.id as string | string[] | undefined;
@@ -123,7 +93,7 @@ export const playersDelete = async (req: Request, res: Response) => {
     const deletedPlayer = await Player.findByIdAndDelete(id).exec();
     if (!deletedPlayer) return res.status(404).json({ message: "not found" });
 
-    return res.status(204).send();
+    return res.status(204).send(); // 204 No Content estándar para eliminaciones exitosas
   } catch (err: any) {
     if (err.name === "CastError")
       return res.status(400).json({ message: "Bad Request" });
