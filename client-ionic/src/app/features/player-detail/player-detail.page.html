@@ -1,9 +1,233 @@
-<app-header></app-header>
+<app-header-submenu title="Player Detail"></app-header-submenu>
+<ion-content class="custom-content">
+  <ion-card class="hero-card ion-no-margin">
+    <ion-card-content class="hero-content">
+      <ion-grid class="ion-no-padding">
+        <ion-row class="badges-row">
+          <ion-badge class="badge-position">ST</ion-badge>
+          <ion-badge class="badge-rating">91 OVR</ion-badge>
+        </ion-row>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">player-detail</ion-title>
-    </ion-toolbar>
-  </ion-header>
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <ion-text class="player-name">Erling Haaland</ion-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <ion-text class="player-team">Manchester City • Norway</ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-grid class="action-grid ion-no-padding">
+    <ion-row>
+      <ion-col class="ion-no-padding">
+        <ion-button expand="block" class="edit-btn">
+          <ion-icon name="pencil" slot="start"></ion-icon>
+          Edit Player
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card class="details-card ion-no-margin">
+    <ion-card-header class="details-header ion-no-padding">
+      <ion-icon name="information-circle" class="info-icon"></ion-icon>
+      <ion-text class="section-title">Player Details</ion-text>
+    </ion-card-header>
+
+    <ion-card-content class="details-content ion-no-padding">
+      <ion-grid class="ion-no-padding">
+        <ion-row class="details-row">
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Full Name</ion-text>
+            <ion-text class="detail-value">Erling Braut Haaland</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">First Name</ion-text>
+            <ion-text class="detail-value">Erling</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Last Name</ion-text>
+            <ion-text class="detail-value">Haaland</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Age</ion-text>
+            <ion-text class="detail-value">23</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Birthdate</ion-text>
+            <ion-text class="detail-value">July 21, 2000</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Nationality</ion-text>
+            <ion-text class="detail-value">Norway</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Height</ion-text>
+            <ion-text class="detail-value">195 cm (6' 5")</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Weight</ion-text>
+            <ion-text class="detail-value">88 kg (194 lbs)</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Number</ion-text>
+            <ion-text class="detail-value">9</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Team</ion-text>
+            <ion-text class="detail-value">Manchester City</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">League</ion-text>
+            <ion-text class="detail-value">Premier League</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Position</ion-text>
+            <ion-text class="detail-value">Striker (ST)</ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-accordion-group
+    class="custom-accordions ion-no-margin"
+    expand="inset"
+    [multiple]="true"
+  >
+    <ion-accordion value="comments" class="comments-accordion">
+      <ion-item slot="header" class="comments-header" lines="none">
+        <ion-icon name="chatbox" slot="start" class="comments-icon"></ion-icon>
+        <ion-text class="comments-title">Manager Comments</ion-text>
+        <ion-badge slot="end" class="comments-count">24</ion-badge>
+      </ion-item>
+
+      <div slot="content">
+        <div class="comments-list">
+          <div class="new-comment-container">
+            <ion-input
+              class="new-comment-input"
+              placeholder="Write a comment..."
+              fill="outline"
+            ></ion-input>
+            <ion-button class="new-comment-btn" fill="clear">
+              <ion-icon name="send"></ion-icon>
+            </ion-button>
+          </div>
+
+          <ion-item class="comment-item" lines="full">
+            <ion-avatar slot="start" class="comment-avatar">
+              <ion-icon name="person"></ion-icon>
+            </ion-avatar>
+            <ion-label class="ion-text-wrap comment-label">
+              <ion-grid class="ion-no-padding">
+                <ion-row class="comment-top-row">
+                  <ion-text class="comment-author">TacticalGenius99</ion-text>
+                  <ion-text class="stars-container">
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                  </ion-text>
+                </ion-row>
+                <ion-row>
+                  <ion-text class="comment-text"
+                    >Absolute monster in the box. His finishing is unmatched,
+                    but don't expect him to drop deep and link play up too much.
+                    Worth every coin.</ion-text
+                  >
+                </ion-row>
+              </ion-grid>
+            </ion-label>
+          </ion-item>
+
+          <ion-item class="comment-item" lines="none">
+            <ion-avatar slot="start" class="comment-avatar">
+              <ion-icon name="person"></ion-icon>
+            </ion-avatar>
+            <ion-label class="ion-text-wrap comment-label">
+              <ion-grid class="ion-no-padding">
+                <ion-row class="comment-top-row">
+                  <ion-text class="comment-author">CityFan2024</ion-text>
+                  <ion-text class="stars-container">
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star-outline"></ion-icon>
+                  </ion-text>
+                </ion-row>
+                <ion-row>
+                  <ion-text class="comment-text"
+                    >Great pace and physical stats. Just keep him central and
+                    feed him through balls.</ion-text
+                  >
+                </ion-row>
+              </ion-grid>
+            </ion-label>
+          </ion-item>
+        </div>
+      </div>
+    </ion-accordion>
+
+    <ion-accordion value="news" class="comments-accordion news-accordion">
+      <ion-item slot="header" class="comments-header" lines="none">
+        <ion-icon
+          name="document-text"
+          slot="start"
+          class="comments-icon"
+        ></ion-icon>
+        <ion-text class="comments-title">Related News</ion-text>
+        <ion-badge slot="end" class="comments-count">5</ion-badge>
+      </ion-item>
+
+      <div slot="content">
+        <div class="news-list">
+          <ion-item class="news-item" lines="full">
+            <ion-label class="ion-text-wrap">
+              <ion-text class="news-title"
+                >Haaland scores hat-trick against rivals</ion-text
+              >
+              <ion-text class="news-date">Oct 24, 2023</ion-text>
+            </ion-label>
+          </ion-item>
+
+          <ion-item class="news-item" lines="full">
+            <ion-label class="ion-text-wrap">
+              <ion-text class="news-title"
+                >Manager praises Haaland's work ethic in training</ion-text
+              >
+              <ion-text class="news-date">Oct 18, 2023</ion-text>
+            </ion-label>
+          </ion-item>
+
+          <ion-item class="news-item" lines="full">
+            <ion-label class="ion-text-wrap">
+              <ion-text class="news-title"
+                >Injury update: Haaland cleared for weekend clash</ion-text
+              >
+              <ion-text class="news-date">Oct 12, 2023</ion-text>
+            </ion-label>
+          </ion-item>
+
+          <ion-button expand="block" class="add-news-btn">
+            <ion-icon name="add" slot="start"></ion-icon>
+            Add News
+          </ion-button>
+        </div>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
 </ion-content>

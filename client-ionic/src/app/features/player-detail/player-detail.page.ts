@@ -2,11 +2,35 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
+  IonInput,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonText,
+  IonBadge,
+  IonButton,
+  IonIcon,
+  IonAccordionGroup,
+  IonAccordion,
+  IonItem,
+  IonAvatar,
+  IonLabel,
 } from '@ionic/angular/standalone';
-import { HeaderComponent } from '../../shared/components/header/header.component';
+import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
+import { addIcons } from 'ionicons';
+import {
+  pencil,
+  informationCircle,
+  chatbox,
+  person,
+  star,
+  starOutline,
+  send,
+  documentText,
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-player-detail',
@@ -15,15 +39,40 @@ import { HeaderComponent } from '../../shared/components/header/header.component
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonText,
+    IonBadge,
+    IonButton,
+    IonIcon,
+    IonAccordionGroup,
+    IonAccordion,
+    IonItem,
+    IonAvatar,
+    IonLabel,
+    IonInput,
+    HeaderSubmenuComponent,
     FormsModule,
-    HeaderComponent,
   ],
 })
 export class PlayerDetailPage implements OnInit {
-  constructor() {}
+  constructor() {
+    // Registramos los íconos globalmente para este componente standalone
+    addIcons({
+      pencil,
+      informationCircle,
+      chatbox,
+      person,
+      star,
+      starOutline,
+      send,
+      documentText,
+    });
+  }
 
   ngOnInit() {
     // Temporal para que el linter no de error
