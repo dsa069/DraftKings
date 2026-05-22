@@ -2,7 +2,7 @@
 
 .sign-up-page {
   --background: var(--ion-color-surface);
-  font-family: var(--font-family-sans);
+  font-family: var(--font-family-body-md, "Inter");
 }
 
 /* 1. Hero Section */
@@ -12,6 +12,8 @@
   width: 100%;
   background-color: var(--ion-color-surface-container-lowest);
   overflow: hidden;
+  --ion-grid-padding: 0;
+  padding: 0;
 
   @media (min-width: 768px) {
     height: 288px; // h-72
@@ -24,13 +26,14 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  filter: saturate(0.5); // mix-blend-luminosity aproximado
+  filter: saturate(0.5);
+  margin: 0;
+  padding: 0;
 }
 
 .hero-gradient-vertical {
   position: absolute;
   inset: 0;
-  /* Fundimos a sólido justo al 75% para que coincida con el margen negativo (-64px) de tu contenido */
   background: linear-gradient(
     to bottom,
     transparent 0%,
@@ -38,17 +41,22 @@
     var(--ion-color-surface) 75%,
     var(--ion-color-surface) 100%
   );
+  margin: 0;
+  padding: 0;
+  pointer-events: none; /* Asegura que el botón back sea clickeable */
 }
 
 .hero-gradient-horizontal {
   position: absolute;
   inset: 0;
-  /* Evitamos el uso de -rgb aquí también por seguridad usando color-mix (soportado nativamente) */
   background: linear-gradient(
     to right,
     color-mix(in srgb, var(--ion-color-surface) 50%, transparent) 0%,
     transparent 100%
   );
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
 }
 
 /* 2. Botón Back Circular */
@@ -57,19 +65,28 @@
   top: var(--spacing-margin-mobile);
   left: var(--spacing-margin-mobile);
   z-index: 20;
+  margin: 0;
 }
 
 .circular-back-btn {
-  --background: rgba(var(--ion-color-surface-container-high-rgb), 0.6);
+  --background: color-mix(
+    in srgb,
+    var(--ion-color-surface-container-high) 60%,
+    transparent
+  );
   --color: var(--ion-color-chalk-white);
   --border-radius: 50%;
   --border-width: 1px;
   --border-style: solid;
-  --border-color: rgba(var(--ion-color-outline-variant-rgb), 0.3);
+  --border-color: color-mix(
+    in srgb,
+    var(--ion-color-outline-variant) 30%,
+    transparent
+  );
   backdrop-filter: blur(12px);
   width: 40px;
   height: 40px;
-  border-radius: 50px; /* Ajusta el valor a tu gusto */
+  border-radius: 50px;
   margin: 0;
   transition: all 0.2s ease;
 
@@ -101,24 +118,31 @@
   }
 }
 
+.branding-col {
+  padding: 0;
+}
+
 .branding-header {
   margin-bottom: var(--spacing-stack-lg);
+  padding: 0;
 }
 
 .badge-draft {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(var(--ion-color-surface-container-high-rgb), 0.8);
+  background: transparent;
   backdrop-filter: blur(4px);
   border: 1px solid var(--ion-color-outline-variant);
   border-radius: 9999px;
   padding: 4px 12px;
   margin-bottom: var(--spacing-stack-sm);
+  height: auto;
 
   .badge-icon {
     color: var(--ion-color-primary);
     font-size: 14px;
+    margin: 0;
   }
 
   .badge-text {
@@ -128,7 +152,13 @@
     color: var(--ion-color-on-surface);
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    margin: 0;
   }
+}
+
+.hero-title-container {
+  display: block;
+  margin: 0 0 4px 0;
 }
 
 .hero-title {
@@ -138,15 +168,15 @@
   text-transform: uppercase;
   letter-spacing: -0.02em;
   line-height: 1;
-  margin: 0 0 4px 0;
 
-  .hero-title-highlight {
+  &.hero-title-highlight {
     color: var(--ion-color-primary);
     filter: drop-shadow(0 0 12px rgba(77, 253, 133, 0.3));
   }
 }
 
 .hero-description {
+  display: block;
   font-family: var(--font-family-body-md);
   font-size: var(--font-size-body-md);
   color: var(--ion-color-on-surface-variant);
@@ -155,20 +185,20 @@
 }
 
 /* 4. Estilos específicos para el formulario dentro de la Card */
-.main-submit-btn {
-  --background: var(--ion-color-primary);
-  --color: var(--ion-color-on-primary);
-  --border-radius: var(--border-radius-lg);
-  font-family: var(--font-family-label-bold);
-  margin-top: var(--spacing-stack-md);
-  height: 56px;
-  text-transform: none;
+.form-list {
+  background: transparent;
+  padding: 0;
 }
 
-.field-wrapper {
+.form-group {
+  display: block;
   margin-bottom: var(--spacing-stack-md);
 
-  .field-label {
+  .form-label-row {
+    padding: 0;
+  }
+
+  .form-label {
     font-family: var(--font-family-label-bold);
     color: var(--ion-color-on-surface);
     font-size: 12px;
@@ -176,41 +206,51 @@
     display: block;
   }
 
-  .field-item {
+  .form-item {
     --background: var(--ion-color-surface-container);
-    --border-radius: var(--border-radius-md);
+    --border-radius: var(--border-radius-lg);
     --padding-start: 12px;
     --inner-padding-end: 12px;
+    margin: 0;
 
     ion-icon {
       color: var(--ion-color-on-surface-variant);
       margin-right: 8px;
     }
+
+    .form-input {
+      font-family: var(--font-family-body-md);
+      color: var(--ion-color-on-surface);
+    }
   }
 }
+
 /* ==========================================================================
-   3. REQUISITOS DE CONTRASEÑA (ÚNICO ESTILO PERMITIDO PARA EL FORM)
+   3. REQUISITOS DE CONTRASEÑA (Adaptado para iconos)
    ========================================================================== */
 .password-requirements-container {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  padding: 0;
+  margin-bottom: var(--spacing-stack-md);
 }
 
 .requirement-item {
   display: flex;
   align-items: center;
   gap: 4px;
+  padding: 0;
 }
 
 .requirement-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(
-    --ion-color-outline-variant,
-    #444
-  ); /* Fallback si no existe la var */
+  font-size: 6px; /* Ajuste perfecto para el tamaño del icon de punto */
+  color: var(--ion-color-outline-variant, #444);
+  transition: color 0.3s ease;
+
+  &.requirement-met {
+    color: var(--ion-color-success) !important;
+  }
 }
 
 .requirement-text {
@@ -220,8 +260,4 @@
   color: var(--ion-color-outline);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
-
-.requirement-met {
-  background-color: var(--ion-color-success) !important;
 }
