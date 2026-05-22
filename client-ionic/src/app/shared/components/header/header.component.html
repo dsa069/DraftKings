@@ -1,23 +1,27 @@
-<ion-header [translucent]="false" class="app-header">
+<ion-header [translucent]="false" class="header-container app-header">
   <ion-toolbar color="surface">
     <ion-buttons slot="start">
-      <ion-button class="icon-button" fill="clear" (click)="goToHome()">
+      <ion-button
+        class="header-nav-button icon-button"
+        fill="clear"
+        (click)="goToHome()"
+      >
         <ion-img
-          class="logo"
+          class="header-logo"
           src="assets/icon/DK-logo.png"
           alt="DraftKings Logo"
         ></ion-img>
       </ion-button>
     </ion-buttons>
 
-    <ion-title class="app-title">DRAFTKINGS</ion-title>
+    <ion-title class="header-title-base app-title">DRAFTKINGS</ion-title>
 
     <ion-buttons slot="end">
       @if (isLogged()) {
       <ion-button
         (click)="closeSession()"
         aria-label="Log Out"
-        class="icon-button"
+        class="header-nav-button icon-button"
         fill="clear"
       >
         <ion-icon
@@ -30,7 +34,7 @@
       <ion-button
         (click)="goToLogin()"
         aria-label="Log In"
-        class="icon-button"
+        class="header-nav-button icon-button"
         fill="clear"
       >
         <ion-icon

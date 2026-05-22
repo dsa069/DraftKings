@@ -1,65 +1,23 @@
-// Header Container
-.app-header {
-  width: 100%;
-  z-index: 50;
-
-  ion-toolbar {
-    --padding-start: var(--spacing-margin-mobile, 16px);
-    --padding-end: var(--spacing-margin-mobile, 16px);
-    --min-height: 3.5rem; // h-14 equivalent (56px)
-    --background: var(--ion-color-surface, var(--ion-color-background));
-    background: var(--ion-color-surface, var(--ion-color-background));
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
-
-// Title Styling
-.app-subtitle {
-  font-family: var(--font-family-display-lg, "Lexend"), sans-serif;
-  font-size: var(--font-line-height-body-lg);
-  font-weight: 700;
-  letter-spacing: -0.02em; // tracking-tighter equivalent
-  text-align: center;
-  flex-grow: 1;
-  margin: 0;
-}
-
-// Logo Styling
-.logo {
-  width: 40px !important;
-  height: 40px !important;
-  max-width: 40px;
-  max-height: 40px;
-  object-fit: contain;
-}
-
-// Back Button Styling
-ion-back-button {
-  width: 56px !important;
-  height: 56px !important;
-  --color: var(--ion-color-primary-variant-dark) !important;
-}
-
-// Ensure proper layout distribution
+// Fondo específico para este toolbar
 ion-toolbar {
-  ion-buttons {
-    flex: 0 0 auto;
-  }
-
-  ion-buttons[slot="start"] {
-    margin-inline-end: auto;
-  }
-
-  ion-buttons[slot="end"] {
-    margin-inline-start: auto;
-  }
+  --background: var(--ion-color-surface, var(--ion-color-background));
+  background: var(--ion-color-surface, var(--ion-color-background));
 }
 
-// Responsive adjustments
+// Subtítulo
+.app-subtitle {
+  font-size: var(--font-line-height-body-lg);
+}
+
+// Back Button específico de este header (AQUÍ SE APLICA EL CAMBIO)
+ion-back-button {
+  --color: var(--ion-color-primary-variant-dark) !important;
+  --icon-font-size: 34px !important; /* <--- Esto solo afectará a este componente */
+}
+
+// Nota: Se corrigió el selector del media query para que afecte a .app-subtitle en vez de .app-title
 @media (max-width: 480px) {
-  .app-title {
+  .app-subtitle {
     font-size: clamp(24px, 5vw, 32px);
   }
 }
