@@ -41,6 +41,9 @@ export class HeaderComponent {
       'football-outline': footballOutline,
     });
   }
+  async goToHome(): Promise<void> {
+    this.navCtrl.navigateForward(['/']);
+  }
 
   async goToLogin(): Promise<void> {
     this.navCtrl.navigateForward(['/login']);

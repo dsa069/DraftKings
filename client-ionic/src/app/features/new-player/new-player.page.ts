@@ -1,9 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
   IonToolbar,
   IonGrid,
   IonRow,
@@ -22,9 +20,10 @@ import {
   IonImg,
   IonFooter,
 } from '@ionic/angular/standalone';
-import { HeaderComponent } from '../../shared/components/header/header.component';
 import { addIcons } from 'ionicons';
-import { person, camera, location } from 'ionicons/icons';
+import { person, camera, location, saveOutline } from 'ionicons/icons';
+import { NavController } from '@ionic/angular';
+import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
 
 @Component({
   selector: 'app-new-player',
@@ -33,8 +32,6 @@ import { person, camera, location } from 'ionicons/icons';
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
-    IonTitle,
     IonToolbar,
     IonGrid,
     IonRow,
@@ -52,18 +49,26 @@ import { person, camera, location } from 'ionicons/icons';
     IonCardContent,
     IonImg,
     IonFooter,
-    HeaderComponent,
+    HeaderSubmenuComponent,
     FormsModule,
   ],
 })
 export class NewPlayerPage implements OnInit {
+  private readonly navCtrl = inject(NavController);
+
   constructor() {
     // Registramos los íconos globalmente para este standalone component
-    addIcons({ person, camera, location });
+    addIcons({ person, camera, location, saveOutline });
   }
 
   ngOnInit() {
     // Temporal para que el linter no de error
     console.log('NewPlayerPage inicializado');
+  }
+
+  onSavePlayer() {
+    // Aquí iría la lógica para guardar el nuevo jugador
+    console.log('Guardar jugador');
+    this.navCtrl.navigateForward(['/player-detail']);
   }
 }

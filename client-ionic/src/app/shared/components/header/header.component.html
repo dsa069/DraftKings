@@ -1,7 +1,7 @@
 <ion-header [translucent]="false" class="app-header">
   <ion-toolbar color="surface">
     <ion-buttons slot="start">
-      <ion-button class="icon-button" fill="clear">
+      <ion-button class="icon-button" fill="clear" (click)="goToHome()">
         <ion-img
           class="logo"
           src="assets/icon/DK-logo.png"
@@ -14,31 +14,31 @@
 
     <ion-buttons slot="end">
       @if (isLogged()) {
-        <ion-button
-          (click)="closeSession()"
-          aria-label="Log Out"
-          class="icon-button"
-          fill="clear"
-        >
-          <ion-icon
-            slot="icon-only"
-            name="log-out-outline"
-            class="icon"
-          ></ion-icon>
-        </ion-button>
+      <ion-button
+        (click)="closeSession()"
+        aria-label="Log Out"
+        class="icon-button"
+        fill="clear"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="log-out-outline"
+          class="icon"
+        ></ion-icon>
+      </ion-button>
       } @else {
-        <ion-button
-          (click)="goToLogin()"
-          aria-label="Log In"
-          class="icon-button"
-          fill="clear"
-        >
-          <ion-icon
-            slot="icon-only"
-            name="log-in-outline"
-            class="icon"
-          ></ion-icon>
-        </ion-button>
+      <ion-button
+        (click)="goToLogin()"
+        aria-label="Log In"
+        class="icon-button"
+        fill="clear"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="log-in-outline"
+          class="icon"
+        ></ion-icon>
+      </ion-button>
       }
     </ion-buttons>
   </ion-toolbar>
