@@ -1,8 +1,9 @@
+<app-header-submenu></app-header-submenu>
 <ion-content class="custom-content">
   <ion-grid class="form-section ion-no-padding">
     <ion-row>
       <ion-col class="ion-no-padding">
-        <ion-label class="custom-label">Name (Display Name)</ion-label>
+        <ion-label class="custom-label">Display Name</ion-label>
         <ion-input
           class="custom-input"
           placeholder="e.g. Mbappé"
@@ -168,6 +169,9 @@
 
 <ion-footer class="ion-no-border bottom-action-footer">
   <ion-toolbar class="transparent-toolbar">
-    <ion-button expand="block" class="save-btn"> Save Player </ion-button>
+    <ion-button expand="block" class="save-btn" (click)="onSavePlayer()">
+      <ion-icon slot="start" name="save-outline"></ion-icon>
+      Save Player
+    </ion-button>
   </ion-toolbar>
 </ion-footer>
