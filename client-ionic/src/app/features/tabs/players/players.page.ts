@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import {
   IonContent,
   IonGrid,
@@ -34,6 +34,7 @@ import {
   add,
 } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-players',
@@ -66,6 +67,8 @@ import { FormsModule } from '@angular/forms';
   ],
 })
 export class PlayersPage {
+  private readonly navCtrl = inject(NavController);
+
   showFilters = signal<boolean>(false);
   // Señales para controlar el estado de los filtros
   selectedTeam = signal<string>('');
@@ -117,5 +120,9 @@ export class PlayersPage {
   onDateChange(event: any): void {
     const value = event.detail.value;
     this.selectedDate.set(value ? String(value) : null);
+  }
+
+  goToAddPlayer(): void {
+    this.navCtrl.navigateForward('/new-player');
   }
 }
