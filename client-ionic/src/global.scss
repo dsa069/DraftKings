@@ -46,6 +46,68 @@ ion-content {
   --background: var(--ion-color-background);
 }
 
+// ==========================================
+// ESTRUCTURA Y CONTENEDORES DEL HEADER
+// ==========================================
+
+.header-container {
+  width: 100%;
+  z-index: 50;
+
+  ion-toolbar {
+    --padding-start: var(--spacing-margin-mobile, 16px);
+    --padding-end: var(--spacing-margin-mobile, 16px);
+    --min-height: 3.5rem; // h-14 equivalent (56px)
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+// Distribución de espacio dentro del Toolbar de Ionic
+ion-toolbar {
+  ion-buttons {
+    flex: 0 0 auto;
+  }
+
+  ion-buttons[slot="start"] {
+    margin-inline-end: auto;
+  }
+
+  ion-buttons[slot="end"] {
+    margin-inline-start: auto;
+  }
+}
+
+// ==========================================
+// COMPONENTES INTERNOS DEL HEADER
+// ==========================================
+
+// Estilo Base del Título (Tipografía compartida)
+.header-title-base {
+  font-family: var(--font-family-display-lg, "Lexend"), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em; // tracking-tighter equivalent
+  text-align: center;
+  flex-grow: 1;
+  margin: 0;
+}
+
+// Logo compartido
+.header-logo {
+  width: 40px !important;
+  height: 40px !important;
+  max-width: 40px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+// Estilos base para elementos de navegación/iconos
+.header-nav-button {
+  width: 56px !important;
+  height: 56px !important;
+}
+
 /* ==========================================================================
    ESTILOS COMPARTIDOS PARA FORMULARIOS DE AUTENTICACIÓN (LOGIN / REGISTRO)
    ========================================================================== */

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -9,6 +9,8 @@ import {
   IonImg,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { chevronBackCircleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-header-submenu',
@@ -28,7 +30,14 @@ import { NavController } from '@ionic/angular';
 export class HeaderSubmenuComponent {
   private readonly navCtrl = inject(NavController);
 
-  constructor() {}
+  @Input() title = 'DRAFTKINGS';
+  @Input() href = '/';
+
+  constructor() {
+    addIcons({
+      'chevron-back-circle-outline': chevronBackCircleOutline,
+    });
+  }
 
   async goToHome(): Promise<void> {
     this.navCtrl.navigateForward(['/']);
