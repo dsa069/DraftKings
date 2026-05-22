@@ -1,0 +1,554 @@
+/* --- Main Content Wrapper --- */
+.main-content {
+  --background: var(--ion-color-background);
+
+  &::part(scroll) {
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--spacing-stack-md);
+    padding-inline: var(--spacing-margin-mobile);
+    width: 100%;
+  }
+}
+
+.content-grid {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* --- Strategy Header --- */
+.strategy-header {
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-stack-md);
+}
+
+.title-col {
+  padding: 0;
+}
+
+.headline {
+  display: block;
+  font-family: var(--font-family-headline-md);
+  font-size: var(--font-size-headline-md);
+  font-weight: var(--font-weight-headline-md);
+  line-height: var(--font-line-height-headline-md);
+  color: var(--ion-color-on-surface);
+  margin: 0;
+}
+
+.subtitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface-variant);
+
+  ion-icon {
+    font-size: 16px;
+    color: var(--ion-color-primary);
+  }
+}
+
+.ovr-col {
+  padding: 0;
+}
+
+.ovr-chip {
+  margin: 0;
+  background: var(--ion-color-surface-container);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-lg);
+  padding: 6px 12px;
+  gap: 8px;
+
+  .ovr-number {
+    font-family: var(--font-family-stat-number);
+    font-size: var(--font-size-stat-number);
+    font-weight: var(--font-weight-stat-number);
+    color: var(--ion-color-stat-gold);
+  }
+
+  .ovr-text {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    font-weight: var(--font-weight-label-bold);
+    color: var(--ion-color-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* --- Filters Row --- */
+.filters-row {
+  margin-top: var(--spacing-stack-sm);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  gap: var(--spacing-gutter);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  ion-col {
+    padding: 0;
+  }
+}
+
+.filter-btn {
+  --border-radius: var(--border-radius-full);
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin: 0;
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  text-transform: none;
+  letter-spacing: normal;
+  transition: transform 0.2s;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.active {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-on-primary);
+  }
+
+  &:not(.active) {
+    --background: var(--ion-color-surface-container);
+    --color: var(--ion-color-on-surface);
+    --border-color: var(--ion-color-outline-variant);
+    --border-width: 1px;
+    --border-style: solid;
+    --background-hover: var(--ion-color-surface-container-high);
+  }
+
+  ion-icon {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+}
+
+/* --- Tactical Pitch Container --- */
+.pitch-row {
+  justify-content: center;
+
+  > ion-col {
+    padding: 0;
+    width: 100%;
+  }
+}
+
+.tactical-pitch {
+  position: relative;
+  width: min(100%, 540px);
+  margin: 0 auto;
+  aspect-ratio: 3/4;
+  padding: 16px;
+  background: #0f1710;
+  border-radius: var(--border-radius-xl);
+  border: 1px solid var(--ion-color-outline-variant);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.pitch-background {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.18) 50%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  padding: 0;
+  margin: 0;
+  z-index: 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    border-top: 2px dashed var(--ion-color-primary-fixed-dim);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    border: 2px solid var(--ion-color-primary-fixed-dim);
+  }
+}
+
+.pitch-lines-1 {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  padding: 0;
+  margin: 0;
+  z-index: 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 16.666%;
+    border-left: 2px solid var(--ion-color-primary-fixed-dim);
+    border-right: 2px solid var(--ion-color-primary-fixed-dim);
+    border-bottom: 2px solid var(--ion-color-primary-fixed-dim);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 16.666%;
+    border-left: 2px solid var(--ion-color-primary-fixed-dim);
+    border-right: 2px solid var(--ion-color-primary-fixed-dim);
+    border-top: 2px solid var(--ion-color-primary-fixed-dim);
+  }
+}
+
+/* --- Players Grid --- */
+.players-grid {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+ion-row.forward-row {
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+ion-row.midfield-row {
+  justify-content: space-around;
+  padding: 0 24px;
+}
+
+ion-row.defense-row {
+  justify-content: space-between;
+  padding: 0 8px;
+  @media (min-width: 768px) {
+    padding: 0 24px;
+  }
+}
+
+ion-row.gk-row {
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.player-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 0;
+  flex: 0 0 auto;
+  width: auto;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.col-mt-2 {
+    margin-top: 8px;
+  }
+  &.col-mt-4 {
+    margin-top: 16px;
+  }
+}
+
+/* --- Avatar & Images --- */
+.player-avatar {
+  position: relative;
+  overflow: visible;
+  border-radius: 50%;
+
+  width: 40px;
+  height: 40px;
+  @media (min-width: 768px) {
+    width: 48px;
+    height: 48px;
+  }
+
+  &.large-avatar {
+    width: 48px;
+    height: 48px;
+    @media (min-width: 768px) {
+      width: 56px;
+      height: 56px;
+    }
+  }
+
+  ion-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border-width: 2.5px;
+    border-style: solid;
+    border-color: var(--ion-color-surface-variant);
+    transition: border-color 0.2s, opacity 0.2s;
+
+    &::part(image) {
+      border-radius: 50%;
+    }
+  }
+
+  /* Standard variants */
+  &:not(.highlight-avatar):not(.gk-avatar):not(.border-standard) ion-img {
+    opacity: 0.8;
+  }
+  .player-col:hover &:not(.highlight-avatar):not(.gk-avatar) ion-img {
+    opacity: 1;
+    border-color: var(--ion-color-primary);
+  }
+
+  /* Midfielders / Defenders standard big */
+  &.border-standard ion-img {
+    opacity: 1;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Highlight variant */
+  &.highlight-avatar ion-img {
+    opacity: 1;
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 15px rgba(77, 253, 133, 0.3);
+  }
+  .player-col:hover &.highlight-avatar ion-img {
+    border-color: var(--ion-color-chalk-white);
+  }
+
+  /* Goalkeeper variant */
+  &.gk-avatar ion-img {
+    opacity: 1;
+    border-color: #ffcc00;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+  }
+  .player-col:hover &.gk-avatar ion-img {
+    border-color: var(--ion-color-chalk-white);
+  }
+}
+
+/* --- Badges --- */
+ion-badge {
+  --background: transparent;
+  --color: inherit;
+  --padding-end: 0;
+  --padding-start: 0;
+  box-shadow: none;
+}
+
+.ovr-badge {
+  --background: var(--ion-color-surface);
+  --color: var(--ion-color-stat-gold);
+  position: absolute;
+  bottom: -6px;
+  right: -4px;
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 9999px;
+  padding: 2px 6px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-family-stat-number);
+  font-size: 9px;
+  line-height: 1;
+  z-index: 10;
+
+  &.large-badge {
+    right: -8px;
+    font-size: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    @media (min-width: 768px) {
+      font-size: 12px;
+    }
+  }
+}
+
+.pos-badge {
+  --background: var(--ion-color-surface-container-highest);
+  --color: var(--ion-color-on-surface);
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-family: var(--font-family-label-bold);
+  font-size: 7px;
+  z-index: 10;
+
+  &.large-badge {
+    font-size: 8px;
+  }
+
+  &.gk-pos {
+    --background: #ffcc00;
+    --color: #000;
+    border-color: #ffcc00;
+  }
+}
+
+/* --- Player Text Name --- */
+.player-name {
+  display: block;
+  margin-top: 8px;
+  background: rgba(25, 34, 25, 0.9);
+  padding: 2px 6px;
+  border-radius: var(--border-radius);
+  font-family: var(--font-family-label-bold);
+  font-size: 9px;
+  color: var(--ion-color-on-surface-variant);
+  border: 1px solid rgba(60, 74, 60, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
+  text-align: center;
+
+  &.large-name {
+    margin-top: 10px;
+    background: rgba(35, 44, 35, 0.9);
+    backdrop-filter: blur(4px);
+    padding: 2px 8px;
+    font-size: 11px;
+    color: var(--ion-color-on-surface);
+    border: 1px solid rgba(60, 74, 60, 0.5);
+    max-width: 70px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+}
+/* --- AI Advice Section --- */
+.ai-advice-row {
+  margin-top: var(--spacing-stack-md);
+  margin-bottom: var(--spacing-stack-md);
+
+  ion-col {
+    padding: 0;
+  }
+}
+
+.ai-advice-card {
+  margin: 0;
+  background: var(--ion-color-surface-container);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-xl);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.ai-advice-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-btn {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+  --border-radius: 8px;
+  --box-shadow: 0 0 20px rgba(var(--ion-color-primary-rgb), 0.2);
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  margin: 0;
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  text-transform: none;
+  letter-spacing: normal;
+  transition: transform 0.2s, filter 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+.ai-tip-box {
+  margin: 0;
+  /* Usamos un color ligeramente más oscuro/claro simulando el container-low */
+  background: var(--ion-color-surface);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 8px;
+  box-shadow: none;
+  min-height: 60px;
+  opacity: 0.8; /* Simula el /30 del border-outline-variant de tailwind */
+}
+
+.ai-tip-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.ai-tip-icon {
+  background: var(--ion-color-surface-container-highest);
+  color: rgba(var(--ion-color-primary-rgb), 0.5);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  padding: 6px;
+}
+
+.ai-tip-text {
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface-variant);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+}

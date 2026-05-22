@@ -1,9 +1,184 @@
 <app-header></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">My Team</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="main-content" scroll-y="true">
+  <ion-grid class="content-grid">
+    <ion-row class="strategy-header">
+      <ion-col class="title-col">
+        <ion-text class="headline">Starting XI</ion-text>
+        <ion-text class="subtitle">
+          <ion-icon name="git-network-outline"></ion-icon> Tactical Setup
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="auto" class="ovr-col">
+        <ion-chip class="ovr-chip">
+          <ion-label class="ovr-number">88</ion-label>
+          <ion-label class="ovr-text">OVR</ion-label>
+        </ion-chip>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="filters-row">
+      <ion-col size="auto">
+        <ion-button class="filter-btn active" shape="round">
+          4-3-3 Offensive
+        </ion-button>
+      </ion-col>
+      <ion-col size="auto">
+        <ion-button class="filter-btn" shape="round" fill="outline">
+          Balanced
+        </ion-button>
+      </ion-col>
+      <ion-col size="auto">
+        <ion-button class="filter-btn" shape="round" fill="outline">
+          <ion-icon slot="start" name="options-outline"></ion-icon>
+          Tactics
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="pitch-row">
+      <ion-col>
+        <ion-card class="tactical-pitch">
+          <ion-card-content class="pitch-background"></ion-card-content>
+          <ion-card-content class="pitch-lines-1"></ion-card-content>
+
+          <ion-grid class="players-grid">
+            <ion-row class="forward-row">
+              <ion-col class="player-col col-mt-4">
+                <ion-avatar class="player-avatar">
+                  <ion-img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFUQ4co8WYh09TWNA2Cvs05v-h8G_fJ_H0-zE1fTxE2yFMw6XoqiNXc9OIUJRCZf6faWZBxNQjHOFJBV-HFEJvgCIuH_KbGPSXbTKPxIuOWt89YwT9_CMuc2c9ireDQqZTBuOYdX7AXeIz87Vvq9w_i3zhKfJseusYrdPPVXoq2CsgteJ7A58xWuyJ3CpPNnTdATDyMMSF8USHLqWQgvPkyEPISaYneQbyNj6LknJeeTU24J1df84dwR0ahxsvNhdGjRNYKm7xJuw"
+                  ></ion-img>
+                  <ion-badge class="pos-badge">LW</ion-badge>
+                  <ion-badge class="ovr-badge">85</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name">GREALISH</ion-text>
+              </ion-col>
+              <ion-col class="player-col">
+                <ion-avatar class="player-avatar large-avatar highlight-avatar">
+                  <ion-img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2CXb_I048S6Nn9hrfdNaY1KM1MET5i6lVJRLD9LcP6MATNfizDKCr9HlE5ruk6Ta6LarbOcMCv7u9sL0xXAijzVPJJuLEs8Jq0lZ3_8HP5Km4Wx_v-Fp40Ewj5NxWGuAJaO28rw9gBH0GDZlvhuHGqlirEfK8rr9pL3h2SaTPUCotHknXIe1Q6FUQnGLjHkWXHf0nC5_mDHSo_yY03UJqstdbYiUiUNGDbNCOY1K0cqqQvwVDsNnffZLkQfiIclIZNLCl7-zqrIQ"
+                  ></ion-img>
+                  <ion-badge class="pos-badge large-badge">ST</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">91</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name large-name">HAALAND</ion-text>
+              </ion-col>
+              <ion-col class="player-col col-mt-4">
+                <ion-avatar class="player-avatar">
+                  <ion-img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7ZIt4sL0AE-dJ_I26ER0m8l8yw-QljzCzjXGKwgQ62yAapXFzvHdLFm2j3pq-4An_GUr1QB7kV9fu9myfG71DZ2N5DcfWctSvR2Hclqe9nc4ISCiIgZHqFNbkyoHpwBzliJa0Kz1IYNobPLLq7EQJCtLIHKIpxamXMAXFcCcygW8vrkDchFYmN0qX6GvF28NhNDiSOiqJf1ec4c4POdZJJCPIb58xJJVmwKIZthpaalKl-oJ49oUPkLDZIioMYB_mZoIEc9xcrec"
+                  ></ion-img>
+                  <ion-badge class="pos-badge">RW</ion-badge>
+                  <ion-badge class="ovr-badge">87</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name">FODEN</ion-text>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="midfield-row">
+              <ion-col class="player-col">
+                <ion-avatar class="player-avatar large-avatar border-standard">
+                  <ion-img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWE1E20xquwXtGtRy3lB4P2iTyipYGcmBEjnGLdqVoj4sPouEBjBTbgvB20YWw2X_Ns9o0g-aaD5psasLY0iZTSEGs389dWwG1bzqCzE8rVOcNr3ztVnJ32Yf9UCS3s_XC3ivf5wxCAdrWB0DJFGbxihTMW7KdF--qxngaP_3LULwlA9VnBKQW6KVo-hVFtnLcMJ-ddpflpkjsep-rpurKVjbkOyJyewtAgPzG3G1Q6em7YFAjoywJKkFv0AhVgJl3tywG2eFAIO0"
+                  ></ion-img>
+                  <ion-badge class="pos-badge large-badge">CM</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">88</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name large-name">ALVAREZ</ion-text>
+              </ion-col>
+              <ion-col class="player-col col-mt-4">
+                <ion-avatar class="player-avatar large-avatar border-standard">
+                  <ion-img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1EeLCxtU9yGjs54H1b7Dkoibh2cq9vFdyVC4FHPcw8SPtgZuv1ZOiEfCS5sZuFhPu1cRNfw7RrSe8FKdoQqMuOSYPRu6e-4atCVz5-QqtrMc48Em1UsTNsx0fL3zdg2z-7CL8JMyEVCbrsv8SZ9g1InZoO2ADy40m4jJkGSaZCI7MgS3X8agApAZR9WBZGzy5RMyJubTH4wSBM-bOuuumyFVI4CAmfqT4eEoQwVQOMNVuqRjsJs0Ky413P6JiGr5YMsuPOuE40UM"
+                  ></ion-img>
+                  <ion-badge class="pos-badge large-badge">CDM</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">89</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name large-name">RODRI</ion-text>
+              </ion-col>
+              <ion-col class="player-col">
+                <ion-avatar class="player-avatar large-avatar highlight-avatar">
+                  <ion-img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsSNFJ2oBkXAPh4UiZdEzp3jV4F9FobtPxcYPxX7PxJGUrmRmFgE7UwTwZFfbO4Y21NMuLePbWXpNbrVb9SGkuGlCS8L30tj2eENbT5FgtdBXVRel9NKDi6BP9k46nhMzMsZx4CvFUpJbogU6FEWLGHimK-zXVKuPoOhnqazBzGJ8a5QBR9Ji-Tl4cztCyWfB6TA4_uxuCsojuI21IoDotV1wzO9fhNg9HbTAJPtn_-mrNxYIo1cW_aBiw0KlG0nmuCnjkYBM1qLQ"
+                  ></ion-img>
+                  <ion-badge class="pos-badge large-badge">CM</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">92</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name large-name">DE BRUYNE</ion-text>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="defense-row">
+              <ion-col class="player-col col-mt-2">
+                <ion-avatar class="player-avatar">
+                  <ion-img src="https://placeholder.pics/svg/300"></ion-img>
+                  <ion-badge class="pos-badge">LB</ion-badge>
+                  <ion-badge class="ovr-badge">84</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name">AKE</ion-text>
+              </ion-col>
+              <ion-col class="player-col">
+                <ion-avatar class="player-avatar large-avatar border-standard">
+                  <ion-img src="https://placeholder.pics/svg/300"></ion-img>
+                  <ion-badge class="pos-badge large-badge">CB</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">89</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name large-name">DIAS</ion-text>
+              </ion-col>
+              <ion-col class="player-col">
+                <ion-avatar class="player-avatar large-avatar border-standard">
+                  <ion-img src="https://placeholder.pics/svg/300"></ion-img>
+                  <ion-badge class="pos-badge large-badge">CB</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">86</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name large-name">STONES</ion-text>
+              </ion-col>
+              <ion-col class="player-col col-mt-2">
+                <ion-avatar class="player-avatar">
+                  <ion-img src="https://placeholder.pics/svg/300"></ion-img>
+                  <ion-badge class="pos-badge">RB</ion-badge>
+                  <ion-badge class="ovr-badge">85</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name">WALKER</ion-text>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="gk-row">
+              <ion-col class="player-col">
+                <ion-avatar class="player-avatar large-avatar gk-avatar">
+                  <ion-img src="https://placeholder.pics/svg/300"></ion-img>
+                  <ion-badge class="pos-badge gk-pos">GK</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">88</ion-badge>
+                </ion-avatar>
+                <ion-text class="player-name large-name">EDERSON</ion-text>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ai-advice-row">
+      <ion-col>
+        <ion-card class="ai-advice-card">
+          <ion-card-content class="ai-advice-content">
+            <ion-button class="ai-btn" expand="block">
+              <ion-icon slot="start" name="sparkles"></ion-icon>
+              AI Advice
+            </ion-button>
+
+            <ion-card class="ai-tip-box">
+              <ion-card-content class="ai-tip-content">
+                <ion-icon class="ai-tip-icon" name="bulb"></ion-icon>
+                <ion-text class="ai-tip-text">
+                  Tap to get AI recommendations for your squad.
+                </ion-text>
+              </ion-card-content>
+            </ion-card>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
