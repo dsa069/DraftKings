@@ -82,6 +82,7 @@ export class SignUpPage implements OnInit {
   };
 
   showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
   signUpForm!: FormGroup;
   selectedBackend: BackendType = this.configService.selectedBackend();
 
@@ -127,6 +128,10 @@ export class SignUpPage implements OnInit {
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   // En sign-up.page.ts
