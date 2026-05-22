@@ -1,0 +1,401 @@
+ion-content.settings-content {
+  --background: var(--ion-color-background);
+}
+
+.main-grid {
+  max-width: 42rem; // max-w-2xl
+  margin: 0 auto;
+  margin-top: 56px; // mt-14
+  margin-bottom: 76px;
+  padding: var(--spacing-stack-lg) var(--spacing-margin-mobile);
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-lg);
+  padding: 0;
+}
+
+// ----- Estilos Globales de Tarjetas -----
+ion-card {
+  margin: 0;
+  box-shadow: none;
+  background: var(--ion-color-surface-container-high);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-xl);
+  overflow: hidden;
+}
+
+// ----- Profile Card -----
+.profile-card {
+  position: relative;
+  overflow: visible; // Permite que el glow sobresalga sin ser cortado
+
+  .ambient-glow {
+    position: absolute;
+    top: -6rem;
+    right: -6rem;
+    width: 12rem;
+    height: 12rem;
+    background-color: rgba(var(--ion-color-primary-rgb), 0.05);
+    border-radius: var(--border-radius-full);
+    filter: blur(3xl);
+    pointer-events: none;
+    transition: background-color 0.5s;
+  }
+
+  &:hover .ambient-glow {
+    background-color: rgba(var(--ion-color-primary-rgb), 0.1);
+  }
+
+  .profile-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-stack-lg);
+    padding: var(--spacing-stack-lg);
+    position: relative;
+    z-index: 10;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .profile-avatar {
+    width: 6rem;
+    height: 6rem;
+    border: 2px solid var(--ion-color-primary);
+    box-shadow: 0px 0px 20px rgba(var(--ion-color-primary-rgb), 0.2);
+    position: relative;
+    overflow: visible;
+
+    ion-img {
+      border-radius: var(--border-radius-full);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      overflow: hidden;
+    }
+
+    .edit-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 2rem;
+      height: 2rem;
+      --background: var(--ion-color-surface);
+      --border-radius: var(--border-radius-full);
+      --border-color: var(--ion-color-outline-variant);
+      --border-style: solid;
+      --border-width: 1px;
+      --color: var(--ion-color-primary);
+      margin: 0;
+      --padding-start: 0;
+      --padding-end: 0;
+
+      &:hover {
+        --background: var(--ion-color-surface-container-highest);
+      }
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    @media (min-width: 768px) {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .profile-name h2 {
+      font-family: var(--font-family-headline-md);
+      font-size: var(--font-size-headline-md);
+      font-weight: var(--font-weight-headline-md);
+      line-height: var(--font-line-height-headline-md);
+      color: var(--ion-color-chalk-white);
+      margin: 0 0 4px 0;
+    }
+
+    .profile-email p {
+      font-family: var(--font-family-body-md);
+      font-size: var(--font-size-body-md);
+      font-weight: var(--font-weight-body-md);
+      color: var(--ion-color-on-surface-variant);
+      margin: 0 0 var(--spacing-stack-md) 0;
+    }
+
+    .pro-badge {
+      background: var(--ion-color-surface);
+      border: 1px solid var(--ion-color-outline-variant);
+      padding: 4px 12px;
+      margin: 0;
+
+      ion-icon,
+      ion-label {
+        color: var(--ion-color-stat-gold);
+      }
+
+      ion-icon {
+        font-size: 14px;
+      }
+
+      ion-label {
+        font-family: var(--font-family-label-bold);
+        font-size: var(--font-size-label-bold);
+        font-weight: var(--font-weight-label-bold);
+      }
+    }
+  }
+}
+
+// ----- Bento Grid Cards -----
+.bento-row {
+  margin: 0;
+  padding: 0;
+  gap: var(--spacing-gutter);
+  flex-wrap: nowrap;
+
+  .bento-col-left {
+    padding: 0;
+  }
+  .bento-col-right {
+    padding: 0;
+  }
+}
+
+.action-card.square-card {
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  transition: border-color 0.3s;
+
+  &:hover {
+    border-color: rgba(var(--ion-color-primary-rgb), 0.5);
+
+    .icon-arrow {
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .square-card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: var(--spacing-stack-md);
+  }
+
+  .card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+
+    .icon-arrow {
+      color: var(--ion-color-outline-variant);
+      transition: color 0.3s;
+      font-size: 24px;
+    }
+  }
+
+  .card-footer-col {
+    width: 100%;
+
+    .card-subtitle h3 {
+      font-family: var(--font-family-label-bold);
+      font-size: var(--font-size-label-bold);
+      color: var(--ion-color-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 4px 0;
+    }
+
+    .card-footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+
+      .card-title p {
+        font-family: var(--font-family-headline-sm);
+        font-size: var(--font-size-headline-sm);
+        color: var(--ion-color-chalk-white);
+        margin: 0;
+      }
+
+      .dropdown-icon {
+        color: var(--ion-color-on-surface);
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+// ----- Icon Circle (Shared) -----
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-full);
+  background: var(--ion-color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-color-primary);
+  transition: transform 0.3s;
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+// ----- List Sections (Security / System) -----
+.section-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gutter);
+  margin-top: var(--spacing-stack-md);
+
+  .section-title h3 {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    color: var(--ion-color-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-left: var(--spacing-base);
+    margin: 0;
+  }
+
+  .custom-list {
+    background: transparent;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-gutter);
+  }
+
+  .custom-item {
+    --background: var(--ion-color-surface-container-high);
+    --border-color: var(--ion-color-outline-variant);
+    --border-width: 1px;
+    --border-style: solid;
+    --border-radius: var(--border-radius-xl);
+    --padding-start: var(--spacing-stack-md);
+    --inner-padding-end: var(--spacing-stack-md);
+    --min-height: 72px;
+    margin: 0;
+
+    &:hover {
+      --background: var(--ion-color-surface-container-highest);
+    }
+
+    &:hover .icon-circle {
+      transform: scale(1.1);
+    }
+
+    &::part(detail-icon) {
+      color: var(--ion-color-outline-variant);
+      transition: color 0.3s;
+    }
+
+    &:hover::part(detail-icon) {
+      color: var(--ion-color-primary);
+    }
+
+    &.hide-detail-icon::part(detail-icon) {
+      display: none;
+    }
+
+    .item-title {
+      font-family: var(--font-family-body-lg);
+      font-size: var(--font-size-body-lg);
+      font-weight: 700;
+      color: var(--ion-color-chalk-white);
+      margin-bottom: 4px;
+    }
+
+    .item-subtitle {
+      font-family: var(--font-family-body-md);
+      font-size: var(--font-size-body-md);
+      color: var(--ion-color-on-surface-variant);
+    }
+  }
+}
+
+// ----- Custom Toggles -----
+.custom-toggle {
+  padding: 0;
+  width: 48px;
+  height: 24px;
+  --background: var(--ion-color-surface-bright);
+  --background-checked: var(--ion-color-primary);
+  --handle-background: var(--ion-color-on-surface-variant);
+  --handle-background-checked: var(--ion-color-sideline-black);
+
+  &.toggle-checked {
+    box-shadow: 0 0 10px rgba(var(--ion-color-primary-rgb), 0.3);
+    border-radius: var(--border-radius-full);
+  }
+}
+
+// ----- Tech Chip -----
+.tech-chip {
+  background: var(--ion-color-surface);
+  border: 1px solid var(--ion-color-outline-variant);
+  padding: 4px 12px;
+  margin: 0;
+
+  ion-icon {
+    color: var(--ion-color-primary);
+    font-size: 16px;
+  }
+
+  ion-label {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    color: var(--ion-color-on-surface-variant);
+  }
+}
+
+// ----- Destructive Section (Logout) -----
+.logout-section {
+  margin-top: var(--spacing-stack-lg);
+
+  .logout-btn {
+    --background: transparent;
+    --background-hover: rgba(var(--ion-color-error-container-rgb), 0.2);
+    --border-color: rgba(var(--ion-color-error-rgb), 0.3);
+    --border-style: solid;
+    --border-width: 1px;
+    --border-radius: var(--border-radius-xl);
+    --color: var(
+      --ion-color-warning
+    ); // Equivale al warning-red del HTML original
+    --box-shadow: none;
+    font-family: var(--font-family-headline-sm);
+    font-size: var(--font-size-headline-sm);
+    height: 56px;
+    margin: 0;
+  }
+
+  .version-text {
+    display: block;
+    text-align: center;
+    margin-top: var(--spacing-stack-md);
+
+    p {
+      font-family: var(--font-family-body-md);
+      font-size: var(--font-size-body-md);
+      color: var(--ion-color-outline);
+      margin: 0;
+    }
+  }
+}
