@@ -52,36 +52,3 @@ ion-text.login-subtitle {
   color: var(--ion-color-on-surface-variant);
   display: block;
 }
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-stack-md);
-}
-
-// Adaptado de div a ion-row
-ion-row.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-stack-sm);
-  width: 100%; // Garantizar anchura en la rejilla
-}
-
-.form-label {
-  font-family: var(--font-family-label-bold);
-  font-size: var(--font-size-label-bold);
-  font-weight: var(--font-weight-label-bold);
-  color: var(--ion-color-on-surface-variant);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: block;
-}
-
-// Adaptado de div a ion-row
-ion-row.form-label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-  width: 100%;
-}

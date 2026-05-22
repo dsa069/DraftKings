@@ -53,9 +53,10 @@
         [formGroup]="signUpForm"
         (ngSubmit)="onRegister()"
         id="signUpFormId"
+        class="auth-form"
       >
-        <ion-row class="form-group">
-          <ion-label class="form-label">Full Name</ion-label>
+        <ion-row class="auth-form-group">
+          <ion-label class="auth-form-label">Full Name</ion-label>
           <ion-item class="form-item" lines="none">
             <ion-icon slot="start" name="person-outline"></ion-icon>
             <ion-input
@@ -67,8 +68,8 @@
           </ion-item>
         </ion-row>
 
-        <ion-row class="form-group">
-          <ion-label class="form-label">Email Address</ion-label>
+        <ion-row class="auth-form-group">
+          <ion-label class="auth-form-label">Email Address</ion-label>
           <ion-item class="form-item" lines="none">
             <ion-icon slot="start" name="mail-outline"></ion-icon>
             <ion-input
@@ -80,9 +81,9 @@
           </ion-item>
         </ion-row>
 
-        <ion-row class="form-group">
-          <ion-row class="form-label-row ion-no-padding">
-            <ion-label class="form-label">Secure Password</ion-label>
+        <ion-row class="auth-form-group">
+          <ion-row class="auth-form-label-row ion-no-padding">
+            <ion-label class="auth-form-label">Secure Password</ion-label>
           </ion-row>
           <ion-item class="form-item" lines="none">
             <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
@@ -133,27 +134,27 @@
           </ion-col>
         </ion-row>
 
-        <ion-row class="form-group">
-          <ion-row class="form-label-row ion-no-padding">
-            <ion-label class="form-label">Repeat Password</ion-label>
+        <ion-row class="auth-form-group">
+          <ion-row class="auth-form-label-row ion-no-padding">
+            <ion-label class="auth-form-label">Repeat Password</ion-label>
           </ion-row>
           <ion-item class="form-item" lines="none">
             <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
             <ion-input
               #confirmPasswordInput
               formControlName="confirmPassword"
-              [type]="showPassword ? 'text' : 'password'"
+              [type]="showConfirmPassword ? 'text' : 'password'"
               placeholder="••••••••"
               class="form-input"
             ></ion-input>
             <ion-button
               slot="end"
               fill="clear"
-              (click)="togglePasswordVisibility()"
+              (click)="toggleConfirmPasswordVisibility()"
               class="password-toggle"
             >
               <ion-icon
-                [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
+                [name]="showConfirmPassword ? 'eye-outline' : 'eye-off-outline'"
               ></ion-icon>
             </ion-button>
           </ion-item>

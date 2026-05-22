@@ -16,9 +16,14 @@
       (footerActionClick)="gotoSignUp()"
       (backendChange)="selectedBackend = $event"
     >
-      <form (ngSubmit)="onLogin()" [formGroup]="loginForm" id="loginFormId">
-        <ion-row class="form-group">
-          <ion-label class="form-label">Email Address</ion-label>
+      <form
+        (ngSubmit)="onLogin()"
+        [formGroup]="loginForm"
+        id="loginFormId"
+        class="auth-form"
+      >
+        <ion-row class="auth-form-group">
+          <ion-label class="auth-form-label">Email Address</ion-label>
           <ion-item class="form-item" lines="none">
             <ion-icon slot="start" name="mail-outline"></ion-icon>
             <ion-input
@@ -30,9 +35,9 @@
           </ion-item>
         </ion-row>
 
-        <ion-row class="form-group">
-          <ion-row class="form-label-row ion-no-padding">
-            <ion-label class="form-label">Password</ion-label>
+        <ion-row class="auth-form-group">
+          <ion-row class="auth-form-label-row ion-no-padding">
+            <ion-label class="auth-form-label">Password</ion-label>
             <ion-button
               fill="clear"
               class="forgot-link ion-no-margin"

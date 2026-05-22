@@ -45,3 +45,37 @@
 ion-content {
   --background: var(--ion-color-background);
 }
+
+/* ==========================================================================
+   ESTILOS COMPARTIDOS PARA FORMULARIOS DE AUTENTICACIÓN (LOGIN / REGISTRO)
+   ========================================================================== */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+}
+
+ion-row.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-sm);
+  width: 100%;
+}
+
+.auth-form-label {
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  color: var(--ion-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+ion-row.auth-form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  width: 100%;
+}
