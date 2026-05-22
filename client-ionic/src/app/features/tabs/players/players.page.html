@@ -2,7 +2,7 @@
 
 <ion-content class="players-page-content">
   <ion-grid class="main-container" fixed="false">
-    <ion-row class="search-filter-section">
+    <ion-row class="search-filter-section ion-align-items-center">
       <ion-col class="search-input-col">
         <ion-item class="search-input-item" lines="none">
           <ion-icon
@@ -19,93 +19,164 @@
       </ion-col>
 
       <ion-col class="filter-col" size="auto">
-        <ion-button class="filter-button" fill="clear">
+        <ion-button
+          class="filter-button"
+          fill="clear"
+          (click)="toggleFilters()"
+          [class.filter-active]="showFilters()"
+        >
           <ion-icon name="options-outline"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
 
-    <ion-list class="player-list" lines="none">
-      <ion-item class="player-card">
-        <ion-avatar slot="start" class="player-avatar">
-          <ion-img
-            alt="Marcus Rashford thumbnail"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz-m2oKvZrv9GZ4DnPs74HaPQWPZuTrMUy83bVT0u44XhhR86VZ62dAe0CLyxeM8_Z5veRfwMrKOLThpJROGpQJrBB2Nlhzf3AXJVNlcIccUfAxJn9WF960oqSk6qZ5kd85AwHmSrJEdRPwrcDviKQyGk_fqYRIsmUELshyDFbG3sQOe488esMUNj2PAJAofmCoCcaWphYJ0wdMPHIQHz-TBPO_HXEXxQ9I_FPpkQmdb0h46eeg4QdIjsaAO3SyraXU9nsEw7KlvQ"
-          ></ion-img>
-        </ion-avatar>
-        <ion-label>
-          <ion-text class="player-name">Marcus Rashford</ion-text>
-          <ion-text class="player-position">Forward • LW</ion-text>
-        </ion-label>
-        <ion-text slot="end" class="player-rating">
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star-half"></ion-icon>
-        </ion-text>
-      </ion-item>
+    <ion-item-group class="players-content-container">
+      @if (showFilters()) {
+      <ion-grid class="filters-panel" fixed="false">
+        <ion-row class="filters-header ion-align-items-center">
+          <ion-icon
+            name="funnel-outline"
+            class="filters-header-icon"
+          ></ion-icon>
+          <ion-text class="filters-title">Filters</ion-text>
+        </ion-row>
 
-      <ion-item class="player-card">
-        <ion-avatar slot="start" class="player-avatar">
-          <ion-img
-            alt="Kevin De Bruyne thumbnail"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVc9WekoEdogEqgaPa5yohUMjf8MDigX4OUQhqqiK-XMwli0g7Ba6D4VYFv7LgHGgVDwQOK1suHDnwFW9_Iv4XXb11JpsF4Lejc1w9bhkethR7QV40086cjUJXWh5UhCHg7ShsKqQznJW9Noa5GgN6p0mC5Kb3t_3DvM6krEBcu4tSAtlDNfGz2iRYd5uikO8jY0uQ8Lu31LWfoWwi-UFbDsq1yaAraUNt3PhsX-DnMuOg7ctiLz299Egwic7cBG6qRmsK-VkZZ1c"
-          ></ion-img>
-        </ion-avatar>
-        <ion-label>
-          <ion-text class="player-name">Kevin De Bruyne</ion-text>
-          <ion-text class="player-position">Midfielder • CM</ion-text>
-        </ion-label>
-        <ion-text slot="end" class="player-rating">
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-        </ion-text>
-      </ion-item>
+        <ion-row class="filters-row">
+          <ion-col size="12" size-md="6" class="filter-group">
+            <ion-label class="filter-label">Team</ion-label>
+            <ion-item class="custom-ionic-item" lines="none">
+              <ion-select
+                interface="action-sheet"
+                placeholder="All Teams"
+                class="custom-ionic-select"
+              >
+                <ion-select-option value="">All Teams</ion-select-option>
+                <ion-select-option value="mci"
+                  >Manchester City</ion-select-option
+                >
+                <ion-select-option value="liv">Liverpool</ion-select-option>
+                <ion-select-option value="psg">Paris SG</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
 
-      <ion-item class="player-card">
-        <ion-avatar slot="start" class="player-avatar">
-          <ion-img
-            alt="Virgil van Dijk thumbnail"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWLm8LvBJY3yfcBjyc6cZfQ1QWLYgtAyS2RugKv-1ht0lnHykdCU1Sh1tK1lRa-VqAYLRq1E3Pm0RzugxIaWB4lNlg3BG6u5M-Lnh9KivPhRKN9KwsmMLg428Na0r9Z_mnuPFvRikX_uNED0_rE7Q-Y7Cw_iG1BEpRzQZmH4kcZa2aw0yOLDo1wjWaFQ3_CGE1g6bGZJRO5UrB8KDQSM0KDiDmgw-H8RBPyxGUP01gyFlQ1K0C7nAKCrtD7GHtsXjbUBZyunR-WEk"
-          ></ion-img>
-        </ion-avatar>
-        <ion-label>
-          <ion-text class="player-name">Virgil van Dijk</ion-text>
-          <ion-text class="player-position">Defender • CB</ion-text>
-        </ion-label>
-        <ion-text slot="end" class="player-rating">
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-        </ion-text>
-      </ion-item>
+          <ion-col size="12" size-md="6" class="filter-group">
+            <ion-label class="filter-label">League</ion-label>
+            <ion-item class="custom-ionic-item" lines="none">
+              <ion-select
+                interface="action-sheet"
+                placeholder="All Leagues"
+                class="custom-ionic-select"
+              >
+                <ion-select-option value="">All Leagues</ion-select-option>
+                <ion-select-option value="pl">Premier League</ion-select-option>
+                <ion-select-option value="ligue1">Ligue 1</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
 
-      <ion-item class="player-card">
-        <ion-avatar slot="start" class="player-avatar">
-          <ion-img
-            alt="Kylian Mbappé thumbnail"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr_eKwDlQIPwcty_1nR4Chu6ekbZ7kHXlUF67GWg2W8734_HP-Uj8L_wVJsgKKOvxrUkLpgrogn1FoBBduuUSsBUUNavCvTCFqz9DY_82ZElIA7Y8BrQeDy-DyCU0E5vyR-yYORkVywvwMpj4bxQdp-5OBvnTWu5O8H-jc5quoQusdek8eM5ePnFdLSkFxmCnfbiAQDaRmPbXNgSuqaO8BDt_h3qfxDpOfbaIyteZz4ELz7xo5P4fM8GR8vm_elOkoZ4jiP_uy-Tw"
-          ></ion-img>
-        </ion-avatar>
-        <ion-label>
-          <ion-text class="player-name">Kylian Mbappé</ion-text>
-          <ion-text class="player-position">Forward • ST</ion-text>
-        </ion-label>
-        <ion-text slot="end" class="player-rating">
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star-half"></ion-icon>
-        </ion-text>
-      </ion-item>
-    </ion-list>
+          <ion-col size="12" class="filter-group datetime-group">
+            <ion-label class="filter-label">Fecha de Adición</ion-label>
+            <ion-item class="custom-ionic-item date-picker-item" lines="none">
+              <ion-datetime-button
+                datetime="datetime-picker"
+              ></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime
+                    id="datetime-picker"
+                    presentation="date"
+                    [preferWheel]="true"
+                  ></ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      }
+      <ion-list class="player-list" lines="none">
+        <ion-item class="player-card">
+          <ion-avatar slot="start" class="player-avatar">
+            <ion-img
+              alt="Marcus Rashford thumbnail"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz-m2oKvZrv9GZ4DnPs74HaPQWPZuTrMUy83bVT0u44XhhR86VZ62dAe0CLyxeM8_Z5veRfwMrKOLThpJROGpQJrBB2Nlhzf3AXJVNlcIccUfAxJn9WF960oqSk6qZ5kd85AwHmSrJEdRPwrcDviKQyGk_fqYRIsmUELshyDFbG3sQOe488esMUNj2PAJAofmCoCcaWphYJ0wdMPHIQHz-TBPO_HXEXxQ9I_FPpkQmdb0h46eeg4QdIjsaAO3SyraXU9nsEw7KlvQ"
+            ></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <ion-text class="player-name">Marcus Rashford</ion-text>
+            <ion-text class="player-position">Forward • LW</ion-text>
+          </ion-label>
+          <ion-text slot="end" class="player-rating">
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star-half"></ion-icon>
+          </ion-text>
+        </ion-item>
+
+        <ion-item class="player-card">
+          <ion-avatar slot="start" class="player-avatar">
+            <ion-img
+              alt="Kevin De Bruyne thumbnail"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVc9WekoEdogEqgaPa5yohUMjf8MDigX4OUQhqqiK-XMwli0g7Ba6D4VYFv7LgHGgVDwQOK1suHDnwFW9_Iv4XXb11JpsF4Lejc1w9bhkethR7QV40086cjUJXWh5UhCHg7ShsKqQznJW9Noa5GgN6p0mC5Kb3t_3DvM6krEBcu4tSAtlDNfGz2iRYd5uikO8jY0uQ8Lu31LWfoWwi-UFbDsq1yaAraUNt3PhsX-DnMuOg7ctiLz299Egwic7cBG6qRmsK-VkZZ1c"
+            ></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <ion-text class="player-name">Kevin De Bruyne</ion-text>
+            <ion-text class="player-position">Midfielder • CM</ion-text>
+          </ion-label>
+          <ion-text slot="end" class="player-rating">
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+          </ion-text>
+        </ion-item>
+
+        <ion-item class="player-card">
+          <ion-avatar slot="start" class="player-avatar">
+            <ion-img
+              alt="Virgil van Dijk thumbnail"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWLm8LvBJY3yfcBjyc6cZfQ1QWLYgtAyS2RugKv-1ht0lnHykdCU1Sh1tK1lRa-VqAYLRq1E3Pm0RzugxIaWB4lNlg3BG6u5M-Lnh9KivPhRKN9KwsmMLg428Na0r9Z_mnuPFvRikX_uNED0_rE7Q-Y7Cw_iG1BEpRzQZmH4kcZa2aw0yOLDo1wjWaFQ3_CGE1g6bGZJRO5UrB8KDQSM0KDiDmgw-H8RBPyxGUP01gyFlQ1K0C7nAKCrtD7GHtsXjbUBZyunR-WEk"
+            ></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <ion-text class="player-name">Virgil van Dijk</ion-text>
+            <ion-text class="player-position">Defender • CB</ion-text>
+          </ion-label>
+          <ion-text slot="end" class="player-rating">
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+          </ion-text>
+        </ion-item>
+
+        <ion-item class="player-card">
+          <ion-avatar slot="start" class="player-avatar">
+            <ion-img
+              alt="Kylian Mbappé thumbnail"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr_eKwDlQIPwcty_1nR4Chu6ekbZ7kHXlUF67GWg2W8734_HP-Uj8L_wVJsgKKOvxrUkLpgrogn1FoBBduuUSsBUUNavCvTCFqz9DY_82ZElIA7Y8BrQeDy-DyCU0E5vyR-yYORkVywvwMpj4bxQdp-5OBvnTWu5O8H-jc5quoQusdek8eM5ePnFdLSkFxmCnfbiAQDaRmPbXNgSuqaO8BDt_h3qfxDpOfbaIyteZz4ELz7xo5P4fM8GR8vm_elOkoZ4jiP_uy-Tw"
+            ></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <ion-text class="player-name">Kylian Mbappé</ion-text>
+            <ion-text class="player-position">Forward • ST</ion-text>
+          </ion-label>
+          <ion-text slot="end" class="player-rating">
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star-half"></ion-icon>
+          </ion-text>
+        </ion-item>
+      </ion-list>
+    </ion-item-group>
   </ion-grid>
 
   <ion-fab

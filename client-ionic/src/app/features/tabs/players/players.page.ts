@@ -1,11 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonGrid,
   IonRow,
+  IonItemGroup,
   IonCol,
   IonItem,
   IonIcon,
@@ -17,12 +15,19 @@ import {
   IonLabel,
   IonText,
   IonFab,
+  IonSelect,
+  IonSelectOption,
+  IonDatetime,
+  IonDatetimeButton,
+  IonModal,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { addIcons } from 'ionicons';
 import {
   searchOutline,
   optionsOutline,
+  funnelOutline,
+  chevronDownOutline,
   star,
   starHalf,
   add,
@@ -34,9 +39,6 @@ import {
   styleUrls: ['players.page.scss'],
   standalone: true,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonGrid,
     IonRow,
@@ -51,10 +53,18 @@ import {
     IonLabel,
     IonText,
     IonFab,
+    IonItemGroup,
+    IonSelect,
+    IonSelectOption,
+    IonDatetime,
+    IonDatetimeButton,
+    IonModal,
     HeaderComponent,
   ],
 })
 export class PlayersPage {
+  showFilters = signal<boolean>(false);
+
   constructor() {
     // Registramos los iconos equivalentes a los que usabas de Material Symbols
     addIcons({
@@ -63,6 +73,12 @@ export class PlayersPage {
       star,
       starHalf,
       add,
+      funnelOutline,
+      chevronDownOutline,
     });
+  }
+
+  toggleFilters(): void {
+    this.showFilters.update((value) => !value);
   }
 }
