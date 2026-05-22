@@ -1,9 +1,8 @@
 // Posicionamiento específico del Header Principal
-.app-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+
+ion-toolbar {
+  --background: var(--ion-color-surface, var(--ion-color-background));
+  background: var(--ion-color-surface, var(--ion-color-background));
 }
 
 // Título Principal
