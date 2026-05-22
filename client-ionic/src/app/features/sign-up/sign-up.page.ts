@@ -16,6 +16,14 @@ import {
   IonButton,
   IonIcon,
   IonBackButton,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonText,
+  IonChip,
+  IonButtons,
+  IonList,
+  IonItemGroup,
   ToastController,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
@@ -28,6 +36,7 @@ import {
   eyeOutline,
   eyeOffOutline,
   gameControllerOutline,
+  ellipse,
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 import { ConfigService, BackendType } from '../../core/services/config.service';
@@ -46,6 +55,14 @@ import { AuthService } from '../../core/services/abstract/auth.service';
     IonLabel,
     IonButton,
     IonIcon,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonText,
+    IonChip,
+    IonButtons,
+    IonList,
+    IonItemGroup,
     IonBackButton,
     LoginCardComponent,
   ],
@@ -77,6 +94,7 @@ export class SignUpPage implements OnInit {
       eyeOutline,
       eyeOffOutline,
       gameControllerOutline,
+      ellipse,
     });
   }
 
