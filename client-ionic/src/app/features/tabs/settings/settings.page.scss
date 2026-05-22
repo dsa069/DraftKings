@@ -3,9 +3,9 @@ ion-content.settings-content {
 }
 
 .main-grid {
-  max-width: 42rem; // max-w-2xl
+  max-width: 42rem;
   margin: 0 auto;
-  margin-top: 56px; // mt-14
+  margin-top: 56px;
   margin-bottom: 76px;
   padding: var(--spacing-stack-lg) var(--spacing-margin-mobile);
 }
@@ -30,9 +30,11 @@ ion-card {
 // ----- Profile Card -----
 .profile-card {
   position: relative;
-  overflow: visible; // Permite que el glow sobresalga sin ser cortado
+  overflow: visible;
+  min-height: 275px;
 
   .ambient-glow {
+    display: block; // Requerido al reemplazar div por ion-text
     position: absolute;
     top: -6rem;
     right: -6rem;
@@ -107,6 +109,8 @@ ion-card {
   }
 
   .profile-info {
+    padding: 0; // Reset por ser ion-col
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -117,7 +121,8 @@ ion-card {
       text-align: left;
     }
 
-    .profile-name h2 {
+    .profile-name {
+      display: block; // Requerido para reemplazar h2
       font-family: var(--font-family-headline-md);
       font-size: var(--font-size-headline-md);
       font-weight: var(--font-weight-headline-md);
@@ -126,7 +131,8 @@ ion-card {
       margin: 0 0 4px 0;
     }
 
-    .profile-email p {
+    .profile-email {
+      display: block; // Requerido para reemplazar p
       font-family: var(--font-family-body-md);
       font-size: var(--font-size-body-md);
       font-weight: var(--font-weight-body-md);
@@ -209,8 +215,12 @@ ion-card {
 
   .card-footer-col {
     width: 100%;
+    padding: 0; // Reset por ser ion-col
+    display: flex;
+    flex-direction: column;
 
-    .card-subtitle h3 {
+    .card-subtitle {
+      display: block; // Requerido para reemplazar h3
       font-family: var(--font-family-label-bold);
       font-size: var(--font-size-label-bold);
       color: var(--ion-color-on-surface-variant);
@@ -225,7 +235,8 @@ ion-card {
       align-items: flex-end;
       width: 100%;
 
-      .card-title p {
+      .card-title {
+        display: block; // Requerido para reemplazar p
         font-family: var(--font-family-headline-sm);
         font-size: var(--font-size-headline-sm);
         color: var(--ion-color-chalk-white);
@@ -259,12 +270,15 @@ ion-card {
 
 // ----- List Sections (Security / System) -----
 .section-container {
+  padding: 0; // Reset por ser ion-col
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-gutter);
   margin-top: var(--spacing-stack-md);
 
-  .section-title h3 {
+  .section-title {
+    display: block; // Requerido para reemplazar h3
     font-family: var(--font-family-label-bold);
     font-size: var(--font-size-label-bold);
     color: var(--ion-color-on-surface-variant);
@@ -315,6 +329,7 @@ ion-card {
     }
 
     .item-title {
+      display: block; // Requerido
       font-family: var(--font-family-body-lg);
       font-size: var(--font-size-body-lg);
       font-weight: 700;
@@ -323,6 +338,7 @@ ion-card {
     }
 
     .item-subtitle {
+      display: block; // Requerido
       font-family: var(--font-family-body-md);
       font-size: var(--font-size-body-md);
       color: var(--ion-color-on-surface-variant);
@@ -346,25 +362,6 @@ ion-card {
   }
 }
 
-// ----- Tech Chip -----
-.tech-chip {
-  background: var(--ion-color-surface);
-  border: 1px solid var(--ion-color-outline-variant);
-  padding: 4px 12px;
-  margin: 0;
-
-  ion-icon {
-    color: var(--ion-color-primary);
-    font-size: 16px;
-  }
-
-  ion-label {
-    font-family: var(--font-family-label-bold);
-    font-size: var(--font-size-label-bold);
-    color: var(--ion-color-on-surface-variant);
-  }
-}
-
 // ----- Destructive Section (Logout) -----
 .logout-section {
   margin-top: var(--spacing-stack-lg);
@@ -376,9 +373,7 @@ ion-card {
     --border-style: solid;
     --border-width: 1px;
     --border-radius: var(--border-radius-xl);
-    --color: var(
-      --ion-color-warning
-    ); // Equivale al warning-red del HTML original
+    --color: var(--ion-color-warning);
     --box-shadow: none;
     font-family: var(--font-family-headline-sm);
     font-size: var(--font-size-headline-sm);
@@ -391,7 +386,10 @@ ion-card {
     text-align: center;
     margin-top: var(--spacing-stack-md);
 
-    p {
+    // Si decides usar ion-text class="version-p" en un futuro:
+    p,
+    &.version-p {
+      display: block;
       font-family: var(--font-family-body-md);
       font-size: var(--font-size-body-md);
       color: var(--ion-color-outline);
