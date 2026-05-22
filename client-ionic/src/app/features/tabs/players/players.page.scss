@@ -72,27 +72,45 @@
   border: 1px solid var(--ion-color-outline-variant);
   border-radius: 50px;
   transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  position: relative;
 
+  /* MODIFICADO: Forzamos la máscara circular en la capa interna nativa de Ionic */
   &::part(native) {
     padding: 0;
+    border-radius: 50% !important; /* Corta el efecto de pulsación cuadrado */
+    overflow: hidden; /* Evita que cualquier capa nativa se desborde */
   }
 
   &:active {
     transform: scale(0.95);
   }
 
-  /* --- NUEVO: Feedback para cuando la VISTA de filtros está abierta --- */
   &.active {
-    --background: var(
-      --ion-color-pitch-green
-    ); /* Invierte el fondo al color del texto actual */
-    --color: var(
-      --ion-color-surface-container-high
-    ); /* Invierte el icono al color del fondo actual */
+    --background: var(--ion-color-pitch-green);
+    --color: var(--ion-color-surface-container-high);
   }
 
   ion-icon {
     font-size: 24px;
+  }
+
+  /* NUEVO: Estilos para el circulito de notificación */
+  .filter-notification-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--ion-color-pitch-green);
+    border: 2px solid var(--ion-color-surface-container-high);
+    border-radius: 50%;
+    z-index: 10;
+  }
+
+  /* Cambia el color del borde del punto cuando el botón está activo/presionado */
+  &.active .filter-notification-dot {
+    background-color: var(--ion-color-surface-container-high);
+    border-color: var(--ion-color-pitch-green);
   }
 }
 /* --- Nuevo Contenedor Padre Común --- */
@@ -193,22 +211,56 @@ ion-item-group.players-content-container {
   }
 
   /* Estilos específicos para el botón del Datetime picker */
-  ion-datetime-button {
-    --background: transparent;
-    --color: var(--ion-color-on-surface);
-    font-family: var(--font-family-body-md);
-    margin: 0;
+  .date-picker-item {
+    cursor: pointer;
 
     &::part(native) {
-      padding: 0;
-      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-left: 16px; /* Misma sangría interna que tienen los ion-select */
+      padding-right: 16px;
+    }
+
+    .date-content-wrapper {
+      display: flex !important;
+      align-items: center;
+      flex: 1;
+      height: 100%;
+    }
+
+    /* Texto de marcador de posición: Blanco de la app y sin mayúsculas */
+    .placeholder-date-text {
+      font-family: var(--font-family-body-md);
+      font-size: var(--font-size-body-md);
+      color: var(--ion-color-on-surface); /* Tu blanco principal */
+      text-transform: none !important;
+    }
+
+    /* Ajuste para el botón nativo cuando esté lleno */
+    ion-datetime-button {
+      --background: transparent;
+      --color: var(--ion-color-on-surface);
+      font-family: var(--font-family-body-md);
+      margin: 0;
+
+      &::part(native) {
+        padding: 0;
+        background: transparent;
+      }
+    }
+
+    /* Botón para vaciar el filtro */
+    .clear-date-btn {
+      --padding-end: 0;
+      margin: 0;
+      font-size: 13px;
+      font-family: var(--font-family-body-md);
+      text-transform: none;
+      z-index: 20; /* Asegura que sea cliqueable sobre el modal */
     }
   }
-}
-
-/* Ajuste visual para el datetime de Ionic */
-.date-picker-item {
-  justify-content: flex-start;
 }
 
 /* Modal del Datetime en modo oscuro/estilo propio */

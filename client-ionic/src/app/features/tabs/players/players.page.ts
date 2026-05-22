@@ -20,7 +20,6 @@ import {
   IonDatetime,
   IonDatetimeButton,
   IonModal,
-  IonBadge,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { addIcons } from 'ionicons';
@@ -62,7 +61,6 @@ import { FormsModule } from '@angular/forms';
     IonDatetime,
     IonDatetimeButton,
     IonModal,
-    IonBadge,
     HeaderComponent,
   ],
 })
@@ -72,9 +70,14 @@ export class PlayersPage {
   selectedTeam = signal<string>('');
   selectedLeague = signal<string>('');
 
-  // Computado que evalúa si hay algún filtro activo (no vacío)
+  selectedDate = signal<string | null>(null);
+
   hasActiveFilters = computed<boolean>(() => {
-    return this.selectedTeam() !== '' || this.selectedLeague() !== '';
+    return (
+      this.selectedTeam() !== '' ||
+      this.selectedLeague() !== '' ||
+      this.selectedDate() !== null
+    );
   });
 
   constructor() {
@@ -92,5 +95,17 @@ export class PlayersPage {
 
   toggleFilters(): void {
     this.showFilters.update((value) => !value);
+  }
+
+  // Método para limpiar el filtro de fecha
+  clearDateFilter(event: Event): void {
+    event.stopPropagation();
+    this.selectedDate.set(null);
+  }
+
+  // Capturar el cambio de fecha desde el ion-datetime
+  onDateChange(event: any): void {
+    const value = event.detail.value;
+    this.selectedDate.set(value ? String(value) : null);
   }
 }
