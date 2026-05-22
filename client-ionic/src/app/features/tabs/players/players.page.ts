@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import {
   IonContent,
   IonGrid,
@@ -20,6 +20,7 @@ import {
   IonDatetime,
   IonDatetimeButton,
   IonModal,
+  IonBadge,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { addIcons } from 'ionicons';
@@ -32,6 +33,7 @@ import {
   starHalf,
   add,
 } from 'ionicons/icons';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-players',
@@ -39,6 +41,7 @@ import {
   styleUrls: ['players.page.scss'],
   standalone: true,
   imports: [
+    FormsModule,
     IonContent,
     IonGrid,
     IonRow,
@@ -59,11 +62,20 @@ import {
     IonDatetime,
     IonDatetimeButton,
     IonModal,
+    IonBadge,
     HeaderComponent,
   ],
 })
 export class PlayersPage {
   showFilters = signal<boolean>(false);
+  // Señales para controlar el estado de los filtros
+  selectedTeam = signal<string>('');
+  selectedLeague = signal<string>('');
+
+  // Computado que evalúa si hay algún filtro activo (no vacío)
+  hasActiveFilters = computed<boolean>(() => {
+    return this.selectedTeam() !== '' || this.selectedLeague() !== '';
+  });
 
   constructor() {
     // Registramos los iconos equivalentes a los que usabas de Material Symbols
