@@ -21,9 +21,8 @@
       <ion-col class="filter-col" size="auto">
         <ion-button
           class="filter-button"
-          fill="clear"
+          [class.active]="showFilters()"
           (click)="toggleFilters()"
-          [class.filter-active]="showFilters()"
         >
           <ion-icon name="options-outline"></ion-icon>
         </ion-button>
