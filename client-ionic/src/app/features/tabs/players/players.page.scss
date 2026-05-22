@@ -1,0 +1,193 @@
+.players-page-content {
+  --background: var(--ion-color-surface);
+}
+
+.main-container {
+  padding-top: 72px; /* pt-[72px] */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%; /* max-w-2xl */
+  margin: 0 auto;
+  --ion-grid-padding: 0;
+}
+
+/* --- Search & Filter --- */
+.search-filter-section {
+  padding: 0 var(--spacing-margin-mobile) var(--spacing-stack-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-base);
+  margin: 0;
+}
+
+.search-input-col {
+  padding: 0;
+  flex: 1;
+}
+
+.search-input-item {
+  --background: var(--ion-color-stadium-grey);
+  --border-radius: 50px; /* rounded-full */
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  --min-height: 44px;
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 50px;
+  margin: 0;
+  width: 100%;
+  transition: border-color 0.2s ease;
+
+  &.item-has-focus {
+    border-color: var(--ion-color-pitch-green);
+  }
+
+  .search-icon {
+    color: var(--ion-color-on-surface-variant);
+    font-size: 20px;
+    margin-right: 8px;
+  }
+
+  .search-input {
+    --color: var(--ion-color-on-surface);
+    --placeholder-color: var(--ion-color-on-surface-variant);
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+  }
+}
+
+.filter-col {
+  padding: 0;
+}
+
+.filter-button {
+  --background: var(--ion-color-surface-container-high);
+  --background-hover: var(--ion-color-surface-container-highest);
+  --background-activated: var(--ion-color-surface-container-highest);
+  --border-radius: 50px;
+  --color: var(--ion-color-on-surface);
+  margin: 0;
+  height: 44px;
+  width: 44px;
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 50px;
+  transition: transform 0.2s ease;
+
+  &::part(native) {
+    padding: 0;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+/* --- Player List --- */
+.player-list {
+  background: transparent;
+  padding: 0 var(--spacing-margin-mobile);
+  display: flex;
+  width: 98%;
+  flex-direction: column;
+  gap: var(--spacing-gutter);
+  margin: 0 auto;
+}
+
+.player-card {
+  --background: var(--ion-color-stadium-grey);
+  --border-radius: var(--border-radius-xl, 0.75rem);
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  margin: 0;
+
+  .player-avatar {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--ion-color-outline-variant);
+    margin-right: 16px;
+
+    ion-img {
+      object-fit: cover;
+    }
+  }
+
+  .player-name {
+    display: block;
+    font-family: var(--font-family-headline-sm);
+    font-size: var(--font-size-headline-sm);
+    font-weight: var(--font-weight-headline-sm);
+    color: var(--ion-color-on-surface);
+    line-height: var(--font-line-height-headline-sm);
+    margin-bottom: 2px;
+  }
+
+  .player-position {
+    display: block;
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    color: var(--ion-color-on-surface-variant);
+  }
+}
+
+.player-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--ion-color-stat-gold);
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+/* --- Floating Action Button --- */
+.custom-extended-fab {
+  bottom: --spacing-margin-mobile;
+  right: --spacing-margin-mobile;
+}
+
+.extended-fab-btn {
+  --background: var(--ion-color-pitch-green);
+  --background-hover: color-mix(
+    in srgb,
+    var(--ion-color-pitch-green) 90%,
+    black
+  );
+  --color: var(--ion-color-sideline-black);
+  --border-radius: 50px;
+  --box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  height: auto;
+  margin: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  ion-icon {
+    margin-right: 8px;
+    font-size: 24px;
+  }
+
+  .fab-text {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    font-weight: var(--font-weight-label-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
