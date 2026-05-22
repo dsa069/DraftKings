@@ -35,7 +35,7 @@
 
     <ion-item-group class="players-content-container">
       @if (showFilters()) {
-      <ion-grid class="filters-panel" fixed="false">
+      <ion-grid class="filters-panel" fixed="false" [hidden]="!showFilters()">
         <ion-row class="filters-header ion-align-items-center">
           <ion-icon
             name="funnel-outline"
@@ -45,87 +45,133 @@
         </ion-row>
 
         <ion-row class="filters-row">
-          <ion-col size="12" size-md="6" class="filter-group">
+          <ion-col size="12" class="filter-group">
             <ion-label class="filter-label">Team</ion-label>
-            <ion-item class="custom-ionic-item" lines="none">
-              <ion-select
-                interface="action-sheet"
-                placeholder="All Teams"
-                class="custom-ionic-select"
-                [ngModel]="selectedTeam()"
-                (ngModelChange)="selectedTeam.set($event)"
-              >
-                <ion-select-option value="">All Teams</ion-select-option>
-                <ion-select-option value="mci"
-                  >Manchester City</ion-select-option
+            <ion-row class="ion-align-items-center ion-no-padding">
+              <ion-col class="ion-no-padding">
+                <ion-item class="custom-ionic-item" lines="none">
+                  <ion-select
+                    placeholder="Select Team"
+                    class="custom-ionic-select"
+                    [interface]="'popover'"
+                    [toggleIcon]="'chevron-down-outline'"
+                    [value]="selectedTeam()"
+                    (ionChange)="selectedTeam.set($event.detail.value)"
+                  >
+                    <ion-select-option value="Real Madrid"
+                      >Real Madrid</ion-select-option
+                    >
+                    <ion-select-option value="FC Barcelona"
+                      >FC Barcelona</ion-select-option
+                    >
+                    <ion-select-option value="Manchester City"
+                      >Manchester City</ion-select-option
+                    >
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+              @if (selectedTeam() !== '') {
+              <ion-col size="auto" class="ion-no-padding ion-padding-start">
+                <ion-button
+                  fill="clear"
+                  class="filter-clear-icon-btn"
+                  (click)="clearTeamFilter()"
                 >
-                <ion-select-option value="liv">Liverpool</ion-select-option>
-                <ion-select-option value="psg">Paris SG</ion-select-option>
-              </ion-select>
-            </ion-item>
+                  <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </ion-col>
+              }
+            </ion-row>
           </ion-col>
 
-          <ion-col size="12" size-md="6" class="filter-group">
+          <ion-col size="12" class="filter-group">
             <ion-label class="filter-label">League</ion-label>
-            <ion-item class="custom-ionic-item" lines="none">
-              <ion-select
-                interface="action-sheet"
-                placeholder="All Leagues"
-                class="custom-ionic-select"
-                [ngModel]="selectedLeague()"
-                (ngModelChange)="selectedLeague.set($event)"
-              >
-                <ion-select-option value="">All Leagues</ion-select-option>
-                <ion-select-option value="pl">Premier League</ion-select-option>
-                <ion-select-option value="ligue1">Ligue 1</ion-select-option>
-              </ion-select>
-            </ion-item>
+            <ion-row class="ion-align-items-center ion-no-padding">
+              <ion-col class="ion-no-padding">
+                <ion-item class="custom-ionic-item" lines="none">
+                  <ion-select
+                    placeholder="Select League"
+                    class="custom-ionic-select"
+                    [interface]="'popover'"
+                    [toggleIcon]="'chevron-down-outline'"
+                    [value]="selectedLeague()"
+                    (ionChange)="selectedLeague.set($event.detail.value)"
+                  >
+                    <ion-select-option value="LaLiga">LaLiga</ion-select-option>
+                    <ion-select-option value="Premier League"
+                      >Premier League</ion-select-option
+                    >
+                    <ion-select-option value="Champions League"
+                      >Champions League</ion-select-option
+                    >
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+              @if (selectedLeague() !== '') {
+              <ion-col size="auto" class="ion-no-padding ion-padding-start">
+                <ion-button
+                  fill="clear"
+                  class="filter-clear-icon-btn"
+                  (click)="clearLeagueFilter()"
+                >
+                  <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </ion-col>
+              }
+            </ion-row>
           </ion-col>
 
           <ion-col size="12" class="filter-group">
             <ion-label class="filter-label">Fecha de Adición</ion-label>
-
-            <ion-item
-              class="custom-ionic-item date-picker-item"
-              lines="none"
-              id="open-date-modal"
-            >
-              <ion-text class="date-content-wrapper">
-                @if (selectedDate() === null) {
-                <ion-text class="placeholder-date-text"
-                  >Seleccionar fecha...</ion-text
+            <ion-row class="ion-align-items-center ion-no-padding">
+              <ion-col class="ion-no-padding">
+                <ion-item
+                  class="custom-ionic-item date-picker-item"
+                  lines="none"
+                  id="open-date-input"
                 >
-                } @else {
-                <ion-datetime-button
-                  datetime="datetime-picker"
-                ></ion-datetime-button>
-                }
-              </ion-text>
+                  <ion-text class="date-content-wrapper">
+                    @if (selectedDate() === null) {
+                    <span class="placeholder-date-text"
+                      >Seleccionar fecha ...</span
+                    >
+                    } @else {
+                    <ion-datetime-button
+                      datetime="datetime-picker"
+                    ></ion-datetime-button>
+                    }
+                  </ion-text>
+                </ion-item>
+              </ion-col>
 
               @if (selectedDate() !== null) {
-              <ion-button
-                fill="clear"
-                size="small"
-                color="danger"
-                class="clear-date-btn"
-                (click)="clearDateFilter($event)"
-              >
-                Limpiar
-              </ion-button>
+              <ion-col size="auto" class="ion-no-padding ion-padding-start">
+                <ion-button
+                  fill="clear"
+                  class="filter-clear-icon-btn"
+                  (click)="clearDateFilter($event)"
+                >
+                  <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </ion-col>
               }
+            </ion-row>
 
-              <ion-modal [keepContentsMounted]="true" trigger="open-date-modal">
-                <ng-template>
-                  <ion-datetime
-                    id="datetime-picker"
-                    presentation="date"
-                    [preferWheel]="true"
-                    [value]="selectedDate()"
-                    (ionChange)="onDateChange($event)"
-                  ></ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
+            <ion-popover
+              trigger="open-date-input"
+              [dismissOnSelect]="false"
+              class="date-picker-popover"
+            >
+              <ng-template>
+                <ion-datetime
+                  id="datetime-picker"
+                  presentation="date"
+                  [preferWheel]="true"
+                  [value]="selectedDate()"
+                  (ionChange)="onDateChange($event)"
+                ></ion-datetime>
+              </ng-template>
+            </ion-popover>
           </ion-col>
         </ion-row>
       </ion-grid>

@@ -209,57 +209,73 @@ ion-item-group.players-content-container {
       font-size: 18px;
     }
   }
+}
 
-  /* Estilos específicos para el botón del Datetime picker */
-  .date-picker-item {
-    cursor: pointer;
+/* Ajustes específicos para el maquetado del Datepicker */
+/* Mantiene la coherencia visual del desplegable con tu tema oscuro y corrige el ancho inicial */
+ion-popover.date-picker-popover {
+  --background: var(--ion-color-surface-container-high);
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  /* SOLUCIÓN: Forzamos un ancho mínimo nativo para el popover */
+  /* Esto evita que se comprima contra el contenedor o use un cálculo inicial erróneo */
+  --width: 320px;
+
+  ion-datetime {
+    --background: transparent;
+    --title-color: var(--ion-color-primary);
+
+    /* Asegura que las ruedas internas de fecha ocupen todo el ancho configurado */
+    width: 100%;
+  }
+}
+
+.date-picker-item {
+  cursor: pointer;
+
+  &::part(native) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .date-content-wrapper {
+    display: flex !important;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    width: 100%;
+  }
+
+  .placeholder-date-text {
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    color: var(--ion-color-on-surface);
+    text-transform: none !important;
+  }
+
+  ion-datetime-button {
+    --background: transparent;
+    --color: var(--ion-color-on-surface);
+    font-family: var(--font-family-body-md);
+    margin: 0;
 
     &::part(native) {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding-left: 16px; /* Misma sangría interna que tienen los ion-select */
-      padding-right: 16px;
+      padding: 0;
+      background: transparent;
     }
+  }
+}
 
-    .date-content-wrapper {
-      display: flex !important;
-      align-items: center;
-      flex: 1;
-      height: 100%;
-    }
+/* Estilos puros para el botón de icono externo */
+.filter-clear-icon-btn {
+  --padding-start: 4px;
+  --padding-end: 4px;
+  margin: 0;
+  height: 44px; /* Asegura la misma altura de alineación vertical que el input */
+  color: var(--ion-color-secondary);
 
-    /* Texto de marcador de posición: Blanco de la app y sin mayúsculas */
-    .placeholder-date-text {
-      font-family: var(--font-family-body-md);
-      font-size: var(--font-size-body-md);
-      color: var(--ion-color-on-surface); /* Tu blanco principal */
-      text-transform: none !important;
-    }
-
-    /* Ajuste para el botón nativo cuando esté lleno */
-    ion-datetime-button {
-      --background: transparent;
-      --color: var(--ion-color-on-surface);
-      font-family: var(--font-family-body-md);
-      margin: 0;
-
-      &::part(native) {
-        padding: 0;
-        background: transparent;
-      }
-    }
-
-    /* Botón para vaciar el filtro */
-    .clear-date-btn {
-      --padding-end: 0;
-      margin: 0;
-      font-size: 13px;
-      font-family: var(--font-family-body-md);
-      text-transform: none;
-      z-index: 20; /* Asegura que sea cliqueable sobre el modal */
-    }
+  ion-icon {
+    font-size: 24px; /* Tamaño perfecto y nítido para el aspa */
   }
 }
 
@@ -280,7 +296,6 @@ ion-datetime {
   }
 }
 
-/* --- Player List --- */
 /* --- Player List --- */
 .player-list {
   background: transparent;

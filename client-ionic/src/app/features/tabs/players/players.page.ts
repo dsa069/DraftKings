@@ -19,7 +19,7 @@ import {
   IonSelectOption,
   IonDatetime,
   IonDatetimeButton,
-  IonModal,
+  IonPopover,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { addIcons } from 'ionicons';
@@ -28,6 +28,7 @@ import {
   optionsOutline,
   funnelOutline,
   chevronDownOutline,
+  closeOutline,
   star,
   starHalf,
   add,
@@ -60,7 +61,7 @@ import { FormsModule } from '@angular/forms';
     IonSelectOption,
     IonDatetime,
     IonDatetimeButton,
-    IonModal,
+    IonPopover,
     HeaderComponent,
   ],
 })
@@ -90,6 +91,7 @@ export class PlayersPage {
       add,
       funnelOutline,
       chevronDownOutline,
+      closeOutline,
     });
   }
 
@@ -97,7 +99,15 @@ export class PlayersPage {
     this.showFilters.update((value) => !value);
   }
 
-  // Método para limpiar el filtro de fecha
+  // Métodos de limpieza para cada filtro separado
+  clearTeamFilter(): void {
+    this.selectedTeam.set('');
+  }
+
+  clearLeagueFilter(): void {
+    this.selectedLeague.set('');
+  }
+
   clearDateFilter(event: Event): void {
     event.stopPropagation();
     this.selectedDate.set(null);
