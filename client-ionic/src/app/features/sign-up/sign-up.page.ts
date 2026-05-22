@@ -22,8 +22,6 @@ import {
   IonText,
   IonChip,
   IonButtons,
-  IonList,
-  IonItemGroup,
   ToastController,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
@@ -61,8 +59,6 @@ import { AuthService } from '../../core/services/abstract/auth.service';
     IonText,
     IonChip,
     IonButtons,
-    IonList,
-    IonItemGroup,
     IonBackButton,
     LoginCardComponent,
   ],

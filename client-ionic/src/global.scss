@@ -79,3 +79,44 @@ ion-row.auth-form-label-row {
   margin-bottom: 4px;
   width: 100%;
 }
+
+/* 2. Botón Back Circular */
+.back-button-container {
+  position: absolute;
+  top: var(--spacing-margin-mobile);
+  left: var(--spacing-margin-mobile);
+  z-index: 20;
+  margin: 0;
+}
+
+.circular-back-btn {
+  --background: color-mix(
+    in srgb,
+    var(--ion-color-surface-container-high) 60%,
+    transparent
+  );
+  --color: var(--ion-color-chalk-white);
+  --border-radius: 50%;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: color-mix(
+    in srgb,
+    var(--ion-color-outline-variant) 30%,
+    transparent
+  );
+  backdrop-filter: blur(12px);
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  margin: 0;
+  transition: all 0.2s ease;
+
+  &::part(native) {
+    padding: 0;
+  }
+
+  &:hover {
+    --color: var(--ion-color-primary);
+    --background: var(--ion-color-surface-container-highest);
+  }
+}

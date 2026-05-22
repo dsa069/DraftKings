@@ -43,7 +43,7 @@ export class HeaderComponent {
   }
 
   async goToLogin(): Promise<void> {
-    this.navCtrl.navigateRoot(['/login']);
+    this.navCtrl.navigateForward(['/login']);
   }
 
   async closeSession(): Promise<void> {

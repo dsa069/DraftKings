@@ -16,6 +16,8 @@ import {
   IonRow,
   IonHeader,
   IonText,
+  IonButtons,
+  IonBackButton,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -48,6 +50,8 @@ import { AuthService } from '../../core/services/abstract/auth.service';
     IonRow,
     IonHeader,
     IonText,
+    IonButtons,
+    IonBackButton,
     LoginCardComponent,
   ],
 })
