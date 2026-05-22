@@ -5,7 +5,8 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" class="content-wrapper">
         <ion-card class="profile-card">
-          <div class="ambient-glow"></div>
+          <ion-text class="ambient-glow"></ion-text>
+
           <ion-card-content class="profile-card-content">
             <ion-avatar class="profile-avatar">
               <ion-img
@@ -17,22 +18,24 @@
               </ion-button>
             </ion-avatar>
 
-            <div class="profile-info">
+            <ion-col class="profile-info">
               <ion-text class="profile-name">
-                <h2>{{ userProfile()?.userName || 'Anonymus' }}</h2>
+                {{ userProfile()?.userName || 'Anonymus' }}
               </ion-text>
+
               @if (userProfile(); as user) {
               <ion-text class="profile-email">
-                <p>{{ userProfile()?.email || 'email@draftkings.com' }}</p>
+                {{ userProfile()?.email || 'email@draftkings.com' }}
               </ion-text>
               }
+
               <ion-chip class="pro-badge">
                 <ion-icon name="star"></ion-icon>
-                <ion-label
-                  >{{ userProfile()?.role || 'Unregistered' }}</ion-label
-                >
+                <ion-label>
+                  {{ userProfile()?.role || 'Unregistered' }}
+                </ion-label>
               </ion-chip>
-            </div>
+            </ion-col>
           </ion-card-content>
         </ion-card>
 
@@ -41,25 +44,26 @@
             <ion-card class="action-card square-card">
               <ion-card-content class="square-card-content">
                 <ion-row class="card-header-row">
-                  <div class="icon-circle">
+                  <ion-text class="icon-circle">
                     <ion-icon name="moon"></ion-icon>
-                  </div>
+                  </ion-text>
                   <ion-icon
                     class="icon-arrow"
                     name="arrow-forward-up"
                   ></ion-icon>
                 </ion-row>
-                <div class="card-footer-col">
-                  <ion-text class="card-subtitle"><h3>Appearance</h3></ion-text>
+
+                <ion-col class="card-footer-col">
+                  <ion-text class="card-subtitle">Appearance</ion-text>
                   <ion-row class="card-footer-bottom">
-                    <ion-text class="card-title"><p>Dark Mode</p></ion-text>
+                    <ion-text class="card-title">Dark Mode</ion-text>
                     <ion-toggle
                       class="custom-toggle"
                       mode="ios"
                       checked="true"
                     ></ion-toggle>
                   </ion-row>
-                </div>
+                </ion-col>
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -68,58 +72,63 @@
             <ion-card class="action-card square-card">
               <ion-card-content class="square-card-content">
                 <ion-row class="card-header-row">
-                  <div class="icon-circle">
+                  <ion-text class="icon-circle">
                     <ion-icon name="globe"></ion-icon>
-                  </div>
+                  </ion-text>
                   <ion-icon
                     class="icon-arrow"
                     name="arrow-forward-up"
                   ></ion-icon>
                 </ion-row>
-                <div class="card-footer-col">
-                  <ion-text class="card-subtitle"><h3>Language</h3></ion-text>
+
+                <ion-col class="card-footer-col">
+                  <ion-text class="card-subtitle">Language</ion-text>
                   <ion-row class="card-footer-bottom">
-                    <ion-text class="card-title"><p>English</p></ion-text>
+                    <ion-text class="card-title">English</ion-text>
                     <ion-icon
                       class="dropdown-icon"
                       name="chevron-down"
                     ></ion-icon>
                   </ion-row>
-                </div>
+                </ion-col>
               </ion-card-content>
             </ion-card>
           </ion-col>
         </ion-row>
 
         <div class="section-container">
-          <ion-text class="section-title"><h3>Security</h3></ion-text>
+          <ion-text class="section-title">Security</ion-text>
           <ion-list lines="none" class="custom-list">
             <ion-item button detail="true" class="custom-item">
-              <div class="icon-circle" slot="start">
+              <ion-text class="icon-circle" slot="start">
                 <ion-icon name="lock-closed"></ion-icon>
-              </div>
+              </ion-text>
               <ion-label>
-                <h3 class="item-title">Reset Password</h3>
-                <p class="item-subtitle">Update your security credentials</p>
+                <ion-text class="item-title">Reset Password</ion-text>
+                <ion-text class="item-subtitle"
+                  >Update your security credentials</ion-text
+                >
               </ion-label>
             </ion-item>
           </ion-list>
         </div>
 
         <div class="section-container">
-          <ion-text class="section-title"><h3>System</h3></ion-text>
+          <ion-text class="section-title">System</ion-text>
           <ion-list lines="none" class="custom-list">
             <ion-item button class="custom-item hide-detail-icon">
-              <div class="icon-circle" slot="start">
+              <ion-text class="icon-circle" slot="start">
                 <ion-icon name="server"></ion-icon>
-              </div>
+              </ion-text>
               <ion-label>
-                <h3 class="item-title">Backend Service</h3>
-                <p class="item-subtitle">Environment and runtime info</p>
+                <ion-text class="item-title">Backend Service</ion-text>
+                <ion-text class="item-subtitle"
+                  >Environment and runtime info</ion-text
+                >
               </ion-label>
               <ion-chip slot="end" class="tech-chip">
                 <ion-icon name="terminal"></ion-icon>
-                <ion-label> {{ currentBackendLabel() || 'Bun' }} </ion-label>
+                <ion-label>{{ currentBackendLabel() || 'Bun' }}</ion-label>
               </ion-chip>
             </ion-item>
           </ion-list>

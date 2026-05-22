@@ -22,13 +22,11 @@ import {
   IonToggle,
 } from '@ionic/angular/standalone';
 
-// Si usas Ionic 18/Angular 18 standalone, debes registrar los iconos a importar:
 import { addIcons } from 'ionicons';
 import {
   pencil,
   star,
   moon,
-  //arrowForwardUp,
   globe,
   chevronDown,
   lockClosed,
@@ -88,12 +86,10 @@ export class SettingsPage implements OnInit {
   );
 
   constructor() {
-    // Registrar los iconos nativos utilizados en el HTML
     addIcons({
       pencil,
       star,
       moon,
-      //'arrow-forward-up': arrowForwardUp,
       globe,
       'chevron-down': chevronDown,
       'lock-closed': lockClosed,
