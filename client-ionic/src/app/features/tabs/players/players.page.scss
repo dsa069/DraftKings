@@ -85,16 +85,151 @@
     font-size: 24px;
   }
 }
+/* --- Nuevo Contenedor Padre Común --- */
+ion-item-group.players-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  width: 98%;
+  /* Este padding define el ancho exacto para todo lo que esté dentro tanto en móvil como en PC */
+  padding: 0 var(--spacing-margin-mobile);
+  margin: 0 auto;
+}
 
+/* --- Contenedor Panel de Filtros --- */
+.filters-panel {
+  background: var(--ion-color-surface-container);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-xl, 12px);
+  padding: 16px;
+
+  /* SOLUCIÓN: Ocupa el 100% del contenedor común */
+  width: 100%;
+  margin: 0;
+
+  --ion-grid-padding: 0;
+  animation: filterFadeIn 0.25s ease-out forwards;
+}
+
+.filters-header {
+  gap: 8px;
+  color: var(--ion-color-primary);
+  margin-bottom: 16px;
+  padding: 0 4px;
+
+  .filters-header-icon {
+    font-size: 20px;
+  }
+
+  .filters-title {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold, 12px);
+    font-weight: var(--font-weight-label-bold, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.filters-row {
+  margin: 0;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px var(--spacing-base, 8px);
+}
+
+.filter-label {
+  font-family: var(--font-family-label-bold);
+  font-size: 12px;
+  font-weight: var(--font-weight-label-bold, 700);
+  color: var(--ion-color-on-surface-variant);
+  padding-left: 4px;
+}
+
+/* --- Inputs e Items Personalizados de Ionic --- */
+.custom-ionic-item {
+  --background: var(--ion-color-stadium-grey);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-md, 8px);
+  --min-height: 40px;
+  height: 40px;
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  transition: border-color 0.2s ease;
+  width: 100%;
+
+  &.item-has-focus {
+    border-color: var(--ion-color-pitch-green);
+  }
+
+  /* El selector ocupa todo el espacio del item */
+  .custom-ionic-select {
+    width: 100%;
+    height: 100%;
+    --padding-start: 0;
+    --padding-end: 0;
+    font-family: var(--font-family-body-md);
+    color: var(--ion-color-on-surface);
+
+    /* Personalizar la flecha nativa de ion-select */
+    &::part(icon) {
+      color: var(--ion-color-on-surface-variant);
+      opacity: 1;
+      font-size: 18px;
+    }
+  }
+
+  /* Estilos específicos para el botón del Datetime picker */
+  ion-datetime-button {
+    --background: transparent;
+    --color: var(--ion-color-on-surface);
+    font-family: var(--font-family-body-md);
+    margin: 0;
+
+    &::part(native) {
+      padding: 0;
+      background: transparent;
+    }
+  }
+}
+
+/* Ajuste visual para el datetime de Ionic */
+.date-picker-item {
+  justify-content: flex-start;
+}
+
+/* Modal del Datetime en modo oscuro/estilo propio */
+ion-datetime {
+  --background: var(--ion-color-surface-container-high);
+  --title-color: var(--ion-color-primary);
+}
+
+@keyframes filterFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Player List --- */
 /* --- Player List --- */
 .player-list {
   background: transparent;
-  padding: 0 var(--spacing-margin-mobile);
+  /* SOLUCIÓN: Quitamos el padding interno viejo que descuadraba las tarjetas */
+  padding: 0;
   display: flex;
-  width: 98%;
   flex-direction: column;
   gap: var(--spacing-gutter);
-  margin: 0 auto;
+  /* Ocupa exactamente el mismo 100% que el panel de filtros */
+  width: 100%;
+  margin: 0;
 }
 
 .player-card {
