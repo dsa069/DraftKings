@@ -1,5 +1,3 @@
-@use "../../../theme/variables.scss" as *;
-
 .sign-up-page {
   --background: var(--ion-color-surface);
   font-family: var(--font-family-body-md, "Inter");
@@ -185,46 +183,36 @@
 }
 
 /* 4. Estilos específicos para el formulario dentro de la Card */
-.form-list {
-  background: transparent;
-  padding: 0;
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
 }
 
-.form-group {
+ion-row.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-sm);
+  width: 100%;
+}
+
+.form-label {
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  color: var(--ion-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   display: block;
-  margin-bottom: var(--spacing-stack-md);
-
-  .form-label-row {
-    padding: 0;
-  }
-
-  .form-label {
-    font-family: var(--font-family-label-bold);
-    color: var(--ion-color-on-surface);
-    font-size: 12px;
-    margin-bottom: 8px;
-    display: block;
-  }
-
-  .form-item {
-    --background: var(--ion-color-surface-container);
-    --border-radius: var(--border-radius-lg);
-    --padding-start: 12px;
-    --inner-padding-end: 12px;
-    margin: 0;
-
-    ion-icon {
-      color: var(--ion-color-on-surface-variant);
-      margin-right: 8px;
-    }
-
-    .form-input {
-      font-family: var(--font-family-body-md);
-      color: var(--ion-color-on-surface);
-    }
-  }
 }
 
+ion-row.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  width: 100%;
+}
 /* ==========================================================================
    3. REQUISITOS DE CONTRASEÑA (Adaptado para iconos)
    ========================================================================== */
@@ -233,7 +221,7 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 0;
-  margin-bottom: var(--spacing-stack-md);
+  margin-bottom: var(--spacing-stack-sm);
 }
 
 .requirement-item {

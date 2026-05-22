@@ -54,112 +54,110 @@
         (ngSubmit)="onRegister()"
         id="signUpFormId"
       >
-        <ion-list class="form-list" lines="none">
-          <ion-item-group class="form-group">
-            <ion-label class="form-label">Full Name</ion-label>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="person-outline"></ion-icon>
-              <ion-input
-                formControlName="userName"
-                type="text"
-                placeholder="Enter your coach name"
-                class="form-input"
-              ></ion-input>
-            </ion-item>
-          </ion-item-group>
+        <ion-row class="form-group">
+          <ion-label class="form-label">Full Name</ion-label>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="person-outline"></ion-icon>
+            <ion-input
+              formControlName="userName"
+              type="text"
+              placeholder="Enter your coach name"
+              class="form-input"
+            ></ion-input>
+          </ion-item>
+        </ion-row>
 
-          <ion-item-group class="form-group">
-            <ion-label class="form-label">Email Address</ion-label>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="mail-outline"></ion-icon>
-              <ion-input
-                formControlName="email"
-                type="email"
-                placeholder="coach@example.com"
-                class="form-input"
-              ></ion-input>
-            </ion-item>
-          </ion-item-group>
+        <ion-row class="form-group">
+          <ion-label class="form-label">Email Address</ion-label>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="mail-outline"></ion-icon>
+            <ion-input
+              formControlName="email"
+              type="email"
+              placeholder="coach@example.com"
+              class="form-input"
+            ></ion-input>
+          </ion-item>
+        </ion-row>
 
-          <ion-item-group class="form-group">
-            <ion-row class="form-label-row">
-              <ion-label class="form-label">Secure Password</ion-label>
-            </ion-row>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-              <ion-input
-                #passwordInput
-                formControlName="password"
-                [type]="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
-                class="form-input"
-              ></ion-input>
-              <ion-button
-                slot="end"
-                fill="clear"
-                (click)="togglePasswordVisibility()"
-                class="password-toggle"
-              >
-                <ion-icon
-                  [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
-                ></ion-icon>
-              </ion-button>
-            </ion-item>
-          </ion-item-group>
-
-          <ion-row class="password-requirements-container">
-            <ion-col class="requirement-item" size="auto">
-              <ion-icon
-                name="ellipse"
-                class="requirement-dot"
-                [class.requirement-met]="isPasswordLongEnough"
-              ></ion-icon>
-              <ion-text class="requirement-text">8+ CHARACTERS</ion-text>
-            </ion-col>
-            <ion-col class="requirement-item" size="auto">
-              <ion-icon
-                name="ellipse"
-                class="requirement-dot"
-                [class.requirement-met]="hasNumber"
-              ></ion-icon>
-              <ion-text class="requirement-text">1 NUMBER</ion-text>
-            </ion-col>
-            <ion-col class="requirement-item" size="auto">
-              <ion-icon
-                name="ellipse"
-                class="requirement-dot"
-                [class.requirement-met]="hasSymbol"
-              ></ion-icon>
-              <ion-text class="requirement-text">1 SYMBOL</ion-text>
-            </ion-col>
+        <ion-row class="form-group">
+          <ion-row class="form-label-row ion-no-padding">
+            <ion-label class="form-label">Secure Password</ion-label>
           </ion-row>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+            <ion-input
+              #passwordInput
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="••••••••"
+              class="form-input"
+            ></ion-input>
+            <ion-button
+              slot="end"
+              fill="clear"
+              (click)="togglePasswordVisibility()"
+              class="password-toggle"
+            >
+              <ion-icon
+                [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
+              ></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-row>
 
-          <ion-item-group class="form-group">
-            <ion-row class="form-label-row">
-              <ion-label class="form-label">Repeat Password</ion-label>
-            </ion-row>
-            <ion-item class="form-item" lines="none">
-              <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-              <ion-input
-                #confirmPasswordInput
-                formControlName="confirmPassword"
-                [type]="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
-                class="form-input"
-              ></ion-input>
-              <ion-button
-                slot="end"
-                fill="clear"
-                (click)="togglePasswordVisibility()"
-                class="password-toggle"
-              >
-                <ion-icon
-                  [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
-                ></ion-icon>
-              </ion-button>
-            </ion-item>
-          </ion-item-group>
-        </ion-list>
+        <ion-row class="password-requirements-container">
+          <ion-col class="requirement-item" size="auto">
+            <ion-icon
+              name="ellipse"
+              class="requirement-dot"
+              [class.requirement-met]="isPasswordLongEnough"
+            ></ion-icon>
+            <ion-text class="requirement-text">8+ CHARACTERS</ion-text>
+          </ion-col>
+          <ion-col class="requirement-item" size="auto">
+            <ion-icon
+              name="ellipse"
+              class="requirement-dot"
+              [class.requirement-met]="hasNumber"
+            ></ion-icon>
+            <ion-text class="requirement-text">1 NUMBER</ion-text>
+          </ion-col>
+          <ion-col class="requirement-item" size="auto">
+            <ion-icon
+              name="ellipse"
+              class="requirement-dot"
+              [class.requirement-met]="hasSymbol"
+            ></ion-icon>
+            <ion-text class="requirement-text">1 SYMBOL</ion-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="form-group">
+          <ion-row class="form-label-row ion-no-padding">
+            <ion-label class="form-label">Repeat Password</ion-label>
+          </ion-row>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+            <ion-input
+              #confirmPasswordInput
+              formControlName="confirmPassword"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="••••••••"
+              class="form-input"
+            ></ion-input>
+            <ion-button
+              slot="end"
+              fill="clear"
+              (click)="togglePasswordVisibility()"
+              class="password-toggle"
+            >
+              <ion-icon
+                [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
+              ></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-row>
       </form>
     </app-login-card>
   </ion-grid>
