@@ -132,8 +132,8 @@
                 >
                   <ion-text class="date-content-wrapper">
                     @if (selectedDate() === null) {
-                    <span class="placeholder-date-text"
-                      >Seleccionar fecha ...</span
+                    <ion-label class="placeholder-date-text"
+                      >Seleccionar fecha ...</ion-label
                     >
                     } @else {
                     <ion-datetime-button
@@ -160,6 +160,7 @@
             <ion-popover
               trigger="open-date-input"
               [dismissOnSelect]="false"
+              [keepContentsMounted]="true"
               class="date-picker-popover"
             >
               <ng-template>
