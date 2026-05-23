@@ -100,65 +100,6 @@ ion-content.custom-content {
   opacity: 1;
 }
 
-// Tarjeta de Foto
-.photo-item {
-  --background: var(--ion-color-surface-container);
-  --border-color: var(--ion-color-outline-variant);
-  --border-width: 1px;
-  --border-style: solid;
-  --border-radius: var(--border-radius-xl);
-  --padding-start: var(--spacing-stack-md);
-  --padding-end: var(--spacing-stack-md);
-  --padding-top: var(--spacing-stack-md);
-  --padding-bottom: var(--spacing-stack-md);
-  --inner-padding-end: 0;
-
-  .photo-avatar {
-    width: 80px;
-    height: 80px;
-    background: var(--ion-color-stadium-grey);
-    border: 2px dashed var(--ion-color-outline-variant);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: var(--spacing-stack-md);
-
-    ion-icon {
-      font-size: 32px;
-      color: var(--ion-color-outline-variant);
-    }
-  }
-
-  .photo-btn {
-    --background: var(--ion-color-stadium-grey);
-    --color: var(--ion-color-pitch-green);
-    --border-color: var(--ion-color-outline-variant);
-    --border-width: 1px;
-    --border-style: solid;
-    --border-radius: var(--border-radius-lg);
-    --padding-start: 16px;
-    --padding-end: 16px;
-    --padding-top: 8px;
-    --padding-bottom: 8px;
-
-    font-family: var(--font-family-label-bold);
-    font-size: var(--font-size-label-bold);
-    font-weight: var(--font-weight-label-bold);
-    text-transform: none;
-    height: auto;
-    margin: 0;
-
-    &:hover {
-      --background: var(--ion-color-surface-container-highest);
-    }
-
-    ion-icon {
-      font-size: 18px;
-      margin-right: 8px;
-    }
-  }
-}
-
 // Mapa
 .map-card {
   height: 12rem;
