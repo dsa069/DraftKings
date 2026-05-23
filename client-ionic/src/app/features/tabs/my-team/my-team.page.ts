@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonGrid,
   IonRow,
@@ -32,9 +29,6 @@ import {
   templateUrl: 'my-team.page.html',
   styleUrls: ['my-team.page.scss'],
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonGrid,
     IonRow,

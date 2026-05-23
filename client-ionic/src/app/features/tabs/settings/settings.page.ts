@@ -5,14 +5,10 @@ import {
   IonRow,
   IonCol,
   IonCard,
-  IonCardHeader,
   IonCardContent,
-  IonCardTitle,
   IonItem,
   IonLabel,
   IonList,
-  IonBadge,
-  IonSpinner,
   IonAvatar,
   IonImg,
   IonButton,
@@ -20,6 +16,7 @@ import {
   IonText,
   IonChip,
   IonToggle,
+  IonItemGroup,
 } from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
@@ -34,6 +31,8 @@ import {
   server,
   terminal,
   logOut,
+  logoNodejs,
+  leafOutline,
 } from 'ionicons/icons';
 
 import { HeaderComponent } from '../../../shared/components/header/header.component';
@@ -52,14 +51,10 @@ import { ConfigService } from '../../../core/services/config.service';
     IonRow,
     IonCol,
     IonCard,
-    IonCardHeader,
     IonCardContent,
-    IonCardTitle,
     IonItem,
     IonLabel,
     IonList,
-    IonBadge,
-    IonSpinner,
     IonAvatar,
     IonImg,
     IonButton,
@@ -67,12 +62,15 @@ import { ConfigService } from '../../../core/services/config.service';
     IonText,
     IonChip,
     IonToggle,
+    IonItemGroup,
     HeaderComponent,
   ],
 })
 export class SettingsPage implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly configService = inject(ConfigService);
+  public readonly nodeBackendIcon = logoNodejs;
+  public readonly springBackendIcon = leafOutline;
 
   readonly #userProfile = signal<User | null>(null);
   public readonly userProfile = this.#userProfile.asReadonly();
@@ -84,6 +82,11 @@ export class SettingsPage implements OnInit {
       ? 'Spring Boot'
       : 'Node.js'
   );
+  public readonly currentBackendIcon = computed(() =>
+    this.configService.selectedBackend() === 'springboot'
+      ? this.springBackendIcon
+      : this.nodeBackendIcon
+  );
 
   constructor() {
     addIcons({
@@ -91,12 +94,14 @@ export class SettingsPage implements OnInit {
       star,
       moon,
       globe,
-      'chevron-down': chevronDown,
-      'lock-closed': lockClosed,
-      'finger-print': fingerPrint,
+      chevronDown,
+      lockClosed,
+      fingerPrint,
       server,
       terminal,
-      'log-out': logOut,
+      logOut,
+      logoNodejs,
+      leafOutline,
     });
   }
 

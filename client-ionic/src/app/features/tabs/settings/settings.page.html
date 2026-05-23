@@ -96,8 +96,8 @@
           </ion-col>
         </ion-row>
 
-        <div class="section-container">
-          <ion-text class="section-title">Security</ion-text>
+        <ion-item-group class="section-container">
+          <ion-text class="section-title">Account</ion-text>
           <ion-list lines="none" class="custom-list">
             <ion-item button detail="true" class="custom-item">
               <ion-text class="icon-circle" slot="start">
@@ -111,9 +111,9 @@
               </ion-label>
             </ion-item>
           </ion-list>
-        </div>
+        </ion-item-group>
 
-        <div class="section-container">
+        <ion-item-group class="section-container">
           <ion-text class="section-title">System</ion-text>
           <ion-list lines="none" class="custom-list">
             <ion-item button class="custom-item hide-detail-icon">
@@ -127,12 +127,12 @@
                 >
               </ion-label>
               <ion-chip slot="end" class="tech-chip">
-                <ion-icon name="terminal"></ion-icon>
+                <ion-icon [icon]="currentBackendIcon()"></ion-icon>
                 <ion-label>{{ currentBackendLabel() || 'Bun' }}</ion-label>
               </ion-chip>
             </ion-item>
           </ion-list>
-        </div>
+        </ion-item-group>
       </ion-col>
     </ion-row>
   </ion-grid>
