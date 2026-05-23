@@ -69,6 +69,8 @@ export class NewPlayerPage implements OnInit {
   onSavePlayer() {
     // Aquí iría la lógica para guardar el nuevo jugador
     console.log('Guardar jugador');
+    const activeElement = document.activeElement as HTMLElement | null;
+    activeElement?.blur();
     this.navCtrl.navigateForward(['/player-detail']);
   }
 }

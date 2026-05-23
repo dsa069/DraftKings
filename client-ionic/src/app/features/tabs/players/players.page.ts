@@ -123,6 +123,9 @@ export class PlayersPage {
   }
 
   goToAddPlayer(): void {
+    // Para evitar que el botón quede "pegado" al teclado en móviles, forzamos el blur del elemento activo antes de navegar
+    const activeElement = document.activeElement as HTMLElement | null;
+    activeElement?.blur();
     this.navCtrl.navigateForward('/new-player');
   }
 }

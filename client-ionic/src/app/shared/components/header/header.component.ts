@@ -46,6 +46,8 @@ export class HeaderComponent {
   }
 
   async goToLogin(): Promise<void> {
+    const activeElement = document.activeElement as HTMLElement | null;
+    activeElement?.blur();
     this.navCtrl.navigateForward(['/login']);
   }
 
