@@ -48,31 +48,39 @@ export class MapCaptureComponent implements AfterViewInit, OnDestroy {
     // 1. Solicitamos la ubicación nativa por Capacitor
     const coords = await this.locationService.requestDeviceCurrentPosition();
 
-    // 2. Definimos el punto de inicio (GPS real o coordenadas de respaldo en caso de error/denegación)
-    const initialLat = coords ? coords.lat : 40.4168; // Por defecto: Madrid
+    // 2. Definimos el punto de inicio (GPS real o Madrid por defecto)
+    const initialLat = coords ? coords.lat : 40.4168;
     const initialLng = coords ? coords.lng : -3.7038;
 
-    // 3. Inicializamos el mapa centrado en la ubicación obtenida
+    // 3. Inicializamos el mapa
     this.map = L.map('leaflet-map').setView([initialLat, initialLng], 15);
 
-    // Añadimos las baldosas de OpenStreetMap
+    // Añadimos las baldosas
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       maxZoom: 19,
     }).addTo(this.map);
 
-    // 4. Si obtuvimos la ubicación real, colocamos el pin y actualizamos la lógica de negocio
+    // 4. LÓGICA DE NEGOCIO: Colocamos el pin
     if (coords) {
       this.setMarker(initialLat, initialLng);
       this.locationService.updateSelectedLocation(initialLat, initialLng);
     }
 
-    // 5. Escuchamos el clic del usuario para cambiar el pin manualmente
     this.map.on('click', (e: L.LeafletMouseEvent) => {
       const { lat, lng } = e.latlng;
       this.setMarker(lat, lng);
       this.locationService.updateSelectedLocation(lat, lng);
     });
+
+    // ==========================================
+    // 5. SOLUCIÓN AL RENDERIZADO (El mapa a trozos)
+    // ==========================================
+    // Le damos a Ionic 250ms para que termine de acomodar el DOM
+    // y luego forzamos a Leaflet a re-dibujarse entero.
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 250);
   }
 
   private setMarker(lat: number, lng: number): void {

@@ -34,17 +34,28 @@
 // Contenedor del lienzo del mapa
 .map-wrapper {
   width: 100%;
-  aspect-ratio: 16/9; // Proporción panorámica adaptativa
+
+  // 1. SOLUCIÓN AL TAMAÑO: Alturas explícitas en lugar de solo aspect-ratio
+  min-height: 250px;
+  height: 40vh; // Toma un 40% del alto de la pantalla visual
+  max-height: 400px;
+
   border-radius: var(--border-radius-xl);
   overflow: hidden;
   border: 2px solid var(--ion-color-outline-variant);
   background: var(--ion-color-stadium-grey);
+
+  // 2. SOLUCIÓN AL SCROLL: Evita que el navegador/Ionic intercepte el gesto de arrastrar
+  touch-action: none;
 }
 
 .map-element {
   width: 100%;
   height: 100%;
   z-index: 1; // Necesario para que no se superponga con cabeceras de Ionic
+
+  // Aseguramos que los cursores dentro del mapa actúen correctamente
+  outline: none;
 }
 
 .coordinates-display {
