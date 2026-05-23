@@ -1,0 +1,29 @@
+<ion-grid class="map-container ion-no-padding">
+  <ion-row class="map-controls">
+    <ion-text class="map-title">Ubicación de Origen</ion-text>
+    <ion-button
+      fill="solid"
+      size="small"
+      class="gps-button"
+      (click)="centerOnDevice()"
+    >
+      <ion-icon name="locate-outline" slot="start"></ion-icon>
+      Usar mi ubicación
+    </ion-button>
+  </ion-row>
+
+  <ion-row class="map-wrapper">
+    <div id="leaflet-map" class="map-element"></div>
+  </ion-row>
+
+  <ion-row
+    class="coordinates-display"
+    *ngIf="locationService.selectedLocation() as loc"
+  >
+    <ion-icon name="pin" class="pin-icon"></ion-icon>
+    <ion-text class="coord-text">
+      <strong>Lat:</strong> {{ loc.lat | number : "1.5-5" }} |
+      <strong>Lng:</strong> {{ loc.lng | number : "1.5-5" }}
+    </ion-text>
+  </ion-row>
+</ion-grid>

@@ -33,6 +33,7 @@ import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/h
 import { ImageCaptureComponent } from '../../shared/components/image-capture/image-capture.component';
 import { PhotoService } from '../../core/services/abstract/photo.service';
 import { PlayerService } from '../../core/services/abstract/player.service';
+import { MapCaptureComponent } from '../../shared/components/map-capture/map-capture.component';
 
 @Component({
   selector: 'app-new-player',
@@ -61,6 +62,7 @@ import { PlayerService } from '../../core/services/abstract/player.service';
     FormsModule,
     ReactiveFormsModule,
     ImageCaptureComponent,
+    MapCaptureComponent,
   ],
 })
 export class NewPlayerPage implements OnInit {
