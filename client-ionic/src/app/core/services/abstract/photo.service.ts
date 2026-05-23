@@ -14,7 +14,7 @@ export class PhotoService {
   private readonly CACHE_KEY = 'cached_player_camera_photo';
 
   private readonly storage = inject(Storage);
-  private _cameraPhotoUri = signal<string | null>(null);
+  private _cameraPhotoPreviewUrl = signal<string | null>(null);
   private _urlInput = signal<string>('');
   private _localImageFile = signal<File | null>(null);
   private _localImagePreviewUrl = signal<string | null>(null);
@@ -22,9 +22,9 @@ export class PhotoService {
 
   public currentPhotoPreview = computed(() => {
     const localPreviewUrl = this._localImagePreviewUrl();
-    const cameraUri = this._cameraPhotoUri();
+    const cameraPreviewUrl = this._cameraPhotoPreviewUrl();
     const url = this._urlInput().trim();
-    return localPreviewUrl || cameraUri || (url !== '' ? url : null);
+    return localPreviewUrl || cameraPreviewUrl || (url !== '' ? url : null);
   });
 
   public urlInputValue = this._urlInput.asReadonly();
@@ -52,28 +52,35 @@ export class PhotoService {
 
   async updateCameraPhoto(uri: string | null): Promise<void> {
     this.clearLocalImagePreview();
-    this._cameraPhotoUri.set(uri);
-    if (uri) {
-      this._urlInput.set('');
-      this._localImageFile.set(null);
-      await Preferences.set({ key: this.CACHE_KEY, value: uri });
-    } else {
+    this.clearCameraPreview();
+
+    this._urlInput.set('');
+    this._localImageFile.set(null);
+
+    if (!uri) {
       await Preferences.remove({ key: this.CACHE_KEY });
+      return;
     }
+
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    this._cameraPhotoPreviewUrl.set(URL.createObjectURL(blob));
+
+    await Preferences.remove({ key: this.CACHE_KEY });
   }
 
   async updateUrlInput(url: string): Promise<void> {
     this.clearLocalImagePreview();
+    this.clearCameraPreview();
     this._urlInput.set(url);
     if (url.trim() !== '') {
-      this._cameraPhotoUri.set(null);
       this._localImageFile.set(null);
       await Preferences.remove({ key: this.CACHE_KEY });
     }
   }
 
   async updateLocalImageFile(file: File | null): Promise<void> {
-    this._cameraPhotoUri.set(null);
+    this.clearCameraPreview();
     this._urlInput.set('');
     await Preferences.remove({ key: this.CACHE_KEY });
 
@@ -86,7 +93,7 @@ export class PhotoService {
   }
 
   async clearPreviewCache(): Promise<void> {
-    this._cameraPhotoUri.set(null);
+    this.clearCameraPreview();
     this._urlInput.set('');
     this._localImageFile.set(null);
     this._lastUploadedStoragePath = null;
@@ -162,8 +169,13 @@ export class PhotoService {
 
   private async loadCachedPreview(): Promise<void> {
     const { value } = await Preferences.get({ key: this.CACHE_KEY });
+    if (value?.startsWith('blob:')) {
+      await Preferences.remove({ key: this.CACHE_KEY });
+      return;
+    }
+
     if (value) {
-      this._cameraPhotoUri.set(value);
+      this._cameraPhotoPreviewUrl.set(value);
     }
   }
 
@@ -173,5 +185,13 @@ export class PhotoService {
       URL.revokeObjectURL(previewUrl);
     }
     this._localImagePreviewUrl.set(null);
+  }
+
+  private clearCameraPreview(): void {
+    const previewUrl = this._cameraPhotoPreviewUrl();
+    if (previewUrl?.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    this._cameraPhotoPreviewUrl.set(null);
   }
 }

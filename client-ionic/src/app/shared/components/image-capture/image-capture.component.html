@@ -1,22 +1,19 @@
 <ion-grid class="capture-container ion-no-padding">
   <ion-row class="main-capture-area">
-    <ng-container
-      *ngIf="!photoService.currentPhotoPreview() || errorState; else hasImage"
-    >
-      <ion-row class="capture-placeholder">
-        <ion-icon name="image-outline" class="capture-icon"></ion-icon>
-        <ion-text class="capture-text">Invalid Photo or URL</ion-text>
-      </ion-row>
-    </ng-container>
-    <ng-template #hasImage>
-      <ion-img
-        [src]="photoService.currentPhotoPreview()"
-        class="capture-image"
-        alt="Evidencia visual"
-        (ionError)="onImageError()"
-        (ionImgDidLoad)="onImageLoad()"
-      ></ion-img>
-    </ng-template>
+    @if (!photoService.currentPhotoPreview() || errorState) {
+    <ion-row class="capture-placeholder">
+      <ion-icon name="image-outline" class="capture-icon"></ion-icon>
+      <ion-text class="capture-text">Invalid Photo or URL</ion-text>
+    </ion-row>
+    } @else {
+    <ion-img
+      [src]="photoService.currentPhotoPreview()"
+      class="capture-image"
+      alt="Evidencia visual"
+      (ionError)="onImageError()"
+      (ionImgDidLoad)="onImageLoad()"
+    ></ion-img>
+    }
   </ion-row>
 
   <ion-row class="capture-controls">

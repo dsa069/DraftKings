@@ -1,5 +1,4 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   IonButton,
   IonIcon,
@@ -18,7 +17,6 @@ import { PhotoService } from '../../../core/services/abstract/photo.service';
   selector: 'app-image-capture',
   standalone: true,
   imports: [
-    CommonModule,
     IonButton,
     IonIcon,
     IonImg,
