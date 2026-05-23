@@ -10,12 +10,14 @@ import {
   IonicRouteStrategy,
   provideIonicAngular,
 } from '@ionic/angular/standalone';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideStorage, getStorage } from '@angular/fire/storage';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './app/core/interceptors/auth.interceptor';
 
@@ -35,6 +37,8 @@ console.log('🚀 Configuración cargada:', {
   nodeApiUrl: environment.nodeApiUrl,
 });
 
+defineCustomElements(window);
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -42,12 +46,13 @@ bootstrapApplication(AppComponent, {
     provideRouter(
       routes,
       withPreloading(PreloadAllModules),
-      withHashLocation(),
+      withHashLocation()
     ),
     provideHttpClient(),
     // 1. Inicializar Firebase
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
+    provideStorage(() => getStorage()),
     // 2. Registrar el Interceptor
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     // 3. Tus Factories actuales

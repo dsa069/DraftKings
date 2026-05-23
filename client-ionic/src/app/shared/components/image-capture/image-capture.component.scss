@@ -1,0 +1,180 @@
+// ===== IMAGE CAPTURE COMPONENT STYLES =====
+// Adaptado a las variables CSS globales de la nueva aplicación
+
+.capture-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  padding: 0; // Neutraliza el padding por defecto de ion-grid
+  height: 100%;
+}
+
+// Zona de vista previa principal
+.main-capture-area {
+  aspect-ratio: 1;
+  border-radius: var(--border-radius-xl);
+  background: var(--ion-color-stadium-grey);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: 2px dashed var(--ion-color-outline-variant);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0;
+
+  .capture-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-stack-sm);
+    text-align: center;
+    padding: var(--spacing-stack-lg);
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    background: var(--ion-color-surface-container-highest);
+    margin: 0;
+
+    .capture-icon {
+      font-size: 48px;
+      color: var(--ion-color-outline-variant);
+      opacity: 0.75;
+    }
+
+    .capture-text {
+      font-family: var(--font-family-body-md);
+      font-size: var(--font-size-body-md);
+      color: var(--ion-color-on-surface-variant);
+      margin: 0;
+      display: block;
+    }
+  }
+
+  .capture-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// Zona de controles (Botones y entrada de texto)
+.capture-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  margin-top: var(--spacing-stack-sm);
+  width: 100%;
+  padding: 0;
+}
+
+// NUEVO: Fila horizontal para los botones
+.buttons-row {
+  display: flex;
+  flex-direction: row;
+  gap: var(
+    --spacing-stack-md
+  ); // Mantiene la misma separación que el flujo vertical
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+// Estilo de botón adaptado
+.take-photo-button {
+  flex: 1; // NUEVO: Hace que ambos botones ocupen el 50% del contenedor de forma equitativa
+  --background: var(--ion-color-stadium-grey);
+  --color: var(--ion-color-pitch-green);
+  --border-color: var(--ion-color-outline-variant);
+  --border-width: 1px;
+  --border-style: solid;
+  --border-radius: var(--border-radius-lg);
+  --padding-start: 8px; // Reducido ligeramente para evitar desbordes en pantallas pequeñas
+  --padding-end: 8px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  height: 25%;
+
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  text-transform: none;
+  min-height: 56px;
+  margin: 0;
+
+  &:hover {
+    --background: var(--ion-color-surface-container-highest);
+  }
+
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+  }
+
+  .button-icon {
+    font-size: 20px;
+    margin-right: 6px;
+  }
+}
+
+// Para ocultar el ion-input equivalente al input file
+.hidden-file-input {
+  display: none !important;
+}
+
+// Contenedor de la entrada URL adaptado
+.url-input-wrapper {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+
+  .url-input {
+    --background: var(--ion-color-stadium-grey);
+    --color: var(--ion-color-on-surface);
+    --placeholder-color: rgba(187, 203, 184, 0.5);
+    --placeholder-opacity: 1;
+    --border-color: var(--ion-color-outline-variant);
+    --border-radius: var(--border-radius-lg);
+    --border-width: 1px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    min-height: 50px;
+    margin: 0;
+
+    &.ion-focused {
+      --border-color: var(--ion-color-pitch-green);
+      box-shadow: 0 0 0 1px var(--ion-color-pitch-green);
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .capture-container {
+    flex-direction: row; // Pone los bloques lado a lado (Fila)
+    align-items: flex-start; // Alinea el contenido al tope superior
+    gap: 24px; // Añade un espacio elegante de separación central
+  }
+
+  .main-capture-area {
+    margin: 0; // Quita el centrado automático (Alinea a la izquierda)
+    flex: 1; // Toma espacio responsivo proporcional
+    max-width: 250px; // Mantiene el tamaño máximo idóneo de la preview
+  }
+
+  .capture-controls {
+    flex: 1.2; // Le da un poco más de holgura a los controles en horizontal
+    margin-top: 0; // Neutraliza el margen superior móvil
+    justify-content: space-evenly;
+    align-items: center;
+    height: 100%;
+  }
+}
