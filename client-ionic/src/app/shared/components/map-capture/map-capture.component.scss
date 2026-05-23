@@ -37,8 +37,8 @@
 
   // 1. SOLUCIÓN AL TAMAÑO: Alturas explícitas en lugar de solo aspect-ratio
   min-height: 250px;
-  height: 40vh; // Toma un 40% del alto de la pantalla visual
-  max-height: 400px;
+  height: 45vh; // Toma un 40% del alto de la pantalla visual
+  max-height: 450px;
 
   border-radius: var(--border-radius-xl);
   overflow: hidden;
@@ -47,6 +47,11 @@
 
   // 2. SOLUCIÓN AL SCROLL: Evita que el navegador/Ionic intercepte el gesto de arrastrar
   touch-action: none;
+
+  @media (min-width: 992px) {
+    height: 66vh; // Sube del 40% al 55% de la altura de la pantalla
+    max-height: 700px; // Le permitimos expandirse más en monitores grandes
+  }
 }
 
 .map-element {
