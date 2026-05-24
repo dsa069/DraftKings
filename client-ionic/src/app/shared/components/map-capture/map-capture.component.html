@@ -21,10 +21,7 @@
     <div id="leaflet-map" class="map-element"></div>
   </ion-row>
 
-  <ion-row
-    class="coordinates-display"
-    *ngIf="locationService.selectedLocation() as loc"
-  >
+  <ion-row class="coordinates-display" *ngIf="currentLocation as loc">
     <ion-icon name="pin" class="pin-icon"></ion-icon>
     <ion-text class="coord-text">
       <strong>Lat:</strong> {{ loc.lat | number : "1.5-5" }} |

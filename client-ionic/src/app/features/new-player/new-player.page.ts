@@ -1,4 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
+import {
+  AppLocation,
+  LocationService,
+} from '../../core/services/abstract/location.service';
 import { Player } from '../../core/models/player.model';
 import {
   FormsModule,
@@ -20,9 +24,6 @@ import {
   IonText,
   IonIcon,
   IonButton,
-  IonCard,
-  IonCardContent,
-  IonImg,
   IonFooter,
   IonNote,
 } from '@ionic/angular/standalone';
@@ -53,9 +54,6 @@ import { MapCaptureComponent } from '../../shared/components/map-capture/map-cap
     IonText,
     IonIcon,
     IonButton,
-    IonCard,
-    IonCardContent,
-    IonImg,
     IonFooter,
     IonNote,
     HeaderSubmenuComponent,
@@ -66,26 +64,54 @@ import { MapCaptureComponent } from '../../shared/components/map-capture/map-cap
   ],
 })
 export class NewPlayerPage implements OnInit {
+  private readonly fallbackLocation: AppLocation = {
+    lat: 40.4168,
+    lng: -3.7038,
+  };
+
   private readonly navCtrl = inject(NavController);
   private readonly fb = inject(FormBuilder);
   private readonly playerService = inject(PlayerService);
   private readonly photoService = inject(PhotoService);
+  private readonly locationService = inject(LocationService);
 
   public selectedImageStr: string | null = null;
 
   public playerForm!: FormGroup;
 
-  // No need for direct child access — the PlayerService centraliza el estado.
+  // Nuevas variables para gestionar la ubicación
+  public initialLocation: AppLocation = this.fallbackLocation;
+  public selectedLocation: AppLocation = this.fallbackLocation;
+
+  @ViewChild(MapCaptureComponent) mapComponent!: MapCaptureComponent;
 
   constructor() {
     addIcons({ person, camera, location, saveOutline });
     this.initForm();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     console.log('NewPlayerPage inicializado');
+    // Solicitamos la posición inicial real del dispositivo antes de mostrar el mapa.
+    const coords = await this.locationService.requestDeviceCurrentPosition();
+    this.initialLocation = coords ?? this.fallbackLocation;
+    this.selectedLocation = this.initialLocation;
   }
 
+  // Recibe la coordenada que el mapa emite al hacer click
+  onLocationSelected(coords: AppLocation) {
+    this.selectedLocation = coords;
+  }
+
+  // Maneja el botón "Usar mi ubicación"
+  async onCenterRequested() {
+    const coords = await this.locationService.requestDeviceCurrentPosition();
+    if (coords && this.mapComponent) {
+      this.initialLocation = coords;
+      this.selectedLocation = coords;
+      this.mapComponent.flyToLocation(coords.lat, coords.lng);
+    }
+  }
   private initForm() {
     this.playerForm = this.fb.group({
       displayName: [
@@ -174,9 +200,8 @@ export class NewPlayerPage implements OnInit {
           league: form.league,
           position: form.position,
           number: form.number,
-          // Lat/long obligatorios en la interfaz; usamos 0 por defecto si no hay ubicación
-          latitude: 0,
-          longitude: 0,
+          latitude: this.selectedLocation.lat,
+          longitude: this.selectedLocation.lng,
         };
 
         const photoUrl = await this.photoService.uploadCurrentImage(

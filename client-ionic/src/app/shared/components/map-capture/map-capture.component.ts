@@ -1,4 +1,11 @@
-import { Component, AfterViewInit, OnDestroy, inject } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonGrid,
@@ -9,12 +16,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { locateOutline, pin } from 'ionicons/icons';
-
-// Importación de Leaflet
 import * as L from 'leaflet';
-
-// Importamos el servicio de negocio (que usa Capacitor)
-import { LocationService } from '../../../core/services/abstract/location.service';
 
 @Component({
   selector: 'app-map-capture',
@@ -24,75 +26,55 @@ import { LocationService } from '../../../core/services/abstract/location.servic
   styleUrls: ['./map-capture.component.scss'],
 })
 export class MapCaptureComponent implements AfterViewInit, OnDestroy {
-  public locationService = inject(LocationService);
+  // Inputs y Outputs directos y simples
+  @Input() initialLocation!: { lat: number; lng: number };
+  @Output() locationSelected = new EventEmitter<{ lat: number; lng: number }>();
+  @Output() requestCenter = new EventEmitter<void>(); // Para avisar al padre si se pulsa "Usar mi ubicación"
 
+  public currentLocation: { lat: number; lng: number } | null = null;
   private map!: L.Map;
   private marker!: L.Marker;
-  // Añadimos una referencia al ResizeObserver
   private resizeObserver!: ResizeObserver;
 
   constructor() {
     addIcons({ locateOutline, pin });
   }
 
-  async ngAfterViewInit(): Promise<void> {
-    await this.initializeMapWithDeviceLocation();
-  }
+  ngAfterViewInit(): void {
+    // Usamos el Input directamente
+    const { lat, lng } = this.initialLocation;
 
-  ngOnDestroy(): void {
-    // Limpiamos los listeners para evitar fugas de memoria
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-    }
-    if (this.map) {
-      this.map.remove();
-    }
-  }
-
-  private async initializeMapWithDeviceLocation(): Promise<void> {
-    const coords = await this.locationService.requestDeviceCurrentPosition();
-
-    const initialLat = coords ? coords.lat : 40.4168;
-    const initialLng = coords ? coords.lng : -3.7038;
-
-    this.map = L.map('leaflet-map').setView([initialLat, initialLng], 15);
+    this.map = L.map('leaflet-map').setView([lat, lng], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       maxZoom: 19,
     }).addTo(this.map);
 
-    if (coords) {
-      this.setMarker(initialLat, initialLng);
-      this.locationService.updateSelectedLocation(initialLat, initialLng);
-    }
+    this.setMarker(lat, lng);
+    this.updateCurrentLocation(lat, lng);
 
     this.map.on('click', (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      this.setMarker(lat, lng);
-      this.locationService.updateSelectedLocation(lat, lng);
+      this.setMarker(e.latlng.lat, e.latlng.lng);
+      this.updateCurrentLocation(e.latlng.lat, e.latlng.lng);
     });
 
-    // ==========================================
-    // SOLUCIÓN DEFINITIVA PARA REDIMENSIONADO EN IONIC
-    // ==========================================
     const mapElement = document.getElementById('leaflet-map');
     if (mapElement) {
-      // El observador vigila si el DIV del mapa cambia de dimensiones (ej. animaciones de Ionic)
       this.resizeObserver = new ResizeObserver(() => {
-        // En cuanto cambie, obligamos a Leaflet a recalcular todo instantáneamente
-        if (this.map) {
-          this.map.invalidateSize();
-        }
+        if (this.map) this.map.invalidateSize();
       });
       this.resizeObserver.observe(mapElement);
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.resizeObserver) this.resizeObserver.disconnect();
+    if (this.map) this.map.remove();
+  }
+
   private setMarker(lat: number, lng: number): void {
-    if (this.marker) {
-      this.map.removeLayer(this.marker);
-    }
+    if (this.marker) this.map.removeLayer(this.marker);
 
     const icon = L.icon({
       iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -107,13 +89,21 @@ export class MapCaptureComponent implements AfterViewInit, OnDestroy {
     this.marker = L.marker([lat, lng], { icon }).addTo(this.map);
   }
 
-  public async centerOnDevice(): Promise<void> {
-    const coords = await this.locationService.requestDeviceCurrentPosition();
+  private updateCurrentLocation(lat: number, lng: number) {
+    this.currentLocation = { lat, lng };
+    this.locationSelected.emit(this.currentLocation);
+  }
 
-    if (coords) {
-      this.map.flyTo([coords.lat, coords.lng], 15);
-      this.setMarker(coords.lat, coords.lng);
-      this.locationService.updateSelectedLocation(coords.lat, coords.lng);
+  public centerOnDevice(): void {
+    this.requestCenter.emit();
+  }
+
+  // Método auxiliar para que el padre pueda re-centrar el mapa si es necesario
+  public flyToLocation(lat: number, lng: number) {
+    if (this.map) {
+      this.map.flyTo([lat, lng], 15);
+      this.setMarker(lat, lng);
+      this.updateCurrentLocation(lat, lng);
     }
   }
 }
