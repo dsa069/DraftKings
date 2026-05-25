@@ -6,6 +6,7 @@
 <ion-grid class="map-container ion-no-padding">
   <ion-row class="map-controls">
     <ion-text></ion-text>
+    @if (!isReadOnly) {
     <ion-button
       fill="solid"
       size="small"
@@ -15,6 +16,7 @@
       <ion-icon name="locate-outline" slot="start"></ion-icon>
       Use My Location
     </ion-button>
+    }
   </ion-row>
 
   <ion-row class="map-wrapper">

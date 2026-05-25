@@ -1,4 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  signal,
+  ChangeDetectorRef,
+  NgZone,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe, NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +29,7 @@ import {
   IonList,
 } from '@ionic/angular/standalone';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
+import { MapCaptureComponent } from '../../shared/components/map-capture/map-capture.component';
 import { Player } from '../../core/models/player.model';
 import { PlayerService } from '../../core/services/abstract/player.service';
 import { addIcons } from 'ionicons';
@@ -34,6 +42,7 @@ import {
   starOutline,
   send,
   documentText,
+  locationOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -62,12 +71,15 @@ import {
     DatePipe,
     NgStyle,
     HeaderSubmenuComponent,
+    MapCaptureComponent,
     FormsModule,
   ],
 })
 export class PlayerDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly playerService = inject(PlayerService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly ngZone = inject(NgZone);
 
   player = signal<Player | null>(null);
   isLoading = signal<boolean>(false);
@@ -84,6 +96,7 @@ export class PlayerDetailPage implements OnInit {
       starOutline,
       send,
       documentText,
+      locationOutline,
     });
   }
 
@@ -109,7 +122,12 @@ export class PlayerDetailPage implements OnInit {
       const playerData = await this.playerService.getPlayerById(
         playerIdNum as any
       );
-      this.player.set(playerData);
+
+      // Usar ngZone para evitar ExpressionChangedAfterItHasBeenCheckedError
+      this.ngZone.run(() => {
+        this.player.set(playerData);
+        this.cdr.markForCheck();
+      });
     } catch (error) {
       const errorMsg =
         error instanceof Error
