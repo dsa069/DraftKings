@@ -175,6 +175,17 @@ export class PlayersPage implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.loadPlayers();
+
+    // Suscribirse a eventos de creación de jugador
+    this.playerService.playerCreated$.subscribe(() => {
+      // Recargar la lista cuando se crea un nuevo jugador
+      this.loadPlayers();
+    });
+  }
+
+  async ionViewWillEnter(): Promise<void> {
+    // Recargar la lista cuando se vuelve a esta página
+    await this.loadPlayers();
   }
 
   private async loadPlayers(): Promise<void> {

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { Player } from '../../models/player.model';
 import { AuthService } from './auth.service'; // Asegúrate de que la ruta sea la correcta
 
@@ -9,6 +9,9 @@ export abstract class PlayerService {
   protected abstract apiUrl: string;
   protected http = inject(HttpClient);
   protected authService = inject(AuthService); // Inyectamos Auth para obtener el token
+
+  // Subject para notificar cuando se crea un nuevo jugador
+  playerCreated$ = new Subject<Player>();
 
   // 3) Obtener listado de jugadores (con filtros opcionales)
   async getPlayers(filters?: {
@@ -48,11 +51,16 @@ export abstract class PlayerService {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
 
-    return firstValueFrom(
+    const createdPlayer = await firstValueFrom(
       this.http.post<Player>(`${this.apiUrl}/players`, player, {
         headers,
       })
     );
+
+    // Emitir evento para notificar que se creó un nuevo jugador
+    this.playerCreated$.next(createdPlayer);
+
+    return createdPlayer;
   }
 
   // 7) Editar datos de un jugador (Requiere JWT)
