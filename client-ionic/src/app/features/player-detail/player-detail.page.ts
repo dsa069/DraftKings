@@ -4,7 +4,6 @@ import { DatePipe, NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
-  IonInput,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -18,10 +17,9 @@ import {
   IonAccordionGroup,
   IonAccordion,
   IonItem,
-  IonAvatar,
-  IonLabel,
   IonSpinner,
   IonNote,
+  IonList,
 } from '@ionic/angular/standalone';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
 import { Player } from '../../core/models/player.model';
@@ -60,6 +58,7 @@ import {
     IonItem,
     IonSpinner,
     IonNote,
+    IonList,
     DatePipe,
     NgStyle,
     HeaderSubmenuComponent,
