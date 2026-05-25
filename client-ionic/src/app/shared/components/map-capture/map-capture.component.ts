@@ -7,11 +7,13 @@ import {
   EventEmitter,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonGrid,
   IonRow,
+  IonCol,
   IonText,
   IonButton,
   IonIcon,
@@ -23,7 +25,7 @@ import * as L from 'leaflet';
 @Component({
   selector: 'app-map-capture',
   standalone: true,
-  imports: [CommonModule, IonGrid, IonRow, IonText, IonButton, IonIcon],
+  imports: [CommonModule, IonGrid, IonRow, IonCol, IonText, IonButton, IonIcon],
   templateUrl: './map-capture.component.html',
   styleUrls: ['./map-capture.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,8 +41,9 @@ export class MapCaptureComponent implements AfterViewInit, OnDestroy {
   private map!: L.Map;
   private marker!: L.Marker;
   private resizeObserver!: ResizeObserver;
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor() {
     addIcons({ locateOutline, pin });
   }
 
