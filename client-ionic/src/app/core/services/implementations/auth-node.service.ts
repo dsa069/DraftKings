@@ -12,7 +12,7 @@ export class AuthNodeService extends AuthService {
   // Implementamos la señal de autenticación de forma computada
   // (similar a AuthSpringService)
   public override readonly isAuthenticated: Signal<boolean> = computed(
-    () => !!this._user(),
+    () => !!this._user()
   );
 
   /**
@@ -32,7 +32,7 @@ export class AuthNodeService extends AuthService {
       await firstValueFrom(
         this.http.get(`${this.apiUrl}/user/profile`, {
           headers: { Authorization: `Bearer ${token}` },
-        }),
+        })
       );
 
       console.log('Backend verificado: Usuario existe en MongoDB');
@@ -41,7 +41,7 @@ export class AuthNodeService extends AuthService {
       // para que no quede una sesión a medias.
       await this.logout();
       throw new Error(
-        'El usuario no está registrado en el sistema local de Node.js.',
+        'El usuario no está registrado en el sistema local de Node.js.'
       );
     }
   }
@@ -75,7 +75,7 @@ export class AuthNodeService extends AuthService {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        }),
+        })
       );
 
       console.log('Usuario sincronizado con Node.js backend:', response);
@@ -83,7 +83,9 @@ export class AuthNodeService extends AuthService {
     } catch (error: any) {
       console.error('Error al sincronizar usuario:', error);
       throw new Error(
-        `Error al registrarse en Node.js: ${error.error?.message || error.message}`,
+        `Error al registrarse en Node.js: ${
+          error.error?.message || error.message
+        }`
       );
     }
   }
@@ -105,7 +107,7 @@ export class AuthNodeService extends AuthService {
             Authorization: `Bearer ${token}`,
           },
         });
-      }),
+      })
     );
   }
 }
