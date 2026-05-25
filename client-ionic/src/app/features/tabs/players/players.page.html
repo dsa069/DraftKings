@@ -195,7 +195,11 @@
       } @if (filteredPlayers().length > 0) {
       <ion-list class="player-list" lines="none">
         @for (player of filteredPlayers(); track player.id) {
-        <ion-item class="player-card">
+        <ion-item
+          class="player-card"
+          (click)="goToPlayerDetail(player.id?.toString())"
+          [disabled]="!player.id"
+        >
           <ion-avatar slot="start" class="player-avatar">
             @if (player.photoUrl) {
             <ion-img [alt]="player.name" [src]="player.photoUrl"></ion-img>

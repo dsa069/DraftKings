@@ -14,9 +14,9 @@ ion-content.custom-content {
   height: 16rem;
   border-radius: var(--border-radius-xl);
   background-color: var(--ion-color-surface-container);
-  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCLcmgth15kA0ME4ptVHR8QL1mlDLobuRERsSuPYCevUoy1MqqdS-BP8-iSoF7wWhoK0nKtZ9jwakbLmsP6C1XafUknnS2bv4TTdhtzflzu8z4VyjoaryEGki66GUX16Bd74fX6UQsD3f5vOburEHAGdWgS08kNvK4JlTyNMra80EansLBTYit6gjFc7acH1J6iONbB0X0JlO7dKqz5iuTIc5kuxDoWvWaZqQLmlaVZMh0jgJfgyjV7Uqaq-iLk2PKYS7ZXbjm9fSc");
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
   margin-bottom: var(--spacing-stack-md);
   overflow: hidden;

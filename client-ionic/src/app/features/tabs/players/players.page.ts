@@ -271,4 +271,14 @@ export class PlayersPage implements OnInit {
     activeElement?.blur();
     this.navCtrl.navigateForward('/new-player');
   }
+
+  goToPlayerDetail(playerId: string | undefined): void {
+    if (!playerId) return;
+    // Navegar a la página de detalles del jugador con el ID como parámetro
+    this.navCtrl.navigateForward(`/player-detail/${playerId}`);
+  }
+
+  getPlayerIdString(playerId: number | undefined): string {
+    return playerId?.toString() || '';
+  }
 }
