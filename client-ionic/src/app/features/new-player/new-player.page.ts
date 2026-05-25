@@ -213,11 +213,19 @@ export class NewPlayerPage implements OnInit {
           photoUrl: photoUrl || undefined,
         };
 
-        await this.playerService.createPlayer(playerWithPhoto);
+        const createdPlayer = await this.playerService.createPlayer(
+          playerWithPhoto
+        );
 
         // Si sale bien, limpiamos la caché del servicio/dispositivo
         await this.photoService.clearPreviewCache();
-        this.navCtrl.navigateBack('/player-detail');
+
+        // Navegar a la vista de detalle del jugador recién creado con su ID
+        if (createdPlayer?.id) {
+          this.navCtrl.navigateForward(`/player-detail/${createdPlayer.id}`);
+        } else {
+          this.navCtrl.navigateBack('/players');
+        }
         // this.showToast('¡Jugador guardado de forma segura!');
       } catch (err) {
         //this.showToast('Error al almacenar los datos en el servidor.');

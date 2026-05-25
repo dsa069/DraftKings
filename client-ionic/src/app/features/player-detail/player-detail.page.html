@@ -1,22 +1,37 @@
 <app-header-submenu title="Player Detail"></app-header-submenu>
 <ion-content class="custom-content">
-  <ion-card class="hero-card ion-no-margin">
+  @if (isLoading()) {
+  <div class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <ion-text>Cargando detalles del jugador...</ion-text>
+  </div>
+  } @else if (errorMessage()) {
+  <ion-note color="danger" class="error-message">
+    {{ errorMessage() }}
+  </ion-note>
+  } @else if (player()) {
+  <ion-card
+    class="hero-card ion-no-margin"
+    [ngStyle]="{'background-image': 'url(' + (player()?.photoUrl || 'https://ionicframework.com/docs/img/demos/avatar.svg') + ')'}"
+  >
     <ion-card-content class="hero-content">
       <ion-grid class="ion-no-padding">
         <ion-row class="badges-row">
-          <ion-badge class="badge-position">ST</ion-badge>
-          <ion-badge class="badge-rating">91 OVR</ion-badge>
+          <ion-badge class="badge-position">{{ player()!.position }}</ion-badge>
+          <ion-badge class="badge-rating">4,5 STARTS</ion-badge>
         </ion-row>
 
         <ion-row>
           <ion-col class="ion-no-padding">
-            <ion-text class="player-name">Erling Haaland</ion-text>
+            <ion-text class="player-name">{{ player()!.name }}</ion-text>
           </ion-col>
         </ion-row>
 
         <ion-row>
           <ion-col class="ion-no-padding">
-            <ion-text class="player-team">Manchester City • Norway</ion-text>
+            <ion-text class="player-team">
+              {{ player()!.team }} • {{ player()!.nationality }}
+            </ion-text>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -45,56 +60,61 @@
         <ion-row class="details-row">
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Full Name</ion-text>
-            <ion-text class="detail-value">Erling Braut Haaland</ion-text>
+            <ion-text class="detail-value">{{ player()!.name }}</ion-text>
           </ion-col>
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">First Name</ion-text>
-            <ion-text class="detail-value">Erling</ion-text>
+            <ion-text class="detail-value">{{ player()!.firstName }}</ion-text>
           </ion-col>
 
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Last Name</ion-text>
-            <ion-text class="detail-value">Haaland</ion-text>
+            <ion-text class="detail-value">{{ player()!.lastName }}</ion-text>
           </ion-col>
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Age</ion-text>
-            <ion-text class="detail-value">23</ion-text>
+            <ion-text class="detail-value">{{ player()!.age }}</ion-text>
           </ion-col>
 
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Birthdate</ion-text>
-            <ion-text class="detail-value">July 21, 2000</ion-text>
+            <ion-text class="detail-value"
+              >{{ (player()!.birthdate | date: 'mediumDate') ?? 'N/A'
+              }}</ion-text
+            >
           </ion-col>
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Nationality</ion-text>
-            <ion-text class="detail-value">Norway</ion-text>
+            <ion-text class="detail-value"
+              >{{ player()!.nationality }}</ion-text
+            >
           </ion-col>
 
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Height</ion-text>
-            <ion-text class="detail-value">195 cm (6' 5")</ion-text>
+            <ion-text class="detail-value">{{ player()!.height }} cm</ion-text>
           </ion-col>
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Weight</ion-text>
-            <ion-text class="detail-value">88 kg (194 lbs)</ion-text>
+            <ion-text class="detail-value">{{ player()!.weight }} kg</ion-text>
           </ion-col>
 
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Number</ion-text>
-            <ion-text class="detail-value">9</ion-text>
+            <ion-text class="detail-value">{{ player()!.number }}</ion-text>
           </ion-col>
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Team</ion-text>
-            <ion-text class="detail-value">Manchester City</ion-text>
+            <ion-text class="detail-value">{{ player()!.team }}</ion-text>
           </ion-col>
 
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">League</ion-text>
-            <ion-text class="detail-value">Premier League</ion-text>
+            <ion-text class="detail-value">{{ player()!.league }}</ion-text>
           </ion-col>
           <ion-col size="6" class="detail-col">
             <ion-text class="detail-label">Position</ion-text>
-            <ion-text class="detail-value">Striker (ST)</ion-text>
+            <ion-text class="detail-value">{{ player()!.position }}</ion-text>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -110,74 +130,12 @@
       <ion-item slot="header" class="comments-header" lines="none">
         <ion-icon name="chatbox" slot="start" class="comments-icon"></ion-icon>
         <ion-text class="comments-title">Manager Comments</ion-text>
-        <ion-badge slot="end" class="comments-count">24</ion-badge>
+        <ion-badge slot="end" class="comments-count">0</ion-badge>
       </ion-item>
 
       <div slot="content">
         <div class="comments-list">
-          <div class="new-comment-container">
-            <ion-input
-              class="new-comment-input"
-              placeholder="Write a comment..."
-              fill="outline"
-            ></ion-input>
-            <ion-button class="new-comment-btn" fill="clear">
-              <ion-icon name="send"></ion-icon>
-            </ion-button>
-          </div>
-
-          <ion-item class="comment-item" lines="full">
-            <ion-avatar slot="start" class="comment-avatar">
-              <ion-icon name="person"></ion-icon>
-            </ion-avatar>
-            <ion-label class="ion-text-wrap comment-label">
-              <ion-grid class="ion-no-padding">
-                <ion-row class="comment-top-row">
-                  <ion-text class="comment-author">TacticalGenius99</ion-text>
-                  <ion-text class="stars-container">
-                    <ion-icon name="star"></ion-icon>
-                    <ion-icon name="star"></ion-icon>
-                    <ion-icon name="star"></ion-icon>
-                    <ion-icon name="star"></ion-icon>
-                    <ion-icon name="star"></ion-icon>
-                  </ion-text>
-                </ion-row>
-                <ion-row>
-                  <ion-text class="comment-text"
-                    >Absolute monster in the box. His finishing is unmatched,
-                    but don't expect him to drop deep and link play up too much.
-                    Worth every coin.</ion-text
-                  >
-                </ion-row>
-              </ion-grid>
-            </ion-label>
-          </ion-item>
-
-          <ion-item class="comment-item" lines="none">
-            <ion-avatar slot="start" class="comment-avatar">
-              <ion-icon name="person"></ion-icon>
-            </ion-avatar>
-            <ion-label class="ion-text-wrap comment-label">
-              <ion-grid class="ion-no-padding">
-                <ion-row class="comment-top-row">
-                  <ion-text class="comment-author">CityFan2024</ion-text>
-                  <ion-text class="stars-container">
-                    <ion-icon name="star"></ion-icon>
-                    <ion-icon name="star"></ion-icon>
-                    <ion-icon name="star"></ion-icon>
-                    <ion-icon name="star"></ion-icon>
-                    <ion-icon name="star-outline"></ion-icon>
-                  </ion-text>
-                </ion-row>
-                <ion-row>
-                  <ion-text class="comment-text"
-                    >Great pace and physical stats. Just keep him central and
-                    feed him through balls.</ion-text
-                  >
-                </ion-row>
-              </ion-grid>
-            </ion-label>
-          </ion-item>
+          <ion-note>No comments yet for this player</ion-note>
         </div>
       </div>
     </ion-accordion>
@@ -190,44 +148,15 @@
           class="comments-icon"
         ></ion-icon>
         <ion-text class="comments-title">Related News</ion-text>
-        <ion-badge slot="end" class="comments-count">5</ion-badge>
+        <ion-badge slot="end" class="comments-count">0</ion-badge>
       </ion-item>
 
       <div slot="content">
         <div class="news-list">
-          <ion-item class="news-item" lines="full">
-            <ion-label class="ion-text-wrap">
-              <ion-text class="news-title"
-                >Haaland scores hat-trick against rivals</ion-text
-              >
-              <ion-text class="news-date">Oct 24, 2023</ion-text>
-            </ion-label>
-          </ion-item>
-
-          <ion-item class="news-item" lines="full">
-            <ion-label class="ion-text-wrap">
-              <ion-text class="news-title"
-                >Manager praises Haaland's work ethic in training</ion-text
-              >
-              <ion-text class="news-date">Oct 18, 2023</ion-text>
-            </ion-label>
-          </ion-item>
-
-          <ion-item class="news-item" lines="full">
-            <ion-label class="ion-text-wrap">
-              <ion-text class="news-title"
-                >Injury update: Haaland cleared for weekend clash</ion-text
-              >
-              <ion-text class="news-date">Oct 12, 2023</ion-text>
-            </ion-label>
-          </ion-item>
-
-          <ion-button expand="block" class="add-news-btn">
-            <ion-icon name="add" slot="start"></ion-icon>
-            Add News
-          </ion-button>
+          <ion-note>No news available for this player</ion-note>
         </div>
       </div>
     </ion-accordion>
   </ion-accordion-group>
+  }
 </ion-content>
