@@ -22,6 +22,8 @@ import {
   IonPopover,
   IonSpinner,
   IonNote,
+  IonCard,
+  IonCardContent,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { PlayerService } from '../../../core/services/abstract/player.service';
@@ -69,6 +71,8 @@ import { NavController } from '@ionic/angular';
     IonPopover,
     IonSpinner,
     IonNote,
+    IonCard,
+    IonCardContent,
     HeaderComponent,
   ],
 })

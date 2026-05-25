@@ -133,11 +133,11 @@
         <ion-badge slot="end" class="comments-count">0</ion-badge>
       </ion-item>
 
-      <div slot="content">
-        <div class="comments-list">
+      <ion-list slot="content" class="comments-list">
+        <ion-item lines="none">
           <ion-note>No comments yet for this player</ion-note>
-        </div>
-      </div>
+        </ion-item>
+      </ion-list>
     </ion-accordion>
 
     <ion-accordion value="news" class="comments-accordion news-accordion">
@@ -151,11 +151,11 @@
         <ion-badge slot="end" class="comments-count">0</ion-badge>
       </ion-item>
 
-      <div slot="content">
-        <div class="news-list">
+      <ion-list slot="content" class="news-list">
+        <ion-item lines="none">
           <ion-note>No news available for this player</ion-note>
-        </div>
-      </div>
+        </ion-item>
+      </ion-list>
     </ion-accordion>
   </ion-accordion-group>
   }
