@@ -5,6 +5,8 @@ import {
   Input,
   Output,
   EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -24,10 +26,12 @@ import * as L from 'leaflet';
   imports: [CommonModule, IonGrid, IonRow, IonText, IonButton, IonIcon],
   templateUrl: './map-capture.component.html',
   styleUrls: ['./map-capture.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapCaptureComponent implements AfterViewInit, OnDestroy {
   // Inputs y Outputs directos y simples
   @Input() initialLocation!: { lat: number; lng: number };
+  @Input() isReadOnly: boolean = false;
   @Output() locationSelected = new EventEmitter<{ lat: number; lng: number }>();
   @Output() requestCenter = new EventEmitter<void>(); // Para avisar al padre si se pulsa "Usar mi ubicación"
 
@@ -36,7 +40,7 @@ export class MapCaptureComponent implements AfterViewInit, OnDestroy {
   private marker!: L.Marker;
   private resizeObserver!: ResizeObserver;
 
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
     addIcons({ locateOutline, pin });
   }
 
@@ -54,10 +58,13 @@ export class MapCaptureComponent implements AfterViewInit, OnDestroy {
     this.setMarker(lat, lng);
     this.updateCurrentLocation(lat, lng);
 
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      this.setMarker(e.latlng.lat, e.latlng.lng);
-      this.updateCurrentLocation(e.latlng.lat, e.latlng.lng);
-    });
+    // Solo permitir clicks en el mapa si no está en modo read-only
+    if (!this.isReadOnly) {
+      this.map.on('click', (e: L.LeafletMouseEvent) => {
+        this.setMarker(e.latlng.lat, e.latlng.lng);
+        this.updateCurrentLocation(e.latlng.lat, e.latlng.lng);
+      });
+    }
 
     const mapElement = document.getElementById('leaflet-map');
     if (mapElement) {
@@ -92,6 +99,7 @@ export class MapCaptureComponent implements AfterViewInit, OnDestroy {
   private updateCurrentLocation(lat: number, lng: number) {
     this.currentLocation = { lat, lng };
     this.locationSelected.emit(this.currentLocation);
+    this.cdr.markForCheck();
   }
 
   public centerOnDevice(): void {

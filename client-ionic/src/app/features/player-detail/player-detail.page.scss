@@ -191,6 +191,43 @@ ion-content.custom-content {
 }
 
 // -------------------------
+// Map Card
+// -------------------------
+.map-card {
+  background: var(--ion-color-surface-container);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-xl);
+  box-shadow: none;
+  margin-bottom: var(--spacing-stack-md);
+  overflow: hidden;
+
+  .map-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: var(--spacing-stack-md);
+
+    .location-icon {
+      color: var(--ion-color-pitch-green);
+      font-size: 24px;
+    }
+
+    .section-title {
+      font-family: var(--font-family-headline-sm);
+      font-size: var(--font-size-headline-sm);
+      font-weight: var(--font-weight-headline-sm);
+      color: var(--ion-color-chalk-white);
+    }
+  }
+
+  .map-content {
+    height: 350px;
+    overflow: hidden;
+  }
+}
+
+// -------------------------
 // Comments Accordion
 // -------------------------
 .comments-accordion {

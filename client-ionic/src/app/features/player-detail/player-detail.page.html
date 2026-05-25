@@ -121,6 +121,25 @@
     </ion-card-content>
   </ion-card>
 
+  @if (player()?.latitude && player()?.longitude) {
+  <ion-card class="map-card ion-no-margin">
+    <ion-card-header class="map-header ion-no-padding">
+      <ion-icon name="location-outline" class="location-icon"></ion-icon>
+      <ion-text class="section-title">Player Location</ion-text>
+    </ion-card-header>
+
+    <ion-card-content class="map-content ion-no-padding">
+      <app-map-capture
+        [initialLocation]="{
+          lat: player()!.latitude,
+          lng: player()!.longitude
+        }"
+        [isReadOnly]="true"
+      ></app-map-capture>
+    </ion-card-content>
+  </ion-card>
+  }
+
   <ion-accordion-group
     class="custom-accordions ion-no-margin"
     expand="inset"
