@@ -107,6 +107,11 @@ ion-content.custom-content {
 // -------------------------
 .action-grid {
   margin-bottom: var(--spacing-stack-md);
+
+  .buttons-row {
+    // Esto añade la separación perfecta en medio de las dos columnas
+    gap: var(--spacing-gutter, 12px);
+  }
 }
 
 .edit-btn {
@@ -132,7 +137,52 @@ ion-content.custom-content {
     font-size: 20px;
   }
 }
+// -------------------------
+// Edit & Delete Buttons
+// -------------------------
+.edit-btn {
+  --background: var(--ion-color-pitch-green);
+  --color: var(--ion-color-surface-container-lowest);
+  --border-radius: var(--border-radius-xl);
+  --box-shadow: 0px 4px 12px rgba(30, 224, 108, 0.25);
+  font-family: var(--font-family-display-lg);
+  font-size: 16px;
+  font-weight: bold;
+  height: 48px;
+  margin: 0;
+  text-transform: none;
 
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+.delete-btn {
+  --background: var(--ion-color-danger);
+  --color: var(--ion-color-surface-container-lowest);
+  --border-radius: var(--border-radius-xl);
+  --box-shadow: 0px 4px 12px rgba(235, 68, 68, 0.25);
+  font-family: var(--font-family-display-lg);
+  font-size: 16px;
+  font-weight: bold;
+  height: 48px;
+  margin: 0;
+  text-transform: none;
+
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
 // -------------------------
 // Player Details
 // -------------------------
@@ -453,5 +503,54 @@ ion-content.custom-content {
 
   &:hover {
     filter: brightness(1.1);
+  }
+}
+ion-modal.custom-modal {
+  // Forzar el centrado absoluto en la pantalla para iOS y Android
+  align-items: center;
+  justify-content: center;
+
+  // Variables nativas de Ionic para dimensionar el contenedor interno
+  --height: fit-content;
+  --width: 85%;
+  --max-width: 360px;
+  --background: var(--ion-color-surface-container);
+  --border-radius: var(--border-radius-xl);
+  --box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.2);
+
+  .modal-content {
+    padding: var(--spacing-stack-lg);
+    text-align: center;
+
+    h2 {
+      font-family: var(--font-family-headline-sm);
+      font-size: var(--font-size-headline-sm);
+      color: var(--ion-color-chalk-white);
+      margin: 0 0 var(--spacing-stack-sm) 0;
+    }
+
+    p {
+      font-family: var(--font-family-body-md);
+      font-size: var(--font-size-body-md);
+      color: var(
+        --ion-color-on-surface-variant
+      ); // Cambiado para asegurar legibilidad sobre el fondo
+      margin: 0 0 var(--spacing-stack-md) 0;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-stack-sm);
+
+      ion-button {
+        margin: 0;
+
+        &:first-child {
+          margin-bottom: var(--spacing-stack-xs);
+        }
+      }
+    }
   }
 }
