@@ -1,10 +1,14 @@
 <app-header-submenu title="Player Detail"></app-header-submenu>
 <ion-content class="custom-content">
   @if (isLoading()) {
-  <div class="loading-container">
-    <ion-spinner name="crescent"></ion-spinner>
-    <ion-text>Loading Player Details...</ion-text>
-  </div>
+  <ion-grid class="loading-container ion-no-padding">
+    <ion-row class="ion-justify-content-center">
+      <ion-col class="ion-text-center ion-no-padding">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p><ion-text>Loading Player Details...</ion-text></p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
   } @else if (errorMessage()) {
   <ion-note color="danger" class="error-message">
     {{ errorMessage() }}
@@ -196,21 +200,36 @@
     (willDismiss)="onModalDismiss($event)"
   >
     <ng-template>
-      <div class="modal-content">
-        <h2>Delete Player?</h2>
-        <p>
-          This action will permanently delete "{{ player()?.name }}" from the
-          database. Do you want to continue?
-        </p>
-        <div class="modal-actions">
-          <ion-button color="danger" (click)="confirmDeletePlayer()">
-            Delete
-          </ion-button>
-          <ion-button fill="clear" (click)="cancelDeletePlayer()">
-            Cancel
-          </ion-button>
-        </div>
-      </div>
+      <ion-grid class="modal-content ion-no-padding">
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <h2>Delete Player?</h2>
+            <p>
+              This action will permanently delete "{{ player()?.name }}" from
+              the database. Do you want to continue?
+            </p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col class="modal-actions ion-no-padding">
+            <ion-button
+              color="danger"
+              expand="block"
+              (click)="confirmDeletePlayer()"
+            >
+              Delete
+            </ion-button>
+            <ion-button
+              fill="clear"
+              expand="block"
+              (click)="cancelDeletePlayer()"
+            >
+              Cancel
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ng-template>
   </ion-modal>
 </ion-content>
