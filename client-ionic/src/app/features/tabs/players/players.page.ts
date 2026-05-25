@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import {
   IonContent,
   IonGrid,
@@ -20,8 +20,12 @@ import {
   IonDatetime,
   IonDatetimeButton,
   IonPopover,
+  IonSpinner,
+  IonNote,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { PlayerService } from '../../../core/services/abstract/player.service';
+import { Player } from '../../../core/models/player.model';
 import { addIcons } from 'ionicons';
 import {
   searchOutline,
@@ -63,25 +67,92 @@ import { NavController } from '@ionic/angular';
     IonDatetime,
     IonDatetimeButton,
     IonPopover,
+    IonSpinner,
+    IonNote,
     HeaderComponent,
   ],
 })
-export class PlayersPage {
+export class PlayersPage implements OnInit {
   private readonly navCtrl = inject(NavController);
+  private readonly playerService = inject(PlayerService);
 
+  // Señales para datos
+  allPlayers = signal<Player[]>([]);
+  isLoading = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
+
+  // Señales para filtros y búsqueda
   showFilters = signal<boolean>(false);
-  // Señales para controlar el estado de los filtros
+  searchText = signal<string>('');
   selectedTeam = signal<string>('');
   selectedLeague = signal<string>('');
-
   selectedDate = signal<string | null>(null);
+
+  // Computed para filtrar jugadores
+  filteredPlayers = computed<Player[]>(() => {
+    const players = this.allPlayers();
+
+    // Validar que players es un array
+    if (!Array.isArray(players)) {
+      console.warn('allPlayers no es un array:', players);
+      return [];
+    }
+
+    const search = this.searchText().toLowerCase();
+    const team = this.selectedTeam();
+    const league = this.selectedLeague();
+    const date = this.selectedDate();
+
+    return players.filter((player) => {
+      // Filtro de búsqueda por nombre
+      const playerName =
+        `${player.firstName} ${player.lastName} ${player.name}`.toLowerCase();
+      const matchesSearch = search === '' || playerName.includes(search);
+
+      // Filtro por equipo
+      const matchesTeam = team === '' || player.team === team;
+
+      // Filtro por liga
+      const matchesLeague = league === '' || player.league === league;
+
+      // Filtro por fecha (si existe created_at en el Player)
+      const matchesDate = date === null || this.isDateInRange(player, date);
+
+      return matchesSearch && matchesTeam && matchesLeague && matchesDate;
+    });
+  });
 
   hasActiveFilters = computed<boolean>(() => {
     return (
       this.selectedTeam() !== '' ||
       this.selectedLeague() !== '' ||
-      this.selectedDate() !== null
+      this.selectedDate() !== null ||
+      this.searchText() !== ''
     );
+  });
+
+  // Computed para obtener equipos únicos
+  uniqueTeams = computed<string[]>(() => {
+    const teams = new Set<string>();
+    const players = this.allPlayers();
+    if (Array.isArray(players)) {
+      players.forEach((player) => {
+        if (player.team) teams.add(player.team);
+      });
+    }
+    return Array.from(teams).sort();
+  });
+
+  // Computed para obtener ligas únicas
+  uniqueLeagues = computed<string[]>(() => {
+    const leagues = new Set<string>();
+    const players = this.allPlayers();
+    if (Array.isArray(players)) {
+      players.forEach((player) => {
+        if (player.league) leagues.add(player.league);
+      });
+    }
+    return Array.from(leagues).sort();
   });
 
   constructor() {
@@ -98,8 +169,65 @@ export class PlayersPage {
     });
   }
 
+  async ngOnInit(): Promise<void> {
+    await this.loadPlayers();
+  }
+
+  private async loadPlayers(): Promise<void> {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    try {
+      const response = await this.playerService.getPlayers();
+      console.log('Players API Response:', response);
+
+      // Manejar diferentes formatos de respuesta de la API
+      let players: Player[] = [];
+      if (Array.isArray(response)) {
+        players = response;
+      } else if (
+        response &&
+        typeof response === 'object' &&
+        !Array.isArray(response)
+      ) {
+        // Intentar extraer array de propiedades comunes
+        const data = response as Record<string, any>;
+        players =
+          data['content'] ||
+          data['data'] ||
+          data['players'] ||
+          data['results'] ||
+          [];
+      }
+
+      // Validar que es un array válido
+      if (!Array.isArray(players)) {
+        throw new Error(
+          'Formato de respuesta inválido: no se encontró array de jugadores'
+        );
+      }
+
+      this.allPlayers.set(players);
+    } catch (error) {
+      const errorMsg =
+        error instanceof Error ? error.message : 'Error al cargar jugadores';
+      this.errorMessage.set(errorMsg);
+      console.error('Error cargando jugadores:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   toggleFilters(): void {
     this.showFilters.update((value) => !value);
+  }
+
+  onSearchChange(event: any): void {
+    this.searchText.set(event.detail.value || '');
+  }
+
+  clearSearchFilter(): void {
+    this.searchText.set('');
   }
 
   // Métodos de limpieza para cada filtro separado
@@ -120,6 +248,21 @@ export class PlayersPage {
   onDateChange(event: any): void {
     const value = event.detail.value;
     this.selectedDate.set(value ? String(value) : null);
+  }
+
+  // Verificar si la fecha del jugador está en el rango seleccionado
+  private isDateInRange(player: Player, selectedDate: string): boolean {
+    if (!player.birthdate && !player.created_at) return false;
+
+    // Convertir la fecha seleccionada al formato YYYY-MM-DD
+    const selectedDateFormatted = selectedDate.split('T')[0];
+
+    // Buscar coincidencia con birthdate o created_at
+    const playerDate = player.created_at || player.birthdate;
+    if (!playerDate) return false;
+
+    const playerDateFormatted = playerDate.toString().split('T')[0];
+    return playerDateFormatted === selectedDateFormatted;
   }
 
   goToAddPlayer(): void {
