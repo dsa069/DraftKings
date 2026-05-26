@@ -218,16 +218,16 @@ export class PlayersPage implements OnInit {
       // Validar que es un array válido
       if (!Array.isArray(players)) {
         throw new Error(
-          'Formato de respuesta inválido: no se encontró array de jugadores'
+          'Invalid API response format: expected an array of players'
         );
       }
 
       this.allPlayers.set(players);
     } catch (error) {
       const errorMsg =
-        error instanceof Error ? error.message : 'Error al cargar jugadores';
+        error instanceof Error ? error.message : 'Error loading players';
       this.errorMessage.set(errorMsg);
-      console.error('Error cargando jugadores:', error);
+      console.error('Error loading players:', error);
     } finally {
       this.isLoading.set(false);
     }

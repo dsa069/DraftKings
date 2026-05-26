@@ -140,9 +140,7 @@ export class PlayerDetailPage implements OnInit {
       });
     } catch (error) {
       const errorMsg =
-        error instanceof Error
-          ? error.message
-          : 'Error al cargar detalles del jugador';
+        error instanceof Error ? error.message : 'Error loading player details';
       this.errorMessage.set(errorMsg);
       console.error('Error cargando jugador:', error);
     } finally {
@@ -153,6 +151,14 @@ export class PlayerDetailPage implements OnInit {
   // Métodos para manejar delete player
   onDeletePlayer(): void {
     this._showConfirmModal.set(true);
+  }
+
+  onEditPlayer(): void {
+    if (this.player()?.id) {
+      const playerId = String(this.player()!.id);
+      console.log('[PlayerDetailPage] Navegando a edición con ID:', playerId);
+      this.navCtrl.navigateForward(`/new-player?id=${playerId}`);
+    }
   }
 
   async confirmDeletePlayer(): Promise<void> {

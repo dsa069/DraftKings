@@ -77,3 +77,42 @@
     color: var(--ion-color-on-surface);
   }
 }
+
+// Manual coordinate input fields
+.manual-coords-input {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-stack-md);
+  background: var(--ion-color-surface-container);
+  padding: var(--spacing-gutter) var(--spacing-stack-md);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--ion-color-outline-variant);
+
+  @media (min-width: 576px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .coord-input {
+    --padding-start: var(--spacing-gutter);
+    --padding-end: var(--spacing-gutter);
+    --padding-top: var(--spacing-base);
+    --padding-bottom: var(--spacing-base);
+    --background: var(--ion-color-surface-variant);
+    --border-radius: var(--border-radius-md);
+    --placeholder-color: var(--ion-color-medium);
+  }
+
+  .error-text {
+    display: block;
+    margin-top: var(--spacing-xs);
+    color: var(--ion-color-danger);
+    font-family: var(--font-family-label-regular);
+    font-size: var(--font-size-label-sm);
+  }
+
+  ion-col {
+    display: flex;
+    flex-direction: column;
+  }
+}

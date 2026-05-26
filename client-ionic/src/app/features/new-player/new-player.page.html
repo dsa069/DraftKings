@@ -1,4 +1,6 @@
-<app-header-submenu title="Add Player"></app-header-submenu>
+<app-header-submenu
+  [title]="isEditMode ? 'Edit Player' : 'Add Player'"
+></app-header-submenu>
 
 <ion-content class="custom-content">
   <form [formGroup]="playerForm" (ngSubmit)="onSavePlayer()">

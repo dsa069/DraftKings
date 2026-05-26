@@ -23,6 +23,40 @@
     <ion-col id="leaflet-map" class="map-element ion-no-padding"></ion-col>
   </ion-row>
 
+  <!-- Manual coordinate input fields (only in edit mode) -->
+  @if (!isReadOnly) {
+  <ion-row class="manual-coords-input">
+    <ion-col size="12" sizeSm="6">
+      <ion-input
+        label="Latitude"
+        type="number"
+        step="0.00001"
+        placeholder="e.g., 40.4168"
+        [value]="manualLatitude"
+        (ionChange)="onLatitudeChange($event)"
+        class="coord-input"
+      ></ion-input>
+      @if (latitudeError) {
+      <ion-text class="error-text">{{ latitudeError }}</ion-text>
+      }
+    </ion-col>
+    <ion-col size="12" sizeSm="6">
+      <ion-input
+        label="Longitude"
+        type="number"
+        step="0.00001"
+        placeholder="e.g., -3.7038"
+        [value]="manualLongitude"
+        (ionChange)="onLongitudeChange($event)"
+        class="coord-input"
+      ></ion-input>
+      @if (longitudeError) {
+      <ion-text class="error-text">{{ longitudeError }}</ion-text>
+      }
+    </ion-col>
+  </ion-row>
+  }
+
   <ion-row class="coordinates-display" *ngIf="currentLocation as loc">
     <ion-icon name="pin" class="pin-icon"></ion-icon>
     <ion-text class="coord-text">
