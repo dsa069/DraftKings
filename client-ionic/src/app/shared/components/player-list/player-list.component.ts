@@ -186,12 +186,22 @@ export class PlayerListComponent {
     this.selectedDate.set(value ? String(value) : null);
   }
 
-  private isDateInRange(player: Player, selectedDate: string): boolean {
-    if (!player.birthdate && !player.created_at) return false;
-    const selectedDateFormatted = selectedDate.split('T')[0];
-    const playerDate = player.created_at || player.birthdate;
-    if (!playerDate) return false;
-    return playerDate.toString().split('T')[0] === selectedDateFormatted;
+  private isDateInRange(player: any, selectedDate: string): boolean {
+    // MAGIA AQUÍ: Soportamos Spring Boot (createdAt), Node.js (created_at) y nacimiento (birthdate)
+    const dateString =
+      player.createdAt || player.created_at || player.birthdate;
+
+    // Si el jugador no tiene ninguna de las fechas, lo ocultamos
+    if (!dateString) return false;
+
+    // Convertimos ambas fechas a objetos Date de Javascript para compararlas matemáticamente
+    const filterDate = new Date(selectedDate);
+    filterDate.setHours(0, 0, 0, 0); // Lo ajustamos a medianoche para evitar problemas de horas
+
+    const playerDate = new Date(dateString);
+
+    // Devolvemos los jugadores creados a partir de esa fecha (Mayor o igual)
+    return playerDate >= filterDate;
   }
 
   // Lógica de clic adaptiva según el modo activo
