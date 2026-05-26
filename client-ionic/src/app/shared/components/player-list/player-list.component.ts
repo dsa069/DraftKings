@@ -29,6 +29,7 @@ import {
   IonDatetimeButton,
   IonPopover,
   IonNote,
+  IonCheckbox,
 } from '@ionic/angular/standalone';
 import { Player } from '../../../core/models/player.model';
 import { addIcons } from 'ionicons';
@@ -40,6 +41,9 @@ import {
   closeOutline,
   star,
   starHalf,
+  checkbox,
+  squareOutline,
+  downloadOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -70,32 +74,33 @@ import {
     IonDatetimeButton,
     IonPopover,
     IonNote,
+    IonCheckbox,
   ],
 })
 export class PlayerListComponent {
-  // Recibimos los jugadores desde el padre y actualizamos una señal interna
+  // Modo de visualización por defecto: 'view'. Cambia a 'import' desde la otra vista.
+  @Input() mode: 'view' | 'import' = 'view';
+
   private _players = signal<Player[]>([]);
   @Input({ required: true }) set players(value: Player[]) {
     this._players.set(value || []);
   }
 
-  // Emitimos el ID del jugador al componente padre para que maneje la navegación
   @Output() playerClick = new EventEmitter<string | undefined>();
+  @Output() importSelected = new EventEmitter<Player[]>(); // Evento para enviar los elegidos
 
-  // Señales locales para filtros y búsqueda
+  // Control de selección múltiple para el modo Import
+  selectedPlayers = signal<Map<string | number, Player>>(new Map());
+
   showFilters = signal<boolean>(false);
   searchText = signal<string>('');
   selectedTeam = signal<string>('');
   selectedLeague = signal<string>('');
   selectedDate = signal<string | null>(null);
 
-  // Computed para filtrar jugadores
   filteredPlayers = computed<Player[]>(() => {
     const playersList = this._players();
-
-    if (!Array.isArray(playersList)) {
-      return [];
-    }
+    if (!Array.isArray(playersList)) return [];
 
     const search = this.searchText().toLowerCase();
     const team = this.selectedTeam();
@@ -125,23 +130,13 @@ export class PlayerListComponent {
 
   uniqueTeams = computed<string[]>(() => {
     const teams = new Set<string>();
-    const playersList = this._players();
-    if (Array.isArray(playersList)) {
-      playersList.forEach((player) => {
-        if (player.team) teams.add(player.team);
-      });
-    }
+    this._players().forEach((p) => p.team && teams.add(p.team));
     return Array.from(teams).sort();
   });
 
   uniqueLeagues = computed<string[]>(() => {
     const leagues = new Set<string>();
-    const playersList = this._players();
-    if (Array.isArray(playersList)) {
-      playersList.forEach((player) => {
-        if (player.league) leagues.add(player.league);
-      });
-    }
+    this._players().forEach((p) => p.league && leagues.add(p.league));
     return Array.from(leagues).sort();
   });
 
@@ -154,6 +149,9 @@ export class PlayerListComponent {
       funnelOutline,
       chevronDownOutline,
       closeOutline,
+      checkbox,
+      squareOutline,
+      downloadOutline,
     });
   }
 
@@ -168,15 +166,12 @@ export class PlayerListComponent {
   clearSearchFilter(): void {
     this.searchText.set('');
   }
-
   clearTeamFilter(): void {
     this.selectedTeam.set('');
   }
-
   clearLeagueFilter(): void {
     this.selectedLeague.set('');
   }
-
   clearDateFilter(event: Event): void {
     event.stopPropagation();
     this.selectedDate.set(null);
@@ -189,16 +184,37 @@ export class PlayerListComponent {
 
   private isDateInRange(player: Player, selectedDate: string): boolean {
     if (!player.birthdate && !player.created_at) return false;
-
     const selectedDateFormatted = selectedDate.split('T')[0];
     const playerDate = player.created_at || player.birthdate;
     if (!playerDate) return false;
-
-    const playerDateFormatted = playerDate.toString().split('T')[0];
-    return playerDateFormatted === selectedDateFormatted;
+    return playerDate.toString().split('T')[0] === selectedDateFormatted;
   }
 
-  onPlayerClick(playerId: number | string | undefined): void {
-    this.playerClick.emit(playerId?.toString());
+  // Lógica de clic adaptiva según el modo activo
+  onPlayerClick(player: Player): void {
+    if (this.mode === 'import') {
+      const identifier = player.id || player.name; // Usar name si no tiene ID en la API externa
+      const currentMap = new Map(this.selectedPlayers());
+
+      if (currentMap.has(identifier)) {
+        currentMap.delete(identifier);
+      } else {
+        currentMap.set(identifier, player);
+      }
+      this.selectedPlayers.set(currentMap);
+    } else {
+      this.playerClick.emit(player.id?.toString());
+    }
+  }
+
+  isPlayerSelected(player: Player): boolean {
+    return this.selectedPlayers().has(player.id || player.name);
+  }
+
+  emitImport(): void {
+    const playersToImport = Array.from(this.selectedPlayers().values());
+    if (playersToImport.length > 0) {
+      this.importSelected.emit(playersToImport);
+    }
   }
 }

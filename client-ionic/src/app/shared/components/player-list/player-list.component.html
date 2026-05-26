@@ -1,4 +1,3 @@
-<p>player-list works!</p>
 <ion-grid class="main-container" fixed="false">
   <ion-row class="search-filter-section ion-align-items-center">
     <ion-col class="search-input-col">
@@ -44,7 +43,7 @@
 
   <ion-item-group class="players-content-container">
     @if (showFilters()) {
-    <ion-grid class="filters-panel" fixed="false" [hidden]="!showFilters()">
+    <ion-grid class="filters-panel" fixed="false">
       <ion-row class="filters-header ion-align-items-center">
         <ion-icon name="funnel-outline" class="filters-header-icon"></ion-icon>
         <ion-text class="filters-title">Filters</ion-text>
@@ -60,7 +59,6 @@
                   placeholder="Select Team"
                   class="custom-ionic-select"
                   [interface]="'popover'"
-                  [toggleIcon]="'chevron-down-outline'"
                   [value]="selectedTeam()"
                   (ionChange)="selectedTeam.set($event.detail.value)"
                 >
@@ -95,7 +93,6 @@
                   placeholder="Select League"
                   class="custom-ionic-select"
                   [interface]="'popover'"
-                  [toggleIcon]="'chevron-down-outline'"
                   [value]="selectedLeague()"
                   (ionChange)="selectedLeague.set($event.detail.value)"
                 >
@@ -178,12 +175,22 @@
     </ion-grid>
     } @if (filteredPlayers().length > 0) {
     <ion-list class="player-list" lines="none">
-      @for (player of filteredPlayers(); track player.id) {
+      @for (player of filteredPlayers(); track player.id || player.name) {
       <ion-item
         class="player-card"
-        (click)="onPlayerClick(player.id)"
-        [disabled]="!player.id"
+        [class.is-selected]="mode === 'import' && isPlayerSelected(player)"
+        (click)="onPlayerClick(player)"
       >
+        @if (mode === 'import') {
+        <ion-icon
+          slot="start"
+          [name]="isPlayerSelected(player) ? 'checkbox' : 'square-outline'"
+          class="import-checkbox-icon"
+          [color]="isPlayerSelected(player) ? 'success' : 'medium'"
+        >
+        </ion-icon>
+        }
+
         <ion-avatar slot="start" class="player-avatar">
           @if (player.photoUrl) {
           <ion-img [alt]="player.name" [src]="player.photoUrl"></ion-img>
@@ -194,12 +201,14 @@
           ></ion-img>
           }
         </ion-avatar>
+
         <ion-label>
           <ion-text class="player-name">{{ player.name }}</ion-text>
           <ion-text class="player-position">
-            {{ player.position }} • {{ player.team }}
+            {{ player.position || "Unknown Position" }} • {{ player.team }}
           </ion-text>
         </ion-label>
+
         <ion-text slot="end" class="player-rating">
           <ion-icon name="star"></ion-icon>
           <ion-icon name="star"></ion-icon>
@@ -210,7 +219,20 @@
       </ion-item>
       }
     </ion-list>
-    } @else {
+
+    @if (mode === 'import' && selectedPlayers().size > 0) {
+    <div class="import-action-container">
+      <ion-button
+        class="import-submit-btn"
+        expand="block"
+        shape="round"
+        (click)="emitImport()"
+      >
+        <ion-icon slot="start" name="download-outline"></ion-icon>
+        Import Selected ({{ selectedPlayers().size }})
+      </ion-button>
+    </div>
+    } } @else {
     <ion-note color="medium" class="no-results-message">
       No players found matching your criteria
     </ion-note>
