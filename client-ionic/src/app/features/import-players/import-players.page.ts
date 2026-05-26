@@ -51,16 +51,28 @@ export class ImportPlayersPage implements OnInit {
     this.loadExternalPlayers();
   }
 
-  async loadExternalPlayers() {
+  // 1. Modifica el método para aceptar el parámetro opcional
+  async loadExternalPlayers(search?: string) {
     this.isLoading.set(true);
     this.errorMessage.set(null);
     try {
-      const players = await this.playerService.getExternalApiPlayers();
+      const players = await this.playerService.getExternalApiPlayers(search);
       this.externalPlayers.set(players);
     } catch (err) {
       this.errorMessage.set('Could not load data from API Football.');
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  // 2. Agrega este nuevo método para capturar la búsqueda del componente
+  onSearchChange(searchText: string) {
+    const query = searchText.trim();
+
+    if (query.length >= 3) {
+      this.loadExternalPlayers(query); // Busca en la API externa
+    } else if (query === '') {
+      this.loadExternalPlayers(); // Recarga la lista por defecto si borra el texto
     }
   }
 
