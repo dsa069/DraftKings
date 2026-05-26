@@ -1,4 +1,12 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import {
   IonContent,
   IonGrid,
@@ -47,6 +55,7 @@ import { NavController } from '@ionic/angular';
   templateUrl: 'players.page.html',
   styleUrls: ['players.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     IonContent,
@@ -79,6 +88,7 @@ import { NavController } from '@ionic/angular';
 export class PlayersPage implements OnInit {
   private readonly navCtrl = inject(NavController);
   private readonly playerService = inject(PlayerService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   // Señales para datos
   allPlayers = signal<Player[]>([]);
@@ -176,9 +186,19 @@ export class PlayersPage implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.loadPlayers();
 
-    // Suscribirse a eventos de creación de jugador
+    // Suscribirse a eventos de cambios en jugadores
     this.playerService.playerCreated$.subscribe(() => {
       // Recargar la lista cuando se crea un nuevo jugador
+      this.loadPlayers();
+    });
+
+    this.playerService.playerUpdated$.subscribe(() => {
+      // Recargar la lista cuando se actualiza un jugador
+      this.loadPlayers();
+    });
+
+    this.playerService.playerDeleted$.subscribe(() => {
+      // Recargar la lista cuando se elimina un jugador
       this.loadPlayers();
     });
   }
@@ -223,6 +243,7 @@ export class PlayersPage implements OnInit {
       }
 
       this.allPlayers.set(players);
+      this.cdr.markForCheck();
     } catch (error) {
       const errorMsg =
         error instanceof Error ? error.message : 'Error loading players';

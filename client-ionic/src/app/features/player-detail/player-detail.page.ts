@@ -5,6 +5,7 @@ import {
   signal,
   ChangeDetectorRef,
   NgZone,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe, NgStyle } from '@angular/common';
@@ -53,6 +54,7 @@ import {
   templateUrl: './player-detail.page.html',
   styleUrls: ['./player-detail.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonContent,
     IonCard,
@@ -89,6 +91,7 @@ export class PlayerDetailPage implements OnInit {
   player = signal<Player | null>(null);
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
+  private isLeavingPage = false;
 
   // Modal state para confirmación de delete
   private _showConfirmModal = signal(false);
@@ -122,6 +125,26 @@ export class PlayerDetailPage implements OnInit {
     await this.loadPlayerDetail(playerId);
   }
 
+  async ionViewWillEnter(): Promise<void> {
+    // No recargar si estamos saliendo de esta página
+    if (this.isLeavingPage) {
+      this.isLeavingPage = false;
+      return;
+    }
+
+    // Recargar el jugador cada vez que la vista se muestra
+    // Esto asegura que los datos estén actualizados después de editar
+    const playerId = this.route.snapshot.paramMap.get('id');
+    if (playerId) {
+      await this.loadPlayerDetail(playerId);
+    }
+  }
+
+  ionViewDidLeave(): void {
+    // Marcar que estamos saliendo para evitar recargas innecesarias
+    this.isLeavingPage = true;
+  }
+
   private async loadPlayerDetail(playerId: string): Promise<void> {
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -145,6 +168,7 @@ export class PlayerDetailPage implements OnInit {
       console.error('Error cargando jugador:', error);
     } finally {
       this.isLoading.set(false);
+      this.cdr.markForCheck();
     }
   }
 

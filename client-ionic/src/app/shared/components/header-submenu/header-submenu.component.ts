@@ -39,7 +39,7 @@ export class HeaderSubmenuComponent {
     });
   }
 
-  async goToHome(): Promise<void> {
-    this.navCtrl.navigateForward(['/']);
+  goToHome(): void {
+    this.navCtrl.navigateRoot(this.href);
   }
 }
