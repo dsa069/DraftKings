@@ -2,10 +2,10 @@
 
 <ion-content class="ion-padding">
   @if (isLoading()) {
-  <div class="loading-wrapper">
+  <ion-item-group class="loading-wrapper">
     <ion-spinner name="crescent" color="success"></ion-spinner>
     <p>Processing data...</p>
-  </div>
+  </ion-item-group>
   } @else if (errorMessage()) {
   <ion-note color="danger" class="error-box"> {{ errorMessage() }} </ion-note>
   } @else {
