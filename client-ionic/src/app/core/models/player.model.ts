@@ -16,4 +16,5 @@ export interface Player {
   latitude: number;
   longitude: number;
   created_at?: string | Date;
+  //externalId?: string | number; // Para almacenar el ID de API-Football si es necesario
 }

@@ -194,6 +194,10 @@ export abstract class PlayerService {
         league: 'External',
         latitude: 0,
         longitude: 0,
+        height: item.player.height || undefined,
+        weight: item.player.weight || undefined,
+        number: item.player.number || undefined,
+        //externalId: item.player.id || undefined,
       }));
     } catch (error) {
       console.error('Error fetching from API-Football:', error);
