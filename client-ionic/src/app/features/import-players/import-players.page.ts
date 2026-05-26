@@ -75,7 +75,7 @@ export class ImportPlayersPage implements OnInit {
 
       // Regresar a la vista principal tras el éxito
       setTimeout(() => {
-        this.navCtrl.navigateBack('/players');
+        this.navCtrl.navigateBack('/tabs/players');
       }, 1500);
     } catch (err) {
       this.toastMessage.set('Error saving players to DB.');
