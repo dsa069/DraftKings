@@ -6,13 +6,14 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
 
 describe('PlayersPage', () => {
-  it('should render ion-content', () => {
+  it('should render header', () => {
     cy.mount(PlayersPage, {
-      imports: [IonContent, IonHeader, IonTitle, IonToolbar],
+      imports: [IonContent, IonHeader, IonTitle, IonToolbar, HeaderComponent],
     });
 
-    cy.get('ion-content').should('exist');
+    cy.get('app-header').should('exist');
   });
 });
