@@ -113,6 +113,10 @@ export class NewPlayerPage implements OnInit {
         `[ngOnInit] Modo edición detectado. ID: ${this.editingPlayerId}`
       );
 
+      // IMPORTANTE: Limpiar el PhotoService antes de cargar datos del jugador anterior
+      // Esto previene residuos de fotos de jugadores previos
+      await this.photoService.clearPreviewCache();
+
       // Esperar a que la autenticación esté disponible antes de cargar datos del jugador
       // Esto evita el error 400 cuando el token aún no está disponible
       let attempts = 0;
@@ -142,6 +146,9 @@ export class NewPlayerPage implements OnInit {
           '❌ No se pudo obtener token de autenticación después de 10 intentos. Usuario puede no estar autenticado.'
         );
       }
+    } else {
+      // Nuevo jugador: limpiar el PhotoService también
+      await this.photoService.clearPreviewCache();
     }
 
     // Solicitamos la posición inicial real del dispositivo antes de mostrar el mapa.
@@ -332,15 +339,16 @@ export class NewPlayerPage implements OnInit {
 
         let photoUrl: string | null | undefined;
 
-        // Solo subir foto si el usuario seleccionó una nueva (no es la existente)
-        if (
-          this.selectedImageStr &&
-          !this.selectedImageStr.startsWith('http')
-        ) {
+        // Usar el estado del PhotoService como fuente única de verdad
+        const currentPhoto = this.photoService.currentPhotoPreview();
+
+        if (currentPhoto) {
+          // Si hay una foto, usar uploadCurrentImage que maneja:
+          // - Fotos nuevas: las sube a Firebase y devuelve la URL
+          // - Fotos existentes (HTTP URLs): las devuelve sin cambios
           photoUrl = await this.photoService.uploadCurrentImage(player.name);
-        } else if (this.selectedImageStr?.startsWith('http')) {
-          // Mantener URL existente si no cambió
-          photoUrl = this.selectedImageStr;
+        } else {
+          photoUrl = undefined;
         }
 
         const playerWithPhoto: Player = {
