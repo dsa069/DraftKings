@@ -29,6 +29,15 @@
     class="custom-extended-fab"
   >
     <ion-button
+      class="extended-fab-btn import-btn"
+      shape="round"
+      (click)="goToImportPlayers()"
+    >
+      <ion-icon slot="start" name="cloud-download-outline"></ion-icon>
+      <ion-text class="fab-text">Import Players</ion-text>
+    </ion-button>
+
+    <ion-button
       class="extended-fab-btn"
       shape="round"
       (click)="goToAddPlayer()"

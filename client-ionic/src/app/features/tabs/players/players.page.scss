@@ -4,8 +4,17 @@
 }
 
 .custom-extended-fab {
-  bottom: --spacing-margin-mobile;
-  right: --spacing-margin-mobile;
+  bottom: var(
+    --spacing-margin-mobile,
+    20px
+  ); /* Asegúrate de que esta variable exista o dale un valor por defecto */
+  right: var(--spacing-margin-mobile, 20px);
+
+  /* NUEVO: Apila los botones verticalmente */
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espacio entre los botones */
+  align-items: flex-end; /* Alinea los botones a la derecha */
 }
 
 .extended-fab-btn {
@@ -41,11 +50,25 @@
 
   .fab-text {
     font-family: var(--font-family-label-bold);
-    font-size: var(--font-size-label-bold);
-    font-weight: var(--font-weight-label-bold);
+    font-size: var(
+      --font-size-label-bold
+    ); /* Ojo aquí, el snippet se cortó, asegúrate de tener el valor correcto */
+    font-weight: bold; /* O el valor de tu variable */
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
+}
+
+/* Clase específica para el botón de importar */
+.import-btn {
+  --background: var(
+    --ion-color-primary-variant
+  ); /* Color lima de tu variables.scss */
+  --background-hover: color-mix(
+    in srgb,
+    var(--ion-color-primary-variant) 90%,
+    black
+  );
 }
 
 .loading-container {
