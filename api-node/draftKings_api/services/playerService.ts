@@ -33,13 +33,30 @@ export class PlayerService {
       throw new Error("NOT_FOUND");
     }
 
-    // Comprobaciones selectivas
+    // Comprobaciones selectivas - TODOS LOS CAMPOS PERSONALES
+    if (updateData.name !== undefined) player.name = updateData.name;
+    if (updateData.firstName !== undefined)
+      player.firstName = updateData.firstName;
+    if (updateData.lastName !== undefined)
+      player.lastName = updateData.lastName;
+    if (updateData.age !== undefined) player.age = updateData.age;
+    if (updateData.birthdate !== undefined)
+      player.birthdate = updateData.birthdate
+        ? new Date(updateData.birthdate)
+        : undefined;
+    if (updateData.nationality !== undefined)
+      player.nationality = updateData.nationality;
+    if (updateData.height !== undefined) player.height = updateData.height;
+    if (updateData.weight !== undefined) player.weight = updateData.weight;
+
+    // Campos de carrera/equipo
     if (updateData.team !== undefined) player.team = updateData.team;
     if (updateData.league !== undefined) player.league = updateData.league;
-    if (updateData.number !== undefined) player.number = updateData.number;
-    if (updateData.name !== undefined) player.name = updateData.name;
     if (updateData.position !== undefined)
       player.position = updateData.position;
+    if (updateData.number !== undefined) player.number = updateData.number;
+
+    // Foto
     if (updateData.photoUrl !== undefined)
       player.photoUrl = updateData.photoUrl;
 
