@@ -154,7 +154,7 @@ export abstract class PlayerService {
    * Obtiene los jugadores desde la API externa de API-Football
    * Utiliza la clave guardada en el environment
    */
-  async getExternalApiPlayers(): Promise<Player[]> {
+  async getExternalApiPlayers(search?: string): Promise<Player[]> {
     const apiKey = environment.apiFootballKey;
 
     const headers = new HttpHeaders({
@@ -162,11 +162,17 @@ export abstract class PlayerService {
       'x-rapidapi-host': 'v3.football.api-sports.io',
     });
 
+    // Configurar los parámetros de la URL
+    let params = new HttpParams();
+    if (search) {
+      params = params.set('search', search);
+    }
+
     try {
       const res = await firstValueFrom(
         this.http.get<any>(
           'https://v3.football.api-sports.io/players/profiles',
-          { headers }
+          { headers, params } // <-- Pasamos los params aquí
         )
       );
 
@@ -184,7 +190,7 @@ export abstract class PlayerService {
         nationality: item.player.nationality || '',
         position: item.player.position || '',
         photoUrl: item.player.photo || '',
-        team: 'API Football', // Por defecto ya que perfiles no siempre trae equipo directo
+        team: 'API Football',
         league: 'External',
         latitude: 0,
         longitude: 0,

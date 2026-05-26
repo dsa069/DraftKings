@@ -88,6 +88,7 @@ export class PlayerListComponent {
 
   @Output() playerClick = new EventEmitter<string | undefined>();
   @Output() importSelected = new EventEmitter<Player[]>(); // Evento para enviar los elegidos
+  @Output() searchChange = new EventEmitter<string>();
 
   // Control de selección múltiple para el modo Import
   selectedPlayers = signal<Map<string | number, Player>>(new Map());
@@ -160,11 +161,14 @@ export class PlayerListComponent {
   }
 
   onSearchChange(event: any): void {
-    this.searchText.set(event.detail.value || '');
+    const value = event.detail.value || '';
+    this.searchText.set(value);
+    this.searchChange.emit(value); // <-- Emitimos el valor
   }
 
   clearSearchFilter(): void {
     this.searchText.set('');
+    this.searchChange.emit(''); // <-- Emitimos vacío al limpiar
   }
   clearTeamFilter(): void {
     this.selectedTeam.set('');
