@@ -329,3 +329,38 @@ ion-datetime {
   font-family: var(--font-family-body-md);
   font-size: var(--font-size-body-md);
 }
+/* Agrega estos selectores al final de tu archivo player-list.component.scss actual */
+
+.import-checkbox-icon {
+  font-size: 22px;
+  margin-right: 8px;
+  transition: color 0.2s ease;
+}
+
+.player-card.is-selected {
+  --background: color-mix(
+    in srgb,
+    var(--ion-color-success) 12%,
+    var(--ion-color-stadium-grey)
+  );
+  border-color: var(--ion-color-success);
+}
+
+.import-action-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  z-index: 999;
+  animation: filterFadeIn 0.3s ease;
+}
+
+.import-submit-btn {
+  --background: var(--ion-color-success, #2dd36f);
+  --color: white;
+  font-family: var(--font-family-label-bold);
+  font-weight: bold;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}

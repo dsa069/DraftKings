@@ -1,0 +1,33 @@
+<app-header-submenu
+  title="Import Players"
+  backButtonText="Back"
+  (back)="navController.back()"
+></app-header-submenu>
+
+<ion-content class="ion-padding">
+  @if (isLoading()) {
+  <div class="loading-wrapper">
+    <ion-spinner name="crescent" color="success"></ion-spinner>
+    <p>Processing data...</p>
+  </div>
+  } @else if (errorMessage()) {
+  <ion-note color="danger" class="error-box"> {{ errorMessage() }} </ion-note>
+  } @else {
+
+  <app-player-list
+    [mode]="'import'"
+    [players]="externalPlayers()"
+    (importSelected)="handleImport($event)"
+  >
+  </app-player-list>
+
+  }
+
+  <ion-toast
+    [isOpen]="showToast()"
+    [message]="toastMessage()"
+    [duration]="2000"
+    (didDismiss)="showToast.set(false)"
+  >
+  </ion-toast>
+</ion-content>

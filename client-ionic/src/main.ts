@@ -29,12 +29,16 @@ import { AuthService } from './app/core/services/abstract/auth.service';
 import { authFactory } from './app/core/services/factory/auth.factory';
 import { ConfigService } from './app/core/services/config.service';
 import { environment } from './environments/environment';
+import { football } from 'ionicons/icons';
 
 console.log('🚀 Configuración cargada:', {
   produccion: environment.production,
   proyectoId: environment.firebaseConfig?.projectId,
   springApiUrl: environment.springApiUrl,
   nodeApiUrl: environment.nodeApiUrl,
+  footballApiKey: environment.apiFootballKey
+    ? '✅ Cargada'
+    : '❌ No encontrada',
 });
 
 defineCustomElements(window);

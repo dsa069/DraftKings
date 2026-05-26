@@ -22,6 +22,7 @@ const configMapping = [
     firebaseConfigVars: ['FIREBASE_CONFIG_DEV', 'FIREBASE_CONFIG_LOCAL'],
     springApiUrlVars: ['SPRING_API_URL_DEV', 'SPRING_API_URL_LOCAL'],
     nodeApiUrlVars: ['NODE_API_URL_DEV', 'NODE_API_URL_LOCAL'],
+    footballApiKeyVars: ['FOOTBALL_API_KEY_DEV', 'FOOTBALL_API_KEY_LOCAL'],
   },
   {
     targetPath: './src/environments/environment.prod.ts',
@@ -29,6 +30,7 @@ const configMapping = [
     firebaseConfigVars: ['FIREBASE_CONFIG_PROD'],
     springApiUrlVars: ['SPRING_API_URL_PROD'],
     nodeApiUrlVars: ['NODE_API_URL_PROD'],
+    footballApiKeyVars: ['FOOTBALL_API_KEY_PROD'],
   },
 ];
 
@@ -36,6 +38,7 @@ configMapping.forEach((config) => {
   const firebaseConfigValue = getEnvValue(config.firebaseConfigVars);
   const springApiUrlValue = getEnvValue(config.springApiUrlVars);
   const nodeApiUrlValue = getEnvValue(config.nodeApiUrlVars);
+  const footballApiKeyValue = getEnvValue(config.footballApiKeyVars);
 
   // Intentamos parsear Firebase si existe, si no, objeto vacío
   let firebaseParsed = {};
@@ -50,14 +53,15 @@ configMapping.forEach((config) => {
   production: ${config.production},
   firebaseConfig: ${JSON.stringify(firebaseParsed, null, 2)},
   springApiUrl: '${springApiUrlValue || ''}',
-  nodeApiUrl: '${nodeApiUrlValue || ''}'
+  nodeApiUrl: '${nodeApiUrlValue || ''}',
+  apiFootballKey: '${footballApiKeyValue || ''}'
 };
 `;
 
   writeFile(config.targetPath, fileContent, (err) => {
     if (err) throw err;
     console.log(
-      `✅ ${config.targetPath} generado (Producción: ${config.production})`,
+      `✅ ${config.targetPath} generado (Producción: ${config.production})`
     );
   });
 });

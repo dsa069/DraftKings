@@ -44,4 +44,11 @@ export const routes: Routes = [
         (m) => m.CreatePlayersNewsPage
       ),
   },
+  {
+    path: 'import-players',
+    loadComponent: () =>
+      import('./features/import-players/import-players.page').then(
+        (m) => m.ImportPlayersPage
+      ),
+  },
 ];

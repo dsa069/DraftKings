@@ -115,7 +115,7 @@ export class PlayersPage implements OnInit {
   goToAddPlayer(): void {
     const activeElement = document.activeElement as HTMLElement | null;
     activeElement?.blur();
-    this.navCtrl.navigateForward('/new-player');
+    this.navCtrl.navigateForward('/import-players');
   }
 
   goToPlayerDetail(playerId: string | undefined): void {
