@@ -13,6 +13,10 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://securetoken.google.com/draftkings-local
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
 
 management:
   info:
