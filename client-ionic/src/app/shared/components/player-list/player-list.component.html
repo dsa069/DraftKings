@@ -221,7 +221,7 @@
     </ion-list>
 
     @if (mode === 'import' && selectedPlayers().size > 0) {
-    <div class="import-action-container">
+    <ion-item-group class="import-action-container">
       <ion-button
         class="import-submit-btn"
         expand="block"
@@ -231,7 +231,7 @@
         <ion-icon slot="start" name="download-outline"></ion-icon>
         Import Selected ({{ selectedPlayers().size }})
       </ion-button>
-    </div>
+    </ion-item-group>
     } } @else {
     <ion-note color="medium" class="no-results-message">
       No players found matching your criteria

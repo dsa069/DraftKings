@@ -8,7 +8,7 @@ export class PlayerService {
       firstName: body.firstName,
       lastName: body.lastName,
       age: body.age,
-      birthdate: body.birthdate ? new Date(body.birthdate) : undefined,
+      birthdate: body.birthdate ? new Date(body.birthdate) : null,
       nationality: body.nationality,
       height: body.height,
       weight: body.weight,
@@ -43,7 +43,7 @@ export class PlayerService {
     if (updateData.birthdate !== undefined)
       player.birthdate = updateData.birthdate
         ? new Date(updateData.birthdate)
-        : undefined;
+        : null;
     if (updateData.nationality !== undefined)
       player.nationality = updateData.nationality;
     if (updateData.height !== undefined) player.height = updateData.height;

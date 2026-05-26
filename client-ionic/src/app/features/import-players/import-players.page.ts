@@ -10,12 +10,14 @@ import {
   IonToast,
   IonButtons,
   IonBackButton,
+  IonItemGroup,
 } from '@ionic/angular/standalone';
 import { PlayerListComponent } from '../../shared/components/player-list/player-list.component';
 import { PlayerService } from '../../core/services/abstract/player.service';
 import { Player } from '../../core/models/player.model';
 import { NavController } from '@ionic/angular';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
+import { LocationService } from '../../core/services/abstract/location.service';
 
 @Component({
   selector: 'app-import-players',
@@ -33,6 +35,7 @@ import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/h
     IonToast,
     IonButtons,
     IonBackButton,
+    IonItemGroup,
     PlayerListComponent,
     HeaderSubmenuComponent,
   ],
@@ -40,6 +43,7 @@ import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/h
 export class ImportPlayersPage implements OnInit {
   private readonly playerService = inject(PlayerService);
   private readonly navCtrl = inject(NavController);
+  private readonly locationService = inject(LocationService);
 
   externalPlayers = signal<Player[]>([]);
   isLoading = signal<boolean>(false);
@@ -79,9 +83,26 @@ export class ImportPlayersPage implements OnInit {
   async handleImport(playersToImport: Player[]) {
     this.isLoading.set(true);
     try {
-      await this.playerService.importPlayers(playersToImport);
+      // 1. Pedimos la ubicación nativa del dispositivo
+      const deviceLocation =
+        await this.locationService.requestDeviceCurrentPosition();
+
+      // Extraemos las coordenadas (si falla el GPS, por defecto dejamos 0)
+      const currentLat = deviceLocation?.lat || 0;
+      const currentLng = deviceLocation?.lng || 0;
+
+      // 2. Modificamos los jugadores para inyectarles la ubicación real
+      const playersWithLocation = playersToImport.map((player) => ({
+        ...player,
+        latitude: currentLat,
+        longitude: currentLng,
+      }));
+
+      // 3. Pasamos los jugadores modificados al servicio (sea Node o Spring)
+      await this.playerService.importPlayers(playersWithLocation);
+
       this.toastMessage.set(
-        `Successfully imported ${playersToImport.length} players!`
+        `Successfully imported ${playersWithLocation.length} players!`
       );
       this.showToast.set(true);
 
@@ -90,7 +111,7 @@ export class ImportPlayersPage implements OnInit {
         this.navCtrl.navigateBack('/tabs/players');
       }, 1500);
     } catch (err) {
-      this.toastMessage.set('Error saving players to DB.');
+      this.toastMessage.set('Error importing players. Please try again.');
       this.showToast.set(true);
     } finally {
       this.isLoading.set(false);

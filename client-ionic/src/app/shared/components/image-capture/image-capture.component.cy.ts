@@ -5,14 +5,15 @@ import {
   IonHeader,
   IonTitle,
   IonToolbar,
+  IonGrid,
 } from '@ionic/angular/standalone';
 
 describe('ImageCaptureComponent', () => {
-  it('should render title', () => {
+  it('should render ion-grid', () => {
     cy.mount(ImageCaptureComponent, {
-      imports: [IonContent, IonHeader, IonTitle, IonToolbar],
+      imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonGrid],
     });
 
-    cy.get('ion-title').should('exist');
+    cy.get('ion-grid').should('exist');
   });
 });

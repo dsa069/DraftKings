@@ -50,8 +50,7 @@ public class PlayerServiceImpl implements PlayerService {
         Player existingPlayer = playerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Jugador no encontrado"));
 
-        // Simulación de PATCH (Modificación parcial): Solo sobreescribimos campos que
-        // no vengan nulos
+        // Campos originales que ya tenías
         if (playerDetails.getTeam() != null)
             existingPlayer.setTeam(playerDetails.getTeam());
         if (playerDetails.getLeague() != null)
@@ -62,15 +61,28 @@ public class PlayerServiceImpl implements PlayerService {
             existingPlayer.setLatitude(playerDetails.getLatitude());
         if (playerDetails.getLongitude() != null)
             existingPlayer.setLongitude(playerDetails.getLongitude());
-
-        // Mapeos adicionales por si se modifican campos base desde el formulario
-        // interno
         if (playerDetails.getName() != null)
             existingPlayer.setName(playerDetails.getName());
         if (playerDetails.getPosition() != null)
             existingPlayer.setPosition(playerDetails.getPosition());
         if (playerDetails.getPhotoUrl() != null)
             existingPlayer.setPhotoUrl(playerDetails.getPhotoUrl());
+
+        // NUEVOS CAMPOS AÑADIDOS
+        if (playerDetails.getFirstName() != null)
+            existingPlayer.setFirstName(playerDetails.getFirstName());
+        if (playerDetails.getLastName() != null)
+            existingPlayer.setLastName(playerDetails.getLastName());
+        if (playerDetails.getAge() != null)
+            existingPlayer.setAge(playerDetails.getAge());
+        if (playerDetails.getBirthdate() != null)
+            existingPlayer.setBirthdate(playerDetails.getBirthdate());
+        if (playerDetails.getNationality() != null)
+            existingPlayer.setNationality(playerDetails.getNationality());
+        if (playerDetails.getHeight() != null)
+            existingPlayer.setHeight(playerDetails.getHeight());
+        if (playerDetails.getWeight() != null)
+            existingPlayer.setWeight(playerDetails.getWeight());
 
         // Guardamos los cambios consolidados en la base de datos
         return playerRepository.save(existingPlayer);

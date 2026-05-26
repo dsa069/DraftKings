@@ -5,7 +5,7 @@ export interface IPlayer extends Document {
   firstName?: string;
   lastName?: string;
   age?: number;
-  birthdate?: Date;
+  birthdate?: Date | null;
   nationality?: string;
   height?: number;
   weight?: number;
@@ -23,7 +23,7 @@ const playerSchema = new Schema<IPlayer>({
   firstName: String,
   lastName: String,
   age: { type: Number, min: 0, max: 99 },
-  birthdate: Date,
+  birthdate: { type: Date, default: null },
   nationality: String,
   height: Number,
   weight: Number,
