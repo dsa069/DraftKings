@@ -20,6 +20,19 @@ export abstract class PlayerService {
     league?: string;
     startDate?: string;
   }): Promise<Player[]> {
+    console.log('[PlayerService] getPlayers llamado con filtros:', filters);
+    const token = await this.authService.getToken();
+    console.log('[PlayerService] Token obtenido:', token ? `${token.substring(0, 20)}...` : 'null');
+    
+    let headers = new HttpHeaders();
+
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+      console.log('[PlayerService] Authorization header agregado');
+    } else {
+      console.warn('[PlayerService] ⚠️ Token es null, la solicitud NO incluye Authorization header');
+    }
+
     let params = new HttpParams();
 
     if (filters) {
@@ -30,15 +43,35 @@ export abstract class PlayerService {
         params = params.set('startDate', filters.startDate);
     }
 
+    const url = `${this.apiUrl}/players`;
+    console.log('[PlayerService] GET', url);
+    
     return firstValueFrom(
-      this.http.get<Player[]>(`${this.apiUrl}/players`, { params })
+      this.http.get<Player[]>(url, { params, headers })
     );
   }
 
   // 4) Obtener detalle de un jugador
-  async getPlayerById(id: number): Promise<Player> {
+  async getPlayerById(id: string | number): Promise<Player> {
+    console.log(`[PlayerService] getPlayerById llamado con ID: ${id}`);
+    const token = await this.authService.getToken();
+    console.log(`[PlayerService] Token obtenido:`, token ? `${token.substring(0, 20)}...` : 'null');
+    
+    let headers = new HttpHeaders();
+
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+      console.log(`[PlayerService] Authorization header agregado`);
+    } else {
+      console.warn(`[PlayerService] ⚠️ Token es null, la solicitud NO incluye Authorization header`);
+    }
+
+    const url = `${this.apiUrl}/players/${id}`;
+    console.log(`[PlayerService] GET ${url}`);
+    console.log(`[PlayerService] Headers que se envían:`, headers.keys());
+    
     return firstValueFrom(
-      this.http.get<Player>(`${this.apiUrl}/players/${id}`)
+      this.http.get<Player>(url, { headers })
     );
   }
 
@@ -64,7 +97,7 @@ export abstract class PlayerService {
   }
 
   // 7) Editar datos de un jugador (Requiere JWT)
-  async updatePlayer(id: number, player: Partial<Player>): Promise<Player> {
+  async updatePlayer(id: string | number, player: Partial<Player>): Promise<Player> {
     const token = await this.authService.getToken();
     let headers = new HttpHeaders();
 
@@ -80,7 +113,7 @@ export abstract class PlayerService {
   }
 
   // 8) Eliminar un jugador (Requiere JWT)
-  async deletePlayer(id: number): Promise<void> {
+  async deletePlayer(id: string | number): Promise<void> {
     const token = await this.authService.getToken();
     let headers = new HttpHeaders();
 
