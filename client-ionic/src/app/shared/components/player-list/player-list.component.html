@@ -1,0 +1,219 @@
+<p>player-list works!</p>
+<ion-grid class="main-container" fixed="false">
+  <ion-row class="search-filter-section ion-align-items-center">
+    <ion-col class="search-input-col">
+      <ion-item class="search-input-item" lines="none">
+        <ion-icon
+          slot="start"
+          name="search-outline"
+          class="search-icon"
+        ></ion-icon>
+        <ion-input
+          placeholder="Search players..."
+          type="text"
+          class="search-input"
+          [value]="searchText()"
+          (ionChange)="onSearchChange($event)"
+        ></ion-input>
+        @if (searchText() !== '') {
+        <ion-button
+          slot="end"
+          fill="clear"
+          size="small"
+          (click)="clearSearchFilter()"
+        >
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+        }
+      </ion-item>
+    </ion-col>
+
+    <ion-col class="filter-col" size="auto">
+      <ion-button
+        class="filter-button"
+        [class.active]="showFilters()"
+        (click)="toggleFilters()"
+      >
+        <ion-icon name="options-outline"></ion-icon>
+        @if (hasActiveFilters()) {
+        <span class="filter-notification-dot"></span>
+        }
+      </ion-button>
+    </ion-col>
+  </ion-row>
+
+  <ion-item-group class="players-content-container">
+    @if (showFilters()) {
+    <ion-grid class="filters-panel" fixed="false" [hidden]="!showFilters()">
+      <ion-row class="filters-header ion-align-items-center">
+        <ion-icon name="funnel-outline" class="filters-header-icon"></ion-icon>
+        <ion-text class="filters-title">Filters</ion-text>
+      </ion-row>
+
+      <ion-row class="filters-row">
+        <ion-col size="12" class="filter-group">
+          <ion-label class="filter-label">Team</ion-label>
+          <ion-row class="ion-align-items-center ion-no-padding">
+            <ion-col class="ion-no-padding">
+              <ion-item class="custom-ionic-item" lines="none">
+                <ion-select
+                  placeholder="Select Team"
+                  class="custom-ionic-select"
+                  [interface]="'popover'"
+                  [toggleIcon]="'chevron-down-outline'"
+                  [value]="selectedTeam()"
+                  (ionChange)="selectedTeam.set($event.detail.value)"
+                >
+                  @for (team of uniqueTeams(); track team) {
+                  <ion-select-option [value]="team">{{
+                    team
+                  }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+            </ion-col>
+            @if (selectedTeam() !== '') {
+            <ion-col size="auto" class="ion-no-padding ion-padding-start">
+              <ion-button
+                fill="clear"
+                class="filter-clear-icon-btn"
+                (click)="clearTeamFilter()"
+              >
+                <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-col>
+            }
+          </ion-row>
+        </ion-col>
+
+        <ion-col size="12" class="filter-group">
+          <ion-label class="filter-label">League</ion-label>
+          <ion-row class="ion-align-items-center ion-no-padding">
+            <ion-col class="ion-no-padding">
+              <ion-item class="custom-ionic-item" lines="none">
+                <ion-select
+                  placeholder="Select League"
+                  class="custom-ionic-select"
+                  [interface]="'popover'"
+                  [toggleIcon]="'chevron-down-outline'"
+                  [value]="selectedLeague()"
+                  (ionChange)="selectedLeague.set($event.detail.value)"
+                >
+                  @for (league of uniqueLeagues(); track league) {
+                  <ion-select-option [value]="league">{{
+                    league
+                  }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+            </ion-col>
+            @if (selectedLeague() !== '') {
+            <ion-col size="auto" class="ion-no-padding ion-padding-start">
+              <ion-button
+                fill="clear"
+                class="filter-clear-icon-btn"
+                (click)="clearLeagueFilter()"
+              >
+                <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-col>
+            }
+          </ion-row>
+        </ion-col>
+
+        <ion-col size="12" class="filter-group">
+          <ion-label class="filter-label">Creation Date</ion-label>
+          <ion-row class="ion-align-items-center ion-no-padding">
+            <ion-col class="ion-no-padding">
+              <ion-item
+                class="custom-ionic-item date-picker-item"
+                lines="none"
+                id="open-date-input"
+              >
+                <ion-text class="date-content-wrapper">
+                  @if (selectedDate() === null) {
+                  <ion-label class="placeholder-date-text"
+                    >Select date...</ion-label
+                  >
+                  } @else {
+                  <ion-datetime-button
+                    datetime="datetime-picker"
+                  ></ion-datetime-button>
+                  }
+                </ion-text>
+              </ion-item>
+            </ion-col>
+
+            @if (selectedDate() !== null) {
+            <ion-col size="auto" class="ion-no-padding ion-padding-start">
+              <ion-button
+                fill="clear"
+                class="filter-clear-icon-btn"
+                (click)="clearDateFilter($event)"
+              >
+                <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-col>
+            }
+          </ion-row>
+
+          <ion-popover
+            trigger="open-date-input"
+            [dismissOnSelect]="false"
+            [keepContentsMounted]="true"
+            class="date-picker-popover"
+          >
+            <ng-template>
+              <ion-datetime
+                id="datetime-picker"
+                presentation="date"
+                [preferWheel]="true"
+                [value]="selectedDate() ?? undefined"
+                (ionChange)="onDateChange($event)"
+              ></ion-datetime>
+            </ng-template>
+          </ion-popover>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    } @if (filteredPlayers().length > 0) {
+    <ion-list class="player-list" lines="none">
+      @for (player of filteredPlayers(); track player.id) {
+      <ion-item
+        class="player-card"
+        (click)="onPlayerClick(player.id)"
+        [disabled]="!player.id"
+      >
+        <ion-avatar slot="start" class="player-avatar">
+          @if (player.photoUrl) {
+          <ion-img [alt]="player.name" [src]="player.photoUrl"></ion-img>
+          } @else {
+          <ion-img
+            alt="player placeholder"
+            src="https://ionicframework.com/docs/img/demos/avatar.svg"
+          ></ion-img>
+          }
+        </ion-avatar>
+        <ion-label>
+          <ion-text class="player-name">{{ player.name }}</ion-text>
+          <ion-text class="player-position">
+            {{ player.position }} • {{ player.team }}
+          </ion-text>
+        </ion-label>
+        <ion-text slot="end" class="player-rating">
+          <ion-icon name="star"></ion-icon>
+          <ion-icon name="star"></ion-icon>
+          <ion-icon name="star"></ion-icon>
+          <ion-icon name="star"></ion-icon>
+          <ion-icon name="star-half"></ion-icon>
+        </ion-text>
+      </ion-item>
+      }
+    </ion-list>
+    } @else {
+    <ion-note color="medium" class="no-results-message">
+      No players found matching your criteria
+    </ion-note>
+    }
+  </ion-item-group>
+</ion-grid>
