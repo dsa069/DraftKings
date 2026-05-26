@@ -21,7 +21,7 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
 import { PlayerService } from '../../../core/services/abstract/player.service';
 import { Player } from '../../../core/models/player.model';
 import { addIcons } from 'ionicons';
-import { add } from 'ionicons/icons';
+import { add, cloudDownloadOutline } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { PlayerListComponent } from '../../../shared/components/player-list/player-list.component';
 
@@ -55,7 +55,7 @@ export class PlayersPage implements OnInit {
   errorMessage = signal<string | null>(null);
 
   constructor() {
-    addIcons({ add });
+    addIcons({ add, cloudDownloadOutline });
   }
 
   async ngOnInit(): Promise<void> {
@@ -113,6 +113,12 @@ export class PlayersPage implements OnInit {
   }
 
   goToAddPlayer(): void {
+    const activeElement = document.activeElement as HTMLElement | null;
+    activeElement?.blur();
+    this.navCtrl.navigateForward('/new-player');
+  }
+
+  goToImportPlayers(): void {
     const activeElement = document.activeElement as HTMLElement | null;
     activeElement?.blur();
     this.navCtrl.navigateForward('/import-players');
