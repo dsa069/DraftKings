@@ -34,7 +34,7 @@ public class Player {
     @Size(max = 100)
     private String nationality;
 
-    @Column(precision = 3, scale = 2)
+    @Column(precision = 5, scale = 2)
     private BigDecimal height;
 
     @Column(precision = 5, scale = 2)

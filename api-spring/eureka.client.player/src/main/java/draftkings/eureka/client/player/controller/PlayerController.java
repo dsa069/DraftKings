@@ -8,10 +8,12 @@ import draftkings.eureka.client.player.service.PlayerService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -33,21 +35,17 @@ public class PlayerController {
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "team", required = false) String team,
             @RequestParam(value = "league", required = false) String league,
-            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        Date dateParam = null;
-        if (startDate != null && !startDate.isEmpty()) {
-            try {
-                dateParam = Date.from(ZonedDateTime.parse(startDate).toInstant());
-            } catch (Exception e) {
-                // Si el parseo falla ignoramos el filtro de fecha de alta
-            }
+        Date startDateAsDate = null;
+        if (startDate != null) {
+            startDateAsDate = java.sql.Date.valueOf(startDate);
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Player> players = playerRepository.findAllWithFilters(search, team, league, dateParam, pageable);
+        Page<Player> players = playerRepository.findAllWithFilters(search, team, league, startDateAsDate, pageable);
         return ResponseEntity.ok(players);
     }
 
