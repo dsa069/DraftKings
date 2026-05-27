@@ -6,6 +6,7 @@ import {
   ChangeDetectorRef,
   NgZone,
   ChangeDetectionStrategy,
+  effect,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe, NgStyle } from '@angular/common';
@@ -39,6 +40,8 @@ import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/h
 import { MapCaptureComponent } from '../../shared/components/map-capture/map-capture.component';
 import { Player } from '../../core/models/player.model';
 import { PlayerService } from '../../core/services/abstract/player.service';
+import { Review } from '../../core/models/review.model';
+import { ReviewService } from '../../core/services/abstract/review.service';
 import { addIcons } from 'ionicons';
 import {
   pencil,
@@ -56,6 +59,10 @@ import {
   checkmark,
   close,
 } from 'ionicons/icons';
+
+export interface ReviewUI extends Review {
+  isEditing?: boolean;
+}
 
 @Component({
   selector: 'app-player-detail',
@@ -96,6 +103,7 @@ import {
 export class PlayerDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly playerService = inject(PlayerService);
+  private readonly reviewService = inject(ReviewService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly ngZone = inject(NgZone);
   private readonly navCtrl = inject(NavController);
@@ -109,30 +117,21 @@ export class PlayerDetailPage implements OnInit {
   private _showConfirmModal = signal(false);
   public showConfirmModal = this._showConfirmModal.asReadonly();
 
-  // Variables de Estado para el formulario y modal
-  newCommentAuthor = signal('');
-  newCommentText = signal('');
-  editTempText = signal('');
-  commentToDeleteId = signal<string | null>(null);
-  showDeleteCommentModal = signal(false);
+  // Lógica y estados reales para Comentarios (Reviews)
+  comments = signal<ReviewUI[]>([]);
+  isLoadingComments = signal<boolean>(false);
 
-  // Estado de los Comentarios Simulados (basado en tus datos originales)
-  comments = signal<any[]>([
-    {
-      id: '1',
-      author: 'TacticalGenius99',
-      text: "Absolute monster in the box. His finishing is unmatched, but don't expect him to drop deep and link play up too much. Worth every coin.",
-      stars: [1, 1, 1, 1, 1], // 1 = estrella llena
-      isEditing: false,
-    },
-    {
-      id: '2',
-      author: 'CityFan2024',
-      text: 'Great pace and physical stats. Just keep him central and feed him through balls.',
-      stars: [1, 1, 1, 1, 0], // 0 = estrella vacía
-      isEditing: false,
-    },
-  ]);
+  // Formulario de nuevo comentario
+  newCommentAuthor = signal<string>('');
+  newCommentText = signal<string>('');
+  newCommentRating = signal<number>(5); // Reemplaza "stars" por el rating numérico
+
+  // Formulario de edición temporal
+  editTempText = signal<string>('');
+
+  // Modales de eliminación
+  showDeleteCommentModal = signal<boolean>(false);
+  commentToDeleteId = signal<string | number | null>(null);
 
   constructor() {
     // Registramos los íconos globalmente para este componente standalone
@@ -152,18 +151,23 @@ export class PlayerDetailPage implements OnInit {
       checkmark,
       close,
     });
+
+    effect(() => {
+      const currentPlayer = this.player();
+      if (currentPlayer && currentPlayer.id) {
+        this.loadReviews(currentPlayer.id);
+      }
+    });
   }
 
-  async ngOnInit(): Promise<void> {
-    // Obtener el ID del jugador de los parámetros de la ruta
+  ngOnInit(): void {
     const playerId = this.route.snapshot.paramMap.get('id');
-
-    if (!playerId) {
-      this.errorMessage.set('ID de jugador no válido');
-      return;
+    if (playerId) {
+      this.loadPlayerDetail(playerId);
+    } else {
+      this.errorMessage.set('Player ID not found in route');
+      this.isLoading.set(false);
     }
-
-    await this.loadPlayerDetail(playerId);
   }
 
   async ionViewWillEnter(): Promise<void> {
@@ -258,67 +262,124 @@ export class PlayerDetailPage implements OnInit {
   onModalDismiss(event: any): void {
     this._showConfirmModal.set(false);
   }
-  // Métodos para Crear un Comentario
-  addComment() {
+  // ==========================================
+  // FUNCIONALIDADES REALES DE COMENTARIOS (BD)
+  // ==========================================
+
+  // 1. Cargar automáticamente de la Base de Datos
+  async loadReviews(playerId: string | number): Promise<void> {
+    this.isLoadingComments.set(true);
+    try {
+      const reviews = await this.reviewService.getReviewsByPlayer(playerId);
+      // Ordenar por ID o fecha para mostrar los más recientes arriba si tu backend no lo hace
+      this.comments.set(reviews.reverse());
+    } catch (error) {
+      console.error('Error cargando comentarios de la BD:', error);
+    } finally {
+      this.isLoadingComments.set(false);
+      this.cdr.markForCheck();
+    }
+  }
+
+  // 2. Crear Comentario Real en la BD
+  async addComment(): Promise<void> {
+    const targetPlayer = this.player();
+    if (!targetPlayer || !targetPlayer.id) return;
     if (!this.newCommentAuthor().trim() || !this.newCommentText().trim())
       return;
 
-    const newComment = {
-      id: Date.now().toString(),
+    const reviewPayload: Partial<Review> = {
       author: this.newCommentAuthor(),
       text: this.newCommentText(),
-      stars: [1, 1, 1, 1, 1], // Default a 5 estrellas
-      isEditing: false,
+      rating: this.newCommentRating(),
+      userId: '1', // Aquí puedes vincular el UID real de tu servicio de autenticación si lo tienes
+      latitude: targetPlayer.latitude || 0,
+      longitude: targetPlayer.longitude || 0,
     };
 
-    this.comments.update((curr) => [newComment, ...curr]);
-    this.newCommentAuthor.set('');
-    this.newCommentText.set('');
+    try {
+      const savedReview = await this.reviewService.createReview(
+        targetPlayer.id,
+        reviewPayload
+      );
+      // Actualizamos el Signal agregando el nuevo comentario al inicio del array
+      this.comments.update((curr) => [savedReview, ...curr]);
+
+      // Limpiamos el formulario
+      this.newCommentAuthor.set('');
+      this.newCommentText.set('');
+      this.newCommentRating.set(5);
+    } catch (error) {
+      console.error('Error al guardar el comentario en la BD:', error);
+    } finally {
+      this.cdr.markForCheck();
+    }
   }
 
-  // Métodos para Editar un Comentario
-  editComment(comment: any) {
-    // 1. Asignamos el texto original al estado temporal
+  // 3. Activar Modo Edición (Local)
+  editComment(comment: ReviewUI) {
     this.editTempText.set(comment.text);
-
-    // 2. Actualizamos el Signal mapeando la lista.
-    // Esto activa la detección OnPush de Angular de forma limpia.
     this.comments.update((curr) =>
-      curr.map((c) => ({
-        ...c,
-        isEditing: c.id === comment.id, // Solo el seleccionado pasa a ser true, los demás false
-      }))
+      curr.map((c) => ({ ...c, isEditing: c.id === comment.id }))
     );
   }
 
-  saveComment(comment: any) {
-    this.comments.update((curr) =>
-      curr.map((c) => {
-        if (c.id === comment.id) {
-          return { ...c, text: this.editTempText(), isEditing: false };
-        }
-        return c;
-      })
-    );
+  // 4. Guardar Edición Real en la BD
+  async saveComment(comment: ReviewUI): Promise<void> {
+    if (!comment.id || !this.editTempText().trim()) return;
+
+    const updatedPayload: Partial<Review> = {
+      text: this.editTempText(),
+    };
+
+    try {
+      const updatedReview = await this.reviewService.updateReview(
+        comment.id,
+        updatedPayload
+      );
+
+      this.comments.update((curr) =>
+        curr.map((c) =>
+          c.id === comment.id ? { ...updatedReview, isEditing: false } : c
+        )
+      );
+    } catch (error) {
+      console.error('Error al editar el comentario en la BD:', error);
+    } finally {
+      this.cdr.markForCheck();
+    }
   }
 
-  cancelEditComment(comment: any) {
+  cancelEditComment(comment: ReviewUI) {
     this.comments.update((curr) =>
       curr.map((c) => (c.id === comment.id ? { ...c, isEditing: false } : c))
     );
   }
 
-  // Métodos para Borrar un Comentario
-  promptDeleteComment(commentId: string) {
+  // 5. Borrado Real en la BD
+  promptDeleteComment(commentId: string | number) {
     this.commentToDeleteId.set(commentId);
     this.showDeleteCommentModal.set(true);
   }
 
-  confirmDeleteComment() {
+  async confirmDeleteComment(): Promise<void> {
     const id = this.commentToDeleteId();
-    if (id) {
+    if (!id) return;
+
+    try {
+      await this.reviewService.deleteReview(id);
+      // Removemos el comentario eliminado del Signal local de forma reactiva
       this.comments.update((curr) => curr.filter((c) => c.id !== id));
+      this.showDeleteCommentModal.set(false);
+      this.commentToDeleteId.set(null);
+    } catch (error) {
+      console.error('Error al eliminar el comentario de la BD:', error);
+    } finally {
+      this.cdr.markForCheck();
     }
+  }
+
+  cancelDeleteComment() {
     this.showDeleteCommentModal.set(false);
     this.commentToDeleteId.set(null);
   }

@@ -226,9 +226,9 @@
                     >{{ comment.author }}</ion-text
                   >
                   <ion-text class="stars-container">
-                    @for (star of comment.stars; track $index) {
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
                     <ion-icon
-                      [name]="star === 0 ? 'star-outline' : 'star'"
+                      [name]="star <= comment.rating ? 'star' : 'star-outline'"
                     ></ion-icon>
                     }
                   </ion-text>
@@ -246,7 +246,7 @@
                   <ion-button
                     fill="clear"
                     class="action-icon-btn delete-color"
-                    (click)="promptDeleteComment(comment.id)"
+                    (click)="promptDeleteComment(comment.id!)"
                   >
                     <ion-icon name="trash" slot="icon-only"></ion-icon>
                   </ion-button>
