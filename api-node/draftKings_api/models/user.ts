@@ -5,7 +5,7 @@ const userSchema = new Schema(
     firebaseUid: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     userName: { type: String, required: false },
-    role: { type: String, default: "usuario" },
+    role: { type: String, default: "USER" },
     is_active: { type: Boolean, default: true },
     blocked: { type: Boolean, default: false },
   },

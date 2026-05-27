@@ -27,16 +27,19 @@ export class AuthNodeService extends AuthService {
     if (!token) throw new Error('No hay token disponible');
 
     try {
-      // 2. Confirmar existencia en MongoDB llamando a GET /api/user/profile
-      // Este endpoint requiere que el usuario ya esté registrado (usa authorizeRequestNoCreate)
-      await firstValueFrom(
-        this.http.get(`${this.apiUrl}/user/profile`, {
+      // 2. Confirmar existencia en MongoDB y guardar el perfil devuelto
+      const userProfile = await firstValueFrom(
+        this.http.get<User>(`${this.apiUrl}/user/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         })
       );
 
-      console.log('Backend verificado: Usuario existe en MongoDB');
+      this._userProfile.set(userProfile);
+
+      console.log('Backend verificado. Rol cargado:', userProfile.role);
     } catch (error) {
+      this._userProfile.set(null);
+
       // Si el usuario existe en Firebase pero NO en la BD de Node, forzamos logout
       // para que no quede una sesión a medias.
       await this.logout();

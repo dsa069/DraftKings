@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, Signal } from '@angular/core';
+import { computed, inject, Injectable, Signal, signal } from '@angular/core';
 import {
   Auth,
   signInWithEmailAndPassword,
@@ -25,6 +25,15 @@ export abstract class AuthService {
   // Usuario de Firebase (disponible para todos los hijos)
   protected readonly _user = toSignal(authState(this.firebaseAuth));
 
+  // Estado global del perfil del usuario obtenido del backend
+  protected readonly _userProfile = signal<User | null>(null);
+
+  public readonly userProfile = this._userProfile.asReadonly();
+  public readonly isAdmin = computed(
+    () => this._userProfile()?.role === 'ADMIN'
+  );
+  public readonly isUser = computed(() => this._userProfile()?.role === 'USER');
+
   // 1. Lógica común: Login en Firebase
   async loginFirebase(email: string, pass: string): Promise<any> {
     return await signInWithEmailAndPassword(this.firebaseAuth, email, pass);
@@ -36,6 +45,7 @@ export abstract class AuthService {
 
   // 2. Lógica común: Logout
   async logout(): Promise<void> {
+    this._userProfile.set(null);
     await signOut(this.firebaseAuth);
   }
 
@@ -52,12 +62,12 @@ export abstract class AuthService {
       try {
         await deleteUser(user);
         console.log(
-          '🗑️ Rollback ejecutado: Cuenta de Firebase eliminada por fallo en el Backend',
+          '🗑️ Rollback ejecutado: Cuenta de Firebase eliminada por fallo en el Backend'
         );
       } catch (error) {
         console.error(
           '⚠️ Error crítico en Rollback: No se pudo eliminar de Firebase',
-          error,
+          error
         );
       }
     }

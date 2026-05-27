@@ -22,6 +22,8 @@ import {
   IonText,
   IonChip,
   IonButtons,
+  IonSelect,
+  IonSelectOption,
   ToastController,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
@@ -35,6 +37,7 @@ import {
   eyeOffOutline,
   gameControllerOutline,
   ellipse,
+  peopleOutline,
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 import { ConfigService, BackendType } from '../../core/services/config.service';
@@ -59,6 +62,8 @@ import { AuthService } from '../../core/services/abstract/auth.service';
     IonText,
     IonChip,
     IonButtons,
+    IonSelect,
+    IonSelectOption,
     IonBackButton,
     LoginCardComponent,
   ],
@@ -92,6 +97,7 @@ export class SignUpPage implements OnInit {
       eyeOffOutline,
       gameControllerOutline,
       ellipse,
+      peopleOutline,
     });
   }
 
@@ -104,6 +110,7 @@ export class SignUpPage implements OnInit {
       {
         userName: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
+        role: ['USER', [Validators.required]],
         password: [
           '',
           [
@@ -138,7 +145,7 @@ export class SignUpPage implements OnInit {
       return;
     }
 
-    const { email, password, userName } = this.signUpForm.value;
+    const { email, password, userName, role } = this.signUpForm.value;
 
     try {
       // 1. Bloqueamos al centinela temporalmente para que no interfiera en caliente
@@ -150,7 +157,10 @@ export class SignUpPage implements OnInit {
       // 3. ¿Hay cambio de backend?
       if (this.selectedBackend !== this.configService.selectedBackend()) {
         // Preparamos las banderas EXCLUSIVAS para el post-reload
-        localStorage.setItem('pending_sync_data', JSON.stringify({ userName }));
+        localStorage.setItem(
+          'pending_sync_data',
+          JSON.stringify({ userName, role })
+        );
         localStorage.setItem('execute_sync_on_reload', 'true');
 
         // Liberamos el bypass para que el centinela despierte al recargar
@@ -162,7 +172,7 @@ export class SignUpPage implements OnInit {
       }
 
       // 4. Si es el mismo backend (Sin reload)
-      await this.authService.registerBackend({ userName });
+      await this.authService.registerBackend({ userName, role });
 
       // Limpieza total y navegación
       localStorage.removeItem('bypass_centinela');

@@ -67,7 +67,7 @@ export async function authorizeRequest(
         // El displayName de Firebase es opcional
         userName: decodedToken.name,
         // Mapeo de custom claims si existieran, con un rol por defecto
-        role: (decodedToken.role as string) || "usuario",
+        role: (decodedToken.role as string) || "USER",
         is_active: true,
         blocked: false,
       });
