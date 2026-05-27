@@ -12,9 +12,6 @@ import java.util.List;
 @FeignClient(value = "reviewMS", fallback = ReviewClient.ReviewFallback.class)
 public interface ReviewClient {
 
-    @GetMapping("/check")
-    public String checkReview(@RequestParam("reviewName") String reviewName);
-
     @GetMapping
     List<ReviewDTO> getReviewsByUserId(@RequestParam("userId") Long userId);
 
@@ -23,11 +20,6 @@ public interface ReviewClient {
         @Override
         public List<ReviewDTO> getReviewsByUserId(Long userId) {
             return Collections.emptyList();
-        }
-
-        @Override
-        public String checkReview(String reviewName) {
-            return "Review service unavailable";
         }
     }
 }
