@@ -654,6 +654,12 @@ ion-modal.custom-modal {
   margin-bottom: 12px;
 }
 
+.rating-item {
+  --background: transparent !important;
+  --ion-item-background: transparent !important;
+  --inner-background: transparent !important;
+}
+
 .edit-actions-grid {
   margin-bottom: 12px;
 
@@ -693,4 +699,21 @@ ion-modal.custom-modal {
   color: var(--ion-color-on-surface-variant);
   margin-bottom: var(--spacing-stack-md);
   line-height: 1.5;
+}
+
+.interactive-star,
+.star-icon {
+  color: #ffd700; // Amarillo / Dorado puro
+}
+
+// Mantienes tu clase de interactividad como la tenías
+.interactive-star {
+  font-size: 28px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.8);
+  }
 }

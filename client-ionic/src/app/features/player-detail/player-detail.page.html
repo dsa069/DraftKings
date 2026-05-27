@@ -186,6 +186,18 @@
               </ion-item>
             </ion-row>
             <ion-row class="auth-form-group">
+              <ion-label class="auth-form-label">Rating</ion-label>
+              <ion-item lines="none" class="rating-item">
+                @for (starNum of [1, 2, 3, 4, 5]; track starNum) {
+                <ion-icon
+                  [name]="starNum <= newCommentRating() ? 'star' : 'star-outline'"
+                  class="interactive-star"
+                  (click)="updateNewRating($event, starNum)"
+                ></ion-icon>
+                }
+              </ion-item>
+            </ion-row>
+            <ion-row class="auth-form-group">
               <ion-label class="auth-form-label">Comment</ion-label>
               <ion-item class="form-item" lines="none">
                 <ion-icon slot="start" name="chatbox-outline"></ion-icon>
@@ -256,38 +268,61 @@
               <ion-row>
                 <ion-col class="ion-no-padding">
                   @if (comment.isEditing) {
-                  <ion-item class="form-item edit-form-item" lines="none">
-                    <ion-textarea
-                      [ngModel]="editTempText()"
-                      (ngModelChange)="editTempText.set($event)"
-                      class="form-input"
-                      [autoGrow]="true"
-                      rows="2"
-                    ></ion-textarea>
-                  </ion-item>
-
-                  <ion-grid class="ion-no-padding edit-actions-grid">
+                  <ion-grid class="ion-no-padding">
                     <ion-row>
-                      <ion-col class="ion-padding-end">
-                        <ion-button
-                          expand="block"
-                          class="confirm-edit-btn"
-                          (click)="saveComment(comment)"
+                      <ion-col class="ion-no-padding">
+                        <ion-item
+                          class="rating-item"
+                          lines="none"
+                          style="margin-bottom: 8px"
                         >
-                          <ion-icon name="checkmark" slot="start"></ion-icon>
-                          Save
-                        </ion-button>
-                      </ion-col>
-                      <ion-col class="ion-padding-start">
-                        <ion-button
-                          expand="block"
-                          fill="outline"
-                          class="cancel-edit-btn"
-                          (click)="cancelEditComment(comment)"
-                        >
-                          <ion-icon name="close" slot="start"></ion-icon>
-                          Cancel
-                        </ion-button>
+                          @for (starNum of [1, 2, 3, 4, 5]; track starNum) {
+                          <ion-icon
+                            [name]="starNum <= editTempRating() ? 'star' : 'star-outline'"
+                            class="interactive-star"
+                            (click)="updateEditRating($event, starNum)"
+                          ></ion-icon>
+                          }
+                        </ion-item>
+
+                        <ion-item class="form-item edit-form-item" lines="none">
+                          <ion-textarea
+                            class="form-input"
+                            [autoGrow]="true"
+                            [value]="editTempText()"
+                            (ionInput)="editTempText.set($event.detail.value ?? '')"
+                            rows="2"
+                          ></ion-textarea>
+                        </ion-item>
+
+                        <ion-grid class="ion-no-padding edit-actions-grid">
+                          <ion-row>
+                            <ion-col class="ion-padding-end">
+                              <ion-button
+                                expand="block"
+                                class="confirm-edit-btn"
+                                (click)="saveComment(comment)"
+                              >
+                                <ion-icon
+                                  name="checkmark"
+                                  slot="start"
+                                ></ion-icon>
+                                Save
+                              </ion-button>
+                            </ion-col>
+                            <ion-col class="ion-padding-start">
+                              <ion-button
+                                expand="block"
+                                fill="outline"
+                                class="cancel-edit-btn"
+                                (click)="cancelEditComment(comment)"
+                              >
+                                <ion-icon name="close" slot="start"></ion-icon>
+                                Cancel
+                              </ion-button>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -300,8 +335,23 @@
           </ion-label>
         </ion-item>
         } @if (comments().length === 0) {
-        <ion-item lines="none">
-          <ion-note>No comments yet for this player</ion-note>
+        <ion-item class="comment-item no-comments" lines="full">
+          <ion-avatar slot="start" class="comment-avatar">
+            <ion-icon name="chatbox-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label class="ion-text-wrap comment-label">
+            <ion-grid class="ion-no-padding">
+              <ion-row>
+                <ion-col>
+                  <ion-text class="comment-author">No comments yet</ion-text>
+                  <ion-text class="comment-text" style="margin-top: 6px"
+                    >Be the first to leave a manager note about this
+                    player.</ion-text
+                  >
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
         </ion-item>
         }
       </ion-list>
