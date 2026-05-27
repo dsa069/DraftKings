@@ -2,8 +2,10 @@ package draftkings.eureka.client.player.controller;
 
 import draftkings.eureka.client.player.domain.Player;
 import draftkings.eureka.client.player.dto.PlayerDetailResponseDTO;
+import draftkings.eureka.client.player.dto.PlayerExternalDTO;
 import draftkings.eureka.client.player.repository.PlayerRepository;
 import draftkings.eureka.client.player.service.PlayerService;
+import draftkings.eureka.client.player.service.ApiFootballService;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,8 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/players")
@@ -23,10 +25,13 @@ public class PlayerController {
 
     private final PlayerRepository playerRepository;
     private final PlayerService playerService; // Solo lo inyectamos para los métodos con lógica
+    private final ApiFootballService apiFootballService;
 
-    public PlayerController(PlayerRepository playerRepository, PlayerService playerService) {
+    public PlayerController(PlayerRepository playerRepository, PlayerService playerService,
+            ApiFootballService apiFootballService) {
         this.playerRepository = playerRepository;
         this.playerService = playerService;
+        this.apiFootballService = apiFootballService;
     }
 
     // 3) Obtener listado de jugadores -> DIRECTO A REPOSITORY
@@ -94,5 +99,30 @@ public class PlayerController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/external")
+    public ResponseEntity<List<PlayerExternalDTO>> getExternalPlayers(
+            @RequestParam(value = "search", required = false) String search) {
+        List<PlayerExternalDTO> players = apiFootballService.searchExternalPlayers(search);
+        return ResponseEntity.ok(players);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<Void> importPlayers(@RequestBody List<Player> playersToImport) {
+        if (playersToImport == null || playersToImport.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Aseguramos que la fecha de creación se asigne si es necesario
+        for (Player p : playersToImport) {
+            if (p.getCreatedAt() == null) {
+                p.setCreatedAt(new Date());
+            }
+        }
+
+        // El repositorio guarda toda la lista en una sola transacción eficiente
+        playerRepository.saveAll(playersToImport);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

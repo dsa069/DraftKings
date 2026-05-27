@@ -20,6 +20,9 @@ spring:
     openfeign:
       circuitbreaker:
         enabled: true
+api:
+  football:
+    key: ${API_FOOTBALL_KEY:}
 eureka:
   instance:
     hostname: localhost
