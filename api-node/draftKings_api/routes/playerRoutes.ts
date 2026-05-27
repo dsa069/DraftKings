@@ -8,6 +8,10 @@ import {
   playersGetExternal,
   playersImport,
 } from "../controllers/playerController";
+import {
+  reviewsGetByPlayer,
+  reviewsCreate,
+} from "../controllers/reviewController";
 import { authorizeRequest } from "../middleware/auth.middleware";
 
 const router = Router();
@@ -32,5 +36,11 @@ router.put("/:id", authorizeRequest, playersUpdate);
 
 // 8) Eliminar un jugador
 router.delete("/:id", authorizeRequest, playersDelete);
+
+// 10) Obtener comentarios de un jugador
+router.get("/:id/reviews", reviewsGetByPlayer);
+
+// 11) Crear comentario de un jugador
+router.post("/:id/reviews", reviewsCreate);
 
 export default router;
