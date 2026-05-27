@@ -128,6 +128,7 @@ export class PlayerDetailPage implements OnInit {
 
   // Formulario de edición temporal
   editTempText = signal<string>('');
+  editTempRating = signal<number>(5);
 
   // Modales de eliminación
   showDeleteCommentModal = signal<boolean>(false);
@@ -319,6 +320,7 @@ export class PlayerDetailPage implements OnInit {
   // 3. Activar Modo Edición (Local)
   editComment(comment: ReviewUI) {
     this.editTempText.set(comment.text);
+    this.editTempRating.set(comment.rating || 5);
     this.comments.update((curr) =>
       curr.map((c) => ({ ...c, isEditing: c.id === comment.id }))
     );
@@ -330,6 +332,7 @@ export class PlayerDetailPage implements OnInit {
 
     const updatedPayload: Partial<Review> = {
       text: this.editTempText(),
+      rating: this.editTempRating(),
     };
 
     try {
@@ -382,5 +385,25 @@ export class PlayerDetailPage implements OnInit {
   cancelDeleteComment() {
     this.showDeleteCommentModal.set(false);
     this.commentToDeleteId.set(null);
+  }
+  updateNewRating(event: Event, rating: number) {
+    event.stopPropagation(); // Evita que el clic detecte que hemos tocado el "fondo" vacío
+
+    // Si tocas la misma estrella que ya tienes seleccionada, se resetea a 0
+    if (this.newCommentRating() === rating) {
+      this.newCommentRating.set(0);
+    } else {
+      this.newCommentRating.set(rating);
+    }
+  }
+
+  updateEditRating(event: Event, rating: number) {
+    event.stopPropagation();
+
+    if (this.editTempRating() === rating) {
+      this.editTempRating.set(0);
+    } else {
+      this.editTempRating.set(rating);
+    }
   }
 }
