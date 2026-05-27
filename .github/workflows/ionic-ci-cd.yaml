@@ -42,7 +42,6 @@ jobs:
           FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_DEV }}
           SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_DEV }}
-          FOOTBALL_API_KEY_PROD: ${{ secrets.FOOTBALL_API_KEY }}
 
       - name: Build
         run: npx ionic build #En producción, usar --prod
@@ -98,7 +97,6 @@ jobs:
           FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_DEV }}
           SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_DEV }}
-          FOOTBALL_API_KEY_PROD: ${{ secrets.FOOTBALL_API_KEY }}
 
       - name: Build web assets
         run: npx ionic build # --prod, en producción
@@ -173,11 +171,10 @@ jobs:
           FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
           SPRING_API_URL_DEV: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_DEV: ${{ secrets.NODE_API_URL_DEV }}
-          FOOTBALL_API_KEY_DEV: ${{ secrets.FOOTBALL_API_KEY }}
+
           FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_DEV }} # Aunque este en desarollo y no se vaya a usar env.prod, lo generamos para evitar errores de variables no definidas
           SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_DEV }}
-          FOOTBALL_API_KEY_PROD: ${{ secrets.FOOTBALL_API_KEY }}
 
       - name: Add Component Header
         run: |
@@ -234,7 +231,6 @@ jobs:
           FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
           SPRING_API_URL_DEV: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_DEV: ${{ secrets.NODE_API_URL_DEV }}
-          FOOTBALL_API_KEY_DEV: ${{ secrets.FOOTBALL_API_KEY }}
 
       - name: Add E2E Header
         run: |
@@ -346,12 +342,6 @@ jobs:
             echo "${{ secrets.NODE_API_URL_DEV }}" | gcloud secrets create NODE_API_URL_DEV --replication-policy="automatic" --data-file=-
           fi
 
-          # FOOTBALL_API_KEY
-          if gcloud secrets describe FOOTBALL_API_KEY > /dev/null 2>&1; then
-            echo "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets versions add FOOTBALL_API_KEY --data-file=-
-          else
-            echo "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets create FOOTBALL_API_KEY --replication-policy="automatic" --data-file=-
-
       - name: Build Docker image
         run: |
           docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:latest .
@@ -372,7 +362,6 @@ jobs:
             FIREBASE_CONFIG_DEV=FIREBASE_CONFIG_DEV:latest
             SPRING_API_URL_DEV=SPRING_API_URL_DEV:latest
             NODE_API_URL_DEV=NODE_API_URL_DEV:latest
-            FOOTBALL_API_KEY_DEV=FOOTBALL_API_KEY:latest
 
           # Si es una web pública, añade esto (producción):
           # flags: '--allow-unauthenticated'

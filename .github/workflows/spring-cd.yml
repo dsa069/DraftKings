@@ -3,9 +3,9 @@ name: CD SpringBoot
 on:
   workflow_call:
     inputs:
-        service_name:
-          required: true
-          type: string
+      service_name:
+        required: true
+        type: string
 
 jobs:
   deploy:
@@ -27,7 +27,7 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
       - name: Docker login to Artifact Registry
         uses: docker/login-action@v4.1.0
@@ -44,13 +44,21 @@ jobs:
           echo "service_slug=$CLEAN_NAME" >> $GITHUB_OUTPUT
 
       - name: Create or Update Secret in GCP
-        if: ${{ inputs.service_name == 'eureka.client.player' || inputs.service_name == 'eureka.client.review' || inputs.service_name == 'eureka.client.user' }}        
+        if: ${{ inputs.service_name == 'eureka.client.player' || inputs.service_name == 'eureka.client.review' || inputs.service_name == 'eureka.client.user' }}
         run: |
           if gcloud secrets describe DB_SQL_PASS_DEV > /dev/null 2>&1; then
             printf %s "${{ secrets.DB_SQL_PASS_DEV }}" | gcloud secrets versions add DB_SQL_PASS_DEV --data-file=-
           else
             printf %s "${{ secrets.DB_SQL_PASS_DEV }}" | gcloud secrets create DB_SQL_PASS_DEV --replication-policy="automatic" --data-file=-
           fi
+
+          # FOOTBALL_API_KEY
+          if [[ "${{ inputs.service_name }}" == "eureka.client.player" ]]; then
+            if gcloud secrets describe FOOTBALL_API_KEY > /dev/null 2>&1; then
+              printf %s "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets versions add FOOTBALL_API_KEY --data-file=-
+            else
+              printf %s "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets create FOOTBALL_API_KEY --replication-policy="automatic" --data-file=-
+            fi
 
       - name: Build Docker image
         run: |
@@ -60,19 +68,27 @@ jobs:
         run: |
           docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:latest
 
-
       - name: Set Secret Placeholder
         id: secret
         run: |
           # Usamos comillas dobles para evitar errores si el input falla
           SERVICE="${{ inputs.service_name }}"
-          
+
           if [[ "$SERVICE" == "eureka.client.player" || "$SERVICE" == "eureka.client.review" || "$SERVICE" == "eureka.client.user" ]]; then
             echo "✅ INFO: El servicio '$SERVICE' requiere base de datos. Configurando secreto..."
             echo "db_secret=DB_SQL_PASS_DEV=DB_SQL_PASS_DEV:latest" >> $GITHUB_OUTPUT
           else
             echo "ℹ️ INFO: El servicio '$SERVICE' no requiere secretos de DB. Saltando..."
             echo "db_secret=" >> $GITHUB_OUTPUT
+          fi
+
+           # FOOTBALL_API_KEY
+          if [[ "$SERVICE" == "eureka.client.player" ]]; then
+            echo "✅ INFO: El servicio '$SERVICE' requiere API key. Configurando secreto..."
+            echo "football_api_key=FOOTBALL_API_KEY=FOOTBALL_API_KEY:latest" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️ INFO: El servicio '$SERVICE' no requiere API key. Saltando..."
+            echo "football_api_key=" >> $GITHUB_OUTPUT
           fi
 
       - name: Deploy to Cloud Run
@@ -87,3 +103,4 @@ jobs:
             --service-account=draftkings@cnsa-2026.iam.gserviceaccount.com
           secrets: |
             ${{ steps.secret.outputs.db_secret }}
+            ${{ steps.secret.outputs.football_api_key }}
