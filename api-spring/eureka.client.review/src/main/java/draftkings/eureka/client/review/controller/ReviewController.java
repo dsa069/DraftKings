@@ -4,7 +4,6 @@ import draftkings.eureka.client.review.domain.Review;
 import draftkings.eureka.client.review.repository.ReviewRepository;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -84,12 +83,5 @@ public class ReviewController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/check")
-    public ResponseEntity<String> checkReview(@RequestParam String reviewName) {
-        // Respuesta estática, sin llamadas a API
-        return new ResponseEntity<>("La reseña " + reviewName + " existe en el sistema (respuesta estática)",
-                HttpStatus.OK);
     }
 }

@@ -11,6 +11,7 @@ import { MapCaptureComponent } from '../../shared/components/map-capture/map-cap
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { PlayerService } from '../../core/services/abstract/player.service';
+import { ReviewService } from '../../core/services/abstract/review.service';
 
 describe('PlayerDetailPage', () => {
   it('should render header submenu', () => {
@@ -46,6 +47,15 @@ describe('PlayerDetailPage', () => {
           useValue: {
             getPlayerById: async () => null,
             deletePlayer: async () => undefined,
+          },
+        },
+        {
+          provide: ReviewService,
+          useValue: {
+            getReviewsByPlayer: async () => [],
+            createReview: async () => undefined,
+            updateReview: async () => undefined,
+            deleteReview: async () => undefined,
           },
         },
       ],

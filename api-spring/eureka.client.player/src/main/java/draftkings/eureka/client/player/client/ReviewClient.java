@@ -11,9 +11,6 @@ import draftkings.eureka.client.player.dto.ReviewDTO;
 @FeignClient(value = "reviewMS", fallback = ReviewClient.ReviewFallback.class)
 public interface ReviewClient {
 
-    @GetMapping("/check")
-    String checkReview(@RequestParam("reviewName") String reviewName);
-
     // Modificamos la ruta para que coincida con la del ReviewMS
     @GetMapping("/api/players/{playerId}/reviews")
     List<ReviewDTO> getReviewsByPlayerId(@PathVariable("playerId") Long playerId);
@@ -35,14 +32,9 @@ public interface ReviewClient {
         }
 
         @Override
-        public String checkReview(String reviewName) {
-            return "Review service unavailable";
-        }
-
-        @Override
         public ReviewDTO createReview(Long playerId, ReviewDTO review) {
             // Si está caído, devolvemos null para poder lanzar un 503 desde el controller
-            return null; 
+            return null;
         }
 
         @Override
