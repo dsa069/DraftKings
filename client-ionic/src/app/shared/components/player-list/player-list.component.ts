@@ -23,13 +23,13 @@ import {
   IonImg,
   IonLabel,
   IonText,
+  IonSpinner,
   IonSelect,
   IonSelectOption,
   IonDatetime,
   IonDatetimeButton,
   IonPopover,
   IonNote,
-  IonCheckbox,
 } from '@ionic/angular/standalone';
 import { Player } from '../../../core/models/player.model';
 import { addIcons } from 'ionicons';
@@ -67,6 +67,7 @@ import {
     IonImg,
     IonLabel,
     IonText,
+    IonSpinner,
     IonItemGroup,
     IonSelect,
     IonSelectOption,
@@ -74,12 +75,12 @@ import {
     IonDatetimeButton,
     IonPopover,
     IonNote,
-    IonCheckbox,
   ],
 })
 export class PlayerListComponent {
   // Modo de visualización por defecto: 'view'. Cambia a 'import' desde la otra vista.
   @Input() mode: 'view' | 'import' = 'view';
+  @Input() loading = false;
 
   private _players = signal<Player[]>([]);
   @Input({ required: true }) set players(value: Player[]) {
