@@ -50,7 +50,7 @@ configMapping.forEach((config) => {
   production: ${config.production},
   firebaseConfig: ${JSON.stringify(firebaseParsed, null, 2)},
   springApiUrl: '${springApiUrlValue || ''}',
-  nodeApiUrl: '${nodeApiUrlValue || ''}',
+  nodeApiUrl: '${nodeApiUrlValue || ''}'
 };
 `;
 
