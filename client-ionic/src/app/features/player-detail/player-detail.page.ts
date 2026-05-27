@@ -29,7 +29,11 @@ import {
   IonNote,
   IonList,
   IonModal,
+  IonLabel,
+  IonAvatar,
+  IonInput,
   NavController,
+  IonTextarea,
 } from '@ionic/angular/standalone';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
 import { MapCaptureComponent } from '../../shared/components/map-capture/map-capture.component';
@@ -47,6 +51,10 @@ import {
   documentText,
   locationOutline,
   trash,
+  personOutline,
+  chatboxOutline,
+  checkmark,
+  close,
 } from 'ionicons/icons';
 
 @Component({
@@ -74,6 +82,10 @@ import {
     IonNote,
     IonList,
     IonModal,
+    IonLabel,
+    IonAvatar,
+    IonInput,
+    IonTextarea,
     DatePipe,
     NgStyle,
     HeaderSubmenuComponent,
@@ -97,6 +109,31 @@ export class PlayerDetailPage implements OnInit {
   private _showConfirmModal = signal(false);
   public showConfirmModal = this._showConfirmModal.asReadonly();
 
+  // Variables de Estado para el formulario y modal
+  newCommentAuthor = signal('');
+  newCommentText = signal('');
+  editTempText = signal('');
+  commentToDeleteId = signal<string | null>(null);
+  showDeleteCommentModal = signal(false);
+
+  // Estado de los Comentarios Simulados (basado en tus datos originales)
+  comments = signal<any[]>([
+    {
+      id: '1',
+      author: 'TacticalGenius99',
+      text: "Absolute monster in the box. His finishing is unmatched, but don't expect him to drop deep and link play up too much. Worth every coin.",
+      stars: [1, 1, 1, 1, 1], // 1 = estrella llena
+      isEditing: false,
+    },
+    {
+      id: '2',
+      author: 'CityFan2024',
+      text: 'Great pace and physical stats. Just keep him central and feed him through balls.',
+      stars: [1, 1, 1, 1, 0], // 0 = estrella vacía
+      isEditing: false,
+    },
+  ]);
+
   constructor() {
     // Registramos los íconos globalmente para este componente standalone
     addIcons({
@@ -110,6 +147,10 @@ export class PlayerDetailPage implements OnInit {
       documentText,
       locationOutline,
       trash,
+      personOutline,
+      chatboxOutline,
+      checkmark,
+      close,
     });
   }
 
@@ -216,5 +257,69 @@ export class PlayerDetailPage implements OnInit {
 
   onModalDismiss(event: any): void {
     this._showConfirmModal.set(false);
+  }
+  // Métodos para Crear un Comentario
+  addComment() {
+    if (!this.newCommentAuthor().trim() || !this.newCommentText().trim())
+      return;
+
+    const newComment = {
+      id: Date.now().toString(),
+      author: this.newCommentAuthor(),
+      text: this.newCommentText(),
+      stars: [1, 1, 1, 1, 1], // Default a 5 estrellas
+      isEditing: false,
+    };
+
+    this.comments.update((curr) => [newComment, ...curr]);
+    this.newCommentAuthor.set('');
+    this.newCommentText.set('');
+  }
+
+  // Métodos para Editar un Comentario
+  editComment(comment: any) {
+    // 1. Asignamos el texto original al estado temporal
+    this.editTempText.set(comment.text);
+
+    // 2. Actualizamos el Signal mapeando la lista.
+    // Esto activa la detección OnPush de Angular de forma limpia.
+    this.comments.update((curr) =>
+      curr.map((c) => ({
+        ...c,
+        isEditing: c.id === comment.id, // Solo el seleccionado pasa a ser true, los demás false
+      }))
+    );
+  }
+
+  saveComment(comment: any) {
+    this.comments.update((curr) =>
+      curr.map((c) => {
+        if (c.id === comment.id) {
+          return { ...c, text: this.editTempText(), isEditing: false };
+        }
+        return c;
+      })
+    );
+  }
+
+  cancelEditComment(comment: any) {
+    this.comments.update((curr) =>
+      curr.map((c) => (c.id === comment.id ? { ...c, isEditing: false } : c))
+    );
+  }
+
+  // Métodos para Borrar un Comentario
+  promptDeleteComment(commentId: string) {
+    this.commentToDeleteId.set(commentId);
+    this.showDeleteCommentModal.set(true);
+  }
+
+  confirmDeleteComment() {
+    const id = this.commentToDeleteId();
+    if (id) {
+      this.comments.update((curr) => curr.filter((c) => c.id !== id));
+    }
+    this.showDeleteCommentModal.set(false);
+    this.commentToDeleteId.set(null);
   }
 }
