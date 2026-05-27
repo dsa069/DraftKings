@@ -288,11 +288,19 @@ export class PlayerDetailPage implements OnInit {
   async addComment(): Promise<void> {
     const targetPlayer = this.player();
     if (!targetPlayer || !targetPlayer.id) return;
-    if (!this.newCommentAuthor().trim() || !this.newCommentText().trim())
-      return;
+    const inputAuthor = this.newCommentAuthor().trim();
+    if (!inputAuthor || !this.newCommentText().trim()) return;
+
+    let username = 'Anonymous';
+    const userProfile = this.authService.userProfile();
+    if (this.authService.isAuthenticated() && userProfile?.userName) {
+      username = userProfile.userName;
+    }
+
+    const finalAuthor = `${inputAuthor} (${username})`;
 
     const reviewPayload: Partial<Review> = {
-      author: this.newCommentAuthor(),
+      author: finalAuthor,
       text: this.newCommentText(),
       rating: this.newCommentRating(),
       userId: '1', // Aquí puedes vincular el UID real de tu servicio de autenticación si lo tienes
