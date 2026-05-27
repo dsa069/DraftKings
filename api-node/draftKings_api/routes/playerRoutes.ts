@@ -5,10 +5,18 @@ import {
   playersCreate,
   playersUpdate,
   playersDelete,
+  playersGetExternal,
+  playersImport,
 } from "../controllers/playerController";
 import { authorizeRequest } from "../middleware/auth.middleware";
 
 const router = Router();
+
+// Obtener de API Externa (Tiene que ir primero para no confundirse con el GET de detalle por ID)
+router.get("/external", authorizeRequest, playersGetExternal);
+
+// Importar array de jugadores (Tiene que ir antes del GET de detalle para no confundirse con el GET de detalle por ID)
+router.post("/import", authorizeRequest, playersImport);
 
 // 3) Obtener listado de jugadores (Cualquier usuario autenticado común o superior)
 router.get("/", playersReadAll);
