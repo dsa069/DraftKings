@@ -41,6 +41,13 @@
     </ion-col>
   </ion-row>
 
+  @if (loading) {
+  <ion-item-group class="loading-wrapper">
+    <ion-spinner name="crescent" color="success"></ion-spinner>
+    <p>Processing data...</p>
+  </ion-item-group>
+  }
+
   <ion-item-group class="players-content-container">
     @if (showFilters()) {
     <ion-grid class="filters-panel" fixed="false">

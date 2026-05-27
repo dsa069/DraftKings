@@ -2,14 +2,9 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
   IonSpinner,
   IonNote,
   IonToast,
-  IonButtons,
-  IonBackButton,
   IonItemGroup,
 } from '@ionic/angular/standalone';
 import { PlayerListComponent } from '../../shared/components/player-list/player-list.component';
@@ -27,14 +22,9 @@ import { LocationService } from '../../core/services/abstract/location.service';
   imports: [
     CommonModule,
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
     IonSpinner,
     IonNote,
     IonToast,
-    IonButtons,
-    IonBackButton,
     IonItemGroup,
     PlayerListComponent,
     HeaderSubmenuComponent,

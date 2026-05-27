@@ -1,18 +1,14 @@
 <app-header-submenu title="Import Players"></app-header-submenu>
 
 <ion-content class="ion-padding">
-  @if (isLoading()) {
-  <ion-item-group class="loading-wrapper">
-    <ion-spinner name="crescent" color="success"></ion-spinner>
-    <p>Processing data...</p>
-  </ion-item-group>
-  } @else if (errorMessage()) {
+  @if (errorMessage()) {
   <ion-note color="danger" class="error-box"> {{ errorMessage() }} </ion-note>
   } @else {
 
   <app-player-list
     [mode]="'import'"
     [players]="externalPlayers()"
+    [loading]="isLoading()"
     (importSelected)="handleImport($event)"
     (searchChange)="onSearchChange($event)"
   >
