@@ -1,9 +1,16 @@
 <ion-tabs>
   <ion-tab-bar slot="bottom">
+    @if (!authService.isAuthenticated()) {
+    <ion-tab-button class="custom-tab-button" (click)="showAuthToast()">
+      <ion-icon name="shield-half-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">My Squad</ion-label>
+    </ion-tab-button>
+    } @else {
     <ion-tab-button tab="my-team" class="custom-tab-button">
       <ion-icon name="shield-half-outline"></ion-icon>
       <ion-label class="font-label-bold text-label-bold">My Squad</ion-label>
     </ion-tab-button>
+    }
 
     <ion-tab-button tab="players" class="custom-tab-button">
       <ion-icon name="people-outline"></ion-icon>

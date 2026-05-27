@@ -45,6 +45,7 @@
     </ion-card-content>
   </ion-card>
 
+  @if (authService.isAuthenticated()) {
   <ion-grid class="action-grid ion-no-padding">
     <ion-row class="buttons-row">
       <ion-col class="ion-no-padding">
@@ -65,6 +66,7 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+  }
 
   <ion-card class="details-card ion-no-margin">
     <ion-card-header class="details-header ion-no-padding">
@@ -247,7 +249,7 @@
                 </ion-col>
 
                 <ion-col size="4" class="ion-no-padding action-buttons-col">
-                  @if (!comment.isEditing) {
+                  @if (authService.isAuthenticated() && !comment.isEditing) {
                   <ion-button
                     fill="clear"
                     class="action-icon-btn edit-color"
@@ -396,6 +398,7 @@
       </ng-template>
     </ion-modal>
 
+    @if (authService.isAuthenticated()) {
     <ion-accordion value="news" class="comments-accordion news-accordion">
       <ion-item slot="header" class="comments-header" lines="none">
         <ion-icon
@@ -413,6 +416,7 @@
         </ion-item>
       </ion-list>
     </ion-accordion>
+    }
   </ion-accordion-group>
   }
 

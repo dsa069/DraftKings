@@ -73,8 +73,8 @@ export class SettingsPage implements OnInit {
   public readonly nodeBackendIcon = logoNodejs;
   public readonly springBackendIcon = leafOutline;
 
-  readonly #userProfile = signal<User | null>(null);
-  public readonly userProfile = this.#userProfile.asReadonly();
+  readonly _userProfile = signal<User | null>(null);
+  public readonly userProfile = this._userProfile.asReadonly();
   public readonly isAdmin = computed(
     () => this.userProfile()?.role === 'ADMIN'
   );
@@ -110,7 +110,7 @@ export class SettingsPage implements OnInit {
   ngOnInit(): void {
     this.authService.getProfile().subscribe({
       next: (profile) => {
-        this.#userProfile.set(profile);
+        this._userProfile.set(profile);
         console.log('Perfil cargado en Signal:', this.userProfile());
       },
       error: (err) => console.error('Error cargando perfil', err),
