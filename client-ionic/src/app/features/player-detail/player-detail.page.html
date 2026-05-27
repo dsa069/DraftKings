@@ -166,15 +166,185 @@
       <ion-item slot="header" class="comments-header" lines="none">
         <ion-icon name="chatbox" slot="start" class="comments-icon"></ion-icon>
         <ion-text class="comments-title">Manager Comments</ion-text>
-        <ion-badge slot="end" class="comments-count">0</ion-badge>
+        <ion-badge slot="end" class="comments-count"
+          >{{ comments().length }}</ion-badge
+        >
       </ion-item>
 
       <ion-list slot="content" class="comments-list">
+        <ion-item class="comment-form-item" lines="none">
+          <ion-grid class="ion-no-padding">
+            <ion-row class="auth-form-group">
+              <ion-label class="auth-form-label">Manager Name</ion-label>
+              <ion-item class="form-item" lines="none">
+                <ion-icon slot="start" name="person-outline"></ion-icon>
+                <ion-input
+                  placeholder="TacticalGenius99"
+                  [(ngModel)]="newCommentAuthor"
+                  class="form-input"
+                ></ion-input>
+              </ion-item>
+            </ion-row>
+            <ion-row class="auth-form-group">
+              <ion-label class="auth-form-label">Comment</ion-label>
+              <ion-item class="form-item" lines="none">
+                <ion-icon slot="start" name="chatbox-outline"></ion-icon>
+                <ion-textarea
+                  placeholder="Write your analysis..."
+                  [(ngModel)]="newCommentText"
+                  class="form-input"
+                  [autoGrow]="true"
+                  rows="3"
+                ></ion-textarea>
+              </ion-item>
+            </ion-row>
+            <ion-row>
+              <ion-col class="ion-no-padding">
+                <ion-button
+                  expand="block"
+                  class="add-news-btn"
+                  (click)="addComment()"
+                >
+                  <ion-icon name="send" slot="start"></ion-icon>
+                  Post Comment
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        @for (comment of comments(); track comment.id) {
+        <ion-item class="comment-item" lines="full">
+          <ion-avatar slot="start" class="comment-avatar">
+            <ion-icon name="person"></ion-icon>
+          </ion-avatar>
+          <ion-label class="ion-text-wrap comment-label">
+            <ion-grid class="ion-no-padding">
+              <ion-row class="comment-top-row">
+                <ion-col size="8" class="ion-no-padding">
+                  <ion-text class="comment-author"
+                    >{{ comment.author }}</ion-text
+                  >
+                  <ion-text class="stars-container">
+                    @for (star of comment.stars; track $index) {
+                    <ion-icon
+                      [name]="star === 0 ? 'star-outline' : 'star'"
+                    ></ion-icon>
+                    }
+                  </ion-text>
+                </ion-col>
+
+                <ion-col size="4" class="ion-no-padding action-buttons-col">
+                  @if (!comment.isEditing) {
+                  <ion-button
+                    fill="clear"
+                    class="action-icon-btn edit-color"
+                    (click)="editComment(comment)"
+                  >
+                    <ion-icon name="pencil" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button
+                    fill="clear"
+                    class="action-icon-btn delete-color"
+                    (click)="promptDeleteComment(comment.id)"
+                  >
+                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  }
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="ion-no-padding">
+                  @if (comment.isEditing) {
+                  <ion-item class="form-item edit-form-item" lines="none">
+                    <ion-textarea
+                      [ngModel]="editTempText()"
+                      (ngModelChange)="editTempText.set($event)"
+                      class="form-input"
+                      [autoGrow]="true"
+                      rows="2"
+                    ></ion-textarea>
+                  </ion-item>
+
+                  <ion-grid class="ion-no-padding edit-actions-grid">
+                    <ion-row>
+                      <ion-col class="ion-padding-end">
+                        <ion-button
+                          expand="block"
+                          class="confirm-edit-btn"
+                          (click)="saveComment(comment)"
+                        >
+                          <ion-icon name="checkmark" slot="start"></ion-icon>
+                          Save
+                        </ion-button>
+                      </ion-col>
+                      <ion-col class="ion-padding-start">
+                        <ion-button
+                          expand="block"
+                          fill="outline"
+                          class="cancel-edit-btn"
+                          (click)="cancelEditComment(comment)"
+                        >
+                          <ion-icon name="close" slot="start"></ion-icon>
+                          Cancel
+                        </ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                  } @else {
+                  <ion-text class="comment-text">{{ comment.text }}</ion-text>
+                  }
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
+        </ion-item>
+        } @if (comments().length === 0) {
         <ion-item lines="none">
           <ion-note>No comments yet for this player</ion-note>
         </ion-item>
+        }
       </ion-list>
     </ion-accordion>
+
+    <ion-modal
+      class="custom-modal"
+      [isOpen]="showDeleteCommentModal()"
+      (willDismiss)="showDeleteCommentModal.set(false)"
+    >
+      <ng-template>
+        <ion-grid class="modal-content ion-no-padding">
+          <ion-row>
+            <ion-col class="ion-no-padding">
+              <ion-text class="modal-title">Delete Comment?</ion-text>
+              <ion-text class="modal-message">
+                This action will permanently delete this comment. Do you want to
+                continue?
+              </ion-text>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col class="modal-actions ion-no-padding">
+              <ion-button
+                color="danger"
+                expand="block"
+                (click)="confirmDeleteComment()"
+              >
+                Delete
+              </ion-button>
+              <ion-button
+                fill="clear"
+                expand="block"
+                (click)="showDeleteCommentModal.set(false)"
+              >
+                Cancel
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ng-template>
+    </ion-modal>
 
     <ion-accordion value="news" class="comments-accordion news-accordion">
       <ion-item slot="header" class="comments-header" lines="none">

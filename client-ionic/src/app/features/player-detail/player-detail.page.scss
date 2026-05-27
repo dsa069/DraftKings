@@ -333,6 +333,7 @@ ion-content.custom-content {
     --border-color: var(--ion-color-outline-variant);
     --padding-start: 0;
     --inner-padding-end: 0;
+    --inner-padding-bottom: 16px !important;
     margin-bottom: var(--spacing-stack-md);
 
     &:last-child {
@@ -384,11 +385,13 @@ ion-content.custom-content {
     }
 
     .comment-text {
+      display: block !important;
       font-family: var(--font-family-body-md);
       font-size: var(--font-size-body-md);
       color: var(--ion-color-on-surface-variant);
       white-space: normal;
-      padding-bottom: 12px;
+
+      margin-bottom: 12px !important;
     }
   }
 }
@@ -553,4 +556,141 @@ ion-modal.custom-modal {
       }
     }
   }
+}
+
+// -------------------------
+// Forms & Inputs (Comments Edit/New)
+// -------------------------
+.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: var(--spacing-stack-md);
+
+  .auth-form-label {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    color: var(--ion-color-on-surface-variant);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+}
+
+.form-item {
+  --background: var(--ion-color-surface-container-high);
+  --border-radius: var(--border-radius-lg);
+  border-radius: var(--border-radius-lg);
+
+  --padding-start: 16px;
+  --padding-end: 16px;
+  width: 100%;
+  border: 1px solid var(--ion-color-outline-variant);
+
+  --border-color: transparent !important;
+  --border-style: none !important;
+  --border-width: 0px !important;
+  --inner-border-width: 0px !important;
+  --highlight-height: 0px !important;
+  box-shadow: none !important;
+
+  &.item-has-focus {
+    border-color: var(--ion-color-pitch-green);
+  }
+
+  // OPTIMIZACIÓN AQUÍ: Alinea el icono arriba de forma elegante si el textarea crece
+  ion-icon {
+    color: var(--ion-color-on-surface-variant);
+    margin-right: 8px;
+    align-self: flex-start;
+    margin-top: 14px; /* Centrado perfecto con la primera línea de texto */
+  }
+
+  .form-input {
+    --color: var(--ion-color-chalk-white);
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+  }
+}
+// -------------------------
+// Comments Structure Updates
+// -------------------------
+.comment-form-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: var(--spacing-stack-lg);
+  border-bottom: 1px solid var(--ion-color-outline-variant);
+  padding-bottom: var(--spacing-stack-lg);
+}
+
+.action-buttons-col {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.action-icon-btn {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  margin: 0;
+  height: 24px;
+
+  &.edit-color {
+    --color: var(--ion-color-pitch-green);
+  }
+  &.delete-color {
+    --color: var(--ion-color-danger);
+  }
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+.edit-form-item {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.edit-actions-grid {
+  margin-bottom: 12px;
+
+  .confirm-edit-btn {
+    --background: var(--ion-color-pitch-green);
+    --color: var(--ion-color-surface-container-lowest);
+    --border-radius: var(--border-radius-lg);
+    margin: 0;
+    font-weight: bold;
+    height: 36px;
+  }
+
+  .cancel-edit-btn {
+    --color: var(--ion-color-on-surface-variant);
+    --border-radius: var(--border-radius-lg);
+    --border-color: var(--ion-color-outline-variant);
+    margin: 0;
+    font-weight: bold;
+    height: 36px;
+  }
+}
+
+// Sustitutos puros de Ionic para etiquetas de texto en el Modal
+.modal-title {
+  display: block;
+  font-family: var(--font-family-headline-sm);
+  font-size: var(--font-size-headline-sm);
+  color: var(--ion-color-chalk-white);
+  margin-bottom: var(--spacing-stack-sm);
+  font-weight: bold;
+}
+
+.modal-message {
+  display: block;
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface-variant);
+  margin-bottom: var(--spacing-stack-md);
+  line-height: 1.5;
 }
