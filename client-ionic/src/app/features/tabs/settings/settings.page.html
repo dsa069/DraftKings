@@ -96,6 +96,7 @@
           </ion-col>
         </ion-row>
 
+        @if (userProfile()) {
         <ion-item-group class="section-container">
           <ion-text class="section-title">Account</ion-text>
           <ion-list lines="none" class="custom-list">
@@ -112,6 +113,7 @@
             </ion-item>
           </ion-list>
         </ion-item-group>
+        }
 
         <ion-item-group class="section-container">
           <ion-text class="section-title">System</ion-text>

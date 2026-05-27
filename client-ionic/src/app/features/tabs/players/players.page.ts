@@ -24,6 +24,7 @@ import { addIcons } from 'ionicons';
 import { add, cloudDownloadOutline } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { PlayerListComponent } from '../../../shared/components/player-list/player-list.component';
+import { AuthService } from '../../../core/services/abstract/auth.service';
 
 @Component({
   selector: 'app-players',
@@ -48,6 +49,7 @@ import { PlayerListComponent } from '../../../shared/components/player-list/play
 export class PlayersPage implements OnInit {
   private readonly navCtrl = inject(NavController);
   private readonly playerService = inject(PlayerService);
+  public readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   allPlayers = signal<Player[]>([]);

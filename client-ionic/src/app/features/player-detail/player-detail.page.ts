@@ -59,6 +59,7 @@ import {
   checkmark,
   close,
 } from 'ionicons/icons';
+import { AuthService } from '../../core/services/abstract/auth.service';
 
 export interface ReviewUI extends Review {
   isEditing?: boolean;
@@ -107,6 +108,7 @@ export class PlayerDetailPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly ngZone = inject(NgZone);
   private readonly navCtrl = inject(NavController);
+  public readonly authService = inject(AuthService);
 
   player = signal<Player | null>(null);
   isLoading = signal<boolean>(false);
