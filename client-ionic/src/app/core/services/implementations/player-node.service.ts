@@ -107,46 +107,20 @@ export class PlayerNodeService extends PlayerService {
   }
 
   async getExternalApiPlayers(search?: string): Promise<Player[]> {
-    const apiKey = environment.apiFootballKey;
-    const headers = new HttpHeaders({
-      'x-apisports-key': apiKey,
-      'x-rapidapi-host': 'v3.football.api-sports.io',
-    });
+    const token = await this.authService.getToken();
+    let headers = new HttpHeaders();
+    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
 
     let params = new HttpParams();
     if (search) params = params.set('search', search);
 
-    try {
-      const res = await firstValueFrom(
-        this.http.get<any>(
-          'https://v3.football.api-sports.io/players/profiles',
-          { headers, params }
-        )
-      );
-
-      if (!res || !res.response || !Array.isArray(res.response)) return [];
-
-      return res.response.map((item: any) => ({
-        name: item.player.name,
-        firstName: item.player.firstname || '',
-        lastName: item.player.lastname || '',
-        age: item.player.age || undefined,
-        birthdate: item.player.birth?.date || undefined,
-        nationality: item.player.nationality || '',
-        position: item.player.position || '',
-        photoUrl: item.player.photo || '',
-        team: 'API Football',
-        league: 'External',
-        latitude: 0,
-        longitude: 0,
-        height: item.player.height || undefined,
-        weight: item.player.weight || undefined,
-        number: item.player.number || undefined,
-      }));
-    } catch (error) {
-      console.error('Error fetching from API-Football:', error);
-      throw error;
-    }
+    // Llamamos a nuestro PROPIO backend
+    return firstValueFrom(
+      this.http.get<Player[]>(`${this.apiUrl}/players/external`, {
+        headers,
+        params,
+      })
+    );
   }
 
   async importPlayers(players: Player[]): Promise<void> {
@@ -154,13 +128,14 @@ export class PlayerNodeService extends PlayerService {
     let headers = new HttpHeaders();
     if (token) headers = headers.set('Authorization', `Bearer ${token}`);
 
-    const promises = players.map((player) =>
-      firstValueFrom(
-        this.http.post<Player>(`${this.apiUrl}/players`, player, { headers })
-      )
+    // Enviamos el array completo a nuestro backend para que él haga la inserción masiva
+    await firstValueFrom(
+      this.http.post(`${this.apiUrl}/players/import`, players, { headers })
     );
 
-    await Promise.all(promises);
-    this.playerCreated$.next(players[0]);
+    // Notificamos para que el front se entere de que hay nuevos datos
+    if (players.length > 0) {
+      this.playerCreated$.next(players[0]);
+    }
   }
 }

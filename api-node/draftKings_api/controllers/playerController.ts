@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import Player from "../models/player";
 import { PlayerService } from "../services/playerService";
+import { ApiFootballService } from "../services/apiFootballService";
 
+const apiFootballService = new ApiFootballService();
 const playerService = new PlayerService();
 
 // 3) Obtener listado de jugadores (Directo al Modelo + Transformación automática de Mongoose)
@@ -98,5 +100,30 @@ export const playersDelete = async (req: Request, res: Response) => {
     if (err.name === "CastError")
       return res.status(400).json({ message: "Bad Request" });
     res.status(500).json({ message: "Unknown Error" });
+  }
+};
+// Obtener jugadores de la API Externa
+export const playersGetExternal = async (req: Request, res: Response) => {
+  try {
+    const search = req.query.search as string;
+    const players = await apiFootballService.searchPlayers(search);
+    return res.status(200).json(players);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Importar jugadores desde el Front
+export const playersImport = async (req: Request, res: Response) => {
+  try {
+    const playersArray = req.body; // El front envía un array de jugadores
+    if (!Array.isArray(playersArray)) {
+      return res.status(400).json({ message: "Expected an array of players" });
+    }
+
+    await apiFootballService.importPlayers(playersArray);
+    return res.status(201).json({ message: "Players imported successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 };
