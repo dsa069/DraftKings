@@ -39,7 +39,6 @@ jobs:
           FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_PROD }}
           SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_PROD }}
           NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_PROD }}
-          FOOTBALL_API_KEY_PROD: ${{ secrets.FOOTBALL_API_KEY }}
 
       - name: Build
         run: npx ionic build --prod
@@ -95,7 +94,7 @@ jobs:
           FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_PROD }}
           SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_PROD }}
           NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_PROD }}
-          FOOTBALL_API_KEY_PROD: ${{ secrets.FOOTBALL_API_KEY }}
+
       - name: Build web assets
         run: npx ionic build --prod
 
@@ -185,11 +184,9 @@ jobs:
           FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
           SPRING_API_URL_DEV: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_DEV: ${{ secrets.NODE_API_URL_DEV }}
-          FOOTBALL_API_KEY_DEV: ${{ secrets.FOOTBALL_API_KEY }}
           FIREBASE_CONFIG_PROD: ${{ secrets.FIREBASE_CONFIG_DEV }} # Aunque este en desarollo y no se vaya a usar env.prod, lo generamos para evitar errores de variables no definidas
           SPRING_API_URL_PROD: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_PROD: ${{ secrets.NODE_API_URL_DEV }}
-          FOOTBALL_API_KEY_PROD: ${{ secrets.FOOTBALL_API_KEY }}
 
       - name: Add Component Header
         run: |
@@ -246,7 +243,7 @@ jobs:
           FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
           SPRING_API_URL_DEV: ${{ secrets.SPRING_API_URL_DEV }}
           NODE_API_URL_DEV: ${{ secrets.NODE_API_URL_DEV }}
-          FOOTBALL_API_KEY_DEV: ${{ secrets.FOOTBALL_API_KEY }}
+
       - name: Add E2E Header
         run: |
           echo "## 🧪 Cypress: E2E Tests - ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
@@ -357,13 +354,6 @@ jobs:
             echo "${{ secrets.NODE_API_URL_PROD }}" | gcloud secrets create NODE_API_URL_PROD --replication-policy="automatic" --data-file=-
           fi
 
-          # FOOTBALL_API_KEY
-          if gcloud secrets describe FOOTBALL_API_KEY_PROD > /dev/null 2>&1; then
-            echo "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets versions add FOOTBALL_API_KEY_PROD --data-file=-
-          else
-            echo "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets create FOOTBALL_API_KEY_PROD --replication-policy="automatic" --data-file=-
-          fi
-
       # Que la imagen se suba con el tag actual cuando se etnga el actions del tag
       - name: Build Docker image
         run: |
@@ -384,6 +374,5 @@ jobs:
             FIREBASE_CONFIG_PROD=FIREBASE_CONFIG_PROD:latest
             SPRING_API_URL_PROD=SPRING_API_URL_PROD:latest
             NODE_API_URL_PROD=NODE_API_URL_PROD:latest
-            FOOTBALL_API_KEY_PROD=FOOTBALL_API_KEY:latest
 
           # Habría que proteger el back desplegado (general)
