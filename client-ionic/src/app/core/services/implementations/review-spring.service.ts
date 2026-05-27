@@ -29,9 +29,13 @@ export class ReviewSpringService extends ReviewService {
     if (token) headers = headers.set('Authorization', `Bearer ${token}`);
 
     return firstValueFrom(
-      this.http.post<Review>(`${this.apiUrl}/players/${playerId}/reviews`, review, {
-        headers,
-      })
+      this.http.post<Review>(
+        `${this.apiUrl}/players/${playerId}/reviews`,
+        review,
+        {
+          headers,
+        }
+      )
     );
   }
 

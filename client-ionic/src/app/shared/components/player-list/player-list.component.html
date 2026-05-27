@@ -216,6 +216,7 @@
           </ion-text>
         </ion-label>
 
+        @if (mode !== 'import') {
         <ion-text slot="end" class="player-rating">
           <ion-icon name="star"></ion-icon>
           <ion-icon name="star"></ion-icon>
@@ -223,6 +224,7 @@
           <ion-icon name="star"></ion-icon>
           <ion-icon name="star-half"></ion-icon>
         </ion-text>
+        }
       </ion-item>
       }
     </ion-list>
