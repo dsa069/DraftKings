@@ -1,19 +1,44 @@
 import { ImageCaptureComponent } from './image-capture.component';
 
 import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
+  IonGrid,
   IonRow,
+  IonButton,
+  IonIcon,
+  IonImg,
+  IonInput,
+  IonLabel,
+  IonText,
 } from '@ionic/angular/standalone';
+import { PhotoService } from '../../../core/services/abstract/photo.service';
 
 describe('ImageCaptureComponent', () => {
-  it('should render ion-row', () => {
+  it('should render ion-grid', () => {
     cy.mount(ImageCaptureComponent, {
-      imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonRow],
+      imports: [
+        IonGrid,
+        IonRow,
+        IonButton,
+        IonIcon,
+        IonImg,
+        IonInput,
+        IonLabel,
+        IonText,
+      ],
+      providers: [
+        {
+          provide: PhotoService,
+          useValue: {
+            currentPhotoPreview: () => null,
+            urlInputValue: () => '',
+            takePhoto: async () => undefined,
+            updateUrlInput: async () => undefined,
+            updateLocalImageFile: async () => undefined,
+          },
+        },
+      ],
     });
 
-    cy.get('ion-row').should('exist');
+    cy.get('ion-grid').should('exist');
   });
 });
