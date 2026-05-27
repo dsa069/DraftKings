@@ -7,6 +7,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
+import { NavController } from '@ionic/angular';
+import { PlayerService } from '../../core/services/abstract/player.service';
+import { LocationService } from '../../core/services/abstract/location.service';
 
 describe('ImportPlayersPage Component', () => {
   it('should render header submenu', () => {
@@ -17,6 +20,27 @@ describe('ImportPlayersPage Component', () => {
         IonTitle,
         IonToolbar,
         HeaderSubmenuComponent,
+      ],
+      providers: [
+        {
+          provide: NavController,
+          useValue: {
+            navigateBack: async () => undefined,
+          },
+        },
+        {
+          provide: PlayerService,
+          useValue: {
+            getExternalApiPlayers: async () => [],
+            importPlayers: async () => undefined,
+          },
+        },
+        {
+          provide: LocationService,
+          useValue: {
+            requestDeviceCurrentPosition: async () => ({ lat: 0, lng: 0 }),
+          },
+        },
       ],
     });
 
