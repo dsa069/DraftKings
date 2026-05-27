@@ -1,12 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  IonContent,
-  IonSpinner,
-  IonNote,
-  IonToast,
-  IonItemGroup,
-} from '@ionic/angular/standalone';
+import { IonContent, IonNote, IonToast } from '@ionic/angular/standalone';
 import { PlayerListComponent } from '../../shared/components/player-list/player-list.component';
 import { PlayerService } from '../../core/services/abstract/player.service';
 import { Player } from '../../core/models/player.model';
@@ -22,10 +16,8 @@ import { LocationService } from '../../core/services/abstract/location.service';
   imports: [
     CommonModule,
     IonContent,
-    IonSpinner,
     IonNote,
     IonToast,
-    IonItemGroup,
     PlayerListComponent,
     HeaderSubmenuComponent,
   ],
