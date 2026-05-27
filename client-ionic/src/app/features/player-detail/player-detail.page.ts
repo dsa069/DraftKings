@@ -42,6 +42,7 @@ import { Player } from '../../core/models/player.model';
 import { PlayerService } from '../../core/services/abstract/player.service';
 import { Review } from '../../core/models/review.model';
 import { ReviewService } from '../../core/services/abstract/review.service';
+import { LocationService } from '../../core/services/abstract/location.service';
 import { addIcons } from 'ionicons';
 import {
   pencil,
@@ -105,6 +106,7 @@ export class PlayerDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly playerService = inject(PlayerService);
   private readonly reviewService = inject(ReviewService);
+  private readonly locationService = inject(LocationService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly ngZone = inject(NgZone);
   private readonly navCtrl = inject(NavController);
@@ -299,16 +301,20 @@ export class PlayerDetailPage implements OnInit {
 
     const finalAuthor = `${inputAuthor} (${username})`;
 
-    const reviewPayload: Partial<Review> = {
-      author: finalAuthor,
-      text: this.newCommentText(),
-      rating: this.newCommentRating(),
-      userId: '1', // Aquí puedes vincular el UID real de tu servicio de autenticación si lo tienes
-      latitude: targetPlayer.latitude || 0,
-      longitude: targetPlayer.longitude || 0,
-    };
-
     try {
+      const deviceCoords =
+        await this.locationService.requestDeviceCurrentPosition();
+
+      const reviewPayload: Partial<Review> = {
+        author: finalAuthor,
+        text: this.newCommentText(),
+        rating: this.newCommentRating(),
+        //DEBIDO A LA FALTA DE TIEMPO Y A QUE NO ES REALMENTE NECESARIO, NO GUARDAMOS EL ID REAL DEL USUARIO
+        userId: '1',
+        latitude: deviceCoords?.lat ?? 0,
+        longitude: deviceCoords?.lng ?? 0,
+      };
+
       const savedReview = await this.reviewService.createReview(
         targetPlayer.id,
         reviewPayload
