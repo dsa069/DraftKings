@@ -82,6 +82,23 @@
         </ion-row>
 
         <ion-row class="auth-form-group">
+          <ion-label class="auth-form-label">Account Role</ion-label>
+          <ion-item class="form-item" lines="none">
+            <ion-icon slot="start" name="people-outline"></ion-icon>
+            <ion-select
+              formControlName="role"
+              interface="popover"
+              placeholder="Select a role"
+            >
+              <ion-select-option value="USER"
+                >User (Standard)</ion-select-option
+              >
+              <ion-select-option value="ADMIN">Administrator</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-row>
+
+        <ion-row class="auth-form-group">
           <ion-row class="auth-form-label-row ion-no-padding">
             <ion-label class="auth-form-label">Secure Password</ion-label>
           </ion-row>

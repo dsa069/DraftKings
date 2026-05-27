@@ -32,13 +32,24 @@ public class AuthController {
         User newUser = new User();
         newUser.setFirebaseUid(firebaseUid);
         newUser.setEmail(email);
-        newUser.setUserName(additionalData.getUserName());
-        newUser.setRole("ROLE_USER"); // O el rol por defecto de tu MS
+
+        // Verificamos que el nombre de usuario no sea nulo antes de setearlo
+        if (additionalData.getUserName() != null) {
+            newUser.setUserName(additionalData.getUserName().trim());
+        }
+
+        // 4. Validar y setear el ROL
+        String incomingRole = additionalData.getRole();
+        // Validamos estrictamente que solo puedan ser "ADMIN" o "USER" por seguridad
+        if ("ADMIN".equals(incomingRole) || "USER".equals(incomingRole)) {
+            newUser.setRole(incomingRole);
+        } else {
+            newUser.setRole("USER"); // Rol por defecto si mandan basura o viene vacío
+        }
 
         userRepository.save(newUser);
 
-        // Poner bien el mensaje de este endpoint
-        return ResponseEntity.ok(Map.of("message", "Usuario registrado en PostgreSQL con éxito"));
+        return ResponseEntity.ok(Map.of("message", "Usuario registrado en PostgreSQL con éxito y rol asignado"));
     }
 
     @GetMapping("/me")
@@ -46,7 +57,7 @@ public class AuthController {
         // El 'sub' del JWT es el UID de Firebase
         String uid = jwt.getSubject();
 
-        return userRepository.findByFirebaseUid(uid) != null ? ResponseEntity.ok(userRepository.findByFirebaseUid(uid))
-                : ResponseEntity.notFound().build();
+        User user = userRepository.findByFirebaseUid(uid);
+        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 }

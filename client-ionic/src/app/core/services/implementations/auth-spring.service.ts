@@ -20,22 +20,24 @@ export class AuthSpringService extends AuthService {
     if (!token) throw new Error('No hay token disponible');
 
     try {
-      // 2. Confirmar existencia en PostgreSQL llamando al nuevo endpoint
-      // Si el usuario no existe en la DB, el backend devolverá un error (404 o 401)
-      // y saltará al bloque 'catch'.
-      await firstValueFrom(
-        this.http.get(`${this.apiUrl}/api/auth/me`, {
+      // 2. Confirmar existencia en PostgreSQL y guardar el perfil devuelto
+      const userProfile = await firstValueFrom(
+        this.http.get<User>(`${this.apiUrl}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
-        }),
+        })
       );
 
-      console.log('Backend verificado: Usuario existe en PostgreSQL');
+      this._userProfile.set(userProfile);
+
+      console.log('Backend verificado. Rol cargado:', userProfile.role);
     } catch (error) {
+      this._userProfile.set(null);
+
       // Si el usuario existe en Firebase pero NO en tu DB, forzamos el logout de Firebase
       // para que no quede una sesión a medias.
       await this.logout();
       throw new Error(
-        'El usuario no está registrado en el sistema SpringBoot.',
+        'El usuario no está registrado en el sistema SpringBoot.'
       );
     }
   }
@@ -61,7 +63,7 @@ export class AuthSpringService extends AuthService {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        }),
+        })
       );
       console.log('Usuario sincronizado con SpringBoot backend:', response);
       return response;
@@ -84,7 +86,7 @@ export class AuthSpringService extends AuthService {
             Authorization: `Bearer ${token}`,
           },
         });
-      }),
+      })
     );
   }
 }
