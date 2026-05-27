@@ -141,3 +141,19 @@ export async function authorizeRequestNoCreate(
     return res.status(401).json({ message: "Petición no autorizada" });
   }
 }
+
+/**
+ * Middleware para restringir el acceso SOLO a usuarios con rol ADMIN.
+ * DEBE ejecutarse DESPUÉS de authorizeRequest o authorizeRequestNoCreate.
+ */
+export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  // Comprobamos si el usuario existe y si su rol es exactamente "ADMIN"
+  if (req.user && req.user.role === "ADMIN") {
+    return next(); // Todo correcto, dejamos pasar la petición al controlador
+  }
+
+  // Si no es admin (es "USER" o no tiene rol), devolvemos un error 403 Forbidden
+  return res.status(403).json({
+    message: "Acceso denegado. Se requieren privilegios de Administrador.",
+  });
+}

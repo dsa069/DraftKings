@@ -27,9 +27,13 @@ export async function syncUser(req: Request, res: Response) {
     }
 
     if (Object.keys(updateData).length > 0) {
-      const updatedUser = await User.findByIdAndUpdate(req.user._id, updateData, {
-        new: true, // Devolver el documento actualizado
-      });
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        updateData,
+        {
+          new: true, // Devolver el documento actualizado
+        },
+      );
 
       return res.status(200).json(updatedUser);
     }

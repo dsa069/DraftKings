@@ -12,7 +12,7 @@ import {
   reviewsGetByPlayer,
   reviewsCreate,
 } from "../controllers/reviewController";
-import { authorizeRequest } from "../middleware/auth.middleware";
+import { authorizeRequest, requireAdmin } from "../middleware/auth.middleware";
 
 const router = Router();
 
@@ -32,10 +32,10 @@ router.get("/:id", playersReadOne);
 router.post("/", authorizeRequest, playersCreate);
 
 // 7) Editar datos de un jugador (Exclusivo Administrador en la teoría, protegido por JWT)
-router.put("/:id", authorizeRequest, playersUpdate);
+router.put("/:id", authorizeRequest, requireAdmin, playersUpdate);
 
 // 8) Eliminar un jugador
-router.delete("/:id", authorizeRequest, playersDelete);
+router.delete("/:id", authorizeRequest, requireAdmin, playersDelete);
 
 // 10) Obtener comentarios de un jugador
 router.get("/:id/reviews", reviewsGetByPlayer);
