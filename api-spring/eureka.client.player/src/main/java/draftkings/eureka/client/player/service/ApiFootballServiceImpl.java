@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class ApiFootballServiceImpl implements ApiFootballService {
         if (search != null && !search.isEmpty()) {
             builder.queryParam("search", search);
         }
+        URI requestUri = builder.build().encode().toUri();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-apisports-key", apiKey);
@@ -49,7 +51,7 @@ public class ApiFootballServiceImpl implements ApiFootballService {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                    builder.toUriString(),
+                    requestUri,
                     HttpMethod.GET,
                     entity,
                     String.class);
@@ -97,6 +99,32 @@ public class ApiFootballServiceImpl implements ApiFootballService {
             dto.setNationality(playerNode.path("nationality").asText(""));
             dto.setPosition(playerNode.path("position").asText(""));
             dto.setPhotoUrl(playerNode.path("photo").asText(""));
+
+            if (!playerNode.path("height").isMissingNode() && !playerNode.path("height").isNull()) {
+                String heightRaw = playerNode.path("height").asText();
+                // Eliminamos todo lo que NO sea un número o un punto (ej. "185 cm" -> "185")
+                String heightClean = heightRaw.replaceAll("[^0-9.]", "").trim();
+                if (!heightClean.isEmpty()) {
+                    dto.setHeight(new java.math.BigDecimal(heightClean));
+                }
+            }
+
+            if (!playerNode.path("weight").isMissingNode() && !playerNode.path("weight").isNull()) {
+                String weightRaw = playerNode.path("weight").asText();
+                // Eliminamos todo lo que NO sea un número o un punto (ej. "78 kg" -> "78")
+                String weightClean = weightRaw.replaceAll("[^0-9.]", "").trim();
+                if (!weightClean.isEmpty()) {
+                    dto.setWeight(new java.math.BigDecimal(weightClean));
+                }
+            }
+
+            if (!playerNode.path("number").isMissingNode() && !playerNode.path("number").isNull()) {
+                // Protegemos la lectura del dorsal asegurando que no esté vacío
+                String numberText = playerNode.path("number").asText().trim();
+                if (!numberText.isEmpty() && !numberText.equalsIgnoreCase("null")) {
+                    dto.setNumber(playerNode.path("number").asInt());
+                }
+            }
 
             resultList.add(dto);
         }
