@@ -393,6 +393,23 @@ ion-content.custom-content {
 
       margin-bottom: 12px !important;
     }
+    .comment-location-row {
+      margin-top: 4px;
+      margin-bottom: 12px;
+      align-items: center; // Vertically centers the icon with the text
+
+      .location-micro-icon {
+        color: var(--ion-color-pitch-green);
+        font-size: 14px;
+        margin-right: 6px;
+      }
+
+      .location-coords {
+        font-family: var(--font-family-body-md);
+        font-size: 12px; // Slightly smaller to look like subtle metadata
+        color: var(--ion-color-on-surface-variant);
+      }
+    }
   }
 }
 // -------------------------

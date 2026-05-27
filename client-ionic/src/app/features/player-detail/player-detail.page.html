@@ -331,7 +331,19 @@
                   </ion-grid>
                   } @else {
                   <ion-text class="comment-text">{{ comment.text }}</ion-text>
-                  }
+                  @if (comment.latitude && comment.longitude) {
+                  <ion-grid class="ion-no-padding location-grid">
+                    <ion-row class="comment-location-row">
+                      <ion-icon
+                        name="location-outline"
+                        class="location-micro-icon"
+                      ></ion-icon>
+                      <ion-text class="location-coords">
+                        {{ comment.latitude }}, {{ comment.longitude }}
+                      </ion-text>
+                    </ion-row>
+                  </ion-grid>
+                  } }
                 </ion-col>
               </ion-row>
             </ion-grid>
