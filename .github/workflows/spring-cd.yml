@@ -59,6 +59,7 @@ jobs:
             else
               printf %s "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets create FOOTBALL_API_KEY --replication-policy="automatic" --data-file=-
             fi
+          fi
 
       - name: Build Docker image
         run: |
