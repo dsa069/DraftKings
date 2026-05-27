@@ -52,12 +52,12 @@ jobs:
             printf %s "${{ secrets.DB_SQL_PASS_DEV }}" | gcloud secrets create DB_SQL_PASS_DEV --replication-policy="automatic" --data-file=-
           fi
 
-          # FOOTBALL_API_KEY
+          # API_FOOTBALL_KEY
           if [[ "${{ inputs.service_name }}" == "eureka.client.player" ]]; then
-            if gcloud secrets describe FOOTBALL_API_KEY > /dev/null 2>&1; then
-              printf %s "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets versions add FOOTBALL_API_KEY --data-file=-
+            if gcloud secrets describe API_FOOTBALL_KEY > /dev/null 2>&1; then
+              printf %s "${{ secrets.API_FOOTBALL_KEY }}" | gcloud secrets versions add API_FOOTBALL_KEY --data-file=-
             else
-              printf %s "${{ secrets.FOOTBALL_API_KEY }}" | gcloud secrets create FOOTBALL_API_KEY --replication-policy="automatic" --data-file=-
+              printf %s "${{ secrets.API_FOOTBALL_KEY }}" | gcloud secrets create API_FOOTBALL_KEY --replication-policy="automatic" --data-file=-
             fi
           fi
 
@@ -83,10 +83,10 @@ jobs:
             echo "db_secret=" >> $GITHUB_OUTPUT
           fi
 
-           # FOOTBALL_API_KEY
+           # API_FOOTBALL_KEY
           if [[ "$SERVICE" == "eureka.client.player" ]]; then
             echo "✅ INFO: El servicio '$SERVICE' requiere API key. Configurando secreto..."
-            echo "football_api_key=FOOTBALL_API_KEY=FOOTBALL_API_KEY:latest" >> $GITHUB_OUTPUT
+            echo "football_api_key=API_FOOTBALL_KEY=API_FOOTBALL_KEY:latest" >> $GITHUB_OUTPUT
           else
             echo "ℹ️ INFO: El servicio '$SERVICE' no requiere API key. Saltando..."
             echo "football_api_key=" >> $GITHUB_OUTPUT
