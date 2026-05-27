@@ -6,6 +6,8 @@ import draftkings.eureka.client.player.dto.PlayerExternalDTO;
 import draftkings.eureka.client.player.repository.PlayerRepository;
 import draftkings.eureka.client.player.service.PlayerService;
 import draftkings.eureka.client.player.service.ApiFootballService;
+import draftkings.eureka.client.player.dto.ReviewDTO;
+import draftkings.eureka.client.player.client.ReviewClient;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,12 +28,14 @@ public class PlayerController {
     private final PlayerRepository playerRepository;
     private final PlayerService playerService; // Solo lo inyectamos para los métodos con lógica
     private final ApiFootballService apiFootballService;
+    private final ReviewClient reviewClient;
 
     public PlayerController(PlayerRepository playerRepository, PlayerService playerService,
-            ApiFootballService apiFootballService) {
+            ApiFootballService apiFootballService, ReviewClient reviewClient) {
         this.playerRepository = playerRepository;
         this.playerService = playerService;
         this.apiFootballService = apiFootballService;
+        this.reviewClient = reviewClient;
     }
 
     // 3) Obtener listado de jugadores -> DIRECTO A REPOSITORY
@@ -124,5 +128,28 @@ public class PlayerController {
         // El repositorio guarda toda la lista en una sola transacción eficiente
         playerRepository.saveAll(playersToImport);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // 10) Obtener comentarios de un jugador
+    @GetMapping("/{id}/reviews")
+    public ResponseEntity<List<ReviewDTO>> getPlayerReviews(@PathVariable("id") Long playerId) {
+        // En un caso de uso estricto de DDD/Clean, esto pasaría por el Service.
+        // Para simplificar según tu patrón actual directo a cliente/repo:
+        List<ReviewDTO> reviews = reviewClient.getReviewsByPlayerId(playerId);
+        return ResponseEntity.ok(reviews);
+    }
+
+    // 11) Crear un comentario para un jugador
+    @PostMapping("/{id}/reviews")
+    public ResponseEntity<ReviewDTO> createPlayerReview(@PathVariable("id") Long playerId,
+            @RequestBody ReviewDTO review) {
+        ReviewDTO createdReview = reviewClient.createReview(playerId, review);
+
+        // Si el circuit breaker actúa, devuelve null. Protegemos la respuesta.
+        if (createdReview == null) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdReview);
     }
 }
