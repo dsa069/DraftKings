@@ -33,6 +33,10 @@ spring:
       ddl-auto: update # O 'none' si no quieres que toque las tablas
     show-sql: true
 
+api:
+  football:
+    key: ${API_FOOTBALL_KEY:}
+
 management:
   info:
     env:
