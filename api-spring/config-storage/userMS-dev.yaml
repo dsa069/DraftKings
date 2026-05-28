@@ -40,6 +40,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://securetoken.google.com/draftkings-dev-de53b
+openapi:
+  title: DraftKings User Microservice API (Dev)
   
 management:
   info:

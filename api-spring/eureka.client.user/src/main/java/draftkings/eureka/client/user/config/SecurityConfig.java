@@ -23,6 +23,12 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(auth -> auth
                                                 // 2. Deja el permitAll para OPTIONS por seguridad extra
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                                // Exponer Swagger/OpenAPI sin autenticación
+                                                .requestMatchers(
+                                                                "/swagger-ui.html",
+                                                                "/swagger-ui/**",
+                                                                "/v3/api-docs/**")
+                                                .permitAll()
                                                 // 3. Tu endpoint de sincronización DEBE estar expuesto aquí si se llama
                                                 // antes de estar autenticado
                                                 .requestMatchers("/api/auth/**", "/api/public/**").permitAll()

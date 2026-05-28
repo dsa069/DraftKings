@@ -42,6 +42,15 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
+openapi:
+  title: DraftKings User Microservice API
+  description: API documentation for User Microservice API that is part of the DraftKings application. This microservice manages user-related operations such as registration, authentication, and profile management.
+  version: '@project.version@'
+  contact:
+    name: Daniel Salas Alonso
+    email: dsa069@inlumine.ual.es
+    url: https://github.com/dsa069/DraftKings.git
+
 management:
   info:
     env:

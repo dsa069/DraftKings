@@ -24,6 +24,15 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
+openapi:
+  title: DraftKings Review Microservice API
+  description: API documentation for Review Microservice API that is part of the DraftKings application. This microservice manages review-related operations such as creating, retrieving, updating, and deleting reviews for players. It also provides endpoints to fetch reviews by user and player. The API is designed to be consumed by the frontend application and other microservices within the DraftKings ecosystem.
+  version: '@project.version@'
+  contact:
+    name: Daniel Salas Alonso
+    email: dsa069@inlumine.ual.es
+    url: https://github.com/dsa069/DraftKings.git
+
 management:
   info:
     env:

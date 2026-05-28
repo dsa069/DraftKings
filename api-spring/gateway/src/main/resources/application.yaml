@@ -16,6 +16,11 @@ spring:
             locator:
               enabled: true
               lower-case-service-id: true      
+          routes:
+            - id: userms-openapi
+              uri: lb://userMS
+              predicates:
+                - Path=/v3/api-docs/**
 
 app:
   cors:

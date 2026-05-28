@@ -41,6 +41,9 @@ spring:
         jwt:
           issuer-uri: https://securetoken.google.com/draftkings-a26c3
 
+openapi:
+  title: DraftKings User Microservice API (Prod)
+
 management:
   info:
     env:

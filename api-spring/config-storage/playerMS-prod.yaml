@@ -31,6 +31,9 @@ api:
   football:
     key: ${API_FOOTBALL_KEY:}
 
+openapi:
+  title: DraftKings Player Microservice API (Prod)
+
 management:
   info:
     env:
