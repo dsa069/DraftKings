@@ -46,10 +46,22 @@
           <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
             <ng-template>
               <ion-header>
-                <ion-toolbar>
-                  <ion-title>Elegir {{ currentEditingPosition() }}</ion-title>
+                <ion-toolbar color="surface" class="modal-toolbar">
+                  <ion-title class="header-title-base modal-subtitle"
+                    >Elegir {{ currentEditingPosition() }}</ion-title
+                  >
                   <ion-buttons slot="end">
-                    <ion-button (click)="closeModal()">Cerrar</ion-button>
+                    <ion-button
+                      fill="clear"
+                      class="modal-close-button"
+                      aria-label="Cerrar modal"
+                      (click)="closeModal()"
+                    >
+                      <ion-icon
+                        slot="icon-only"
+                        name="arrow-undo-outline"
+                      ></ion-icon>
+                    </ion-button>
                   </ion-buttons>
                 </ion-toolbar>
               </ion-header>
