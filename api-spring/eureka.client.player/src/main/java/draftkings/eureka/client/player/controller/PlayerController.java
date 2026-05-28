@@ -174,8 +174,13 @@ public class PlayerController {
     @Operation(summary = "Obtener comentarios de un jugador", description = "Devuelve todas las reseñas de un jugador")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Comentarios obtenidos", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1/reviews\"}"))),
             @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error loading reviews\",\"path\":\"/api/players/1/reviews\"}"))) })
     public ResponseEntity<List<ReviewDTO>> getPlayerReviews(@PathVariable("id") Long playerId) {
+        if (!playerRepository.existsById(playerId)) {
+            throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Player not found: " + playerId);
+        }
+
         // En un caso de uso estricto de DDD/Clean, esto pasaría por el Service.
         // Para simplificar según tu patrón actual directo a cliente/repo:
         List<ReviewDTO> reviews = reviewClient.getReviewsByPlayerId(playerId);
