@@ -34,18 +34,22 @@ export class AiTacticService {
     this.parser = StructuredOutputParser.fromZodSchema(this.schema);
 
     // 3. Crear la secuencia con LangChain
+    // 3. Crear la secuencia con LangChain
     this.chain = RunnableSequence.from([
       new PromptTemplate({
-        template: `Eres un entrenador de fútbol de élite mundial y analista táctico experto.
-        Dada una lista de posiciones ocupadas por jugadores y una lista de posiciones vacías en el campo, sugiere jugadores reales de primer nivel EXCLUSIVAMENTE para llenar las posiciones vacías para equilibrar el esquema.
+        template: `You are a world-class football manager and expert tactical analyst.
+        Given a list of positions occupied by players and a list of empty positions on the pitch, suggest top-tier real-world players EXCLUSIVELY to fill the empty positions to balance the tactical system.
         
-        REGLA OBLIGATORIA PARA EL CAMPO "message":
-        Debes incluir siempre una explicación explícita de en qué te has basado del equipo actual para tomar tu decisión. El mensaje debe comenzar o fundamentarse fuertemente bajo la estructura "Basado en...", analizando los jugadores actuales, sus sinergias, deficiencias o estilo de juego (por ejemplo: "Basado en la velocidad de Salah y el control de Pedri...").
+        CRITICAL TACTICAL REQUIREMENT:
+        You must carefully analyze the exact positions where the current players are deployed. Pay close attention to whether they are in their natural roles or in unusual/unconventional positions (e.g., Cristiano Ronaldo being placed as a defender). Your recommendations and justification must account for this specific layout to either compensate for the anomaly or complement the overall structure.
+        
+        MANDATORY RULE FOR THE "message" FIELD:
+        The entire response must be in English. You must include an explicit explanation of what you based your decision on regarding the current team layout. The message MUST start with or be heavily grounded in the structure "Based on...", analyzing the current players, their specific positions, synergies, deficiencies, or playstyle (for example: "Based on having Cristiano Ronaldo in defense and the speed of Salah...").
         
         {format_instructions}
         
-        Posiciones ocupadas actualmente: {filledPositions}
-        Posiciones que debes rellenar obligatoriamente: {emptyPositions}`,
+        Currently occupied positions: {filledPositions}
+        Positions you must fill: {emptyPositions}`,
         inputVariables: ["filledPositions", "emptyPositions"],
         partialVariables: {
           format_instructions: this.parser.getFormatInstructions(),
