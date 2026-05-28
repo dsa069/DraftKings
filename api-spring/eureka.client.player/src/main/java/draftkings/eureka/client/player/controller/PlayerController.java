@@ -16,6 +16,7 @@ import draftkings.eureka.client.player.client.ReviewClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -81,8 +82,8 @@ public class PlayerController {
     @Operation(summary = "Obtener detalle de un jugador", description = "Devuelve el jugador con sus reseñas asociadas")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Detalle del jugador", content = @Content(schema = @Schema(implementation = PlayerDetailResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Unexpected error while loading player details\",\"path\":\"/api/players/1\"}"))) })
     public ResponseEntity<PlayerDetailResponseDTO> getPlayerById(@PathVariable Long id) {
         PlayerDetailResponseDTO playerDetail = playerService.getPlayerProfileWithReviews(id);
         return ResponseEntity.ok(playerDetail);
@@ -93,8 +94,8 @@ public class PlayerController {
     @Operation(summary = "Crear un jugador", description = "Registrar un nuevo jugador manualmente")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Jugador creado con éxito", content = @Content(schema = @Schema(implementation = Player.class))),
-            @ApiResponse(responseCode = "400", description = "Body inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "400", description = "Body inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"Invalid player payload\",\"path\":\"/api/players\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error creating player\",\"path\":\"/api/players\"}"))) })
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
         if (player.getCreatedAt() == null) {
             player.setCreatedAt(new Date());
@@ -112,8 +113,8 @@ public class PlayerController {
     @Operation(summary = "Editar datos de un jugador", description = "Actualiza parcialmente un jugador existente")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Jugador actualizado", content = @Content(schema = @Schema(implementation = Player.class))),
-            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error updating player\",\"path\":\"/api/players/1\"}"))) })
     public ResponseEntity<Player> updatePlayer(@PathVariable Long id, @RequestBody Player playerDetails) {
         Player updatedPlayer = playerService.updatePlayerPartial(id, playerDetails);
         return ResponseEntity.ok(updatedPlayer);
@@ -124,8 +125,8 @@ public class PlayerController {
     @Operation(summary = "Eliminar un jugador", description = "Borra un jugador permanentemente")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Eliminación exitosa"),
-            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error deleting player\",\"path\":\"/api/players/1\"}"))) })
     public ResponseEntity<Void> deletePlayer(@PathVariable Long id) {
         if (playerRepository.existsById(id)) {
             playerRepository.deleteById(id);
@@ -138,7 +139,7 @@ public class PlayerController {
     @Operation(summary = "Obtener jugadores desde la API externa", description = "Consulta API-Football y devuelve una lista normalizada")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de jugadores externos obtenida", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PlayerExternalDTO.class)))),
-            @ApiResponse(responseCode = "500", description = "Error consultando la API externa", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "500", description = "Error consultando la API externa", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Failed to fetch players from external API\",\"path\":\"/api/players/external\"}"))) })
     public ResponseEntity<List<PlayerExternalDTO>> getExternalPlayers(
             @RequestParam(value = "search", required = false) String search) {
         List<PlayerExternalDTO> players = apiFootballService.searchExternalPlayers(search);
@@ -149,8 +150,8 @@ public class PlayerController {
     @Operation(summary = "Importar jugadores desde la API externa", description = "Recibe una lista de jugadores y los persiste en la BD")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Jugadores importados correctamente"),
-            @ApiResponse(responseCode = "400", description = "El body es inválido o está vacío", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Error al insertar en base de datos", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "400", description = "El body es inválido o está vacío", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"El body no contiene jugadores para importar\",\"path\":\"/api/players/import\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error al insertar en base de datos", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error importing players\",\"path\":\"/api/players/import\"}"))) })
     public ResponseEntity<Void> importPlayers(@RequestBody List<Player> playersToImport) {
         if (playersToImport == null || playersToImport.isEmpty()) {
             throw new BadRequestException("El body no contiene jugadores para importar");
@@ -173,7 +174,7 @@ public class PlayerController {
     @Operation(summary = "Obtener comentarios de un jugador", description = "Devuelve todas las reseñas de un jugador")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Comentarios obtenidos", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDTO.class)))),
-            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error loading reviews\",\"path\":\"/api/players/1/reviews\"}"))) })
     public ResponseEntity<List<ReviewDTO>> getPlayerReviews(@PathVariable("id") Long playerId) {
         // En un caso de uso estricto de DDD/Clean, esto pasaría por el Service.
         // Para simplificar según tu patrón actual directo a cliente/repo:
@@ -186,10 +187,15 @@ public class PlayerController {
     @Operation(summary = "Crear un comentario para un jugador", description = "Añade una reseña a un jugador")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Comentario añadido con éxito", content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
-            @ApiResponse(responseCode = "503", description = "Servicio de reseñas no disponible", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "400", description = "El body de la reseña es inválido o incompleto", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"Review text and rating are required\",\"path\":\"/api/players/1/reviews\"}"))),
+            @ApiResponse(responseCode = "503", description = "Servicio de reseñas no disponible", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":503,\"error\":\"Servicio de reseñas no disponible\",\"path\":\"/api/players/1/reviews\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error creating review\",\"path\":\"/api/players/1/reviews\"}"))) })
     public ResponseEntity<ReviewDTO> createPlayerReview(@PathVariable("id") Long playerId,
             @RequestBody ReviewDTO review) {
+        if (review == null || review.getText() == null || review.getText().isBlank() || review.getRating() == null) {
+            throw new BadRequestException("Review text and rating are required");
+        }
+
         ReviewDTO createdReview = reviewClient.createReview(playerId, review);
 
         // Si el circuit breaker actúa, devuelve null. Protegemos la respuesta.

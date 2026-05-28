@@ -49,7 +49,6 @@ openapi:
     email: dsa069@inlumine.ual.es
     url: https://github.com/dsa069/DraftKings.git
 
-
 management:
   info:
     env:
