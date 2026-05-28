@@ -395,27 +395,49 @@ GET /api/players/external?search=ronaldo
 
 ## 🏆 Tácticas (Equipo Ideal)
 
-<!-- TO DO -->
+### 16) Obtener recomendaciones de la IA para completar alineación
 
-### 16) Guardar / Actualizar alineación del Equipo Ideal
-
-- **Caso de uso:** `UC_generar_equipo`
-- **Descripción:** Almacena la disposición de los 11 jugadores seleccionados por el usuario.
-- **Método:** `PUT`
-- **URL:** `http://localhost:8092/api/squad/ideal-team`
+- **Caso de uso:** `UC_recomendar_jugadores_ia`
+- **Descripción:** El frontend envía la distribución actual de las posiciones del campo con los nombres de los jugadores asignados y las posiciones vacías. El backend procesa esta información mediante una IA para sugerir nombres de jugadores exclusivamente para cubrir las posiciones que se encuentran vacías, devolviendo además un mensaje explicativo o justificación táctica.
+- **Método:** `POST`
+- **URL:** `http://localhost:8092/api/tactics/ai-recommendations`
 - **Headers:**
-  - `Authorization: Bearer {tu_token_JWT}` (Solo Usuario Registrado o superior)
+  - `Authorization: Bearer {tu_token_JWT}`
   - `Content-Type: application/json`
 - **Body (JSON) ejemplo:**
 
 ```json
 {
-  "formation": "4-3-3",
-  "lineup": [
-    { "player_id": 12, "position_on_pitch": "LW" },
-    { "player_id": 5, "position_on_pitch": "GK" }
-  ]
+  "positions": {
+    "PO": "Thibaut Courtois",
+    "DFI": null,
+    "DFC1": "Ronald Araújo",
+    "DFC2": "Virgil van Dijk",
+    "DFD": "Achraf Hakimi",
+    "MC1": "Pedri",
+    "MC2": null,
+    "MCO": "Lionel Messi",
+    "EI": null,
+    "ED": "Mohamed Salah",
+    "DC": "Erling Haaland"
+  }
 }
 ```
 
----
+- **Respuestas:**
+  - `200 OK` — Recomendaciones generadas con éxito por la IA. Devuelve un mensaje de texto descriptivo y un objeto con las posiciones que estaban vacías asignadas a su respectivo jugador recomendado.
+
+```json
+{
+  "message": "Analizando tu bloque defensivo liderado por Van Dijk y la potencia ofensiva de Haaland, la IA sugiere incorporar un lateral izquierdo con proyección de ataque y un mediocentro organizador clásico para equilibrar las transiciones de tu esquema 4-3-3.",
+  "recommendations": {
+    "DFI": "Alphonso Davies",
+    "MC2": "Kevin De Bruyne",
+    "EI": "Kylian Mbappé"
+  }
+}
+```
+
+- `400 Bad Request` — El formato del mapa de posiciones es inválido o no se han enviado datos.
+- `401 Unauthorized` — Token JWT inválido, ausente o expirado.
+- `503 Service Unavailable` — Error de comunicación o timeout con el proveedor del servicio de Inteligencia Artificial.
