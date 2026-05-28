@@ -8,6 +8,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Subject } from 'rxjs';
 import { TeamService } from '../../../core/services/abstract/team.service';
+import { PlayerService } from '../../../core/services/abstract/player.service';
 
 describe('MyTeamPage', () => {
   it('should render title', () => {
@@ -25,6 +26,12 @@ describe('MyTeamPage', () => {
               message: '',
               recommendations: {},
             }),
+          },
+        },
+        {
+          provide: PlayerService,
+          useValue: {
+            getPlayers: async () => [],
           },
         },
       ],
