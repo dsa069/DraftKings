@@ -45,6 +45,9 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
             ResponseStatusException rse = (ResponseStatusException) ex;
             return writeResponse(request, response, rse.getStatusCode().value(), resolveReason(rse.getReason(), rse));
         }
+        if (ex instanceof HttpMessageNotReadableException || ex instanceof MethodArgumentTypeMismatchException) {
+            return writeResponse(request, response, HttpStatus.BAD_REQUEST.value(), resolveReason(ex.getMessage(), ex));
+        }
         if (ex instanceof BadRequestException || ex instanceof IllegalArgumentException) {
             return writeResponse(request, response, HttpStatus.BAD_REQUEST.value(), resolveReason(ex.getMessage(), ex));
         }
@@ -55,7 +58,11 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
         if (ex instanceof HttpMessageNotReadableException || ex instanceof MethodArgumentTypeMismatchException) {
             return writeResponse(request, response, HttpStatus.BAD_REQUEST.value(), resolveReason(ex.getMessage(), ex));
         }
-        if (ex instanceof InternalServerErrorException || ex instanceof RuntimeException) {
+        if (ex instanceof InternalServerErrorException) {
+            return writeResponse(request, response, HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    resolveReason(ex.getMessage(), ex));
+        }
+        if (ex instanceof RuntimeException) {
             return writeResponse(request, response, HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     resolveReason(ex.getMessage(), ex));
         }
