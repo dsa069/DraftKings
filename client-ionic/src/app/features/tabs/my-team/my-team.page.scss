@@ -18,6 +18,27 @@
   flex: 1;
 }
 
+/* --- Modal Header --- */
+.modal-toolbar {
+  --background: var(--ion-color-surface, var(--ion-color-background));
+  background: var(--ion-color-surface, var(--ion-color-background));
+}
+
+.modal-subtitle {
+  font-size: var(--font-line-height-body-lg);
+}
+
+.modal-close-button {
+  --color: var(--ion-color-primary-variant-dark) !important;
+  --padding-start: 8px;
+  --padding-end: 8px;
+
+  ion-icon {
+    font-size: 34px;
+    color: var(--ion-color-primary-variant-dark);
+  }
+}
+
 /* --- Strategy Header --- */
 .strategy-header {
   align-items: flex-end;

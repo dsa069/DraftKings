@@ -32,6 +32,7 @@ import {
   sparkles,
   bulb,
   gitNetworkOutline,
+  arrowUndoOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -75,7 +76,13 @@ export class MyTeamPage implements OnInit {
   private playerService = inject(PlayerService);
 
   constructor() {
-    addIcons({ optionsOutline, sparkles, bulb, gitNetworkOutline });
+    addIcons({
+      optionsOutline,
+      sparkles,
+      bulb,
+      gitNetworkOutline,
+      arrowUndoOutline,
+    });
   }
 
   async ngOnInit() {
