@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonContent,
@@ -65,15 +65,32 @@ import {
   ],
 })
 export class MyTeamPage implements OnInit {
+  private teamService = inject(TeamService);
+  private playerService = inject(PlayerService);
+
   teamPositions = signal<Record<string, Player>>({});
   allPlayers = signal<Player[]>([]);
   isLoadingPlayers = signal<boolean>(false); // Para mostrar el spinner en el list
-
   isModalOpen = signal<boolean>(false);
   currentEditingPosition = signal<string>('');
 
-  private teamService = inject(TeamService);
-  private playerService = inject(PlayerService);
+  availablePlayers = computed(() => {
+    const all = this.allPlayers();
+    const team = this.teamPositions();
+    const currentPos = this.currentEditingPosition();
+
+    // Extraemos los IDs de los jugadores que ya están ocupando OTRAS posiciones
+    const busyPlayerIds = Object.entries(team)
+      .filter(([pos, player]) => pos !== currentPos && player) // Ignoramos la posición actual
+      .map(([pos, player]) => player?.id?.toString())
+      .filter((id): id is string => id !== undefined);
+
+    // Devolvemos solo los jugadores que NO estén en la lista de ocupados
+    return all.filter((player) => {
+      const id = player.id?.toString();
+      return !id || !busyPlayerIds.includes(id);
+    });
+  });
 
   constructor() {
     addIcons({

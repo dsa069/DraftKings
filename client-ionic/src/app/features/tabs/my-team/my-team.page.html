@@ -68,7 +68,7 @@
 
               <ion-content>
                 <app-player-list
-                  [players]="allPlayers()"
+                  [players]="availablePlayers()"
                   [loading]="isLoadingPlayers()"
                   (playerClick)="onPlayerSelected($event)"
                 >
