@@ -2,21 +2,29 @@ package draftkings.eureka.client.review.controller;
 
 import draftkings.eureka.client.review.domain.Review;
 import draftkings.eureka.client.review.repository.ReviewRepository;
+import draftkings.eureka.client.review.exception.BadRequestException;
+import draftkings.eureka.client.review.exception.ResourceNotFoundException;
+import draftkings.eureka.client.review.exception.CustomResponse;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import java.util.Date;
+import org.springframework.http.MediaType;
+
 import java.util.List;
-import java.util.Optional;
 
 @RestController
+@Tag(name = "Reviews", description = "Operaciones CRUD completas para la gestión de comentarios y reseñas de jugadores")
 public class ReviewController {
 
     private final ReviewRepository reviewRepository;
@@ -26,29 +34,41 @@ public class ReviewController {
     }
 
     // 10) Obtener comentarios de un jugador
-    @GetMapping("/api/players/{player_id}/reviews")
-    public ResponseEntity<List<Review>> getReviewsByPlayer(@PathVariable("player_id") Long playerId) {
+    @GetMapping(value = "/api/players/{player_id}/reviews", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Obtener comentarios de un jugador", description = "Devuelve todas las reseñas filtradas por el identificador del jugador.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de reseñas encontradas", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Review.class)))),
+            @ApiResponse(responseCode = "400", description = "Identificador de jugador inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "No se encontraron reseñas para el jugador", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"No reviews found for player: 1\",\"path\":\"/api/players/1/reviews\"}")))
+    })
+    public ResponseEntity<List<Review>> getReviewsByPlayer(
+            @Parameter(description = "ID del jugador de la cual se quieren obtener las reseñas", required = true) @PathVariable("player_id") Long playerId) {
         List<Review> reviews = reviewRepository.findByPlayerId(playerId);
+        if (reviews == null || reviews.isEmpty()) {
+            throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "No reviews found for player: " + playerId);
+        }
         return ResponseEntity.ok(reviews);
     }
 
     // 11) Crear un comentario para un jugador
-    @PostMapping("/api/players/{player_id}/reviews")
-    public ResponseEntity<Review> createReview(@PathVariable("player_id") Long playerId, @RequestBody Review review) {
-        // Enlazamos el jugador a la review
-        review.setPlayerId(playerId);
+    @PostMapping(value = "/api/players/{player_id}/reviews", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Crear un comentario para un jugador", description = "Añade una reseña con texto, puntuación y ubicación geográfica actual.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Comentario añadido con éxito", content = @Content(schema = @Schema(implementation = Review.class))),
+            @ApiResponse(responseCode = "400", description = "Cuerpo de la petición inválido o faltan campos obligatorios", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":400,\"error\":\"Review text and rating are required\",\"path\":\"/api/players/1/reviews\"}")))
+    })
+    public ResponseEntity<Review> createReview(
+            @Parameter(description = "ID del jugador a asociar la reseña", required = true) @PathVariable("player_id") Long playerId,
+            @RequestBody Review review) {
 
-        // Manejamos la fecha
-        if (review.getCreatedAt() == null) {
-            review.setCreatedAt(new Date());
+        if (review == null || review.getText() == null || review.getText().isBlank() || review.getRating() == null) {
+            throw new BadRequestException("Review text and rating are required");
         }
 
-        // NOTA IMPORTANTE: Tu entidad Review tiene un @NotNull en userId.
-        // Como tu JSON de ejemplo no lo incluye, debes obtenerlo del token de
-        // autenticación
-        // o establecer un valor por defecto temporalmente para que no pete la BD.
+        review.setPlayerId(playerId);
+
         if (review.getUserId() == null) {
-            review.setUserId(1L); // Cambiar por la extracción de ID del usuario autenticado
+            review.setUserId(1L);
         }
 
         Review savedReview = reviewRepository.save(review);
@@ -56,16 +76,25 @@ public class ReviewController {
     }
 
     // 12) Editar comentario
-    @PutMapping("/api/reviews/{id}")
-    public ResponseEntity<Review> updateReview(@PathVariable("id") Long id, @RequestBody Review reviewDetails) {
-        Optional<Review> existingReviewOpt = reviewRepository.findById(id);
-        if (existingReviewOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    @PutMapping(value = "/api/reviews/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Editar comentario", description = "Edita el texto y/o la puntuación de una reseña existente.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Comentario actualizado con éxito", content = @Content(schema = @Schema(implementation = Review.class))),
+            @ApiResponse(responseCode = "400", description = "Cuerpo de la petición inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":400,\"error\":\"At least text or rating must be provided\",\"path\":\"/api/reviews/1\"}"))),
+            @ApiResponse(responseCode = "404", description = "La reseña con el ID proporcionado no existe", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"Review not found with ID: 999\",\"path\":\"/api/reviews/999\"}")))
+    })
+    public ResponseEntity<Review> updateReview(
+            @Parameter(description = "ID de la reseña a modificar", required = true) @PathVariable("id") Long id,
+            @RequestBody Review reviewDetails) {
+
+        if (reviewDetails == null || (reviewDetails.getText() == null && reviewDetails.getRating() == null)) {
+            throw new BadRequestException("At least text or rating must be provided");
         }
 
-        Review existingReview = existingReviewOpt.get();
+        Review existingReview = reviewRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Review not found with ID: " + id));
 
-        // Actualización parcial (solo texto y rating según tu ejemplo)
         if (reviewDetails.getText() != null)
             existingReview.setText(reviewDetails.getText());
         if (reviewDetails.getRating() != null)
@@ -76,12 +105,20 @@ public class ReviewController {
     }
 
     // 13) Eliminar comentario
-    @DeleteMapping("/api/reviews/{id}")
-    public ResponseEntity<Void> deleteReview(@PathVariable("id") Long id) {
-        if (reviewRepository.existsById(id)) {
-            reviewRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
+    @DeleteMapping(value = "/api/reviews/{id}")
+    @Operation(summary = "Eliminar comentario", description = "Elimina de forma lógica/física una reseña por moderación. Exclusivo para administradores.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Comentario eliminado correctamente (Sin Contenido)"),
+            @ApiResponse(responseCode = "404", description = "El comentario no existe", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"Review cannot be deleted. ID not found: 999\",\"path\":\"/api/reviews/999\"}")))
+    })
+    public ResponseEntity<Void> deleteReview(
+            @Parameter(description = "ID de la reseña a eliminar", required = true) @PathVariable("id") Long id) {
+
+        if (!reviewRepository.existsById(id)) {
+            throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Review cannot be deleted. ID not found: " + id);
         }
-        return ResponseEntity.notFound().build();
+
+        reviewRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
