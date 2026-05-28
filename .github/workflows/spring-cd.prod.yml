@@ -59,6 +59,12 @@ jobs:
             else
               printf %s "${{ secrets.API_FOOTBALL_KEY }}" | gcloud secrets create API_FOOTBALL_KEY --replication-policy="automatic" --data-file=-
             fi
+            if gcloud secrets describe GROQ_API_KEY > /dev/null 2>&1; then
+              printf %s "${{ secrets.GROQ_API_KEY }}" | gcloud secrets versions add GROQ_API_KEY --data-file=-
+            else
+              printf %s "${{ secrets.GROQ_API_KEY }}" | gcloud secrets create GROQ_API_KEY --replication-policy="automatic" --data-file=-
+            fi
+          fi
 
       - name: Build Docker image
         run: |
@@ -81,13 +87,15 @@ jobs:
             echo "db_secret=" >> $GITHUB_OUTPUT
           fi
 
-           # API_FOOTBALL_KEY
+           # API_FOOTBALL_KEY Y GROQ_API_KEY solo para player
           if [[ "$SERVICE" == "eureka.client.player" ]]; then
             echo "✅ INFO: El servicio '$SERVICE' requiere API key. Configurando secreto..."
             echo "football_api_key=API_FOOTBALL_KEY=API_FOOTBALL_KEY:latest" >> $GITHUB_OUTPUT
+            echo "groq_api_key=GROQ_API_KEY=GROQ_API_KEY:latest" >> $GITHUB_OUTPUT          
           else
             echo "ℹ️ INFO: El servicio '$SERVICE' no requiere API key. Saltando..."
             echo "football_api_key=" >> $GITHUB_OUTPUT
+            echo "groq_api_key=" >> $GITHUB_OUTPUT
           fi
 
       - name: Deploy to Cloud Run
@@ -103,3 +111,4 @@ jobs:
           secrets: |
             ${{ steps.secret.outputs.db_secret }}
             ${{ steps.secret.outputs.football_api_key }}
+            ${{ steps.secret.outputs.groq_api_key }}
