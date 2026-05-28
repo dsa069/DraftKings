@@ -12,7 +12,7 @@
 
       <ion-col size="auto" class="ovr-col">
         <ion-chip class="ovr-chip">
-          <ion-label class="ovr-number">88</ion-label>
+          <ion-label class="ovr-number">4.5</ion-label>
           <ion-label class="ovr-text">OVR</ion-label>
         </ion-chip>
       </ion-col>
@@ -71,13 +71,17 @@
                 class="player-col col-mt-4"
                 (click)="openPlayerSelection('LW')"
               >
-                <ion-avatar class="player-avatar">
-                  <ion-img
-                    [src]="teamPositions()['LW']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar"
+                  [class.has-player]="teamPositions()['LW']"
+                  [class.placeholder-avatar]="!teamPositions()['LW']"
+                >
+                  @if (teamPositions()['LW']) {
+                  <ion-img [src]="teamPositions()['LW']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge">LW</ion-badge>
                   @if (teamPositions()['LW']) {
-                  <ion-badge class="ovr-badge">85</ion-badge>
+                  <ion-badge class="ovr-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name">
@@ -86,13 +90,17 @@
                 </ion-text>
               </ion-col>
               <ion-col class="player-col" (click)="openPlayerSelection('ST')">
-                <ion-avatar class="player-avatar large-avatar highlight-avatar">
-                  <ion-img
-                    [src]="teamPositions()['ST']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar large-avatar highlight-avatar"
+                  [class.has-player]="teamPositions()['ST']"
+                  [class.placeholder-avatar]="!teamPositions()['ST']"
+                >
+                  @if (teamPositions()['ST']) {
+                  <ion-img [src]="teamPositions()['ST']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge large-badge">ST</ion-badge>
                   @if (teamPositions()['ST']) {
-                  <ion-badge class="ovr-badge large-badge">91</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
@@ -104,13 +112,17 @@
                 class="player-col col-mt-4"
                 (click)="openPlayerSelection('RW')"
               >
-                <ion-avatar class="player-avatar">
-                  <ion-img
-                    [src]="teamPositions()['RW']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar"
+                  [class.has-player]="teamPositions()['RW']"
+                  [class.placeholder-avatar]="!teamPositions()['RW']"
+                >
+                  @if (teamPositions()['RW']) {
+                  <ion-img [src]="teamPositions()['RW']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge">RW</ion-badge>
                   @if (teamPositions()['RW']) {
-                  <ion-badge class="ovr-badge">87</ion-badge>
+                  <ion-badge class="ovr-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name">
@@ -122,13 +134,17 @@
 
             <ion-row class="midfield-row">
               <ion-col class="player-col" (click)="openPlayerSelection('LCM')">
-                <ion-avatar class="player-avatar large-avatar border-standard">
-                  <ion-img
-                    [src]="teamPositions()['LCM']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['LCM']"
+                  [class.placeholder-avatar]="!teamPositions()['LCM']"
+                >
+                  @if (teamPositions()['LCM']) {
+                  <ion-img [src]="teamPositions()['LCM']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge large-badge">CM</ion-badge>
                   @if (teamPositions()['LCM']) {
-                  <ion-badge class="ovr-badge large-badge">88</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
@@ -140,13 +156,17 @@
                 class="player-col col-mt-4"
                 (click)="openPlayerSelection('CDM')"
               >
-                <ion-avatar class="player-avatar large-avatar border-standard">
-                  <ion-img
-                    [src]="teamPositions()['CDM']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['CDM']"
+                  [class.placeholder-avatar]="!teamPositions()['CDM']"
+                >
+                  @if (teamPositions()['CDM']) {
+                  <ion-img [src]="teamPositions()['CDM']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge large-badge">CDM</ion-badge>
                   @if (teamPositions()['CDM']) {
-                  <ion-badge class="ovr-badge large-badge">89</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
@@ -155,13 +175,17 @@
                 </ion-text>
               </ion-col>
               <ion-col class="player-col" (click)="openPlayerSelection('RCM')">
-                <ion-avatar class="player-avatar large-avatar highlight-avatar">
-                  <ion-img
-                    [src]="teamPositions()['RCM']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar large-avatar highlight-avatar"
+                  [class.has-player]="teamPositions()['RCM']"
+                  [class.placeholder-avatar]="!teamPositions()['RCM']"
+                >
+                  @if (teamPositions()['RCM']) {
+                  <ion-img [src]="teamPositions()['RCM']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge large-badge">CM</ion-badge>
                   @if (teamPositions()['RCM']) {
-                  <ion-badge class="ovr-badge large-badge">92</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
@@ -176,13 +200,17 @@
                 class="player-col col-mt-2"
                 (click)="openPlayerSelection('LB')"
               >
-                <ion-avatar class="player-avatar">
-                  <ion-img
-                    [src]="teamPositions()['LB']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar"
+                  [class.has-player]="teamPositions()['LB']"
+                  [class.placeholder-avatar]="!teamPositions()['LB']"
+                >
+                  @if (teamPositions()['LB']) {
+                  <ion-img [src]="teamPositions()['LB']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge">LB</ion-badge>
                   @if (teamPositions()['LB']) {
-                  <ion-badge class="ovr-badge">84</ion-badge>
+                  <ion-badge class="ovr-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name">
@@ -191,13 +219,17 @@
                 </ion-text>
               </ion-col>
               <ion-col class="player-col" (click)="openPlayerSelection('LCB')">
-                <ion-avatar class="player-avatar large-avatar border-standard">
-                  <ion-img
-                    [src]="teamPositions()['LCB']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['LCB']"
+                  [class.placeholder-avatar]="!teamPositions()['LCB']"
+                >
+                  @if (teamPositions()['LCB']) {
+                  <ion-img [src]="teamPositions()['LCB']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge large-badge">CB</ion-badge>
                   @if (teamPositions()['LCB']) {
-                  <ion-badge class="ovr-badge large-badge">89</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
@@ -206,13 +238,17 @@
                 </ion-text>
               </ion-col>
               <ion-col class="player-col" (click)="openPlayerSelection('RCB')">
-                <ion-avatar class="player-avatar large-avatar border-standard">
-                  <ion-img
-                    [src]="teamPositions()['RCB']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['RCB']"
+                  [class.placeholder-avatar]="!teamPositions()['RCB']"
+                >
+                  @if (teamPositions()['RCB']) {
+                  <ion-img [src]="teamPositions()['RCB']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge large-badge">CB</ion-badge>
                   @if (teamPositions()['RCB']) {
-                  <ion-badge class="ovr-badge large-badge">86</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
@@ -224,13 +260,17 @@
                 class="player-col col-mt-2"
                 (click)="openPlayerSelection('RB')"
               >
-                <ion-avatar class="player-avatar">
-                  <ion-img
-                    [src]="teamPositions()['RB']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar"
+                  [class.has-player]="teamPositions()['RB']"
+                  [class.placeholder-avatar]="!teamPositions()['RB']"
+                >
+                  @if (teamPositions()['RB']) {
+                  <ion-img [src]="teamPositions()['RB']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge">RB</ion-badge>
                   @if (teamPositions()['RB']) {
-                  <ion-badge class="ovr-badge">85</ion-badge>
+                  <ion-badge class="ovr-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name">
@@ -242,13 +282,17 @@
 
             <ion-row class="gk-row">
               <ion-col class="player-col" (click)="openPlayerSelection('GK')">
-                <ion-avatar class="player-avatar large-avatar gk-avatar">
-                  <ion-img
-                    [src]="teamPositions()['GK']?.photoUrl || 'assets/placeholder-player.png'"
-                  ></ion-img>
+                <ion-avatar
+                  class="player-avatar large-avatar gk-avatar"
+                  [class.has-player]="teamPositions()['GK']"
+                  [class.placeholder-avatar]="!teamPositions()['GK']"
+                >
+                  @if (teamPositions()['GK']) {
+                  <ion-img [src]="teamPositions()['GK']?.photoUrl"></ion-img>
+                  }
                   <ion-badge class="pos-badge gk-pos">GK</ion-badge>
                   @if (teamPositions()['GK']) {
-                  <ion-badge class="ovr-badge large-badge">88</ion-badge>
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
