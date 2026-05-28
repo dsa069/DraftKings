@@ -90,6 +90,7 @@ export class PlayerListComponent {
   @Output() playerClick = new EventEmitter<string | undefined>();
   @Output() importSelected = new EventEmitter<Player[]>(); // Evento para enviar los elegidos
   @Output() searchChange = new EventEmitter<string>();
+  @Output() playerSelectedComplete = new EventEmitter<Player>();
 
   // Control de selección múltiple para el modo Import
   selectedPlayers = signal<Map<string | number, Player>>(new Map());
@@ -219,6 +220,7 @@ export class PlayerListComponent {
       this.selectedPlayers.set(currentMap);
     } else {
       this.playerClick.emit(player.id?.toString());
+      this.playerSelectedComplete.emit(player);
     }
   }
 
