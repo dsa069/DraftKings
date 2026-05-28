@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Preferences } from '@capacitor/preferences';
 import { Subject } from 'rxjs';
 import { Player } from '../../models/player.model';
+import { AiRecommendation } from '../../models/aiRecommendation.model';
 import { AuthService } from './auth.service';
 
 @Injectable()
@@ -39,6 +40,7 @@ export abstract class TeamService {
 
   // MÉTODO ABSTRACTO: Cada backend lo implementará a su manera
   abstract getAiRecommendations(
-    team: Record<string, Player>
-  ): Promise<Player[]>;
+    team: Record<string, Player>,
+    formationPositions: string[]
+  ): Promise<AiRecommendation>;
 }

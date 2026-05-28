@@ -13,7 +13,7 @@
       <ion-col size="auto" class="ovr-col">
         <ion-chip class="ovr-chip">
           <ion-label class="ovr-number">4.5</ion-label>
-          <ion-label class="ovr-text">OVR</ion-label>
+          <ion-label class="ovr-text">STARTS</ion-label>
         </ion-chip>
       </ion-col>
     </ion-row>
@@ -48,13 +48,13 @@
               <ion-header>
                 <ion-toolbar color="surface" class="modal-toolbar">
                   <ion-title class="header-title-base modal-subtitle"
-                    >Elegir {{ currentEditingPosition() }}</ion-title
+                    >Choose {{ currentEditingPosition() }}</ion-title
                   >
                   <ion-buttons slot="end">
                     <ion-button
                       fill="clear"
                       class="modal-close-button"
-                      aria-label="Cerrar modal"
+                      aria-label="Close modal"
                       (click)="closeModal()"
                     >
                       <ion-icon
@@ -97,13 +97,12 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name">
-                  {{ (teamPositions()['LW']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['LW']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
               <ion-col class="player-col" (click)="openPlayerSelection('ST')">
                 <ion-avatar
-                  class="player-avatar large-avatar highlight-avatar"
+                  class="player-avatar large-avatar border-standard"
                   [class.has-player]="teamPositions()['ST']"
                   [class.placeholder-avatar]="!teamPositions()['ST']"
                 >
@@ -116,8 +115,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
-                  {{ (teamPositions()['ST']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['ST']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
               <ion-col
@@ -138,8 +136,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name">
-                  {{ (teamPositions()['RW']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['RW']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
             </ion-row>
@@ -160,8 +157,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
-                  {{ (teamPositions()['LCM']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['LCM']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
               <ion-col
@@ -182,13 +178,12 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
-                  {{ (teamPositions()['CDM']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['CDM']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
               <ion-col class="player-col" (click)="openPlayerSelection('RCM')">
                 <ion-avatar
-                  class="player-avatar large-avatar highlight-avatar"
+                  class="player-avatar large-avatar border-standard"
                   [class.has-player]="teamPositions()['RCM']"
                   [class.placeholder-avatar]="!teamPositions()['RCM']"
                 >
@@ -201,8 +196,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
-                  {{ (teamPositions()['RCM']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['RCM']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
             </ion-row>
@@ -226,8 +220,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name">
-                  {{ (teamPositions()['LB']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['LB']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
               <ion-col class="player-col" (click)="openPlayerSelection('LCB')">
@@ -245,8 +238,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
-                  {{ (teamPositions()['LCB']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['LCB']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
               <ion-col class="player-col" (click)="openPlayerSelection('RCB')">
@@ -264,8 +256,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
-                  {{ (teamPositions()['RCB']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['RCB']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
               <ion-col
@@ -286,8 +277,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name">
-                  {{ (teamPositions()['RB']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['RB']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
             </ion-row>
@@ -308,8 +298,7 @@
                   }
                 </ion-avatar>
                 <ion-text class="player-name large-name">
-                  {{ (teamPositions()['GK']?.lastName || 'AÑADIR') | uppercase
-                  }}
+                  {{ (teamPositions()['GK']?.lastName || 'ADD') | uppercase }}
                 </ion-text>
               </ion-col>
             </ion-row>
@@ -321,11 +310,24 @@
       <ion-col>
         <ion-card class="ai-advice-card">
           <ion-card-content class="ai-advice-content">
-            <ion-button class="ai-btn" expand="block">
+            <ion-button
+              class="ai-btn"
+              expand="block"
+              (click)="requestAiAdvice()"
+              [disabled]="isAiLoading()"
+            >
+              @if (isAiLoading()) {
+              <ion-spinner
+                name="crescent"
+                slot="start"
+                color="light"
+              ></ion-spinner>
+              } @else {
               <ion-icon slot="start" name="sparkles"></ion-icon>
-              AI Advice
+              } AI Advice
             </ion-button>
 
+            @if (!hasAiResponse()) {
             <ion-card class="ai-tip-box">
               <ion-card-content class="ai-tip-content">
                 <ion-icon class="ai-tip-icon" name="bulb"></ion-icon>
@@ -334,6 +336,47 @@
                 </ion-text>
               </ion-card-content>
             </ion-card>
+            } @else {
+
+            <ion-card class="ai-response-container">
+              <ion-card-content class="ai-response-content">
+                <ion-item lines="none" class="ai-message-item">
+                  <ion-icon
+                    name="chatbubbles-outline"
+                    slot="start"
+                    class="ai-message-icon"
+                  ></ion-icon>
+                  <ion-text class="ai-response-text">
+                    {{ aiNarrative() }}
+                  </ion-text>
+                </ion-item>
+
+                <ion-list class="ai-recs-list">
+                  <ion-list-header class="ai-list-header">
+                    <ion-label class="ai-list-title"
+                      >SUGGESTED SIGNINGS</ion-label
+                    >
+                  </ion-list-header>
+
+                  @for (rec of aiRecommendationsArray(); track rec.position) {
+                  <ion-item lines="none" class="ai-rec-item">
+                    <ion-badge slot="start" class="ai-pos-badge"
+                      >{{ rec.position }}</ion-badge
+                    >
+                    <ion-label class="ai-player-label"
+                      >{{ rec.playerName }}</ion-label
+                    >
+                    <ion-icon
+                      name="sparkles"
+                      slot="end"
+                      class="ai-item-sparkle"
+                    ></ion-icon>
+                  </ion-item>
+                  }
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+            }
           </ion-card-content>
         </ion-card>
       </ion-col>

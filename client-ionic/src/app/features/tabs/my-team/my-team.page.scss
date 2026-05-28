@@ -391,11 +391,6 @@ ion-row.gk-row {
       display: none;
     }
 
-    &.highlight-avatar {
-      border-color: var(--ion-color-primary);
-      box-shadow: 0 0 15px rgba(77, 253, 133, 0.3);
-    }
-
     &.gk-avatar {
       border-color: #ffcc00;
       box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
@@ -590,4 +585,89 @@ ion-badge {
   font-style: italic;
   margin: 0;
   line-height: 1.4;
+}
+
+/* --- New AI Response Container Styles --- */
+.ai-response-container {
+  margin: var(--spacing-stack-md) 0 0 0;
+  background: var(--ion-color-surface);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.ai-response-content {
+  padding: 12px;
+}
+
+.ai-message-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 16px;
+  align-items: flex-start;
+
+  .ai-message-icon {
+    font-size: 24px;
+    color: var(--ion-color-primary);
+    margin-top: 2px;
+  }
+}
+
+.ai-response-text {
+  font-family: var(--font-family-body-md);
+  font-size: 14px;
+  color: var(--ion-color-secondary-tint);
+  line-height: 1.5;
+}
+
+.ai-recs-list {
+  background: transparent;
+  padding: 0;
+}
+
+.ai-list-header {
+  --background: transparent;
+  --padding-start: 0;
+  min-height: auto;
+  margin-bottom: 8px;
+}
+
+.ai-list-title {
+  font-family: var(--font-family-label-bold);
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--ion-color-primary);
+  letter-spacing: 1px;
+}
+
+.ai-rec-item {
+  --background: rgba(var(--ion-color-secondary-rgb), 0.05);
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(var(--ion-color-secondary-rgb), 0.1);
+
+  .ai-pos-badge {
+    --background: var(--ion-color-primary-contrast);
+    color: var(--ion-color-primary);
+    font-family: var(--font-family-label-bold);
+    font-weight: bold;
+    min-width: 42px;
+    text-align: center;
+  }
+
+  .ai-player-label {
+    font-family: var(--font-family-body-lg);
+    font-size: 14px;
+    color: var(--ion-color-chalk-white, #ffffff);
+    padding-left: 8px;
+  }
+
+  .ai-item-sparkle {
+    font-size: 16px;
+    color: var(--ion-color-primary);
+    opacity: 0.8;
+  }
 }
