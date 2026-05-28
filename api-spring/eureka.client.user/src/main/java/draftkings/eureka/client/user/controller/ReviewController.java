@@ -23,6 +23,7 @@ public class ReviewController {
      * @param userId The ID of the user to retrieve
      * @return UserDetailResponseDTO containing user and reviews
      */
+    // UNUSED
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserDetailResponseDTO> getUserProfileWithReviews(@PathVariable Long userId) {
         try {

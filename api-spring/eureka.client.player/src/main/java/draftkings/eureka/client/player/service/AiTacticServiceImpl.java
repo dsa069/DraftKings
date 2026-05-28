@@ -1,6 +1,8 @@
 package draftkings.eureka.client.player.service;
 
 import draftkings.eureka.client.player.dto.TacticRecommendationResponseDTO;
+import draftkings.eureka.client.player.exception.BadRequestException;
+import draftkings.eureka.client.player.exception.ServiceUnavailableException;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -38,7 +40,7 @@ public class AiTacticServiceImpl implements AiTacticService {
                 .collect(Collectors.joining(", "));
 
         if (emptyPositions.isEmpty()) {
-            throw new IllegalArgumentException("NO_EMPTY_POSITIONS");
+            throw new BadRequestException("NO_EMPTY_POSITIONS");
         }
 
         // 2. Definir el prompt en inglés con los requerimientos tácticos estrictos
@@ -84,7 +86,7 @@ public class AiTacticServiceImpl implements AiTacticService {
             // IMPRIMIR EL ERROR REAL EN CONSOLA
             System.err.println("====== ERROR DE COMUNICACIÓN O PARSEO DE IA ======");
             e.printStackTrace();
-            throw new IllegalStateException("AI_SERVICE_ERROR", e);
+            throw new ServiceUnavailableException("AI_SERVICE_ERROR", e);
         }
     }
 }
