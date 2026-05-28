@@ -9,7 +9,7 @@ import {
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
 import { NavController } from '@ionic/angular';
 import { PlayerService } from '../../core/services/abstract/player.service';
-import { LocationService } from '../../core/services/abstract/location.service';
+import { LocationService } from '../../core/services/location.service';
 
 describe('ImportPlayersPage Component', () => {
   it('should render header submenu', () => {

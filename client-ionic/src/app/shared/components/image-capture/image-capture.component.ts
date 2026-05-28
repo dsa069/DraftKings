@@ -11,7 +11,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { camera, imageOutline } from 'ionicons/icons';
-import { PhotoService } from '../../../core/services/abstract/photo.service';
+import { PhotoService } from '../../../core/services/photo.service';
 
 @Component({
   selector: 'app-image-capture',
