@@ -21,6 +21,14 @@ spring:
               uri: lb://userMS
               predicates:
                 - Path=/v3/api-docs/**
+            - id: playerms-openapi
+              uri: lb://playerMS
+              predicates:
+                - Path=/v3/api-docs/**
+            - id: reviewms-openapi
+              uri: lb://reviewMS
+              predicates:
+                - Path=/v3/api-docs/**
 
 app:
   cors:

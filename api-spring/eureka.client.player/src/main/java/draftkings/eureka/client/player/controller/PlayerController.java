@@ -3,11 +3,23 @@ package draftkings.eureka.client.player.controller;
 import draftkings.eureka.client.player.domain.Player;
 import draftkings.eureka.client.player.dto.PlayerDetailResponseDTO;
 import draftkings.eureka.client.player.dto.PlayerExternalDTO;
+import draftkings.eureka.client.player.exception.BadRequestException;
+import draftkings.eureka.client.player.exception.CustomResponse;
+import draftkings.eureka.client.player.exception.ResourceNotFoundException;
+import draftkings.eureka.client.player.exception.ServiceUnavailableException;
 import draftkings.eureka.client.player.repository.PlayerRepository;
 import draftkings.eureka.client.player.service.PlayerService;
 import draftkings.eureka.client.player.service.ApiFootballService;
 import draftkings.eureka.client.player.dto.ReviewDTO;
 import draftkings.eureka.client.player.client.ReviewClient;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +35,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/players")
+@Tag(name = "Players", description = "CRUD de jugadores y operaciones externas")
 public class PlayerController {
 
     private final PlayerRepository playerRepository;
@@ -40,6 +53,10 @@ public class PlayerController {
 
     // 3) Obtener listado de jugadores -> DIRECTO A REPOSITORY
     @GetMapping
+    @Operation(summary = "Obtener listado de jugadores", description = "Lista paginada de jugadores con filtros opcionales")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de jugadores obtenida", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Player.class)))),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<Page<Player>> getAllPlayers(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "team", required = false) String team,
@@ -61,17 +78,23 @@ public class PlayerController {
     // 4) Obtener detalle de un jugador -> USA EL SERVICE (Por la orquestación
     // distribuida)
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener detalle de un jugador", description = "Devuelve el jugador con sus reseñas asociadas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Detalle del jugador", content = @Content(schema = @Schema(implementation = PlayerDetailResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<PlayerDetailResponseDTO> getPlayerById(@PathVariable Long id) {
-        try {
-            PlayerDetailResponseDTO playerDetail = playerService.getPlayerProfileWithReviews(id);
-            return ResponseEntity.ok(playerDetail);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        PlayerDetailResponseDTO playerDetail = playerService.getPlayerProfileWithReviews(id);
+        return ResponseEntity.ok(playerDetail);
     }
 
     // 5) Crear un jugador -> DIRECTO A REPOSITORY
     @PostMapping
+    @Operation(summary = "Crear un jugador", description = "Registrar un nuevo jugador manualmente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Jugador creado con éxito", content = @Content(schema = @Schema(implementation = Player.class))),
+            @ApiResponse(responseCode = "400", description = "Body inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
         if (player.getCreatedAt() == null) {
             player.setCreatedAt(new Date());
@@ -86,26 +109,36 @@ public class PlayerController {
     // simplificar lo dejamos como PUT con lógica de modificación parcial dentro del
     // servicio
     @PutMapping("/{id}")
+    @Operation(summary = "Editar datos de un jugador", description = "Actualiza parcialmente un jugador existente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Jugador actualizado", content = @Content(schema = @Schema(implementation = Player.class))),
+            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<Player> updatePlayer(@PathVariable Long id, @RequestBody Player playerDetails) {
-        try {
-            Player updatedPlayer = playerService.updatePlayerPartial(id, playerDetails);
-            return ResponseEntity.ok(updatedPlayer);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Player updatedPlayer = playerService.updatePlayerPartial(id, playerDetails);
+        return ResponseEntity.ok(updatedPlayer);
     }
 
     // 8) Eliminar un jugador -> DIRECTO A REPOSITORY
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar un jugador", description = "Borra un jugador permanentemente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Eliminación exitosa"),
+            @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<Void> deletePlayer(@PathVariable Long id) {
         if (playerRepository.existsById(id)) {
             playerRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Jugador no encontrado");
     }
 
     @GetMapping("/external")
+    @Operation(summary = "Obtener jugadores desde la API externa", description = "Consulta API-Football y devuelve una lista normalizada")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de jugadores externos obtenida", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PlayerExternalDTO.class)))),
+            @ApiResponse(responseCode = "500", description = "Error consultando la API externa", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<List<PlayerExternalDTO>> getExternalPlayers(
             @RequestParam(value = "search", required = false) String search) {
         List<PlayerExternalDTO> players = apiFootballService.searchExternalPlayers(search);
@@ -113,9 +146,14 @@ public class PlayerController {
     }
 
     @PostMapping("/import")
+    @Operation(summary = "Importar jugadores desde la API externa", description = "Recibe una lista de jugadores y los persiste en la BD")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Jugadores importados correctamente"),
+            @ApiResponse(responseCode = "400", description = "El body es inválido o está vacío", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Error al insertar en base de datos", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<Void> importPlayers(@RequestBody List<Player> playersToImport) {
         if (playersToImport == null || playersToImport.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException("El body no contiene jugadores para importar");
         }
 
         // Aseguramos que la fecha de creación se asigne si es necesario
@@ -132,6 +170,10 @@ public class PlayerController {
 
     // 10) Obtener comentarios de un jugador
     @GetMapping("/{id}/reviews")
+    @Operation(summary = "Obtener comentarios de un jugador", description = "Devuelve todas las reseñas de un jugador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Comentarios obtenidos", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDTO.class)))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<List<ReviewDTO>> getPlayerReviews(@PathVariable("id") Long playerId) {
         // En un caso de uso estricto de DDD/Clean, esto pasaría por el Service.
         // Para simplificar según tu patrón actual directo a cliente/repo:
@@ -141,13 +183,18 @@ public class PlayerController {
 
     // 11) Crear un comentario para un jugador
     @PostMapping("/{id}/reviews")
+    @Operation(summary = "Crear un comentario para un jugador", description = "Añade una reseña a un jugador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Comentario añadido con éxito", content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
+            @ApiResponse(responseCode = "503", description = "Servicio de reseñas no disponible", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
     public ResponseEntity<ReviewDTO> createPlayerReview(@PathVariable("id") Long playerId,
             @RequestBody ReviewDTO review) {
         ReviewDTO createdReview = reviewClient.createReview(playerId, review);
 
         // Si el circuit breaker actúa, devuelve null. Protegemos la respuesta.
         if (createdReview == null) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+            throw new ServiceUnavailableException("Servicio de reseñas no disponible");
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReview);

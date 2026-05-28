@@ -3,9 +3,11 @@ package draftkings.eureka.client.player.service;
 import draftkings.eureka.client.player.domain.Player;
 import draftkings.eureka.client.player.dto.PlayerDetailResponseDTO;
 import draftkings.eureka.client.player.dto.ReviewDTO;
+import draftkings.eureka.client.player.exception.ResourceNotFoundException;
 import draftkings.eureka.client.player.repository.PlayerRepository;
 import draftkings.eureka.client.player.client.ReviewClient;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class PlayerServiceImpl implements PlayerService {
     public PlayerDetailResponseDTO getPlayerProfileWithReviews(Long playerId) {
         // 1. Buscamos el jugador en nuestra BD local relacional
         Player player = playerRepository.findById(playerId)
-                .orElseThrow(() -> new RuntimeException("Jugador no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Jugador no encontrado"));
 
         // 2. Traemos las reseñas consumiendo el microservicio externo vía OpenFeign
         // protegiendo la llamada
@@ -48,7 +50,7 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public Player updatePlayerPartial(Long id, Player playerDetails) {
         Player existingPlayer = playerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Jugador no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Jugador no encontrado"));
 
         // Campos originales que ya tenías
         if (playerDetails.getTeam() != null)

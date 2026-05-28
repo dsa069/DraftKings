@@ -10,8 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,24 +43,46 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
                 ex.toString());
         if (ex instanceof ResponseStatusException) {
             ResponseStatusException rse = (ResponseStatusException) ex;
-            CustomResponse resp = new CustomResponse();
-            resp.setTimestamp(OffsetDateTime.now());
-            resp.setStatus(rse.getStatusCode().value());
-            String reason = rse.getReason();
-            if (reason == null || reason.isBlank()) {
-                reason = rse.getStatusCode().toString();
-            }
-            resp.setError(reason);
-            resp.setPath(request.getRequestURI());
-            response.setStatus(rse.getStatusCode().value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            try {
-                mapper.writeValue(response.getWriter(), resp);
-            } catch (IOException e) {
-                logger.error("Failed to write error response", e);
-            }
-            return new ModelAndView();
+            return writeResponse(request, response, rse.getStatusCode().value(), resolveReason(rse.getReason(), rse));
+        }
+        if (ex instanceof BadRequestException || ex instanceof IllegalArgumentException) {
+            return writeResponse(request, response, HttpStatus.BAD_REQUEST.value(), resolveReason(ex.getMessage(), ex));
+        }
+        if (ex instanceof ServiceUnavailableException || ex instanceof IllegalStateException) {
+            return writeResponse(request, response, HttpStatus.SERVICE_UNAVAILABLE.value(),
+                    resolveReason(ex.getMessage(), ex));
+        }
+        if (ex instanceof HttpMessageNotReadableException || ex instanceof MethodArgumentTypeMismatchException) {
+            return writeResponse(request, response, HttpStatus.BAD_REQUEST.value(), resolveReason(ex.getMessage(), ex));
+        }
+        if (ex instanceof InternalServerErrorException || ex instanceof RuntimeException) {
+            return writeResponse(request, response, HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    resolveReason(ex.getMessage(), ex));
         }
         return null;
+    }
+
+    private ModelAndView writeResponse(HttpServletRequest request, HttpServletResponse response, int status,
+            String errorMessage) {
+        CustomResponse resp = new CustomResponse();
+        resp.setTimestamp(OffsetDateTime.now());
+        resp.setStatus(status);
+        resp.setError(errorMessage);
+        resp.setPath(request.getRequestURI());
+        response.setStatus(status);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        try {
+            mapper.writeValue(response.getWriter(), resp);
+        } catch (IOException e) {
+            logger.error("Failed to write error response", e);
+        }
+        return new ModelAndView();
+    }
+
+    private String resolveReason(String reason, Exception ex) {
+        if (reason != null && !reason.isBlank()) {
+            return reason;
+        }
+        return ex.getClass().getSimpleName();
     }
 }
