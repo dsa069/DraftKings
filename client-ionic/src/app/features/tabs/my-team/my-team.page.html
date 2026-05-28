@@ -56,9 +56,9 @@
 
               <ion-content>
                 <app-player-list
-                  mode="view"
                   [players]="allPlayers()"
-                  (playerSelectedComplete)="onPlayerSelected($event)"
+                  [loading]="isLoadingPlayers()"
+                  (playerClick)="onPlayerSelected($event)"
                 >
                 </app-player-list>
               </ion-content>
