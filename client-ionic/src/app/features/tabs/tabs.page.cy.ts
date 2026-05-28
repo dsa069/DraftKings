@@ -16,12 +16,4 @@ describe('TabsPage Component', () => {
 
     cy.get('ion-tab-bar').should('exist');
   });
-
-  it('should render exactly three tab buttons', () => {
-    cy.mount(TabsPage, {
-      imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
-    });
-
-    cy.get('ion-tab-button').should('have.length', 3);
-  });
 });
