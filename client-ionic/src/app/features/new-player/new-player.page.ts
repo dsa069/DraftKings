@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
   AppLocation,
   LocationService,
-} from '../../core/services/abstract/location.service';
+} from '../../core/services/location.service';
 import { Player } from '../../core/models/player.model';
 import {
   FormsModule,
@@ -33,7 +33,7 @@ import { person, camera, location, saveOutline } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
 import { ImageCaptureComponent } from '../../shared/components/image-capture/image-capture.component';
-import { PhotoService } from '../../core/services/abstract/photo.service';
+import { PhotoService } from '../../core/services/photo.service';
 import { PlayerService } from '../../core/services/abstract/player.service';
 import { AuthService } from '../../core/services/abstract/auth.service';
 import { MapCaptureComponent } from '../../shared/components/map-capture/map-capture.component';

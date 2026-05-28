@@ -6,7 +6,7 @@ import { PlayerService } from '../../core/services/abstract/player.service';
 import { Player } from '../../core/models/player.model';
 import { NavController } from '@ionic/angular';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
-import { LocationService } from '../../core/services/abstract/location.service';
+import { LocationService } from '../../core/services/location.service';
 
 @Component({
   selector: 'app-import-players',

@@ -10,7 +10,7 @@ import {
   IonLabel,
   IonText,
 } from '@ionic/angular/standalone';
-import { PhotoService } from '../../../core/services/abstract/photo.service';
+import { PhotoService } from '../../../core/services/photo.service';
 
 describe('ImageCaptureComponent', () => {
   it('should render ion-grid', () => {

@@ -42,7 +42,7 @@ import { Player } from '../../core/models/player.model';
 import { PlayerService } from '../../core/services/abstract/player.service';
 import { Review } from '../../core/models/review.model';
 import { ReviewService } from '../../core/services/abstract/review.service';
-import { LocationService } from '../../core/services/abstract/location.service';
+import { LocationService } from '../../core/services/location.service';
 import { addIcons } from 'ionicons';
 import {
   pencil,
