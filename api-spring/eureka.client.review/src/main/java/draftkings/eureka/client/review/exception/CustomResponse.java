@@ -14,10 +14,10 @@ public class CustomResponse {
     @Schema(description = "HTTP status code", example = "404")
     private int status;
 
-    @Schema(description = "Error message", example = "Player not found: 1")
+    @Schema(description = "Error message", example = "Review not found: 1")
     private String error;
 
-    @Schema(description = "Request path", example = "/players/1")
+    @Schema(description = "Request path", example = "/reviews/1")
     private String path;
 
     public OffsetDateTime getTimestamp() {
