@@ -31,7 +31,7 @@ import {
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { addIcons } from 'ionicons';
-import { TeamService } from '../../../core/services/team.service';
+import { TeamService } from '../../../core/services/abstract/team.service';
 import { Player } from '../../../core/models/player.model';
 import { PlayerListComponent } from '../../../shared/components/player-list/player-list.component';
 import { PlayerService } from '../../../core/services/abstract/player.service';

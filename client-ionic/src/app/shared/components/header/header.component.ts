@@ -12,7 +12,7 @@ import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { logInOutline, logOutOutline, footballOutline } from 'ionicons/icons';
 import { AuthService } from '../../../core/services/abstract/auth.service';
-import { TeamService } from '../../../core/services/team.service';
+import { TeamService } from '../../../core/services/abstract/team.service';
 
 @Component({
   selector: 'app-header',
