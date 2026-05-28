@@ -12,6 +12,7 @@ import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { logInOutline, logOutOutline, footballOutline } from 'ionicons/icons';
 import { AuthService } from '../../../core/services/abstract/auth.service';
+import { TeamService } from '../../../core/services/team.service';
 
 @Component({
   selector: 'app-header',
@@ -31,6 +32,7 @@ import { AuthService } from '../../../core/services/abstract/auth.service';
 export class HeaderComponent {
   private readonly navCtrl = inject(NavController);
   private readonly authService = inject(AuthService);
+  private readonly teamService = inject(TeamService);
 
   public readonly isLogged = this.authService.isAuthenticated;
 
@@ -53,6 +55,7 @@ export class HeaderComponent {
 
   async closeSession(): Promise<void> {
     await this.authService.logout();
+    await this.teamService.clearTeam();
     this.goToLogin();
   }
 }
