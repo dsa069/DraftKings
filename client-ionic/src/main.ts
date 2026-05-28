@@ -29,6 +29,8 @@ import { AuthService } from './app/core/services/abstract/auth.service';
 import { authFactory } from './app/core/services/factory/auth.factory';
 import { ConfigService } from './app/core/services/config.service';
 import { environment } from './environments/environment';
+import { teamFactory } from './app/core/services/factory/team.factory';
+import { TeamService } from './app/core/services/abstract/team.service';
 
 console.log('🚀 Configuración cargada:', {
   produccion: environment.production,
@@ -68,5 +70,6 @@ bootstrapApplication(AppComponent, {
       useFactory: reviewFactory,
       deps: [ConfigService],
     },
+    { provide: TeamService, useFactory: teamFactory, deps: [ConfigService] },
   ],
 });
