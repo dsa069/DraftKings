@@ -40,6 +40,16 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
+openapi:
+  title: DraftKings Player Microservice API
+  description: API documentation for Player Microservice API that is part of the DraftKings application. This microservice manages player-related operations such as creating, retrieving, updating, and deleting player information. It also provides endpoints for managing player reviews and ratings. The API is designed to be RESTful and follows best practices for API design.
+  version: '@project.version@'
+  contact:
+    name: Daniel Salas Alonso
+    email: dsa069@inlumine.ual.es
+    url: https://github.com/dsa069/DraftKings.git
+
+
 management:
   info:
     env:

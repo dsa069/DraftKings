@@ -17,6 +17,8 @@ spring:
     openfeign:
       circuitbreaker:
         enabled: true
+openapi:
+  title: DraftKings User Microservice API (Local)
 
 management:
   info:

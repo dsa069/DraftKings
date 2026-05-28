@@ -27,6 +27,9 @@ spring:
       ddl-auto: update # O 'none' si no quieres que toque las tablas
     show-sql: true
     open-in-view: false
+    
+openapi:
+  title: DraftKings Review Microservice API (Dev)
 
 management:
   info:

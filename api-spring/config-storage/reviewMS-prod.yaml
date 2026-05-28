@@ -28,6 +28,9 @@ spring:
     show-sql: true
     open-in-view: false
 
+openapi:
+  title: DraftKings Review Microservice API (Prod)
+
 management:
   info:
     env:
