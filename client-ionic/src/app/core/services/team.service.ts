@@ -24,4 +24,9 @@ export class TeamService {
       value: JSON.stringify(team),
     });
   }
+
+  // Limpia solo el equipo guardado en preferences
+  async clearTeam(): Promise<void> {
+    await Preferences.remove({ key: this.TEAM_KEY });
+  }
 }
