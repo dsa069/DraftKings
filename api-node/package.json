@@ -12,6 +12,8 @@
     "lint:json": "mkdir -p coverage && eslint src/**/*.ts --format json -o coverage/eslint-result.json"
   },
   "dependencies": {
+    "@langchain/core": "^1.1.48",
+    "@langchain/groq": "^1.2.1",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.6.0",
     "axios": "^1.16.0",
@@ -27,7 +29,8 @@
     "morgan": "^1.10.1",
     "pug": "^3.0.4",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
