@@ -3,11 +3,11 @@ describe('Client Detail Navigation E2E', () => {
     cy.visit('http://localhost:8100/#/tabs/players');
   });
 
-  it('should navigate to my-team', () => {
-    // Click on the my-team button
-    cy.get('ion-tab-button').eq(0).click();
+  it('should navigate to settings', () => {
+    // Click on the settings button
+    cy.get('ion-tab-button').eq(2).click();
 
-    // Should navigate to my-team
-    cy.url().should('include', '/tabs/my-team');
+    // Should navigate to settings
+    cy.url().should('include', '/tabs/settings');
   });
 });
