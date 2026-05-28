@@ -10,6 +10,7 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
 import { PlayerListComponent } from '../../../shared/components/player-list/player-list.component';
 import { NavController } from '@ionic/angular';
 import { PlayerService } from '../../../core/services/abstract/player.service';
+import { TeamService } from '../../../core/services/abstract/team.service';
 
 describe('PlayersPage', () => {
   it('should render player list', () => {
@@ -42,6 +43,12 @@ describe('PlayersPage', () => {
               subscribe: () => ({ unsubscribe: () => undefined }),
             },
             getPlayers: async () => [],
+          },
+        },
+        {
+          provide: TeamService,
+          useValue: {
+            clearTeam: async () => undefined,
           },
         },
       ],
