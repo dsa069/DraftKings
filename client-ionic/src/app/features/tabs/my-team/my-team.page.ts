@@ -1,4 +1,12 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  signal,
+  inject,
+  computed,
+  OnDestroy,
+} from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import {
   IonContent,
@@ -64,7 +72,8 @@ import {
     PlayerListComponent, // <- Asegúrate de importar el componente aquí
   ],
 })
-export class MyTeamPage implements OnInit {
+export class MyTeamPage implements OnInit, OnDestroy {
+  private teamClearedSub?: Subscription;
   private teamService = inject(TeamService);
   private playerService = inject(PlayerService);
 
@@ -107,8 +116,17 @@ export class MyTeamPage implements OnInit {
     const savedTeam = await this.teamService.getTeam();
     this.teamPositions.set(savedTeam);
 
+    // Nos suscribimos para limpiar el estado en memoria cuando se borre el equipo
+    this.teamClearedSub = this.teamService.teamCleared$.subscribe(() => {
+      this.teamPositions.set({});
+    });
+
     // 2. Cargamos los jugadores de la BD (con la lógica a prueba de fallos)
     await this.loadPlayersFromDB();
+  }
+
+  ngOnDestroy(): void {
+    this.teamClearedSub?.unsubscribe();
   }
 
   // Mismo método de extracción que tienes en players.page.ts
