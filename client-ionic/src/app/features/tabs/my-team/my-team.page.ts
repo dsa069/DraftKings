@@ -28,6 +28,10 @@ import {
   IonToolbar,
   IonTitle,
   IonButtons,
+  IonSpinner,
+  IonItem,
+  IonList,
+  IonListHeader,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { addIcons } from 'ionicons';
@@ -41,6 +45,7 @@ import {
   bulb,
   gitNetworkOutline,
   arrowUndoOutline,
+  chatbubblesOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -68,6 +73,10 @@ import {
     IonToolbar,
     IonTitle,
     IonButtons,
+    IonSpinner,
+    IonItem,
+    IonList,
+    IonListHeader,
     HeaderComponent,
     PlayerListComponent, // <- Asegúrate de importar el componente aquí
   ],
@@ -77,11 +86,27 @@ export class MyTeamPage implements OnInit, OnDestroy {
   private teamService = inject(TeamService);
   private playerService = inject(PlayerService);
 
-  teamPositions = signal<Record<string, Player>>({});
-  allPlayers = signal<Player[]>([]);
-  isLoadingPlayers = signal<boolean>(false); // Para mostrar el spinner en el list
-  isModalOpen = signal<boolean>(false);
-  currentEditingPosition = signal<string>('');
+  public teamPositions = signal<Record<string, Player>>({});
+  public allPlayers = signal<Player[]>([]);
+  public isLoadingPlayers = signal<boolean>(false); // Para mostrar el spinner en el list
+  public isModalOpen = signal<boolean>(false);
+  public currentEditingPosition = signal<string>('');
+  public aiMessage = signal<string>(
+    'Tap to get AI recommendations for your squad.'
+  );
+  public aiNarrative = signal<string>('');
+  public aiRecommendations = signal<Record<string, string>>({});
+  public hasAiResponse = signal<boolean>(false);
+  public isAiLoading = signal<boolean>(false);
+
+  public aiRecommendationsArray = computed(() => {
+    const recommendations = this.aiRecommendations();
+
+    return Object.keys(recommendations).map((position) => ({
+      position,
+      playerName: recommendations[position],
+    }));
+  });
 
   availablePlayers = computed(() => {
     const all = this.allPlayers();
@@ -108,6 +133,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
       bulb,
       gitNetworkOutline,
       arrowUndoOutline,
+      chatbubblesOutline,
     });
   }
 
@@ -119,6 +145,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
     // Nos suscribimos para limpiar el estado en memoria cuando se borre el equipo
     this.teamClearedSub = this.teamService.teamCleared$.subscribe(() => {
       this.teamPositions.set({});
+      this.resetAiAdviceState();
     });
 
     // 2. Cargamos los jugadores de la BD (con la lógica a prueba de fallos)
@@ -154,7 +181,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
 
       this.allPlayers.set(players);
     } catch (error) {
-      console.error('Error cargando jugadores para el Team:', error);
+      console.error('Error loading players for the team:', error);
     } finally {
       this.isLoadingPlayers.set(false);
     }
@@ -190,5 +217,52 @@ export class MyTeamPage implements OnInit, OnDestroy {
 
   closeModal() {
     this.isModalOpen.set(false);
+  }
+
+  private resetAiAdviceState() {
+    this.aiNarrative.set('');
+    this.aiRecommendations.set({});
+    this.hasAiResponse.set(false);
+    this.isAiLoading.set(false);
+  }
+
+  async requestAiAdvice() {
+    this.isAiLoading.set(true);
+
+    try {
+      const currentTeam = this.teamPositions();
+      const currentFormationPositions = [
+        'GK',
+        'RB',
+        'RCB',
+        'LCB',
+        'LB',
+        'RCM',
+        'CDM',
+        'LCM',
+        'RW',
+        'ST',
+        'LW',
+      ];
+
+      // Pasamos el array como segundo parámetro
+      const response = await this.teamService.getAiRecommendations(
+        currentTeam,
+        currentFormationPositions
+      );
+
+      this.aiNarrative.set(response.message);
+      this.aiRecommendations.set(response.recommendations || {});
+      this.hasAiResponse.set(true);
+    } catch (error) {
+      console.error('Error requesting AI advice:', error);
+      this.aiNarrative.set(
+        'Could not load AI advice at this time. Please try again.'
+      );
+      this.aiRecommendations.set({});
+      this.hasAiResponse.set(true);
+    } finally {
+      this.isAiLoading.set(false);
+    }
   }
 }
