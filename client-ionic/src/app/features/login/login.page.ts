@@ -17,7 +17,6 @@ import {
   IonHeader,
   IonText,
   IonButtons,
-  IonBackButton,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -27,6 +26,7 @@ import {
   arrowForwardOutline,
   eyeOutline,
   eyeOffOutline,
+  arrowBackOutline,
 } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
@@ -51,7 +51,6 @@ import { AuthService } from '../../core/services/abstract/auth.service';
     IonHeader,
     IonText,
     IonButtons,
-    IonBackButton,
     LoginCardComponent,
   ],
 })
@@ -67,11 +66,12 @@ export class LoginPage implements OnInit {
 
   constructor() {
     addIcons({
-      'mail-outline': mailOutline,
-      'lock-closed-outline': lockClosedOutline,
-      'arrow-forward-outline': arrowForwardOutline,
-      'eye-outline': eyeOutline,
-      'eye-off-outline': eyeOffOutline,
+      mailOutline,
+      lockClosedOutline,
+      arrowForwardOutline,
+      eyeOutline,
+      eyeOffOutline,
+      arrowBackOutline,
     });
   }
 
@@ -126,6 +126,11 @@ export class LoginPage implements OnInit {
     const activeElement = document.activeElement as HTMLElement | null;
     activeElement?.blur();
     this.navCtrl.navigateForward(['/sign-up']);
+  }
+
+  goToPlayers(): void {
+    // Usamos navigateRoot para limpiar el historial de navegación si vas al inicio/tabs
+    this.navCtrl.navigateRoot(['/tabs/players']);
   }
 
   private async showToast(

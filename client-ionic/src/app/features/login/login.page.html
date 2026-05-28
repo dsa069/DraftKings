@@ -1,10 +1,9 @@
 <ion-content class="login-container">
   <ion-grid class="login-wrapper ion-no-padding">
     <ion-buttons class="back-button-container">
-      <ion-back-button
-        defaultHref="/"
-        class="circular-back-btn"
-      ></ion-back-button>
+      <ion-button class="circular-back-btn" (click)="goToPlayers()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-header class="login-header ion-no-border">
       <ion-text class="login-title">DRAFTKINGS</ion-text>
