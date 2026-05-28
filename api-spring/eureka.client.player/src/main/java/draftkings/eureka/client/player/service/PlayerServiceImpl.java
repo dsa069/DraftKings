@@ -3,6 +3,7 @@ package draftkings.eureka.client.player.service;
 import draftkings.eureka.client.player.domain.Player;
 import draftkings.eureka.client.player.dto.PlayerDetailResponseDTO;
 import draftkings.eureka.client.player.dto.ReviewDTO;
+import draftkings.eureka.client.player.exception.BadRequestException;
 import draftkings.eureka.client.player.exception.ResourceNotFoundException;
 import draftkings.eureka.client.player.repository.PlayerRepository;
 import draftkings.eureka.client.player.client.ReviewClient;
@@ -24,6 +25,10 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public PlayerDetailResponseDTO getPlayerProfileWithReviews(Long playerId) {
+        if (playerId == null || playerId <= 0) {
+            throw new BadRequestException("Player id must be greater than zero");
+        }
+
         // 1. Buscamos el jugador en nuestra BD local relacional
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Jugador no encontrado"));
@@ -49,6 +54,13 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Player updatePlayerPartial(Long id, Player playerDetails) {
+        if (id == null || id <= 0) {
+            throw new BadRequestException("Player id must be greater than zero");
+        }
+        if (playerDetails == null) {
+            throw new BadRequestException("Player payload is required");
+        }
+
         Player existingPlayer = playerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Jugador no encontrado"));
 

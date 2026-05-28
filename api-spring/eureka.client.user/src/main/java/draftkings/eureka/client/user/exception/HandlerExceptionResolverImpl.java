@@ -12,9 +12,11 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,6 +56,9 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
         if (ex instanceof ResponseStatusException) {
             ResponseStatusException rse = (ResponseStatusException) ex;
             return writeResponse(request, response, rse.getStatusCode().value(), resolveReason(rse.getReason(), rse));
+        }
+        if (ex instanceof HttpMessageNotReadableException || ex instanceof MethodArgumentTypeMismatchException) {
+            return writeResponse(request, response, HttpStatus.BAD_REQUEST.value(), resolveReason(ex.getMessage(), ex));
         }
         if (ex instanceof InternalServerErrorException || ex instanceof RuntimeException) {
             return writeResponse(request, response, HttpStatus.INTERNAL_SERVER_ERROR.value(),

@@ -4,6 +4,7 @@ import draftkings.eureka.client.review.domain.Review;
 import draftkings.eureka.client.review.repository.ReviewRepository;
 import draftkings.eureka.client.review.exception.BadRequestException;
 import draftkings.eureka.client.review.exception.ResourceNotFoundException;
+import draftkings.eureka.client.review.exception.InternalServerErrorException;
 import draftkings.eureka.client.review.exception.CustomResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,16 +39,26 @@ public class ReviewController {
     @Operation(summary = "Obtener comentarios de un jugador", description = "Devuelve todas las reseñas filtradas por el identificador del jugador.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de reseñas encontradas", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Review.class)))),
-            @ApiResponse(responseCode = "400", description = "Identificador de jugador inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
-            @ApiResponse(responseCode = "404", description = "No se encontraron reseñas para el jugador", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"No reviews found for player: 1\",\"path\":\"/api/players/1/reviews\"}")))
+            @ApiResponse(responseCode = "400", description = "Identificador de jugador inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":400,\"error\":\"Player id must be greater than zero\",\"path\":\"/api/players/1/reviews\"}"))),
+            @ApiResponse(responseCode = "404", description = "No se encontraron reseñas para el jugador", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"No reviews found for player: 1\",\"path\":\"/api/players/1/reviews\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":500,\"error\":\"Error loading reviews\",\"path\":\"/api/players/1/reviews\"}")))
     })
     public ResponseEntity<List<Review>> getReviewsByPlayer(
             @Parameter(description = "ID del jugador de la cual se quieren obtener las reseñas", required = true) @PathVariable("player_id") Long playerId) {
-        List<Review> reviews = reviewRepository.findByPlayerId(playerId);
-        if (reviews == null || reviews.isEmpty()) {
-            throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "No reviews found for player: " + playerId);
+        if (playerId == null || playerId <= 0) {
+            throw new BadRequestException("Player id must be greater than zero");
         }
-        return ResponseEntity.ok(reviews);
+        try {
+            List<Review> reviews = reviewRepository.findByPlayerId(playerId);
+            if (reviews == null || reviews.isEmpty()) {
+                throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "No reviews found for player: " + playerId);
+            }
+            return ResponseEntity.ok(reviews);
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new InternalServerErrorException("Error loading reviews", ex);
+        }
     }
 
     // 11) Crear un comentario para un jugador
@@ -71,8 +82,12 @@ public class ReviewController {
             review.setUserId(1L);
         }
 
-        Review savedReview = reviewRepository.save(review);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
+        try {
+            Review savedReview = reviewRepository.save(review);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException("Error creating review", ex);
+        }
     }
 
     // 12) Editar comentario
@@ -91,17 +106,28 @@ public class ReviewController {
             throw new BadRequestException("At least text or rating must be provided");
         }
 
-        Review existingReview = reviewRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Review not found with ID: " + id));
+        Review existingReview;
+        try {
+            existingReview = reviewRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND,
+                            "Review not found with ID: " + id));
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new InternalServerErrorException("Error loading review", ex);
+        }
 
         if (reviewDetails.getText() != null)
             existingReview.setText(reviewDetails.getText());
         if (reviewDetails.getRating() != null)
             existingReview.setRating(reviewDetails.getRating());
 
-        Review updatedReview = reviewRepository.save(existingReview);
-        return ResponseEntity.ok(updatedReview);
+        try {
+            Review updatedReview = reviewRepository.save(existingReview);
+            return ResponseEntity.ok(updatedReview);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException("Error updating review", ex);
+        }
     }
 
     // 13) Eliminar comentario
@@ -114,11 +140,18 @@ public class ReviewController {
     public ResponseEntity<Void> deleteReview(
             @Parameter(description = "ID de la reseña a eliminar", required = true) @PathVariable("id") Long id) {
 
-        if (!reviewRepository.existsById(id)) {
-            throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Review cannot be deleted. ID not found: " + id);
-        }
+        try {
+            if (!reviewRepository.existsById(id)) {
+                throw new ResourceNotFoundException(HttpStatus.NOT_FOUND,
+                        "Review cannot be deleted. ID not found: " + id);
+            }
 
-        reviewRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+            reviewRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new InternalServerErrorException("Error deleting review", ex);
+        }
     }
 }

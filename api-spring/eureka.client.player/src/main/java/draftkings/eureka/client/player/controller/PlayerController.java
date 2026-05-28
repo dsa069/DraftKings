@@ -57,7 +57,8 @@ public class PlayerController {
     @Operation(summary = "Obtener listado de jugadores", description = "Lista paginada de jugadores con filtros opcionales")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de jugadores obtenida", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Player.class)))),
-            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = CustomResponse.class))) })
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Unexpected error while loading players\",\"path\":\"/api/players\"}"))) })
     public ResponseEntity<Page<Player>> getAllPlayers(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "team", required = false) String team,
@@ -65,6 +66,10 @@ public class PlayerController {
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        if (page < 0 || size <= 0) {
+            throw new BadRequestException("Page must be zero or greater and size must be greater than zero");
+        }
 
         Date startDateAsDate = null;
         if (startDate != null) {
@@ -79,12 +84,16 @@ public class PlayerController {
     // 4) Obtener detalle de un jugador -> USA EL SERVICE (Por la orquestación
     // distribuida)
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener detalle de un jugador", description = "Devuelve el jugador con sus reseñas asociadas")
+    @Operation(summary = "Obtener detalle de un jugador", description = "Devuelve el jugador con sus reseñas asociadas.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Detalle del jugador", content = @Content(schema = @Schema(implementation = PlayerDetailResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Identificador de jugador inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"Player id must be greater than zero\",\"path\":\"/api/players/1\"}"))),
             @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1\"}"))),
             @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Unexpected error while loading player details\",\"path\":\"/api/players/1\"}"))) })
     public ResponseEntity<PlayerDetailResponseDTO> getPlayerById(@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            throw new BadRequestException("Player id must be greater than zero");
+        }
         PlayerDetailResponseDTO playerDetail = playerService.getPlayerProfileWithReviews(id);
         return ResponseEntity.ok(playerDetail);
     }
@@ -97,6 +106,9 @@ public class PlayerController {
             @ApiResponse(responseCode = "400", description = "Body inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"Invalid player payload\",\"path\":\"/api/players\"}"))),
             @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error creating player\",\"path\":\"/api/players\"}"))) })
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
+        if (player == null) {
+            throw new BadRequestException("Invalid player payload");
+        }
         if (player.getCreatedAt() == null) {
             player.setCreatedAt(new Date());
         }
@@ -139,6 +151,7 @@ public class PlayerController {
     @Operation(summary = "Obtener jugadores desde la API externa", description = "Consulta API-Football y devuelve una lista normalizada")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de jugadores externos obtenida", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PlayerExternalDTO.class)))),
+            @ApiResponse(responseCode = "503", description = "Servicio externo no disponible o circuit breaker abierto", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":503,\"error\":\"Failed to fetch players from external API\",\"path\":\"/api/players/external\"}"))),
             @ApiResponse(responseCode = "500", description = "Error consultando la API externa", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Failed to fetch players from external API\",\"path\":\"/api/players/external\"}"))) })
     public ResponseEntity<List<PlayerExternalDTO>> getExternalPlayers(
             @RequestParam(value = "search", required = false) String search) {
@@ -171,12 +184,15 @@ public class PlayerController {
 
     // 10) Obtener comentarios de un jugador
     @GetMapping("/{id}/reviews")
-    @Operation(summary = "Obtener comentarios de un jugador", description = "Devuelve todas las reseñas de un jugador")
+    @Operation(summary = "Obtener comentarios de un jugador", description = "Devuelve todas las reseñas de un jugador. Si reviewMS está caído, el fallback devuelve una lista vacía y no se expone 503.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Comentarios obtenidos", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDTO.class)))),
             @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1/reviews\"}"))),
             @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error loading reviews\",\"path\":\"/api/players/1/reviews\"}"))) })
     public ResponseEntity<List<ReviewDTO>> getPlayerReviews(@PathVariable("id") Long playerId) {
+        if (playerId == null || playerId <= 0) {
+            throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Player not found: " + playerId);
+        }
         if (!playerRepository.existsById(playerId)) {
             throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Player not found: " + playerId);
         }

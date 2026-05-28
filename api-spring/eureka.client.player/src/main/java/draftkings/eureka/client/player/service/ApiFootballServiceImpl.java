@@ -3,7 +3,7 @@ package draftkings.eureka.client.player.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import draftkings.eureka.client.player.dto.PlayerExternalDTO;
-import draftkings.eureka.client.player.exception.InternalServerErrorException;
+import draftkings.eureka.client.player.exception.ServiceUnavailableException;
 import org.springframework.beans.factory.annotation.Value;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.http.HttpEntity;
@@ -60,14 +60,14 @@ public class ApiFootballServiceImpl implements ApiFootballService {
             JsonNode root = response.getBody() == null ? null : objectMapper.readTree(response.getBody());
             return mapResponseToDTOList(root);
         } catch (Exception e) {
-            throw new InternalServerErrorException("Failed to fetch players from external API", e);
+            throw new ServiceUnavailableException("Failed to fetch players from external API", e);
         }
     }
 
     @SuppressWarnings("unused")
     public List<PlayerExternalDTO> searchExternalPlayersFallback(String search, Throwable throwable) {
         System.err.println("API-Football is down or unavailable: " + throwable.getMessage());
-        throw new InternalServerErrorException("Failed to fetch players from external API", throwable);
+        throw new ServiceUnavailableException("Failed to fetch players from external API", throwable);
     }
 
     private List<PlayerExternalDTO> mapResponseToDTOList(JsonNode root) {
