@@ -98,8 +98,9 @@
   "last": true
 }
 ```
-  - `400 Bad Request` — Parámetros de paginación inválidos.
-  - `500 Internal Server Error` — Error interno inesperado.
+
+- `400 Bad Request` — Parámetros de paginación inválidos.
+- `500 Internal Server Error` — Error interno inesperado.
 
 ### 4) Obtener detalle de un jugador
 
@@ -173,6 +174,7 @@
 
 - **Respuestas:**
   - `201 Created` — Jugador creado con éxito.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
   - `400 Bad Request` — Body inválido.
   - `500 Internal Server Error` — Error interno inesperado.
 
@@ -219,8 +221,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 ]
 ```
 
-  - `503 Service Unavailable` — Error de comunicación o timeout con la API externa.
-  - `500 Internal Server Error` — Error consultando la API externa.
+- `401 Unauthorized` — El token JWT falta o no es válido.
+- `503 Service Unavailable` — Error de comunicación o timeout con la API externa.
+- `500 Internal Server Error` — Error consultando la API externa.
 
 ### 7) Importar jugadores desde la API externa
 
@@ -263,6 +266,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 - **Respuestas:**
   - `201 Created` — Jugadores importados correctamente.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
   - `400 Bad Request` — El body no es un array de jugadores.
   - `500 Internal Server Error` — Error al insertar en base de datos.
 
@@ -292,6 +296,8 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 - **Respuestas:**
   - `200 OK` — Modificación procesada con éxito.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
   - `404 Not Found` — Jugador no encontrado.
   - `500 Internal Server Error` — Error interno inesperado.
 
@@ -305,6 +311,8 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Respuestas:**
   - `204 No Content` — Eliminación exitosa.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
   - `404 Not Found` — Jugador no encontrado.
   - `500 Internal Server Error` — Error interno inesperado.
 
@@ -335,9 +343,10 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   }
 ]
 ```
-  - `400 Bad Request` — Identificador de jugador inválido.
-  - `404 Not Found` — Jugador no encontrado.
-  - `500 Internal Server Error` — Error interno inesperado.
+
+- `400 Bad Request` — Identificador de jugador inválido.
+- `404 Not Found` — Jugador no encontrado.
+- `500 Internal Server Error` — Error interno inesperado.
 
 ### 11) Crear un comentario para un jugador
 
@@ -370,11 +379,11 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 ### 12) Editar comentario
 
 - **Caso de uso:** `UC_editar_comentario`
-- **Descripción:** Edita el texto y/o la puntuación de una reseña existente. (Endpoint marcado como `unused`)
+- **Descripción:** Edita el texto y/o la puntuación de una reseña existente.
 - **Método:** `PUT`
 - **URL:** `http://localhost:8080/reviewms/api/reviews/{id}`
 - **Headers:**
-  - `Authorization: Bearer {tu_token_JWT}`
+  - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Content-Type:** `application/json`
 - **Body (JSON) ejemplo:**
 
@@ -388,6 +397,8 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Tags:** `unused`
 - **Respuestas:**
   - `200 OK` — Comentario actualizado.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
   - `400 Bad Request` — Body de la reseña inválido.
   - `404 Not Found` — Comentario no existe.
 
@@ -401,6 +412,8 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Respuestas:**
   - `204 No Content` — Comentario eliminado.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
   - `404 Not Found` — Comentario no existe.
 
 ---
@@ -416,6 +429,11 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **URL:** `http://localhost:8092/api/news`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
+
+- **Respuestas:**
+  - `200 OK` — Lista de noticias devuelta correctamente.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `500 Internal Server Error` — Error interno del servidor.
 
 ### 15) Publicar una noticia
 
@@ -436,6 +454,13 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   "tags": "Fichajes, Exclusiva"
 }
 ```
+
+- **Respuestas:**
+  - `201 Created` — Noticia publicada correctamente.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
+  - `400 Bad Request` — Body inválido.
+  - `500 Internal Server Error` — Error interno del servidor.
 
 ---
 
@@ -488,5 +513,6 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 ```
 
 - `400 Bad Request` — El formato del mapa de posiciones es inválido o no se han enviado datos.
+- `401 Unauthorized` — El token JWT falta o no es válido.
 - `503 Service Unavailable` — Error de comunicación o timeout con el proveedor del servicio de Inteligencia Artificial.
 - `500 Internal Server Error` — Error interno del servidor.
