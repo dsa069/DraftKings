@@ -16,6 +16,11 @@ import {
   playerToUpdateBody,
   playerWithoutCoordsBody,
 } from "../utils/data/player.test.data";
+import {
+  clearCollections,
+  connectToInMemoryMongo,
+  disconnectInMemoryMongo,
+} from "../utils/helpers/mongoTestDb.helper";
 
 describe("PlayerService (Pruebas de Integración con BD)", () => {
   let mongoServer: MongoMemoryServer;
@@ -25,26 +30,18 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
   // CONFIGURACIÓN DE BASE DE DATOS EN MEMORIA
   // ============================================================================
   beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    const uri = mongoServer.getUri();
-
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.disconnect();
-    }
-    await mongoose.connect(uri);
+    mongoServer = await connectToInMemoryMongo();
 
     // Instanciamos el servicio que vamos a probar
     playerService = new PlayerService();
   });
 
   afterAll(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
+    await disconnectInMemoryMongo(mongoServer);
   });
 
   beforeEach(async () => {
-    // Limpiamos la colección antes de cada prueba
-    await Player.deleteMany({});
+    await clearCollections(Player);
   });
 
   // ============================================================================

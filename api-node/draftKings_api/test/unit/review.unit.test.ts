@@ -19,13 +19,14 @@ import {
   reviewUpdateTextBody,
   validReviewBody,
 } from "../utils/data/review.test.data";
+import { createExpressMockContext } from "../utils/helpers/expressMock.helper";
+import { mockExecResolved } from "../utils/helpers/mongooseQuery.helper";
 
 // 1. Mockeamos los modelos de Mongoose para aislar la base de datos
 jest.mock("../../models/review");
 jest.mock("../../models/player");
 
 describe("ReviewController (Pruebas Unitarias)", () => {
-  // Dobles de prueba para Express
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let responseJsonMock: jest.Mock;
@@ -36,21 +37,15 @@ describe("ReviewController (Pruebas Unitarias)", () => {
   const validObjectId = new mongoose.Types.ObjectId().toString();
 
   beforeEach(() => {
-    // Reseteamos los mocks antes de cada test
-    responseJsonMock = jest.fn();
-    responseSendMock = jest.fn();
-    responseStatusMock = jest
-      .fn()
-      .mockReturnValue({ json: responseJsonMock, send: responseSendMock });
-
-    mockRequest = {
+    const ctx = createExpressMockContext({
       params: {},
       body: {},
-    };
-    mockResponse = {
-      status: responseStatusMock,
-      json: responseJsonMock,
-    };
+    });
+    mockRequest = ctx.req;
+    mockResponse = ctx.res;
+    responseJsonMock = ctx.jsonMock;
+    responseStatusMock = ctx.statusMock;
+    responseSendMock = ctx.sendMock;
 
     jest.clearAllMocks();
   });
@@ -77,9 +72,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       mockRequest.params = { id: validObjectId };
 
       // Simulamos que Player.findById devuelve null (no existe)
-      (Player.findById as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      });
+      (Player.findById as jest.Mock).mockReturnValue(mockExecResolved(null));
 
       await reviewsGetByPlayer(
         mockRequest as Request,
@@ -96,16 +89,14 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       mockRequest.params = { id: validObjectId };
 
       // Simulamos que el jugador existe
-      (Player.findById as jest.Mock).mockReturnValue({
-        exec: jest
-          .fn()
-          .mockResolvedValue({ _id: validObjectId, name: "Jugador Test" }),
-      });
+      (Player.findById as jest.Mock).mockReturnValue(
+        mockExecResolved({ _id: validObjectId, name: "Jugador Test" }),
+      );
 
       // Simulamos que Review.find devuelve el array de reseñas
-      (Review.find as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockReviewList),
-      });
+      (Review.find as jest.Mock).mockReturnValue(
+        mockExecResolved(mockReviewList),
+      );
 
       await reviewsGetByPlayer(
         mockRequest as Request,
@@ -151,9 +142,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       mockRequest.params = { id: validObjectId };
       mockRequest.body = { text: "Gran partido", rating: 5 };
 
-      (Player.findById as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      });
+      (Player.findById as jest.Mock).mockReturnValue(mockExecResolved(null));
 
       await reviewsCreate(mockRequest as Request, mockResponse as Response);
 
@@ -168,9 +157,9 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       mockRequest.body = validReviewBody;
       mockRequest.user = { _id: validObjectId, userName: "Tester" };
 
-      (Player.findById as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue({ _id: validObjectId }),
-      });
+      (Player.findById as jest.Mock).mockReturnValue(
+        mockExecResolved({ _id: validObjectId }),
+      );
 
       (Review as unknown as jest.Mock).mockImplementation(() => ({
         save: jest.fn().mockResolvedValue(mockSavedReview),
@@ -186,9 +175,9 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       mockRequest.params = { id: validObjectId };
       mockRequest.body = { text: "Gran partido", rating: 5 };
 
-      (Player.findById as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue({ _id: validObjectId }),
-      });
+      (Player.findById as jest.Mock).mockReturnValue(
+        mockExecResolved({ _id: validObjectId }),
+      );
 
       (Review as unknown as jest.Mock).mockImplementation(() => ({
         save: jest
@@ -228,9 +217,9 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       mockRequest.body = reviewUpdateTextBody;
 
       // Simulamos que findByIdAndUpdate devuelve null
-      (Review.findByIdAndUpdate as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      });
+      (Review.findByIdAndUpdate as jest.Mock).mockReturnValue(
+        mockExecResolved(null),
+      );
 
       await reviewsUpdate(mockRequest as Request, mockResponse as Response);
 
@@ -244,9 +233,9 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       mockRequest.params = { id: validObjectId };
       mockRequest.body = reviewUpdateRatingBody; // Solo actualizamos rating
 
-      (Review.findByIdAndUpdate as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockUpdatedReview),
-      });
+      (Review.findByIdAndUpdate as jest.Mock).mockReturnValue(
+        mockExecResolved(mockUpdatedReview),
+      );
 
       await reviewsUpdate(mockRequest as Request, mockResponse as Response);
 
@@ -279,9 +268,9 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       mockRequest.params = { id: validObjectId };
 
       // Simulamos que findByIdAndDelete no encuentra nada
-      (Review.findByIdAndDelete as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      });
+      (Review.findByIdAndDelete as jest.Mock).mockReturnValue(
+        mockExecResolved(null),
+      );
 
       await reviewsDelete(mockRequest as Request, mockResponse as Response);
 
@@ -295,9 +284,9 @@ describe("ReviewController (Pruebas Unitarias)", () => {
 
       const mockDeletedReview = { _id: validObjectId, text: "Para borrar" };
 
-      (Review.findByIdAndDelete as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockDeletedReview),
-      });
+      (Review.findByIdAndDelete as jest.Mock).mockReturnValue(
+        mockExecResolved(mockDeletedReview),
+      );
 
       await reviewsDelete(mockRequest as Request, mockResponse as Response);
 

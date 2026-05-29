@@ -11,6 +11,7 @@ import {
   unitAiTacticResponse,
   validTacticPositions,
 } from "../utils/data/tactic.test.data";
+import { createExpressMockContext } from "../utils/helpers/expressMock.helper";
 
 // 1. Mockeamos el servicio de la Inteligencia Artificial (Evitamos llamadas a Groq)
 jest.mock("../../services/aiTacticService");
@@ -22,14 +23,11 @@ describe("TacticController (Pruebas Unitarias)", () => {
   let responseStatusMock: jest.Mock;
 
   beforeEach(() => {
-    responseJsonMock = jest.fn();
-    responseStatusMock = jest.fn().mockReturnValue({ json: responseJsonMock });
-
-    mockRequest = { body: {} };
-    mockResponse = {
-      status: responseStatusMock,
-      json: responseJsonMock,
-    };
+    const ctx = createExpressMockContext({ body: {} });
+    mockRequest = ctx.req;
+    mockResponse = ctx.res;
+    responseJsonMock = ctx.jsonMock;
+    responseStatusMock = ctx.statusMock;
 
     jest.clearAllMocks();
   });

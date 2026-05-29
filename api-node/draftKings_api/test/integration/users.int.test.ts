@@ -9,6 +9,16 @@ import {
   testUserSeed,
   validSyncUserBody,
 } from "../utils/data/user.test.data";
+import { withAuth } from "../utils/helpers/authRequest.helper";
+import {
+  expectApiError,
+  expectUnauthorized,
+} from "../utils/helpers/apiAssertions.helper";
+import {
+  clearCollections,
+  connectToInMemoryMongo,
+  disconnectInMemoryMongo,
+} from "../utils/helpers/mongoTestDb.helper";
 // ============================================================================
 // 1. MOCKS DE MIDDLEWARES
 // ============================================================================
@@ -52,18 +62,15 @@ jest.mock("../../middleware/auth.middleware", () => ({
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  if (mongoose.connection.readyState !== 0) await mongoose.disconnect();
-  await mongoose.connect(mongoServer.getUri());
+  mongoServer = await connectToInMemoryMongo();
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
+  await disconnectInMemoryMongo(mongoServer);
 });
 
 beforeEach(async () => {
-  await User.deleteMany({});
+  await clearCollections(User);
   jest.clearAllMocks();
 });
 
@@ -85,18 +92,15 @@ describe("User API Endpoints (/api/user)", () => {
         .post("/api/user/sync")
         .send(validSyncUserBody);
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("Debería retornar 200 si el usuario está autenticado", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .post("/api/user/sync")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-is-new", "true")
-        .send(validSyncUserBody);
+      const response = await withAuth(request(app).post("/api/user/sync"), {
+        headers: { "x-test-is-new": "true" },
+      }).send(validSyncUserBody);
 
       expect(response.status).toBe(200);
       expect(response.body.userName).toBe("Nuevo Nombre");
@@ -105,25 +109,20 @@ describe("User API Endpoints (/api/user)", () => {
     it("Debería retornar 401 cuando el middleware no inyecta req.user", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .post("/api/user/sync")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-no-user", "true")
-        .send({ userName: "NoDebeAplicar" });
+      const response = await withAuth(request(app).post("/api/user/sync"), {
+        headers: { "x-test-no-user": "true" },
+      }).send({ userName: "NoDebeAplicar" });
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("Debería retornar 200 si el usuario autenticado es admin", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .post("/api/user/sync")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-is-new", "true")
-        .set("x-test-role", "ADMIN")
-        .send(adminSyncUserBody);
+      const response = await withAuth(request(app).post("/api/user/sync"), {
+        role: "ADMIN",
+        headers: { "x-test-is-new": "true" },
+      }).send(adminSyncUserBody);
 
       expect(response.status).toBe(200);
       expect(response.body.role).toBe("ADMIN");
@@ -132,11 +131,9 @@ describe("User API Endpoints (/api/user)", () => {
     it("Debería retornar 200 y actualizar el usuario si es nuevo (isNewUser=true)", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .post("/api/user/sync")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-is-new", "true") // Simulamos que es su primer login
-        .send(adminSyncUserBody);
+      const response = await withAuth(request(app).post("/api/user/sync"), {
+        headers: { "x-test-is-new": "true" },
+      }).send(adminSyncUserBody);
 
       expect(response.status).toBe(200);
       expect(response.body.userName).toBe("NuevoNombre");
@@ -147,11 +144,9 @@ describe("User API Endpoints (/api/user)", () => {
     it("Debería retornar 409 si el usuario ya está sincronizado (isNewUser=false)", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .post("/api/user/sync")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-is-new", "false") // Simulamos login recurrente
-        .send({ userName: "IntentoFallido" });
+      const response = await withAuth(request(app).post("/api/user/sync"), {
+        headers: { "x-test-is-new": "false" },
+      }).send({ userName: "IntentoFallido" });
 
       expect(response.status).toBe(409);
       expect(response.body.message).toBe("Usuario ya sincronizado");
@@ -160,11 +155,9 @@ describe("User API Endpoints (/api/user)", () => {
     it("Debería devolver el usuario actual si no hay campos válidos para actualizar", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .post("/api/user/sync")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-is-new", "true")
-        .send(blankSyncUserBody);
+      const response = await withAuth(request(app).post("/api/user/sync"), {
+        headers: { "x-test-is-new": "true" },
+      }).send(blankSyncUserBody);
 
       expect(response.status).toBe(200);
       expect(response.body.userName).toBe("UsuarioTest");
@@ -177,14 +170,14 @@ describe("User API Endpoints (/api/user)", () => {
         .spyOn(User, "findByIdAndUpdate")
         .mockRejectedValueOnce(new Error("SYNC_FAIL"));
 
-      const response = await request(app)
-        .post("/api/user/sync")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-is-new", "true")
-        .send(validSyncUserBody);
+      const response = await withAuth(request(app).post("/api/user/sync"), {
+        headers: { "x-test-is-new": "true" },
+      }).send(validSyncUserBody);
 
-      expect(response.status).toBe(500);
-      expect(response.body.message).toBe("Error en el servidor");
+      expectApiError(response, {
+        status: 500,
+        message: "Error en el servidor",
+      });
       updateSpy.mockRestore();
     });
   });
@@ -193,16 +186,13 @@ describe("User API Endpoints (/api/user)", () => {
     it("Debería retornar 401 si el usuario no está autenticado", async () => {
       const response = await request(app).get("/api/user/profile");
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("Debería retornar 200 si el usuario está autenticado", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .get("/api/user/profile")
-        .set("Authorization", "Bearer mock-token");
+      const response = await withAuth(request(app).get("/api/user/profile"));
 
       expect(response.status).toBe(200);
       expect(response.body.email).toBe("test@example.com");
@@ -211,10 +201,9 @@ describe("User API Endpoints (/api/user)", () => {
     it("Debería retornar 200 si el usuario autenticado es admin", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .get("/api/user/profile")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-role", "ADMIN");
+      const response = await withAuth(request(app).get("/api/user/profile"), {
+        role: "ADMIN",
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.firebaseUid).toBe("testUid123");
@@ -223,9 +212,7 @@ describe("User API Endpoints (/api/user)", () => {
     it("Debería retornar 200 y los datos del perfil del usuario", async () => {
       await createTestUser();
 
-      const response = await request(app)
-        .get("/api/user/profile")
-        .set("Authorization", "Bearer mock-token");
+      const response = await withAuth(request(app).get("/api/user/profile"));
 
       expect(response.status).toBe(200);
       expect(response.body.email).toBe("test@example.com");

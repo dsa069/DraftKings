@@ -8,27 +8,25 @@ import {
   modelSerializationReviewSeed,
   modelSerializationUserSeed,
 } from "../utils/data/model.test.data";
+import {
+  clearCollections,
+  connectToInMemoryMongo,
+  disconnectInMemoryMongo,
+} from "../utils/helpers/mongoTestDb.helper";
 
 describe("Model serialization (Pruebas Unitarias)", () => {
   let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.disconnect();
-    }
-    await mongoose.connect(mongoServer.getUri());
+    mongoServer = await connectToInMemoryMongo();
   });
 
   afterAll(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
+    await disconnectInMemoryMongo(mongoServer);
   });
 
   beforeEach(async () => {
-    await Review.deleteMany({});
-    await Player.deleteMany({});
-    await User.deleteMany({});
+    await clearCollections(Review, Player, User);
   });
 
   it("Player.toJSON debería mapear id, aplanar coords y formatear birthdate", async () => {

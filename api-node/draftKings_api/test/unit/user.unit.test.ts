@@ -9,6 +9,7 @@ import {
   updatedSyncUser,
   validSyncUserBody,
 } from "../utils/data/user.test.data";
+import { createExpressMockContext } from "../utils/helpers/expressMock.helper";
 
 // 1. Mockeamos el modelo User de Mongoose
 jest.mock("../../models/user");
@@ -23,18 +24,16 @@ describe("UserController (Pruebas Unitarias)", () => {
   let responseStatusMock: jest.Mock;
 
   beforeEach(() => {
-    responseJsonMock = jest.fn();
-    responseStatusMock = jest.fn().mockReturnValue({ json: responseJsonMock });
-
-    // Inicializamos un objeto Request base
-    mockRequest = {
-      body: {},
-    };
-
-    mockResponse = {
-      status: responseStatusMock,
-      json: responseJsonMock,
-    };
+    const ctx = createExpressMockContext<
+      Partial<Request> & {
+        user?: { _id: string; userName?: string; role?: string };
+        isNewUser?: boolean;
+      }
+    >({ body: {} });
+    mockRequest = ctx.req;
+    mockResponse = ctx.res;
+    responseJsonMock = ctx.jsonMock;
+    responseStatusMock = ctx.statusMock;
 
     jest.clearAllMocks();
   });
