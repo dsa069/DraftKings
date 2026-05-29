@@ -4,7 +4,7 @@ import Player from "../../models/player";
 import Review from "../../models/review";
 import { User } from "../../models/user";
 
-describe("Model serialization integration", () => {
+describe("Model serialization (Pruebas Unitarias)", () => {
   let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
