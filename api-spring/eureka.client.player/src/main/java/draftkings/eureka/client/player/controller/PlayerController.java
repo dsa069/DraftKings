@@ -147,6 +147,8 @@ public class PlayerController {
         throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Jugador no encontrado");
     }
 
+    // 6) Obtener jugadores desde la API externa -> USA EL SERVICE (Por la lógica de
+    // orquestación y transformación)
     @GetMapping("/external")
     @Operation(summary = "Obtener jugadores desde la API externa", description = "Consulta API-Football y devuelve una lista normalizada")
     @ApiResponses({
@@ -159,6 +161,8 @@ public class PlayerController {
         return ResponseEntity.ok(players);
     }
 
+    // 7) Importar jugadores desde la API externa -> DIRECTO A REPOSITORY (El
+    // servicio ya hace la orquestación y transformación)
     @PostMapping("/import")
     @Operation(summary = "Importar jugadores desde la API externa", description = "Recibe una lista de jugadores y los persiste en la BD")
     @ApiResponses({
@@ -187,12 +191,14 @@ public class PlayerController {
     @Operation(summary = "Obtener comentarios de un jugador", description = "Devuelve todas las reseñas de un jugador. Si reviewMS está caído, el fallback devuelve una lista vacía y no se expone 503.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Comentarios obtenidos", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Identificador de jugador inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"Player id must be greater than zero\",\"path\":\"/api/players/1/reviews\"}"))),
             @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1/reviews\"}"))),
             @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error loading reviews\",\"path\":\"/api/players/1/reviews\"}"))) })
     public ResponseEntity<List<ReviewDTO>> getPlayerReviews(@PathVariable("id") Long playerId) {
         if (playerId == null || playerId <= 0) {
-            throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Player not found: " + playerId);
+            throw new BadRequestException("Player id must be greater than zero");
         }
+
         if (!playerRepository.existsById(playerId)) {
             throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Player not found: " + playerId);
         }
