@@ -11,6 +11,14 @@ import {
 import Player from "../../models/player";
 import { PlayerService } from "../../services/playerService";
 import { ApiFootballService } from "../../services/apiFootballService";
+import {
+  invalidImportPlayers,
+  playerImportBatchBody,
+  playerImportNotArrayBody,
+  playerUpdatePayload,
+  playerWithoutRequiredFieldsBody,
+  validPlayerBody,
+} from "../utils/data/player.test.data";
 
 // 1. Mockeamos las dependencias del controlador
 jest.mock("../../models/player");
@@ -157,7 +165,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
 
   describe("playersCreate", () => {
     it("Debería retornar 400 si faltan campos requeridos", async () => {
-      mockRequest.body = { name: "Sin coordenadas" };
+      mockRequest.body = playerWithoutRequiredFieldsBody;
 
       await playersCreate(mockRequest as Request, mockResponse as Response);
 
@@ -169,11 +177,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     });
 
     it("Debería crear el jugador y retornar 201", async () => {
-      mockRequest.body = {
-        name: "Jugador Nuevo",
-        latitude: 10,
-        longitude: 20,
-      };
+      mockRequest.body = validPlayerBody;
 
       (PlayerService.prototype.createPlayer as jest.Mock).mockResolvedValue({
         _id: "nuevo-id",
@@ -205,7 +209,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
 
     it("Debería retornar 404 si el servicio devuelve NOT_FOUND", async () => {
       mockRequest.params = { id: "507f1f77bcf86cd799439011" };
-      mockRequest.body = { name: "Nuevo" };
+      mockRequest.body = playerUpdatePayload;
 
       (
         PlayerService.prototype.updatePlayerPartial as jest.Mock
@@ -219,22 +223,27 @@ describe("PlayerController (Pruebas Unitarias)", () => {
 
     it("Debería retornar 200 con el jugador actualizado", async () => {
       mockRequest.params = { id: "507f1f77bcf86cd799439011" };
-      mockRequest.body = { name: "Nuevo" };
+      mockRequest.body = playerUpdatePayload;
 
       (
         PlayerService.prototype.updatePlayerPartial as jest.Mock
-      ).mockResolvedValue({ _id: "507f1f77bcf86cd799439011", name: "Nuevo" });
+      ).mockResolvedValue({
+        _id: "507f1f77bcf86cd799439011",
+        team: "Selección Argentina",
+        age: 37,
+      });
 
       await playersUpdate(mockRequest as Request, mockResponse as Response);
 
       expect(PlayerService.prototype.updatePlayerPartial).toHaveBeenCalledWith(
         "507f1f77bcf86cd799439011",
-        { name: "Nuevo" },
+        playerUpdatePayload,
       );
       expect(responseStatusMock).toHaveBeenCalledWith(200);
       expect(responseJsonMock).toHaveBeenCalledWith({
         _id: "507f1f77bcf86cd799439011",
-        name: "Nuevo",
+        team: "Selección Argentina",
+        age: 37,
       });
     });
   });
@@ -336,7 +345,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
 
   describe("playersImport", () => {
     it("Debería retornar 400 si el body no es un array", async () => {
-      mockRequest.body = { name: "Solo un objeto, no un array" };
+      mockRequest.body = playerImportNotArrayBody;
 
       await playersImport(mockRequest as Request, mockResponse as Response);
 
@@ -347,10 +356,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     });
 
     it("Debería retornar 400 si algún jugador no tiene name, latitud o longitud", async () => {
-      mockRequest.body = [
-        { name: "Jugador 1", latitude: 10, longitude: 20 },
-        { name: "Jugador Malo" }, // Faltan coords
-      ];
+      mockRequest.body = invalidImportPlayers;
 
       await playersImport(mockRequest as Request, mockResponse as Response);
 
@@ -361,7 +367,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     });
 
     it("Debería llamar a apiFootballService y retornar 201 si el array es válido", async () => {
-      mockRequest.body = [{ name: "Jugador 1", latitude: 10, longitude: 20 }];
+      mockRequest.body = playerImportBatchBody;
 
       // Simulamos que el servicio externo resuelve correctamente
       (
@@ -380,7 +386,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     });
 
     it("Debería retornar 500 si el servicio de importación falla", async () => {
-      mockRequest.body = [{ name: "Jugador 1", latitude: 10, longitude: 20 }];
+      mockRequest.body = playerImportBatchBody;
 
       (
         ApiFootballService.prototype.importPlayers as jest.Mock

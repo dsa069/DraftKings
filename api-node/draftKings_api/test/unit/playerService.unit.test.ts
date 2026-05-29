@@ -1,5 +1,12 @@
 import { PlayerService } from "../../services/playerService";
 import Player from "../../models/player";
+import {
+  completePlayerCreateServiceBody,
+  playerCreateServiceBody,
+  playerOriginalServiceBody,
+  playerSingleFieldUpdateBody,
+  playerUpdateServiceBody,
+} from "../utils/data/player.test.data";
 
 // 1. Aislar Mongoose: Mockeamos el modelo completo de Mongoose
 jest.mock("../../models/player");
@@ -15,11 +22,7 @@ describe("PlayerService (Pruebas Unitarias)", () => {
   describe("createPlayer()", () => {
     it("Debería transformar los datos y llamar a save() en el modelo", async () => {
       // Preparamos los datos de entrada
-      const mockBody = {
-        name: "Lamine Yamal",
-        latitude: 41.3809,
-        longitude: 2.1228,
-      };
+      const mockBody = playerCreateServiceBody;
 
       // Simulamos la respuesta de la función save() de Mongoose
       const mockSavedPlayer = { ...mockBody, _id: "mockId123" };
@@ -39,23 +42,7 @@ describe("PlayerService (Pruebas Unitarias)", () => {
     });
 
     it("Debería convertir birthdate y coordinar correctamente todos los campos opcionales", async () => {
-      const mockBody = {
-        name: "Completo",
-        firstName: "Completo",
-        lastName: "Jugador",
-        age: 25,
-        birthdate: "2000-01-01T00:00:00.000Z",
-        nationality: "Spain",
-        height: 180,
-        weight: 75,
-        number: 9,
-        team: "Team A",
-        league: "League A",
-        position: "ST",
-        photoUrl: "https://example.com/photo.jpg",
-        latitude: 41.1,
-        longitude: 2.2,
-      };
+      const mockBody = completePlayerCreateServiceBody;
 
       const mockSavedPlayer = {
         ...mockBody,
@@ -78,12 +65,12 @@ describe("PlayerService (Pruebas Unitarias)", () => {
           birthdate: new Date(mockBody.birthdate),
           coords: {
             type: "Point",
-            coordinates: [2.2, 41.1],
+            coordinates: [20.2, 10.1],
           },
         }),
       );
       expect(result.coords.coordinates).toEqual([2.2, 41.1]);
-      expect(result.team).toBe("Team A");
+      expect(result.team).toBe("Equipo X");
       expect(result.position).toBe("ST");
     });
   });
@@ -97,18 +84,16 @@ describe("PlayerService (Pruebas Unitarias)", () => {
 
       // Verificamos que el servicio lanza el error esperado
       await expect(
-        playerService.updatePlayerPartial("id-falso", { name: "Test" }),
+        playerService.updatePlayerPartial("id-falso", playerUpdateServiceBody),
       ).rejects.toThrow("NOT_FOUND");
     });
 
     it("Debería actualizar los campos y guardar si el jugador existe", async () => {
       // Simulamos el jugador existente en BD
       const mockExistingPlayer = {
+        ...playerOriginalServiceBody,
         _id: "id-real",
-        name: "Jugador Viejo",
-        age: 20,
-        coords: { coordinates: [0, 0] },
-        save: jest.fn().mockResolvedValue(true), // Simulamos el método save del documento
+        save: jest.fn().mockResolvedValue(true),
       };
 
       (Player.findById as jest.Mock).mockReturnValue({
@@ -117,13 +102,13 @@ describe("PlayerService (Pruebas Unitarias)", () => {
 
       // Ejecutamos la actualización
       await playerService.updatePlayerPartial("id-real", {
-        name: "Jugador Nuevo",
-        age: 21,
+        ...playerSingleFieldUpdateBody,
       });
 
       // Verificamos que el servicio modificó los campos del objeto simulado
-      expect(mockExistingPlayer.name).toBe("Jugador Nuevo");
+      expect(mockExistingPlayer.name).toBe("Jugador Viejo");
       expect(mockExistingPlayer.age).toBe(21);
+      expect(mockExistingPlayer.team).toBe("Equipo B");
       // Verificamos que mandó a guardar los cambios
       expect(mockExistingPlayer.save).toHaveBeenCalled();
     });

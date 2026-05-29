@@ -1,6 +1,12 @@
 import axios from "axios";
 import Player from "../../models/player";
 import { ApiFootballService } from "../../services/apiFootballService";
+import {
+  emptyApiFootballResponse,
+  importPlayersApiPayload,
+  searchApiFootballResponse,
+  transformedExternalPlayers,
+} from "../utils/data/apiFootball.test.data";
 
 jest.mock("axios");
 jest.mock("../../models/player");
@@ -15,7 +21,7 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
 
   describe("searchPlayers()", () => {
     it("Debería llamar a la API externa sin search cuando no se pasa criterio", async () => {
-      (axios.get as jest.Mock).mockResolvedValue({ data: { response: [] } });
+      (axios.get as jest.Mock).mockResolvedValue(emptyApiFootballResponse);
 
       await apiFootballService.searchPlayers();
 
@@ -28,29 +34,7 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
     });
 
     it("Debería llamar a la API externa con el parámetro search y mapear la respuesta", async () => {
-      const apiResponse = {
-        data: {
-          response: [
-            {
-              player: {
-                name: "Lamine Yamal",
-                firstname: "Lamine",
-                lastname: "Yamal",
-                age: 17,
-                birth: { date: "2007-07-13" },
-                nationality: "Spain",
-                position: "Attacker",
-                photo: "https://example.com/photo.jpg",
-                height: "180 cm",
-                weight: "72 kg",
-                number: 19,
-              },
-            },
-          ],
-        },
-      };
-
-      (axios.get as jest.Mock).mockResolvedValue(apiResponse);
+      (axios.get as jest.Mock).mockResolvedValue(searchApiFootballResponse);
 
       const result = await apiFootballService.searchPlayers("Lamine");
 
@@ -60,25 +44,7 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
           params: { search: "Lamine" },
         }),
       );
-      expect(result).toEqual([
-        {
-          name: "Lamine Yamal",
-          firstName: "Lamine",
-          lastName: "Yamal",
-          age: 17,
-          birthdate: "2007-07-13",
-          nationality: "Spain",
-          position: "Attacker",
-          photoUrl: "https://example.com/photo.jpg",
-          team: "API Football",
-          league: "External",
-          latitude: 0,
-          longitude: 0,
-          height: "180 cm",
-          weight: "72 kg",
-          number: 19,
-        },
-      ]);
+      expect(result).toEqual(transformedExternalPlayers);
     });
 
     it("Debería devolver un array vacío si la respuesta no tiene formato válido", async () => {
@@ -112,14 +78,7 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
     it("Debería transformar los jugadores e insertarlos en MongoDB", async () => {
       (Player.insertMany as jest.Mock).mockResolvedValue(true);
 
-      const players = [
-        {
-          name: "Jugador 1",
-          birthdate: "2000-01-01",
-          latitude: 41.1,
-          longitude: 2.2,
-        },
-      ];
+      const players = importPlayersApiPayload;
 
       await apiFootballService.importPlayers(players);
 

@@ -1,6 +1,13 @@
 import request from "supertest";
 import app from "../../../app";
 import { AiTacticService } from "../../services/aiTacticService";
+import {
+  fullTacticPositions,
+  invalidTacticRequestBody,
+  integrationAiTacticResponse,
+  singleEmptyTacticPositions,
+  validTacticPositions,
+} from "../utils/data/tactic.test.data";
 
 // ============================================================================
 // 1. MOCKS DE MIDDLEWARES Y SERVICIOS DE IA
@@ -61,7 +68,7 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
     it("Debería retornar 401 si el usuario no está autenticado", async () => {
       const response = await request(app)
         .post("/api/tactics/recommendations")
-        .send({ positions: { ST: null } });
+        .send({ positions: singleEmptyTacticPositions });
 
       expect(response.status).toBe(401);
       expect(response.body.message).toBe("Petición no autorizada");
@@ -71,14 +78,13 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
       (
         AiTacticService.prototype.getRecommendations as jest.Mock
       ).mockResolvedValueOnce({
-        message: "Te falta un buen delantero centro para rematar centros.",
-        recommendations: { ST: "Erling Haaland" },
+        ...integrationAiTacticResponse,
       });
 
       const response = await request(app)
         .post("/api/tactics/recommendations")
         .set("Authorization", "Bearer mock-token")
-        .send({ positions: { ST: null } });
+        .send({ positions: validTacticPositions });
 
       expect(response.status).toBe(200);
       expect(response.body.recommendations).toHaveProperty(
@@ -91,8 +97,7 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
       (
         AiTacticService.prototype.getRecommendations as jest.Mock
       ).mockResolvedValueOnce({
-        message: "Te falta un buen delantero centro para rematar centros.",
-        recommendations: { ST: "Erling Haaland" },
+        ...integrationAiTacticResponse,
       });
 
       const response = await request(app)
@@ -142,7 +147,7 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
       const response = await request(app)
         .post("/api/tactics/recommendations")
         .set("Authorization", "Bearer mock-token")
-        .send({ invalidKey: "algo" });
+        .send(invalidTacticRequestBody);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
@@ -157,11 +162,7 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
       ).mockRejectedValueOnce(new Error("NO_EMPTY_POSITIONS"));
 
       const requestBody = {
-        positions: {
-          GK: "Courtois",
-          ST: "Benzema",
-          // Ningún null enviado
-        },
+        positions: fullTacticPositions,
       };
 
       const response = await request(app)
@@ -181,7 +182,7 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
       ).mockRejectedValueOnce(new Error("AI_SERVICE_ERROR"));
 
       const requestBody = {
-        positions: { ST: null },
+        positions: singleEmptyTacticPositions,
       };
 
       const response = await request(app)
@@ -203,7 +204,7 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
       const response = await request(app)
         .post("/api/tactics/recommendations")
         .set("Authorization", "Bearer mock-token")
-        .send({ positions: { ST: null } });
+        .send({ positions: validTacticPositions });
 
       expect(response.status).toBe(500);
       expect(response.body.message).toBe("Unknown Error");

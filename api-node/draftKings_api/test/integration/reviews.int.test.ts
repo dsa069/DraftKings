@@ -4,6 +4,13 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import app from "../../../app"; // Ajusta el path a tu app.ts
 import Review from "../../models/review";
 import Player from "../../models/player";
+import {
+  integrationReviewBodyWithoutAuthor,
+  integrationReviewSeed,
+  reviewUpdateFullBody,
+  validReviewBody,
+} from "../utils/data/review.test.data";
+import { integrationTestPlayerSeed } from "../utils/data/player.test.data";
 
 // ============================================================================
 // 1. MOCKS DE DEPENDENCIAS EXTERNAS Y MIDDLEWARES
@@ -83,18 +90,9 @@ describe("Review API Endpoints", () => {
   // Helper para crear un jugador válido rápidamente antes de probar las reseñas
   const createTestPlayer = async () => {
     const player = new Player({
-      name: "Jugador de Prueba",
-      coords: { type: "Point", coordinates: [0, 0] },
+      ...integrationTestPlayerSeed,
     });
     return await player.save();
-  };
-
-  const validReviewBody = {
-    author: "Test Author",
-    text: "Excelente jugador, gran visión de juego.",
-    rating: 5,
-    latitude: 40.4168,
-    longitude: -3.7038,
   };
 
   // -------------------------------------------------------------------------
@@ -144,7 +142,7 @@ describe("Review API Endpoints", () => {
       const response = await request(app)
         .post(`/api/players/${player._id}/reviews`)
         .set("Authorization", "Bearer mock-token")
-        .send({ text: "Sin autor", rating: 4, latitude: 0, longitude: 0 });
+        .send(integrationReviewBodyWithoutAuthor);
 
       expect(response.status).toBe(201);
       expect(response.body.author).toBe("Anónimo");
@@ -194,10 +192,10 @@ describe("Review API Endpoints", () => {
       await Review.create({
         user: mockUserId,
         player: player._id,
-        author: "Fan 1",
-        text: "Buen partido",
-        rating: 4,
-        coords: { type: "Point", coordinates: [-3.7, 40.4] },
+        author: integrationReviewSeed.author,
+        text: integrationReviewSeed.text,
+        rating: integrationReviewSeed.rating,
+        coords: integrationReviewSeed.coords,
       });
 
       const response = await request(app).get(
@@ -249,7 +247,7 @@ describe("Review API Endpoints", () => {
         .put(`/api/reviews/${review._id}`)
         .set("Authorization", "Bearer mock-token")
         .set("x-test-role", "USER")
-        .send({ text: "Texto editado", rating: 5 });
+        .send(reviewUpdateFullBody);
 
       expect(response.status).toBe(403);
       expect(response.body.message).toBe(
@@ -262,13 +260,13 @@ describe("Review API Endpoints", () => {
       const review = await Review.create({
         user: mockUserId,
         player: player._id,
-        author: "Fan Original",
-        text: "Texto original",
-        rating: 3,
-        coords: { type: "Point", coordinates: [0, 0] },
+        author: integrationReviewSeed.author,
+        text: integrationReviewSeed.text,
+        rating: integrationReviewSeed.rating,
+        coords: integrationReviewSeed.coords,
       });
 
-      const updateData = { text: "Texto editado", rating: 5 };
+      const updateData = reviewUpdateFullBody;
 
       const response = await request(app)
         .put(`/api/reviews/${review._id}`)
@@ -286,13 +284,13 @@ describe("Review API Endpoints", () => {
       const review = await Review.create({
         user: mockUserId,
         player: player._id,
-        author: "Fan Original",
-        text: "Texto original",
-        rating: 3,
-        coords: { type: "Point", coordinates: [0, 0] },
+        author: integrationReviewSeed.author,
+        text: integrationReviewSeed.text,
+        rating: integrationReviewSeed.rating,
+        coords: integrationReviewSeed.coords,
       });
 
-      const updateData = { text: "Texto editado", rating: 5 };
+      const updateData = reviewUpdateFullBody;
 
       const response = await request(app)
         .put(`/api/reviews/${review._id}`)
@@ -334,17 +332,17 @@ describe("Review API Endpoints", () => {
       const review = await Review.create({
         user: mockUserId,
         player: player._id,
-        author: "Fan",
-        text: "Texto",
-        rating: 2,
-        coords: { type: "Point", coordinates: [0, 0] },
+        author: integrationReviewSeed.author,
+        text: integrationReviewSeed.text,
+        rating: integrationReviewSeed.rating,
+        coords: integrationReviewSeed.coords,
       });
 
       const updateSpy = jest
         .spyOn(Review, "findByIdAndUpdate")
         .mockReturnValueOnce({
           exec: jest.fn().mockRejectedValueOnce(new Error("UPDATE_FAIL")),
-        } as any);
+        } as unknown as { exec: jest.Mock });
 
       const response = await request(app)
         .put(`/api/reviews/${review._id}`)
@@ -462,7 +460,7 @@ describe("Review API Endpoints", () => {
         .spyOn(Review, "findByIdAndDelete")
         .mockReturnValueOnce({
           exec: jest.fn().mockRejectedValueOnce(new Error("DELETE_FAIL")),
-        } as any);
+        } as unknown as { exec: jest.Mock });
 
       const response = await request(app)
         .delete(`/api/reviews/${review._id}`)

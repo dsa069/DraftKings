@@ -2,6 +2,20 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { PlayerService } from "../../services/playerService";
 import Player from "../../models/player";
+import {
+  completePlayerCreateServiceBody,
+  fullUpdatePlayerBody,
+  latitudeUpdatePlayerBody,
+  longitudeUpdatePlayerBody,
+  playerCreateServiceBody,
+  playerExtendedUpdateBody,
+  playerGps2ServiceBody,
+  playerGpsServiceBody,
+  playerNameOnlyBody,
+  playerSingleFieldUpdateBody,
+  playerToUpdateBody,
+  playerWithoutCoordsBody,
+} from "../utils/data/player.test.data";
 
 describe("PlayerService (Pruebas de Integración con BD)", () => {
   let mongoServer: MongoMemoryServer;
@@ -40,13 +54,7 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
   describe("createPlayer()", () => {
     it("Debería crear un jugador y guardar correctamente el punto GeoJSON", async () => {
       const playerData = {
-        name: "Lamine Yamal",
-        firstName: "Lamine",
-        lastName: "Yamal",
-        age: 16,
-        team: "FC Barcelona",
-        latitude: 41.3809,
-        longitude: 2.1228,
+        ...playerCreateServiceBody,
       };
 
       // Ejecutamos el método del servicio
@@ -70,7 +78,7 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
 
     it("Debería guardar [0, 0] como coordenadas si no se envían latitude o longitude", async () => {
       const result = await playerService.createPlayer({
-        name: "Jugador Sin Coordenadas",
+        ...playerWithoutCoordsBody,
       });
 
       expect(result.coords.coordinates[0]).toBe(0);
@@ -80,20 +88,7 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
     it("Debería crear un jugador con todos los campos opcionales y convertir birthdate", async () => {
       const playerData = {
         name: "Completo",
-        firstName: "CompletoFirst",
-        lastName: "CompletoLast",
-        age: 25,
-        team: "Equipo X",
-        latitude: 10.1,
-        longitude: 20.2,
-        birthdate: "2000-01-02T00:00:00.000Z",
-        nationality: "Pais",
-        height: 180,
-        weight: 75,
-        number: 9,
-        position: "ST",
-        photoUrl: "http://example.com/photo.jpg",
-        league: "Liga 1",
+        ...completePlayerCreateServiceBody,
       };
 
       const result = await playerService.createPlayer(playerData);
@@ -108,7 +103,7 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
       );
       expect(result.number).toBe(9);
       expect(result.position).toBe("ST");
-      expect(result.photoUrl).toBe("http://example.com/photo.jpg");
+      expect(result.photoUrl).toBe("https://example.com/photo.jpg");
       expect(result.coords.coordinates[0]).toBeCloseTo(20.2);
       expect(result.coords.coordinates[1]).toBeCloseTo(10.1);
     });
@@ -118,13 +113,11 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
     it("Debería actualizar los campos básicos de un jugador", async () => {
       // 1. Preparamos el terreno: Creamos un jugador en BD
       const player = await playerService.createPlayer({
-        name: "Jugador Original",
-        age: 20,
-        team: "Equipo A",
+        ...playerToUpdateBody,
       });
 
       // 2. Ejecutamos la actualización parcial
-      const updateData = { age: 21, team: "Equipo B" };
+      const updateData = playerSingleFieldUpdateBody;
       const result = await playerService.updatePlayerPartial(
         player._id.toString(),
         updateData,
@@ -139,9 +132,7 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
 
     it("Debería actualizar firstName y lastName cuando se envían", async () => {
       const player = await playerService.createPlayer({
-        name: "Jugador Nombre",
-        firstName: "Viejo",
-        lastName: "ApellidoViejo",
+        ...playerNameOnlyBody,
       });
 
       const result = await playerService.updatePlayerPartial(
@@ -157,13 +148,11 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
     it("Debería actualizar parcialmente las coordenadas sin perder la latitud/longitud anterior", async () => {
       // 1. Creamos jugador con coordenadas iniciales
       const player = await playerService.createPlayer({
-        name: "Jugador GPS",
-        latitude: 40.0,
-        longitude: -3.0,
+        ...playerGpsServiceBody,
       });
 
       // 2. Actualizamos SOLO la latitud
-      const updateData = { latitude: 45.0 };
+      const updateData = latitudeUpdatePlayerBody;
       const result = await playerService.updatePlayerPartial(
         player._id.toString(),
         updateData,
@@ -176,14 +165,12 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
 
     it("Debería actualizar solo la longitud sin perder la latitud anterior", async () => {
       const player = await playerService.createPlayer({
-        name: "Jugador GPS 2",
-        latitude: 12.34,
-        longitude: 56.78,
+        ...playerGps2ServiceBody,
       });
 
       const result = await playerService.updatePlayerPartial(
         player._id.toString(),
-        { longitude: 99.99 },
+        longitudeUpdatePlayerBody,
       );
 
       expect(result.coords.coordinates[0]).toBeCloseTo(99.99); // Longitud nueva
@@ -193,22 +180,10 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
     it("Debería actualizar campos adicionales y permitir establecer birthdate a null", async () => {
       const player = await playerService.createPlayer({
         name: "ToUpdate",
-        birthdate: "1990-05-05T00:00:00.000Z",
-        nationality: "Old",
-        height: 170,
-        weight: 70,
+        ...playerExtendedUpdateBody,
       });
 
-      const updateData = {
-        birthdate: null,
-        nationality: "NuevoPais",
-        height: 175,
-        weight: 72,
-        photoUrl: "http://example.com/new.jpg",
-        number: 11,
-        position: "CM",
-        league: "NewLeague",
-      };
+      const updateData = fullUpdatePlayerBody;
 
       const result = await playerService.updatePlayerPartial(
         player._id.toString(),

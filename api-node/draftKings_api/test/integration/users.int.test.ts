@@ -3,6 +3,12 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import app from "../../../app"; // Ajusta el path a tu app.ts
 import { User } from "../../models/user";
+import {
+  adminSyncUserBody,
+  blankSyncUserBody,
+  testUserSeed,
+  validSyncUserBody,
+} from "../utils/data/user.test.data";
 // ============================================================================
 // 1. MOCKS DE MIDDLEWARES
 // ============================================================================
@@ -69,10 +75,7 @@ describe("User API Endpoints (/api/user)", () => {
   // Helper para tener un usuario válido en la BD en cada test
   const createTestUser = async () => {
     return await User.create({
-      firebaseUid: "testUid123",
-      email: "test@example.com",
-      userName: "UsuarioTest",
-      role: "USER",
+      ...testUserSeed,
     });
   };
 
@@ -80,7 +83,7 @@ describe("User API Endpoints (/api/user)", () => {
     it("Debería retornar 401 si el usuario no está autenticado", async () => {
       const response = await request(app)
         .post("/api/user/sync")
-        .send({ userName: "NuevoNombre" });
+        .send(validSyncUserBody);
 
       expect(response.status).toBe(401);
       expect(response.body.message).toBe("Petición no autorizada");
@@ -93,10 +96,10 @@ describe("User API Endpoints (/api/user)", () => {
         .post("/api/user/sync")
         .set("Authorization", "Bearer mock-token")
         .set("x-test-is-new", "true")
-        .send({ userName: "NuevoNombre" });
+        .send(validSyncUserBody);
 
       expect(response.status).toBe(200);
-      expect(response.body.userName).toBe("NuevoNombre");
+      expect(response.body.userName).toBe("Nuevo Nombre");
     });
 
     it("Debería retornar 401 cuando el middleware no inyecta req.user", async () => {
@@ -120,7 +123,7 @@ describe("User API Endpoints (/api/user)", () => {
         .set("Authorization", "Bearer mock-token")
         .set("x-test-is-new", "true")
         .set("x-test-role", "ADMIN")
-        .send({ userName: "NuevoNombre", role: "ADMIN" });
+        .send(adminSyncUserBody);
 
       expect(response.status).toBe(200);
       expect(response.body.role).toBe("ADMIN");
@@ -133,7 +136,7 @@ describe("User API Endpoints (/api/user)", () => {
         .post("/api/user/sync")
         .set("Authorization", "Bearer mock-token")
         .set("x-test-is-new", "true") // Simulamos que es su primer login
-        .send({ userName: "NuevoNombre", role: "ADMIN" });
+        .send(adminSyncUserBody);
 
       expect(response.status).toBe(200);
       expect(response.body.userName).toBe("NuevoNombre");
@@ -161,7 +164,7 @@ describe("User API Endpoints (/api/user)", () => {
         .post("/api/user/sync")
         .set("Authorization", "Bearer mock-token")
         .set("x-test-is-new", "true")
-        .send({ userName: "   ", role: "SUPERADMIN" });
+        .send(blankSyncUserBody);
 
       expect(response.status).toBe(200);
       expect(response.body.userName).toBe("UsuarioTest");
@@ -178,7 +181,7 @@ describe("User API Endpoints (/api/user)", () => {
         .post("/api/user/sync")
         .set("Authorization", "Bearer mock-token")
         .set("x-test-is-new", "true")
-        .send({ userName: "NuevoNombre" });
+        .send(validSyncUserBody);
 
       expect(response.status).toBe(500);
       expect(response.body.message).toBe("Error en el servidor");
