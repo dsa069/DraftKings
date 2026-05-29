@@ -1,5 +1,15 @@
 # 📋 Especificación de la API REST — DraftKings
 
+## Documentación Swagger
+
+- **Spring**
+  - Player microservice: `http://localhost:8090/swagger-ui/index.html`
+  - Review microservice: `http://localhost:8091/swagger-ui/index.html`
+  - User microservice: `http://localhost:8092/swagger-ui/index.html`
+
+- **Node**
+  - `http://localhost:3000/api-docs/`
+
 ## 🔐 Autenticación y Usuarios
 
 ### 1) Sincronizar / Registrar Usuario
