@@ -26,7 +26,7 @@ export class PlayerService {
     return await newPlayer.save();
   }
 
-  // 7) Editar datos: Lógica de negocio condicional campo por campo
+  // 8) Editar datos: Lógica de negocio condicional campo por campo
   async updatePlayerPartial(id: string, updateData: any): Promise<IPlayer> {
     const player = await Player.findById(id).exec();
     if (!player) {
