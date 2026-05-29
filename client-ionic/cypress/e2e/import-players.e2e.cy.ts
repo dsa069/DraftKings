@@ -1,59 +1,10 @@
 import { setIonInputHostValue, visitApp } from '../support/e2e-helpers';
+import {
+  deviceLocation,
+  externalPlayersFixture,
+} from './utils/data/player.data-test';
 
 describe('Importar jugadores E2E', () => {
-  const externalPlayersFixture = [
-    {
-      id: '101',
-      name: 'Lionel Messi',
-      firstName: 'Lionel',
-      lastName: 'Messi',
-      team: 'Inter Miami',
-      league: 'MLS',
-      position: 'fw',
-      number: 10,
-      nationality: 'Argentina',
-      age: 37,
-      height: 170,
-      weight: 72,
-      photoUrl: '',
-    },
-    {
-      id: '102',
-      name: 'Erling Haaland',
-      firstName: 'Erling',
-      lastName: 'Haaland',
-      team: 'Manchester City',
-      league: 'Premier League',
-      position: 'fw',
-      number: 9,
-      nationality: 'Norway',
-      age: 24,
-      height: 194,
-      weight: 88,
-      photoUrl: '',
-    },
-    {
-      id: '103',
-      name: 'Jude Bellingham',
-      firstName: 'Jude',
-      lastName: 'Bellingham',
-      team: 'Real Madrid',
-      league: 'La Liga',
-      position: 'mf',
-      number: 5,
-      nationality: 'England',
-      age: 21,
-      height: 186,
-      weight: 75,
-      photoUrl: '',
-    },
-  ];
-
-  const deviceLocation = {
-    lat: 40.4167,
-    lng: -3.7032,
-  };
-
   beforeEach(() => {
     cy.intercept('GET', '**/players/external*', (req) => {
       const search = String(req.query['search'] ?? '').toLowerCase();
