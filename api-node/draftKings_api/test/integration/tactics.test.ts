@@ -1,24 +1,46 @@
 import request from "supertest";
-import app from "../../app";
-import { AiTacticService } from "../services/aiTacticService";
+import app from "../../../app";
+import { AiTacticService } from "../../services/aiTacticService";
 
 // ============================================================================
 // 1. MOCKS DE MIDDLEWARES Y SERVICIOS DE IA
 // ============================================================================
 
 // Mockeamos autenticación básica
-jest.mock("../middleware/auth.middleware", () => ({
+jest.mock("../../middleware/auth.middleware", () => ({
   authorizeRequestNoCreate: jest.fn((req, res, next) => {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
+    const role = req.headers["x-test-role"] === "ADMIN" ? "ADMIN" : "USER";
+
     // Mantenemos el mismo comportamiento base para rutas que exigen usuario existente
-    req.user = { id: "mockUserId", role: "USER" };
+    req.user = { id: "mockUserId", role };
     next();
   }),
-  authorizeRequest: jest.fn((req, res, next) => next()),
-  requireAdmin: jest.fn((req, res, next) => next()),
+  authorizeRequest: jest.fn((req, res, next) => {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
+    const role = req.headers["x-test-role"] === "ADMIN" ? "ADMIN" : "USER";
+    req.user = { id: "mockUserId", role };
+    next();
+  }),
+  requireAdmin: jest.fn((req, res, next) => {
+    if (req.user?.role !== "ADMIN") {
+      return res.status(403).json({
+        message: "Acceso denegado. Se requieren privilegios de Administrador.",
+      });
+    }
+
+    next();
+  }),
 }));
 
 // Mockeamos la clase AiTacticService para NO gastar tokens de Groq/LangChain
-jest.mock("../services/aiTacticService");
+jest.mock("../../services/aiTacticService");
 
 // ============================================================================
 // 2. SUITE DE PRUEBAS PARA TACTICS
@@ -30,6 +52,56 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
   });
 
   describe("POST /api/tactics/recommendations", () => {
+    it("Debería retornar 401 si el usuario no está autenticado", async () => {
+      const response = await request(app)
+        .post("/api/tactics/recommendations")
+        .send({ positions: { ST: null } });
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe("Petición no autorizada");
+    });
+
+    it("Debería retornar 200 si el usuario está autenticado", async () => {
+      (
+        AiTacticService.prototype.getRecommendations as jest.Mock
+      ).mockResolvedValueOnce({
+        message: "Te falta un buen delantero centro para rematar centros.",
+        recommendations: { ST: "Erling Haaland" },
+      });
+
+      const response = await request(app)
+        .post("/api/tactics/recommendations")
+        .set("Authorization", "Bearer mock-token")
+        .send({ positions: { ST: null } });
+
+      expect(response.status).toBe(200);
+      expect(response.body.recommendations).toHaveProperty(
+        "ST",
+        "Erling Haaland",
+      );
+    });
+
+    it("Debería retornar 200 si el usuario autenticado es admin", async () => {
+      (
+        AiTacticService.prototype.getRecommendations as jest.Mock
+      ).mockResolvedValueOnce({
+        message: "Te falta un buen delantero centro para rematar centros.",
+        recommendations: { ST: "Erling Haaland" },
+      });
+
+      const response = await request(app)
+        .post("/api/tactics/recommendations")
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-role", "ADMIN")
+        .send({ positions: { ST: null } });
+
+      expect(response.status).toBe(200);
+      expect(response.body.recommendations).toHaveProperty(
+        "ST",
+        "Erling Haaland",
+      );
+    });
+
     it("Debería retornar 200 y las recomendaciones generadas por la IA", async () => {
       // Configuramos el mock para que devuelva un caso de éxito
       (
