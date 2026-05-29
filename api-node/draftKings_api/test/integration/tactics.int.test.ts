@@ -8,6 +8,11 @@ import {
   singleEmptyTacticPositions,
   validTacticPositions,
 } from "../utils/data/tactic.test.data";
+import { withAdminAuth, withAuth } from "../utils/helpers/authRequest.helper";
+import {
+  expectApiError,
+  expectUnauthorized,
+} from "../utils/helpers/apiAssertions.helper";
 
 // ============================================================================
 // 1. MOCKS DE MIDDLEWARES Y SERVICIOS DE IA
@@ -70,8 +75,7 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
         .post("/api/tactics/recommendations")
         .send({ positions: singleEmptyTacticPositions });
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("Debería retornar 200 si el usuario está autenticado", async () => {
@@ -81,10 +85,9 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
         ...integrationAiTacticResponse,
       });
 
-      const response = await request(app)
-        .post("/api/tactics/recommendations")
-        .set("Authorization", "Bearer mock-token")
-        .send({ positions: validTacticPositions });
+      const response = await withAuth(
+        request(app).post("/api/tactics/recommendations"),
+      ).send({ positions: validTacticPositions });
 
       expect(response.status).toBe(200);
       expect(response.body.recommendations).toHaveProperty(
@@ -100,11 +103,9 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
         ...integrationAiTacticResponse,
       });
 
-      const response = await request(app)
-        .post("/api/tactics/recommendations")
-        .set("Authorization", "Bearer mock-token")
-        .set("x-test-role", "ADMIN")
-        .send({ positions: { ST: null } });
+      const response = await withAdminAuth(
+        request(app).post("/api/tactics/recommendations"),
+      ).send({ positions: { ST: null } });
 
       expect(response.status).toBe(200);
       expect(response.body.recommendations).toHaveProperty(
@@ -130,10 +131,9 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
         },
       };
 
-      const response = await request(app)
-        .post("/api/tactics/recommendations")
-        .set("Authorization", "Bearer mock-token")
-        .send(requestBody);
+      const response = await withAuth(
+        request(app).post("/api/tactics/recommendations"),
+      ).send(requestBody);
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBeDefined();
@@ -144,10 +144,9 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
     });
 
     it("Debería retornar 400 si el body no incluye el objeto 'positions'", async () => {
-      const response = await request(app)
-        .post("/api/tactics/recommendations")
-        .set("Authorization", "Bearer mock-token")
-        .send(invalidTacticRequestBody);
+      const response = await withAuth(
+        request(app).post("/api/tactics/recommendations"),
+      ).send(invalidTacticRequestBody);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
@@ -165,15 +164,14 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
         positions: fullTacticPositions,
       };
 
-      const response = await request(app)
-        .post("/api/tactics/recommendations")
-        .set("Authorization", "Bearer mock-token")
-        .send(requestBody);
+      const response = await withAuth(
+        request(app).post("/api/tactics/recommendations"),
+      ).send(requestBody);
 
-      expect(response.status).toBe(400);
-      expect(response.body.message).toBe(
-        "Bad Request. No hay posiciones vacías para recomendar.",
-      );
+      expectApiError(response, {
+        status: 400,
+        message: "Bad Request. No hay posiciones vacías para recomendar.",
+      });
     });
 
     it("Debería retornar 503 si el servicio de IA falla (timeout o error de LangChain)", async () => {
@@ -185,15 +183,14 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
         positions: singleEmptyTacticPositions,
       };
 
-      const response = await request(app)
-        .post("/api/tactics/recommendations")
-        .set("Authorization", "Bearer mock-token")
-        .send(requestBody);
+      const response = await withAuth(
+        request(app).post("/api/tactics/recommendations"),
+      ).send(requestBody);
 
-      expect(response.status).toBe(503);
-      expect(response.body.message).toContain(
-        "Error de comunicación o timeout con el proveedor",
-      );
+      expectApiError(response, {
+        status: 503,
+        message: /Error de comunicación o timeout con el proveedor/,
+      });
     });
 
     it("Debería retornar 500 si ocurre un error desconocido", async () => {
@@ -201,13 +198,11 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
         AiTacticService.prototype.getRecommendations as jest.Mock
       ).mockRejectedValueOnce(new Error("UNHANDLED_ERROR"));
 
-      const response = await request(app)
-        .post("/api/tactics/recommendations")
-        .set("Authorization", "Bearer mock-token")
-        .send({ positions: validTacticPositions });
+      const response = await withAuth(
+        request(app).post("/api/tactics/recommendations"),
+      ).send({ positions: validTacticPositions });
 
-      expect(response.status).toBe(500);
-      expect(response.body.message).toBe("Unknown Error");
+      expectApiError(response, { status: 500, message: "Unknown Error" });
     });
   });
 });

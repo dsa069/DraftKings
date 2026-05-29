@@ -13,6 +13,21 @@ import {
   invalidImportPlayers,
   validPlayerBody,
 } from "../utils/data/player.test.data";
+import {
+  withAdminAuth,
+  withAuth,
+  withUserAuth,
+} from "../utils/helpers/authRequest.helper";
+import {
+  expectAdminForbidden,
+  expectApiError,
+  expectUnauthorized,
+} from "../utils/helpers/apiAssertions.helper";
+import {
+  clearCollections,
+  connectToInMemoryMongo,
+  disconnectInMemoryMongo,
+} from "../utils/helpers/mongoTestDb.helper";
 
 // ============================================================================
 // 1. MOCKS DE DEPENDENCIAS EXTERNAS Y MIDDLEWARES
@@ -64,27 +79,15 @@ jest.mock("axios");
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
-  // Iniciamos la base de datos en memoria
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-
-  // Si tu app.ts ya conecta a mongoose, asegúrate de que no lo haga durante los tests
-  // o sobreescribe la conexión aquí.
-  if (mongoose.connection.readyState !== 0) {
-    await mongoose.disconnect();
-  }
-  await mongoose.connect(mongoUri);
+  mongoServer = await connectToInMemoryMongo();
 });
 
 afterAll(async () => {
-  // Cerramos conexiones al finalizar todos los tests
-  await mongoose.disconnect();
-  await mongoServer.stop();
+  await disconnectInMemoryMongo(mongoServer);
 });
 
 beforeEach(async () => {
-  // Limpiamos la colección de jugadores antes de CADA prueba para asegurar aislamiento
-  await Player.deleteMany({});
+  await clearCollections(Player);
   jest.clearAllMocks();
 
   // Cinturón de seguridad: si un test no define mock explícito, nunca salimos a red.
@@ -103,15 +106,13 @@ describe("Player API Endpoints (/api/players)", () => {
         .post("/api/players")
         .send(validPlayerBody);
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("Debería crear un jugador correctamente y retornar 201", async () => {
-      const response = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer mock-token") // El middleware está mockeado, pero enviamos el header
-        .send(validPlayerBody);
+      const response = await withAuth(request(app).post("/api/players")).send(
+        validPlayerBody,
+      );
 
       expect(response.status).toBe(201);
       expect(response.body.name).toBe(validPlayerBody.name);
@@ -120,10 +121,9 @@ describe("Player API Endpoints (/api/players)", () => {
     });
 
     it("Debería serializar birthdate en formato YYYY-MM-DD", async () => {
-      const response = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer mock-token")
-        .send(playerBodyWithBirthdate);
+      const response = await withAuth(request(app).post("/api/players")).send(
+        playerBodyWithBirthdate,
+      );
 
       expect(response.status).toBe(201);
       expect(response.body.birthdate).toBe("2001-10-30");
@@ -132,13 +132,11 @@ describe("Player API Endpoints (/api/players)", () => {
     });
 
     it("Debería retornar 400 si Mongoose lanza ValidationError", async () => {
-      const response = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer mock-token")
-        .send(invalidPlayerAgeBody);
+      const response = await withAuth(request(app).post("/api/players")).send(
+        invalidPlayerAgeBody,
+      );
 
-      expect(response.status).toBe(400);
-      expect(response.body.message).toBe("Bad Request");
+      expectApiError(response, { status: 400, message: "Bad Request" });
     });
 
     it("Debería retornar 500 si falla el guardado del jugador", async () => {
@@ -146,23 +144,23 @@ describe("Player API Endpoints (/api/players)", () => {
         .spyOn(Player.prototype, "save")
         .mockRejectedValueOnce(new Error("DB_DOWN"));
 
-      const response = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer mock-token")
-        .send(validPlayerBody);
+      const response = await withAuth(request(app).post("/api/players")).send(
+        validPlayerBody,
+      );
 
-      expect(response.status).toBe(500);
-      expect(response.body.message).toBe("Internal Server Error");
+      expectApiError(response, {
+        status: 500,
+        message: "Internal Server Error",
+      });
       saveSpy.mockRestore();
     });
 
     it("Debería retornar 400 si faltan campos obligatorios (name, latitude, longitude)", async () => {
       const invalidBody = { name: "Jugador Incompleto" }; // Faltan lat y long
 
-      const response = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer mock-token")
-        .send(invalidBody);
+      const response = await withAuth(request(app).post("/api/players")).send(
+        invalidBody,
+      );
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain("Body inválido");
@@ -237,41 +235,31 @@ describe("Player API Endpoints (/api/players)", () => {
         .put(`/api/players/${new mongoose.Types.ObjectId()}`)
         .send({ team: "Selección Argentina" });
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("Debería retornar 403 si el usuario está autenticado pero no es admin", async () => {
-      const createRes = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer token")
-        .send(validPlayerBody);
+      const createRes = await withAuth(request(app).post("/api/players")).send(
+        validPlayerBody,
+      );
       const playerId = createRes.body.id;
 
-      const response = await request(app)
-        .put(`/api/players/${playerId}`)
-        .set("Authorization", "Bearer token")
-        .set("x-test-role", "USER")
-        .send({ team: "Selección Argentina" });
+      const response = await withUserAuth(
+        request(app).put(`/api/players/${playerId}`),
+      ).send({ team: "Selección Argentina" });
 
-      expect(response.status).toBe(403);
-      expect(response.body.message).toBe(
-        "Acceso denegado. Se requieren privilegios de Administrador.",
-      );
+      expectAdminForbidden(response);
     });
 
     it("Debería permitir la edición a un usuario admin autenticado", async () => {
-      const createRes = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer token")
-        .send(validPlayerBody);
+      const createRes = await withAuth(request(app).post("/api/players")).send(
+        validPlayerBody,
+      );
       const playerId = createRes.body.id;
 
-      const response = await request(app)
-        .put(`/api/players/${playerId}`)
-        .set("Authorization", "Bearer token")
-        .set("x-test-role", "ADMIN")
-        .send({ team: "Selección Argentina", age: 37 });
+      const response = await withAdminAuth(
+        request(app).put(`/api/players/${playerId}`),
+      ).send({ team: "Selección Argentina", age: 37 });
 
       expect(response.status).toBe(200);
       expect(response.body.team).toBe("Selección Argentina");
@@ -279,19 +267,16 @@ describe("Player API Endpoints (/api/players)", () => {
     });
 
     it("Debería actualizar los campos enviados y retornar 200", async () => {
-      const createRes = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer token")
-        .send(validPlayerBody);
+      const createRes = await withAuth(request(app).post("/api/players")).send(
+        validPlayerBody,
+      );
       const playerId = createRes.body.id;
 
       const updateBody = { team: "Selección Argentina", age: 37 };
 
-      const response = await request(app)
-        .put(`/api/players/${playerId}`)
-        .set("Authorization", "Bearer token")
-        .set("x-test-role", "ADMIN") // Simula admin por el mock
-        .send(updateBody);
+      const response = await withAdminAuth(
+        request(app).put(`/api/players/${playerId}`),
+      ).send(updateBody);
 
       expect(response.status).toBe(200);
       expect(response.body.team).toBe("Selección Argentina");
@@ -306,39 +291,31 @@ describe("Player API Endpoints (/api/players)", () => {
         `/api/players/${new mongoose.Types.ObjectId()}`,
       );
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("Debería retornar 403 si el usuario está autenticado pero no es admin", async () => {
-      const createRes = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer token")
-        .send(validPlayerBody);
+      const createRes = await withAuth(request(app).post("/api/players")).send(
+        validPlayerBody,
+      );
       const playerId = createRes.body.id;
 
-      const response = await request(app)
-        .delete(`/api/players/${playerId}`)
-        .set("Authorization", "Bearer token")
-        .set("x-test-role", "USER");
-
-      expect(response.status).toBe(403);
-      expect(response.body.message).toBe(
-        "Acceso denegado. Se requieren privilegios de Administrador.",
+      const response = await withUserAuth(
+        request(app).delete(`/api/players/${playerId}`),
       );
+
+      expectAdminForbidden(response);
     });
 
     it("Debería permitir la eliminación a un usuario admin autenticado", async () => {
-      const createRes = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer token")
-        .send(validPlayerBody);
+      const createRes = await withAuth(request(app).post("/api/players")).send(
+        validPlayerBody,
+      );
       const playerId = createRes.body.id;
 
-      const deleteRes = await request(app)
-        .delete(`/api/players/${playerId}`)
-        .set("Authorization", "Bearer token")
-        .set("x-test-role", "ADMIN");
+      const deleteRes = await withAdminAuth(
+        request(app).delete(`/api/players/${playerId}`),
+      );
 
       expect(deleteRes.status).toBe(204);
 
@@ -347,16 +324,14 @@ describe("Player API Endpoints (/api/players)", () => {
     });
 
     it("Debería eliminar un jugador existente y retornar 204", async () => {
-      const createRes = await request(app)
-        .post("/api/players")
-        .set("Authorization", "Bearer token")
-        .send(validPlayerBody);
+      const createRes = await withAuth(request(app).post("/api/players")).send(
+        validPlayerBody,
+      );
       const playerId = createRes.body.id;
 
-      const deleteRes = await request(app)
-        .delete(`/api/players/${playerId}`)
-        .set("Authorization", "Bearer token")
-        .set("x-test-role", "ADMIN");
+      const deleteRes = await withAdminAuth(
+        request(app).delete(`/api/players/${playerId}`),
+      );
 
       expect(deleteRes.status).toBe(204); // No content
 
@@ -372,8 +347,7 @@ describe("Player API Endpoints (/api/players)", () => {
         "/api/players/external?search=Mock",
       );
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("GET /api/players/external - Debería retornar datos del mock de la API externa (200)", async () => {
@@ -391,9 +365,9 @@ describe("Player API Endpoints (/api/players)", () => {
         },
       });
 
-      const response = await request(app)
-        .get("/api/players/external?search=Mock")
-        .set("Authorization", "Bearer token");
+      const response = await withAuth(
+        request(app).get("/api/players/external?search=Mock"),
+      );
 
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
@@ -408,9 +382,9 @@ describe("Player API Endpoints (/api/players)", () => {
           message: "network down",
         } as unknown as Error);
 
-      const response = await request(app)
-        .get("/api/players/external?search=Mock")
-        .set("Authorization", "Bearer token");
+      const response = await withAuth(
+        request(app).get("/api/players/external?search=Mock"),
+      );
 
       expect(response.status).toBe(503);
       expect(response.body.message).toContain("Service Unavailable");
@@ -422,19 +396,18 @@ describe("Player API Endpoints (/api/players)", () => {
         new Error("UNEXPECTED_ERROR"),
       );
 
-      const response = await request(app)
-        .get("/api/players/external?search=Mock")
-        .set("Authorization", "Bearer token");
+      const response = await withAuth(
+        request(app).get("/api/players/external?search=Mock"),
+      );
 
       expect(response.status).toBe(500);
       expect(response.body.message).toBe("Internal Server Error");
     });
 
     it("POST /api/players/import - Debería retornar 201 al importar un array válido", async () => {
-      const response = await request(app)
-        .post("/api/players/import")
-        .set("Authorization", "Bearer token")
-        .send(multipleValidImportPlayers);
+      const response = await withAuth(
+        request(app).post("/api/players/import"),
+      ).send(multipleValidImportPlayers);
 
       expect(response.status).toBe(201);
       expect(response.body.message).toBe("Players imported successfully");
@@ -445,15 +418,13 @@ describe("Player API Endpoints (/api/players)", () => {
         .post("/api/players/import")
         .send(multipleValidImportPlayers);
 
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe("Petición no autorizada");
+      expectUnauthorized(response);
     });
 
     it("POST /api/players/import - Debería retornar 400 si el array contiene datos inválidos", async () => {
-      const response = await request(app)
-        .post("/api/players/import")
-        .set("Authorization", "Bearer token")
-        .send(invalidImportPlayers);
+      const response = await withAuth(
+        request(app).post("/api/players/import"),
+      ).send(invalidImportPlayers);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
@@ -462,10 +433,9 @@ describe("Player API Endpoints (/api/players)", () => {
     });
 
     it("POST /api/players/import - Debería retornar 400 si el body no es array", async () => {
-      const response = await request(app)
-        .post("/api/players/import")
-        .set("Authorization", "Bearer token")
-        .send(playerImportNotArrayBody);
+      const response = await withAuth(
+        request(app).post("/api/players/import"),
+      ).send(playerImportNotArrayBody);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Expected an array of players");
@@ -477,13 +447,11 @@ describe("Player API Endpoints (/api/players)", () => {
         message: "Validation failed",
       } as unknown as { name: string; message: string });
 
-      const response = await request(app)
-        .post("/api/players/import")
-        .set("Authorization", "Bearer token")
-        .send(multipleValidImportPlayers);
+      const response = await withAuth(
+        request(app).post("/api/players/import"),
+      ).send(multipleValidImportPlayers);
 
-      expect(response.status).toBe(400);
-      expect(response.body.message).toBe("Bad Request");
+      expectApiError(response, { status: 400, message: "Bad Request" });
       insertSpy.mockRestore();
     });
 
@@ -492,13 +460,14 @@ describe("Player API Endpoints (/api/players)", () => {
         .spyOn(Player, "insertMany")
         .mockRejectedValueOnce(new Error("DB_WRITE_FAIL"));
 
-      const response = await request(app)
-        .post("/api/players/import")
-        .set("Authorization", "Bearer token")
-        .send(multipleValidImportPlayers);
+      const response = await withAuth(
+        request(app).post("/api/players/import"),
+      ).send(multipleValidImportPlayers);
 
-      expect(response.status).toBe(500);
-      expect(response.body.message).toBe("Internal Server Error");
+      expectApiError(response, {
+        status: 500,
+        message: "Internal Server Error",
+      });
       insertSpy.mockRestore();
     });
   });

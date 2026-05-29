@@ -19,6 +19,11 @@ import {
   playerWithoutRequiredFieldsBody,
   validPlayerBody,
 } from "../utils/data/player.test.data";
+import { createExpressMockContext } from "../utils/helpers/expressMock.helper";
+import {
+  mockExecRejected,
+  mockExecResolved,
+} from "../utils/helpers/mongooseQuery.helper";
 
 // 1. Mockeamos las dependencias del controlador
 jest.mock("../../models/player");
@@ -26,7 +31,6 @@ jest.mock("../../services/playerService");
 jest.mock("../../services/apiFootballService");
 
 describe("PlayerController (Pruebas Unitarias)", () => {
-  // Helpers para simular los objetos req y res de Express (TypeScript puro)
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let responseJsonMock: jest.Mock;
@@ -34,18 +38,12 @@ describe("PlayerController (Pruebas Unitarias)", () => {
   let responseSendMock: jest.Mock;
 
   beforeEach(() => {
-    // Reseteamos los mocks de Express en cada prueba
-    responseJsonMock = jest.fn();
-    responseSendMock = jest.fn();
-    responseStatusMock = jest
-      .fn()
-      .mockReturnValue({ json: responseJsonMock, send: responseSendMock });
-
-    mockRequest = {};
-    mockResponse = {
-      status: responseStatusMock,
-      json: responseJsonMock,
-    };
+    const ctx = createExpressMockContext();
+    mockRequest = ctx.req;
+    mockResponse = ctx.res;
+    responseJsonMock = ctx.jsonMock;
+    responseStatusMock = ctx.statusMock;
+    responseSendMock = ctx.sendMock;
 
     jest.clearAllMocks();
   });
@@ -118,9 +116,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     it("Debería retornar 404 si el jugador no existe", async () => {
       mockRequest.params = { id: "507f1f77bcf86cd799439011" };
 
-      (Player.findById as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      });
+      (Player.findById as jest.Mock).mockReturnValue(mockExecResolved(null));
 
       await playersReadOne(mockRequest as Request, mockResponse as Response);
 
@@ -131,9 +127,9 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     it("Debería retornar 200 con el jugador encontrado", async () => {
       mockRequest.params = { id: "507f1f77bcf86cd799439011" };
 
-      (Player.findById as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue({ _id: "507f1f77bcf86cd799439011" }),
-      });
+      (Player.findById as jest.Mock).mockReturnValue(
+        mockExecResolved({ _id: "507f1f77bcf86cd799439011" }),
+      );
 
       await playersReadOne(mockRequest as Request, mockResponse as Response);
 
@@ -146,13 +142,11 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     it("Debería retornar 400 si el ID es inválido", async () => {
       mockRequest.params = { id: "bad-id" };
 
-      (Player.findById as jest.Mock).mockReturnValue({
-        exec: jest
-          .fn()
-          .mockRejectedValue(
-            Object.assign(new Error("cast"), { name: "CastError" }),
-          ),
-      });
+      (Player.findById as jest.Mock).mockReturnValue(
+        mockExecRejected(
+          Object.assign(new Error("cast"), { name: "CastError" }),
+        ),
+      );
 
       await playersReadOne(mockRequest as Request, mockResponse as Response);
 
@@ -261,9 +255,9 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     it("Debería retornar 404 si no encuentra el jugador", async () => {
       mockRequest.params = { id: "507f1f77bcf86cd799439011" };
 
-      (Player.findByIdAndDelete as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      });
+      (Player.findByIdAndDelete as jest.Mock).mockReturnValue(
+        mockExecResolved(null),
+      );
 
       await playersDelete(mockRequest as Request, mockResponse as Response);
 
@@ -274,9 +268,9 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     it("Debería borrar el jugador y retornar 204", async () => {
       mockRequest.params = { id: "507f1f77bcf86cd799439011" };
 
-      (Player.findByIdAndDelete as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue({ _id: "507f1f77bcf86cd799439011" }),
-      });
+      (Player.findByIdAndDelete as jest.Mock).mockReturnValue(
+        mockExecResolved({ _id: "507f1f77bcf86cd799439011" }),
+      );
 
       await playersDelete(mockRequest as Request, mockResponse as Response);
 
