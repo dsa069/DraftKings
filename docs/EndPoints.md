@@ -7,7 +7,7 @@
 - **Caso de uso:** `UC_registrar`
 - **Descripción:** Registra al usuario en la base de datos interna usando el UID y el email extraídos del token JWT.
 - **Método:** `POST`
-- **URL:** `http://localhost:8092/api/auth/sync-user`
+- **URL:** `http://localhost:8080/userms/api/auth/sync-user`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
   - `Content-Type: application/json`
@@ -15,21 +15,27 @@
 
 ```json
 {
-  "userName": "nombreDeUsuario"
+  "userName": "nombreDeUsuario",
+  "role": "USER"
 }
 ```
 
+- **Campos reales:**
+  - `userName` — nombre de usuario a registrar.
+  - `role` — opcional; si no se envía o no es válido, el backend asigna `USER`.
+
 - **Respuestas:**
-  - `201 Created` — Usuario sincronizado correctamente.
-  - `400 Bad Request` — Nombre de usuario en uso o faltan parámetros.
-  - `401 Unauthorized` — Firebase token inválido o expirado.
+  - `200 OK` — Usuario sincronizado y registrado con éxito en PostgreSQL.
+  - `401 Unauthorized` — El token de autenticación falta o no es válido.
+  - `409 Conflict` — El usuario ya se encuentra sincronizado.
+  - `500 Internal Server Error` — Error interno del servidor inesperado.
 
 ### 2) Obtener perfil del usuario autenticado
 
 - **Caso de uso:** `UC_iniciar_sesion`
 - **Descripción:** Devuelve la información del usuario actualmente autenticado a partir del JWT.
 - **Método:** `GET`
-- **URL:** `http://localhost:8092/api/auth/me`
+- **URL real:** `http://localhost:8080/userms/api/auth/me`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
 - **Respuestas:**
@@ -41,11 +47,14 @@
   "email": "usuario@ejemplo.com",
   "userName": "nombreDeUsuario",
   "role": "USER",
+  "firebaseUid": "uid-de-firebase",
   "created_at": "2026-05-21T11:55:00Z"
 }
 ```
 
-- `401 Unauthorized` — Token inválido o expirado.
+- `401 Unauthorized` — El token JWT de autenticación falta o expiró.
+- `404 Not Found` — Usuario no localizado en la base de datos.
+- `500 Internal Server Error` — Error interno del servidor.
 
 ---
 
@@ -56,35 +65,48 @@
 - **Casos de uso:** `UC_ver_listado`, `UC_buscar`, `UC_filtro_nombre`, `UC_filtro_fecha`, `UC_filtro_equipo`
 - **Descripción:** Lista paginada de jugadores con filtros por query params.
 - **Método:** `GET`
-- **URL:** `http://localhost:8092/api/players`
+- **URL:** `http://localhost:8080/playerms/api/players`
 
 - **Query parameters (opcionales):**
   - `search` — texto libre para buscar por nombre
   - `team` — filtrar por equipo
   - `league` — filtrar por liga
   - `startDate` — filtrar por fecha de alta desde (ISO)
+  - `page` — número de página, `0` o superior
+  - `size` — tamaño de página, mayor que `0`
 - **Respuestas:**
-  - `200 OK` — Ejemplo:
+  - `200 OK` — Página de jugadores:
 
 ```json
-[
-  {
-    "id": 12,
-    "name": "Cristiano Ronaldo",
-    "position": "Delantero",
-    "number": 7,
-    "team": "Al-Nassr",
-    "photoUrl": "https://cdn.example.com/cr7.png"
-  }
-]
+{
+  "content": [
+    {
+      "id": 12,
+      "name": "Cristiano Ronaldo",
+      "position": "Delantero",
+      "number": 7,
+      "team": "Al-Nassr",
+      "photoUrl": "https://cdn.example.com/cr7.png"
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 10
+  },
+  "totalElements": 1,
+  "totalPages": 1,
+  "last": true
+}
 ```
+  - `400 Bad Request` — Parámetros de paginación inválidos.
+  - `500 Internal Server Error` — Error interno inesperado.
 
 ### 4) Obtener detalle de un jugador
 
 - **Caso de uso:** `UC_ver_detalles`
 - **Descripción:** Devuelve toda la información de un jugador por ID.
 - **Método:** `GET`
-- **URL:** `http://localhost:8092/api/players/{id}`
+- **URL:** `http://localhost:8080/playerms/api/players/{id}`
 - **Respuestas:**
   - `200 OK` — Ejemplo:
 
@@ -110,17 +132,19 @@
 }
 ```
 
+- `400 Bad Request` — Identificador no válido.
 - `404 Not Found` — Jugador no existe.
+- `500 Internal Server Error` — Error interno inesperado.
 
 ### 5) Crear un jugador (formulario interno)
 
 - **Caso de uso:** `UC_añadir_nuevo` (incluye `UC_obtener_geo` y `UC_añadir_imagen`)
 - **Descripción:** Registrar un nuevo jugador manualmente.
 - **Método:** `POST`
-- **URL:** `http://localhost:8092/api/players`
+- **URL:** `http://localhost:8080/playerms/api/players`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Solo Usuario Registrado o superior)
-  - `Content-Type: application/json`
+- **Content-Type:** `application/json`
 - **Body (JSON):**
 
 ```json
@@ -143,16 +167,21 @@
 }
 ```
 
-- **Respuestas:**
+- **Campos requeridos reales:** `name`, `latitude`, `longitude`.
+- **Campos opcionales:** `firstName`, `lastName`, `age`, `birthdate`, `nationality`, `height`, `weight`, `number`, `team`, `league`, `position`, `photoUrl`.
+- **Nota:** `createdAt` se asigna automáticamente si no llega en el body.
 
-- `201 Created` — Jugador creado con éxito.
+- **Respuestas:**
+  - `201 Created` — Jugador creado con éxito.
+  - `400 Bad Request` — Body inválido.
+  - `500 Internal Server Error` — Error interno inesperado.
 
 ### 6) Obtener jugadores desde la API externa
 
 - **Caso de uso:** `UC_buscar_externo`
 - **Descripción:** Consulta la API de API-Football y devuelve una lista normalizada de jugadores según el texto de búsqueda.
 - **Método:** `GET`
-- **URL:** `http://localhost:8092/api/players/external`
+- **URL:** `http://localhost:8080/playerms/api/players/external`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
 
@@ -162,11 +191,11 @@
 - **Ejemplo de llamada:**
 
 ```http
-GET /api/players/external?search=ronaldo
+GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 ```
 
 - **Respuestas:**
-  - `200 OK` — Ejemplo:
+  - `200 OK` — Lista normalizada de jugadores:
 
 ```json
 [
@@ -190,18 +219,18 @@ GET /api/players/external?search=ronaldo
 ]
 ```
 
-- `401 Unauthorized` — Token inválido o expirado.
-- `500 Internal Server Error` — Error consultando la API externa.
+  - `503 Service Unavailable` — Error de comunicación o timeout con la API externa.
+  - `500 Internal Server Error` — Error consultando la API externa.
 
 ### 7) Importar jugadores desde la API externa
 
 - **Caso de uso:** `UC_importar_externo`
 - **Descripción:** Recibe un array de jugadores ya normalizados y los inserta en MongoDB.
 - **Método:** `POST`
-- **URL:** `http://localhost:8092/api/players/import`
+- **URL:** `http://localhost:8080/playerms/api/players/import`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
-  - `Content-Type: application/json`
+- **Content-Type:** `application/json`
 
 - **Body (JSON):**
 
@@ -229,14 +258,12 @@ GET /api/players/external?search=ronaldo
 
 - **Notas del body:**
   - El body debe ser un array JSON, no un objeto suelto.
-  - Cada elemento debe incluir al menos `name`.
-  - `latitude` y `longitude` son opcionales; si faltan, se guardan como `0`.
-  - `birthdate` se convierte a fecha al persistir.
+  - Cada elemento debe incluir al menos `name`, `latitude` y `longitude`.
+  - `createdAt` se asigna automáticamente si no viene informado.
 
 - **Respuestas:**
   - `201 Created` — Jugadores importados correctamente.
   - `400 Bad Request` — El body no es un array de jugadores.
-  - `401 Unauthorized` — Token inválido o expirado.
   - `500 Internal Server Error` — Error al insertar en base de datos.
 
 ### 8) Editar datos de un jugador
@@ -244,10 +271,10 @@ GET /api/players/external?search=ronaldo
 - **Caso de uso:** `UC_editar_jugador` (puede incluir `UC_editar_geo`)
 - **Descripción:** Actualiza campos de un jugador existente.
 - **Método:** `PUT`
-- **URL:** `http://localhost:8092/api/players/{id}`
+- **URL:** `http://localhost:8080/playerms/api/players/{id}`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
-  - `Content-Type: application/json`
+- **Content-Type:** `application/json`
 - **Body (JSON) ejemplo:**
 
 ```json
@@ -260,19 +287,26 @@ GET /api/players/external?search=ronaldo
 }
 ```
 
+- **Campos editables reales:** `team`, `league`, `number`, `latitude`, `longitude`, `name`, `position`, `photoUrl`, `firstName`, `lastName`, `age`, `birthdate`, `nationality`, `height`, `weight`.
+- **Nota:** la actualización es parcial; solo se cambian los campos no nulos.
+
 - **Respuestas:**
   - `200 OK` — Modificación procesada con éxito.
+  - `404 Not Found` — Jugador no encontrado.
+  - `500 Internal Server Error` — Error interno inesperado.
 
 ### 9) Eliminar un jugador
 
 - **Caso de uso:** `UC_eliminar_jugador`
 - **Descripción:** Borra un jugador permanentemente.
 - **Método:** `DELETE`
-- **URL:** `http://localhost:8092/api/players/{id}`
+- **URL:** `http://localhost:8080/playerms/api/players/{id}`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Respuestas:**
   - `204 No Content` — Eliminación exitosa.
+  - `404 Not Found` — Jugador no encontrado.
+  - `500 Internal Server Error` — Error interno inesperado.
 
 ---
 
@@ -283,9 +317,9 @@ GET /api/players/external?search=ronaldo
 - **Caso de uso:** `UC_ver_comentarios` (incluido en `UC_ver_detalles`)
 - **Descripción:** Devuelve todas las reseñas para un jugador.
 - **Método:** `GET`
-- **URL:** `http://localhost:8092/api/players/{player_id}/reviews`
+- **URL:** `http://localhost:8080/playerms/api/players/{player_id}/reviews`
 - **Respuestas:**
-  - `200 OK` — Ejemplo:
+  - `200 OK` — Lista de reseñas del jugador:
 
 ```json
 [
@@ -301,13 +335,16 @@ GET /api/players/external?search=ronaldo
   }
 ]
 ```
+  - `400 Bad Request` — Identificador de jugador inválido.
+  - `404 Not Found` — Jugador no encontrado.
+  - `500 Internal Server Error` — Error interno inesperado.
 
 ### 11) Crear un comentario para un jugador
 
 - **Caso de uso:** `UC_crear_comentario` (incluye `UC_obtener_geo`)
 - **Descripción:** Añade una reseña con texto, puntuación y ubicación.
 - **Método:** `POST`
-- **URL:** `http://localhost:8092/api/players/{player_id}/reviews`
+- **URL:** `http://localhost:8080/playerms/api/players/{player_id}/reviews`
 - **Body (JSON) ejemplo:**
 
 ```json
@@ -320,18 +357,25 @@ GET /api/players/external?search=ronaldo
 }
 ```
 
+- **Campos requeridos reales:** `text`, `rating`.
+- **Campos opcionales:** `author`, `latitude`, `longitude`.
+- **Nota:** `userId` y `playerId` se asignan desde el backend.
+
 - **Respuestas:**
   - `201 Created` — Comentario añadido con éxito.
+  - `400 Bad Request` — Body de la reseña inválido o incompleto.
+  - `503 Service Unavailable` — Servicio de reseñas no disponible.
+  - `500 Internal Server Error` — Error interno inesperado.
 
 ### 12) Editar comentario
 
 - **Caso de uso:** `UC_editar_comentario`
 - **Descripción:** Edita el texto y/o la puntuación de una reseña existente. (Endpoint marcado como `unused`)
 - **Método:** `PUT`
-- **URL:** `http://localhost:8092/api/reviews/{id}`
+- **URL:** `http://localhost:8080/reviewms/api/reviews/{id}`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
-  - `Content-Type: application/json`
+- **Content-Type:** `application/json`
 - **Body (JSON) ejemplo:**
 
 ```json
@@ -344,6 +388,7 @@ GET /api/players/external?search=ronaldo
 - **Tags:** `unused`
 - **Respuestas:**
   - `200 OK` — Comentario actualizado.
+  - `400 Bad Request` — Body de la reseña inválido.
   - `404 Not Found` — Comentario no existe.
 
 ### 13) Eliminar comentario
@@ -351,11 +396,12 @@ GET /api/players/external?search=ronaldo
 - **Caso de uso:** `UC_eliminar_comentario`
 - **Descripción:** Elimina una reseña (moderación).
 - **Método:** `DELETE`
-- **URL:** `http://localhost:8092/api/reviews/{id}`
+- **URL:** `http://localhost:8080/reviewms/api/reviews/{id}`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Respuestas:**
   - `204 No Content` — Comentario eliminado.
+  - `404 Not Found` — Comentario no existe.
 
 ---
 
@@ -398,13 +444,13 @@ GET /api/players/external?search=ronaldo
 ### 16) Obtener recomendaciones de la IA para completar alineación
 
 - **Caso de uso:** `UC_recomendar_jugadores_ia`
-- **Descripción:** El frontend envía la distribución actual de las posiciones del campo con los nombres de los jugadores asignados y las posiciones vacías. El backend procesa esta información mediante una IA para sugerir nombres de jugadores exclusivamente para cubrir las posiciones que se encuentran vacías, devolviendo además un mensaje explicativo o justificación táctica.
+- **Descripción:** Procesa las posiciones actuales mediante una IA para sugerir jugadores para las posiciones vacías.
 - **Método:** `POST`
-- **URL:** `http://localhost:8092/api/tactics/ai-recommendations`
+- **URL:** `http://localhost:8080/playerms/api/tactics/recommendations`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
   - `Content-Type: application/json`
-- **Body (JSON) ejemplo:**
+- **Body (JSON):**
 
 ```json
 {
@@ -424,8 +470,11 @@ GET /api/players/external?search=ronaldo
 }
 ```
 
+- **Campos reales:**
+  - `positions` — objeto con las posiciones del campo como claves y el nombre del jugador asignado o `null` como valor.
+
 - **Respuestas:**
-  - `200 OK` — Recomendaciones generadas con éxito por la IA. Devuelve un mensaje de texto descriptivo y un objeto con las posiciones que estaban vacías asignadas a su respectivo jugador recomendado.
+  - `200 OK` — Recomendaciones generadas con éxito.
 
 ```json
 {
@@ -439,5 +488,5 @@ GET /api/players/external?search=ronaldo
 ```
 
 - `400 Bad Request` — El formato del mapa de posiciones es inválido o no se han enviado datos.
-- `401 Unauthorized` — Token JWT inválido, ausente o expirado.
 - `503 Service Unavailable` — Error de comunicación o timeout con el proveedor del servicio de Inteligencia Artificial.
+- `500 Internal Server Error` — Error interno del servidor.
