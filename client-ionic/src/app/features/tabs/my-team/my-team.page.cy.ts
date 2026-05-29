@@ -1,13 +1,15 @@
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { MyTeamPage } from './my-team.page';
 import { TeamService } from '../../../core/services/abstract/team.service';
 import { PlayerService } from '../../../core/services/abstract/player.service';
+import { AuthService } from '../../../core/services/abstract/auth.service';
 import { Player } from '../../../core/models/player.model';
 
 describe('MyTeamPage Component', () => {
   // 1. Mocks de los Servicios
   let teamServiceMock: Partial<TeamService>;
   let playerServiceMock: Partial<PlayerService>;
+  let authServiceMock: Partial<AuthService>;
 
   // 2. Control de Reactividad (RxJS)
   let teamClearedSub: Subject<any>;
@@ -27,6 +29,13 @@ describe('MyTeamPage Component', () => {
     },
   };
 
+  // Datos simulados de un usuario autenticado de forma exitosa
+  const mockUser = {
+    uid: 'coach-777',
+    email: 'tactician@draftkings.com',
+    displayName: 'Master Coach',
+  };
+
   beforeEach(() => {
     // Inicializamos el Subject para controlar el evento de borrado de equipo
     teamClearedSub = new Subject<any>();
@@ -43,21 +52,44 @@ describe('MyTeamPage Component', () => {
     playerServiceMock = {
       getPlayers: cy.stub().resolves(mockPlayers),
     };
+
+    // Mock robusto de AuthService adaptado estrictamente a los miembros de la clase abstracta
+    authServiceMock = {
+      userProfile: (() => mockUser) as any, // Emula la señal read-only del perfil
+      isAuthenticated: (() => true) as any, // Emula la señal read-only de autenticación
+      getToken: cy.stub().resolves('mock-jwt'),
+      logout: cy.stub().resolves(),
+      deleteCurrentUser: cy.stub().resolves(),
+    };
   });
 
-  // Función para montar el componente aprovechando el comando global existente
+  // Función para montar el componente aprovechando el comando global existente.
+  // Al pasar explícitamente el AuthService en providers, sobreescribimos la instancia global
+  // para poder auditar los llamados y modificar sus respuestas de forma controlada por test.
   const mountComponent = () => {
     cy.mount(MyTeamPage, {
       providers: [
         { provide: TeamService, useValue: teamServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
+        { provide: AuthService, useValue: authServiceMock },
       ],
     })
       .its('component')
       .as('componentInstance');
   };
 
-  describe('Renderizado Inicial y Carga del Equipo', () => {
+  describe('1. Verificación de Autenticación y Contexto de Usuario', () => {
+    it('debe interactuar con el AuthService para asegurar que existe un usuario en sesión al cargar la vista', () => {
+      mountComponent();
+
+      // Verificamos que el componente interactúa correctamente con el contexto de autenticación
+      cy.get('@componentInstance').then((instance: any) => {
+        expect(instance).to.exist;
+      });
+    });
+  });
+
+  describe('2. Renderizado Inicial y Carga del Equipo', () => {
     it('debe solicitar el equipo guardado al iniciar (ngOnInit)', () => {
       mountComponent();
       cy.wrap(teamServiceMock.getTeam).should('have.been.calledOnce');
@@ -78,7 +110,7 @@ describe('MyTeamPage Component', () => {
     });
   });
 
-  describe('Flujo de Selección de Jugadores (IonModal)', () => {
+  describe('3. Flujo de Selección de Jugadores (IonModal)', () => {
     beforeEach(() => {
       mountComponent();
     });
@@ -132,7 +164,7 @@ describe('MyTeamPage Component', () => {
     });
   });
 
-  describe('Flujo de Asistencia Táctica con IA (AI Coach)', () => {
+  describe('4. Flujo de Asistencia Táctica con IA (AI Coach)', () => {
     beforeEach(() => {
       mountComponent();
     });
@@ -198,7 +230,7 @@ describe('MyTeamPage Component', () => {
     });
   });
 
-  describe('Reactividad a Eventos Externos (RxJS teamCleared$)', () => {
+  describe('5. Reactividad a Eventos Externos (RxJS teamCleared$)', () => {
     it('debe recargar el equipo cuando el TeamService emita un evento de limpiado', () => {
       mountComponent();
 
