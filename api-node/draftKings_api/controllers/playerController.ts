@@ -6,12 +6,20 @@ import { ApiFootballService } from "../services/apiFootballService";
 const apiFootballService = new ApiFootballService();
 const playerService = new PlayerService();
 
-// 3) Obtener listado de jugadores (Directo al Modelo + Transformación automática de Mongoose)
+// 3) Obtener listado de jugadores (Directo al Modelo + Transformación)
 export const playersReadAll = async (req: Request, res: Response) => {
   try {
     const { search, team, league, startDate, page, size } = req.query;
-    const pageNum = parseInt(page as string) || 0;
-    const sizeNum = parseInt(size as string) || 10;
+
+    // Validación de paginación (400 Bad Request según README)
+    const pageNum = page !== undefined ? parseInt(page as string) : 0;
+    const sizeNum = size !== undefined ? parseInt(size as string) : 10;
+
+    if (isNaN(pageNum) || pageNum < 0 || isNaN(sizeNum) || sizeNum <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Parámetros de paginación inválidos" });
+    }
 
     const queryFilter: any = {};
     if (search) queryFilter.name = { $regex: search, $options: "i" };
@@ -24,21 +32,23 @@ export const playersReadAll = async (req: Request, res: Response) => {
     const players = await Player.find(queryFilter)
       .skip(pageNum * sizeNum)
       .limit(sizeNum)
-      .exec(); // .exec() asegura promesas nativas reales
+      .exec();
 
     return res.status(200).json({
-      content: players, // Gracias al transform de toJSON, Mongoose los mapea automáticamente
+      content: players,
       totalElements: totalItems,
       totalPages: Math.ceil(totalItems / sizeNum),
       number: pageNum,
       size: sizeNum,
     });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
   }
 };
 
-// 4) Obtener detalle de un jugador (Limpio y directo sin el "tochaco" de mapeo)
+// 4) Obtener detalle de un jugador
 export const playersReadOne = async (req: Request, res: Response) => {
   try {
     let id = req.params.id as string | string[] | undefined;
@@ -48,26 +58,42 @@ export const playersReadOne = async (req: Request, res: Response) => {
     const player = await Player.findById(id).exec();
     if (!player) return res.status(404).json({ message: "not found" });
 
-    // Mongoose ejecuta en segundo plano 'toJSON.transform' convirtiendo el GeoJSON a campos id, latitude y longitude
     return res.status(200).json(player);
   } catch (err: any) {
     if (err.name === "CastError")
-      return res.status(400).json({ message: "Bad Request" });
-    res.status(500).json({ message: "Unknown Error" });
+      return res.status(400).json({ message: "Bad Request: ID inválido" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-// 5) Crear un jugador -> DELEGA EN SERVICIO (Mantiene la lógica de construcción de GeoJSON interna)
+// 5) Crear un jugador -> DELEGA EN SERVICIO
 export const playersCreate = async (req: Request, res: Response) => {
   try {
+    // Validación de campos requeridos (400 Bad Request según README)
+    const { name, latitude, longitude } = req.body;
+    if (!name || latitude === undefined || longitude === undefined) {
+      return res.status(400).json({
+        message:
+          "Body inválido. Faltan campos requeridos: name, latitude, longitude.",
+      });
+    }
+
     const savedPlayer = await playerService.createPlayer(req.body);
     return res.status(201).json(savedPlayer);
   } catch (err: any) {
-    res.status(400).json({ error: err.message });
+    // Distinguimos errores de validación de Mongoose de errores internos
+    if (err.name === "ValidationError") {
+      return res
+        .status(400)
+        .json({ message: "Bad Request", error: err.message });
+    }
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
   }
 };
 
-// 7) Editar datos de un jugador -> DELEGA EN SERVICIO (Mantiene la lógica condicional campo a campo)
+// 8) Editar datos de un jugador -> DELEGA EN SERVICIO
 export const playersUpdate = async (req: Request, res: Response) => {
   try {
     let id = req.params.id as string | string[] | undefined;
@@ -81,11 +107,12 @@ export const playersUpdate = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "not found" });
     if (err.name === "CastError")
       return res.status(400).json({ message: "Bad Request" });
-    res.status(500).json({ message: "Unknown Error" });
+
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-// 8) Eliminar un jugador (Directo al Modelo)
+// 9) Eliminar un jugador (Directo al Modelo)
 export const playersDelete = async (req: Request, res: Response) => {
   try {
     let id = req.params.id as string | string[] | undefined;
@@ -95,35 +122,71 @@ export const playersDelete = async (req: Request, res: Response) => {
     const deletedPlayer = await Player.findByIdAndDelete(id).exec();
     if (!deletedPlayer) return res.status(404).json({ message: "not found" });
 
-    return res.status(204).send(); // 204 No Content estándar para eliminaciones exitosas
+    return res.status(204).send();
   } catch (err: any) {
     if (err.name === "CastError")
       return res.status(400).json({ message: "Bad Request" });
-    res.status(500).json({ message: "Unknown Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
-// Obtener jugadores de la API Externa
+
+// 6) Obtener jugadores de la API Externa
 export const playersGetExternal = async (req: Request, res: Response) => {
   try {
     const search = req.query.search as string;
     const players = await apiFootballService.searchPlayers(search);
     return res.status(200).json(players);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    // 503 Service Unavailable según README para errores de comunicación externa
+    if (
+      err.isAxiosError ||
+      err.response ||
+      err.message.includes("timeout") ||
+      err.message.includes("network")
+    ) {
+      return res.status(503).json({
+        message:
+          "Service Unavailable: Fallo en la comunicación con la API externa.",
+      });
+    }
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
   }
 };
 
-// Importar jugadores desde el Front
+// 7) Importar jugadores desde el Front
 export const playersImport = async (req: Request, res: Response) => {
   try {
-    const playersArray = req.body; // El front envía un array de jugadores
+    const playersArray = req.body;
+
     if (!Array.isArray(playersArray)) {
       return res.status(400).json({ message: "Expected an array of players" });
+    }
+
+    // Comprobamos que cada elemento cumpla los requisitos del README (400 Bad Request)
+    const isValid = playersArray.every(
+      (p: any) =>
+        p.name && p.latitude !== undefined && p.longitude !== undefined,
+    );
+
+    if (!isValid) {
+      return res.status(400).json({
+        message:
+          "Body inválido. Cada elemento debe incluir al menos name, latitude y longitude.",
+      });
     }
 
     await apiFootballService.importPlayers(playersArray);
     return res.status(201).json({ message: "Players imported successfully" });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    if (err.name === "ValidationError") {
+      return res
+        .status(400)
+        .json({ message: "Bad Request", error: err.message });
+    }
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
   }
 };

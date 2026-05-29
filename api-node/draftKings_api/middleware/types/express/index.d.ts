@@ -16,6 +16,10 @@ declare global {
        * Adjuntado por el middleware de autorización.
        */
       firebaseUser?: DecodedIdToken;
+      /** Indica si el usuario es nuevo (no existía en la base de datos local antes de esta solicitud).
+       * Esto se establece en el middleware de autorización después de verificar el token y buscar/crear el usuario.
+       */
+      isNewUser?: boolean;
     }
   }
 }

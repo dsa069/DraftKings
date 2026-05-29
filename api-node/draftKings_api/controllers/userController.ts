@@ -13,6 +13,10 @@ export async function syncUser(req: Request, res: Response) {
       return res.status(401).json({ message: "Petición no autorizada" });
     }
 
+    if (!req.isNewUser) {
+      return res.status(409).json({ message: "Usuario ya sincronizado" });
+    }
+
     // Extraer los campos editables del body (opcional)
     const { userName, role } = req.body;
 

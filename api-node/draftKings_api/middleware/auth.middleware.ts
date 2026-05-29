@@ -37,6 +37,7 @@ export async function authorizeRequest(
       blocked: false,
     });
 
+    let isNewUserFlag = false;
     // Hook Opcional / Integración configurable: Si el usuario está autenticado en Firebase
     // pero es su primera petición a la API backend, lo registramos localmente de forma automática.
     if (!user) {
@@ -71,11 +72,14 @@ export async function authorizeRequest(
         is_active: true,
         blocked: false,
       });
+
+      isNewUserFlag = true;
     }
 
     // 6. Adjuntar la información procesada al objeto de solicitud Express
     req.user = user;
     req.firebaseUser = decodedToken;
+    req.isNewUser = isNewUserFlag;
 
     // 7. Continuar con la siguiente función en la cadena
     return next();
@@ -125,7 +129,7 @@ export async function authorizeRequestNoCreate(
 
     // 6. Si el usuario no existe o está inactivo/bloqueado, rechazar la petición
     if (!user) {
-      return res.status(401).json({ message: "Petición no autorizada" });
+      return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
     // 7. Adjuntar la información procesada al objeto de solicitud Express
