@@ -7,7 +7,9 @@
 - **Caso de uso:** `UC_registrar`
 - **Descripción:** Registra al usuario en la base de datos interna usando el UID y el email extraídos del token JWT.
 - **Método:** `POST`
-- **URL:** `http://localhost:8080/userms/api/auth/sync-user`
+- **URL:**
+  - Spring: `http://localhost:8080/userms/api/auth/sync-user`
+  - Node: `http://localhost:3000/api/user/sync`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
   - `Content-Type: application/json`
@@ -20,7 +22,7 @@
 }
 ```
 
-- **Campos reales:**
+- **Campos:**
   - `userName` — nombre de usuario a registrar.
   - `role` — opcional; si no se envía o no es válido, el backend asigna `USER`.
 
@@ -35,7 +37,9 @@
 - **Caso de uso:** `UC_iniciar_sesion`
 - **Descripción:** Devuelve la información del usuario actualmente autenticado a partir del JWT.
 - **Método:** `GET`
-- **URL real:** `http://localhost:8080/userms/api/auth/me`
+- **URL:**
+  - Spring: `http://localhost:8080/userms/api/auth/me`
+  - Node: `http://localhost:3000/api/user/profile`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
 - **Respuestas:**
@@ -65,7 +69,9 @@
 - **Casos de uso:** `UC_ver_listado`, `UC_buscar`, `UC_filtro_nombre`, `UC_filtro_fecha`, `UC_filtro_equipo`
 - **Descripción:** Lista paginada de jugadores con filtros por query params.
 - **Método:** `GET`
-- **URL:** `http://localhost:8080/playerms/api/players`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players`
+  - Node: `http://localhost:3000/api/players`
 
 - **Query parameters (opcionales):**
   - `search` — texto libre para buscar por nombre
@@ -75,7 +81,8 @@
   - `page` — número de página, `0` o superior
   - `size` — tamaño de página, mayor que `0`
 - **Respuestas:**
-  - `200 OK` — Página de jugadores:
+  - `200 OK` — Respuesta paginada:
+    - Spring:
 
 ```json
 {
@@ -98,6 +105,8 @@
   "last": true
 }
 ```
+
+    - Node:
 
 ```json
 {
@@ -126,7 +135,9 @@
 - **Caso de uso:** `UC_ver_detalles`
 - **Descripción:** Devuelve toda la información de un jugador por ID.
 - **Método:** `GET`
-- **URL:** `http://localhost:8080/playerms/api/players/{id}`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players/{id}`
+  - Node: `http://localhost:3000/api/players/{id}`
 - **Respuestas:**
   - `200 OK` — Ejemplo:
 
@@ -161,7 +172,9 @@
 - **Caso de uso:** `UC_añadir_nuevo` (incluye `UC_obtener_geo` y `UC_añadir_imagen`)
 - **Descripción:** Registrar un nuevo jugador manualmente.
 - **Método:** `POST`
-- **URL:** `http://localhost:8080/playerms/api/players`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players`
+  - Node: `http://localhost:3000/api/players`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Solo Usuario Registrado o superior)
 - **Content-Type:** `application/json`
@@ -187,7 +200,7 @@
 }
 ```
 
-- **Campos requeridos reales:** `name`, `latitude`, `longitude`.
+- **Campos requeridos:** `name`, `latitude`, `longitude`.
 - **Campos opcionales:** `firstName`, `lastName`, `age`, `birthdate`, `nationality`, `height`, `weight`, `number`, `team`, `league`, `position`, `photoUrl`.
 - **Nota:** `createdAt` se asigna automáticamente si no llega en el body.
 
@@ -202,7 +215,9 @@
 - **Caso de uso:** `UC_buscar_externo`
 - **Descripción:** Consulta la API de API-Football y devuelve una lista normalizada de jugadores según el texto de búsqueda.
 - **Método:** `GET`
-- **URL:** `http://localhost:8080/playerms/api/players/external`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players/external`
+  - Node: `http://localhost:3000/api/players/external`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
 
@@ -249,7 +264,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Caso de uso:** `UC_importar_externo`
 - **Descripción:** Recibe un array de jugadores ya normalizados y los inserta en MongoDB.
 - **Método:** `POST`
-- **URL:** `http://localhost:8080/playerms/api/players/import`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players/import`
+  - Node: `http://localhost:3000/api/players/import`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
 - **Content-Type:** `application/json`
@@ -294,7 +311,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Caso de uso:** `UC_editar_jugador` (puede incluir `UC_editar_geo`)
 - **Descripción:** Actualiza campos de un jugador existente.
 - **Método:** `PUT`
-- **URL:** `http://localhost:8080/playerms/api/players/{id}`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players/{id}`
+  - Node: `http://localhost:3000/api/players/{id}`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Content-Type:** `application/json`
@@ -310,7 +329,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 }
 ```
 
-- **Campos editables reales:** `team`, `league`, `number`, `latitude`, `longitude`, `name`, `position`, `photoUrl`, `firstName`, `lastName`, `age`, `birthdate`, `nationality`, `height`, `weight`.
+- **Campos editables:** `team`, `league`, `number`, `latitude`, `longitude`, `name`, `position`, `photoUrl`, `firstName`, `lastName`, `age`, `birthdate`, `nationality`, `height`, `weight`.
 - **Nota:** la actualización es parcial; solo se cambian los campos no nulos.
 
 - **Respuestas:**
@@ -326,7 +345,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Caso de uso:** `UC_eliminar_jugador`
 - **Descripción:** Borra un jugador permanentemente.
 - **Método:** `DELETE`
-- **URL:** `http://localhost:8080/playerms/api/players/{id}`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players/{id}`
+  - Node: `http://localhost:3000/api/players/{id}`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Respuestas:**
@@ -346,7 +367,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Caso de uso:** `UC_ver_comentarios` (incluido en `UC_ver_detalles`)
 - **Descripción:** Devuelve todas las reseñas para un jugador.
 - **Método:** `GET`
-- **URL:** `http://localhost:8080/playerms/api/players/{player_id}/reviews`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players/{player_id}/reviews`
+  - Node: `http://localhost:3000/api/players/{player_id}/reviews`
 - **Respuestas:**
   - `200 OK` — Lista de reseñas del jugador:
 
@@ -374,7 +397,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Caso de uso:** `UC_crear_comentario` (incluye `UC_obtener_geo`)
 - **Descripción:** Añade una reseña con texto, puntuación y ubicación.
 - **Método:** `POST`
-- **URL:** `http://localhost:8080/playerms/api/players/{player_id}/reviews`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/players/{player_id}/reviews`
+  - Node: `http://localhost:3000/api/players/{player_id}/reviews`
 - **Body (JSON) ejemplo:**
 
 ```json
@@ -387,7 +412,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 }
 ```
 
-- **Campos requeridos reales:** `text`, `rating`.
+- **Campos requeridos:** `text`, `rating`.
 - **Campos opcionales:** `author`, `latitude`, `longitude`.
 - **Nota:** `userId` y `playerId` se asignan desde el backend.
 
@@ -402,7 +427,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Caso de uso:** `UC_editar_comentario`
 - **Descripción:** Edita el texto y/o la puntuación de una reseña existente.
 - **Método:** `PUT`
-- **URL:** `http://localhost:8080/reviewms/api/reviews/{id}`
+- **URL:**
+  - Spring: `http://localhost:8080/reviewms/api/reviews/{id}`
+  - Node: `http://localhost:3000/api/reviews/{id}`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Content-Type:** `application/json`
@@ -429,7 +456,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Caso de uso:** `UC_eliminar_comentario`
 - **Descripción:** Elimina una reseña (moderación).
 - **Método:** `DELETE`
-- **URL:** `http://localhost:8080/reviewms/api/reviews/{id}`
+- **URL:**
+  - Spring: `http://localhost:8080/reviewms/api/reviews/{id}`
+  - Node: `http://localhost:3000/api/reviews/{id}`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Respuestas:**
@@ -450,7 +479,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 - **Caso de uso:** `UC_ver_noticias`
 - **Método:** `GET`
-- **URL:** `http://localhost:8092/api/news`
+- **URL:**
+  - Spring: `http://localhost:8092/api/news`
+  - Node: `No implementado en el backend Node actual`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
 
@@ -463,7 +494,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 - **Caso de uso:** `UC_crear_noticia`
 - **Método:** `POST`
-- **URL:** `http://localhost:8092/api/news`
+- **URL:**
+  - Spring: `http://localhost:8092/api/news`
+  - Node: `No implementado en el backend Node actual`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
   - `Content-Type: application/json`
@@ -495,7 +528,9 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Caso de uso:** `UC_recomendar_jugadores_ia`
 - **Descripción:** Procesa las posiciones actuales mediante una IA para sugerir jugadores para las posiciones vacías.
 - **Método:** `POST`
-- **URL:** `http://localhost:8080/playerms/api/tactics/recommendations`
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/tactics/recommendations`
+  - Node: `http://localhost:3000/api/tactics/recommendations`
 - **Headers:**
   - `Authorization: Bearer {tu_token_JWT}`
   - `Content-Type: application/json`
@@ -519,7 +554,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 }
 ```
 
-- **Campos reales:**
+- **Campos:**
   - `positions` — objeto con las posiciones del campo como claves y el nombre del jugador asignado o `null` como valor.
 
 - **Respuestas:**
