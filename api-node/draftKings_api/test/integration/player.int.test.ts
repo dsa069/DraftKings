@@ -5,6 +5,14 @@ import app from "../../../app";
 import axios from "axios";
 import Player from "../../models/player";
 import { ApiFootballService } from "../../services/apiFootballService";
+import {
+  invalidPlayerAgeBody,
+  playerBodyWithBirthdate,
+  playerImportNotArrayBody,
+  multipleValidImportPlayers,
+  invalidImportPlayers,
+  validPlayerBody,
+} from "../utils/data/player.test.data";
 
 // ============================================================================
 // 1. MOCKS DE DEPENDENCIAS EXTERNAS Y MIDDLEWARES
@@ -89,14 +97,6 @@ beforeEach(async () => {
 // ============================================================================
 
 describe("Player API Endpoints (/api/players)", () => {
-  const validPlayerBody = {
-    name: "Lionel Messi",
-    latitude: 41.3809,
-    longitude: 2.1228,
-    team: "Inter Miami",
-    age: 36,
-  };
-
   describe("POST /api/players (Crear Jugador)", () => {
     it("Debería retornar 401 si el usuario no está autenticado", async () => {
       const response = await request(app)
@@ -123,10 +123,7 @@ describe("Player API Endpoints (/api/players)", () => {
       const response = await request(app)
         .post("/api/players")
         .set("Authorization", "Bearer mock-token")
-        .send({
-          ...validPlayerBody,
-          birthdate: "2001-10-30T00:00:00.000Z",
-        });
+        .send(playerBodyWithBirthdate);
 
       expect(response.status).toBe(201);
       expect(response.body.birthdate).toBe("2001-10-30");
@@ -138,7 +135,7 @@ describe("Player API Endpoints (/api/players)", () => {
       const response = await request(app)
         .post("/api/players")
         .set("Authorization", "Bearer mock-token")
-        .send({ ...validPlayerBody, age: -1 });
+        .send(invalidPlayerAgeBody);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Bad Request");
@@ -409,7 +406,7 @@ describe("Player API Endpoints (/api/players)", () => {
         .mockRejectedValueOnce({
           isAxiosError: true,
           message: "network down",
-        } as any);
+        } as unknown as Error);
 
       const response = await request(app)
         .get("/api/players/external?search=Mock")
@@ -434,15 +431,10 @@ describe("Player API Endpoints (/api/players)", () => {
     });
 
     it("POST /api/players/import - Debería retornar 201 al importar un array válido", async () => {
-      const playersToImport = [
-        { name: "Jugador 1", latitude: 10, longitude: 20 },
-        { name: "Jugador 2", latitude: 30, longitude: 40 },
-      ];
-
       const response = await request(app)
         .post("/api/players/import")
         .set("Authorization", "Bearer token")
-        .send(playersToImport);
+        .send(multipleValidImportPlayers);
 
       expect(response.status).toBe(201);
       expect(response.body.message).toBe("Players imported successfully");
@@ -451,22 +443,17 @@ describe("Player API Endpoints (/api/players)", () => {
     it("POST /api/players/import - Debería retornar 401 si no está autenticado", async () => {
       const response = await request(app)
         .post("/api/players/import")
-        .send([{ name: "Jugador 1", latitude: 10, longitude: 20 }]);
+        .send(multipleValidImportPlayers);
 
       expect(response.status).toBe(401);
       expect(response.body.message).toBe("Petición no autorizada");
     });
 
     it("POST /api/players/import - Debería retornar 400 si el array contiene datos inválidos", async () => {
-      const invalidImport = [
-        { name: "Jugador Valido", latitude: 10, longitude: 20 },
-        { name: "Jugador Invalido" }, // Faltan lat y long
-      ];
-
       const response = await request(app)
         .post("/api/players/import")
         .set("Authorization", "Bearer token")
-        .send(invalidImport);
+        .send(invalidImportPlayers);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
@@ -478,7 +465,7 @@ describe("Player API Endpoints (/api/players)", () => {
       const response = await request(app)
         .post("/api/players/import")
         .set("Authorization", "Bearer token")
-        .send({ name: "NoArray", latitude: 1, longitude: 2 });
+        .send(playerImportNotArrayBody);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Expected an array of players");
@@ -488,12 +475,12 @@ describe("Player API Endpoints (/api/players)", () => {
       const insertSpy = jest.spyOn(Player, "insertMany").mockRejectedValueOnce({
         name: "ValidationError",
         message: "Validation failed",
-      } as any);
+      } as unknown as { name: string; message: string });
 
       const response = await request(app)
         .post("/api/players/import")
         .set("Authorization", "Bearer token")
-        .send([{ name: "Jugador 1", latitude: 10, longitude: 20 }]);
+        .send(multipleValidImportPlayers);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Bad Request");
@@ -508,7 +495,7 @@ describe("Player API Endpoints (/api/players)", () => {
       const response = await request(app)
         .post("/api/players/import")
         .set("Authorization", "Bearer token")
-        .send([{ name: "Jugador 1", latitude: 10, longitude: 20 }]);
+        .send(multipleValidImportPlayers);
 
       expect(response.status).toBe(500);
       expect(response.body.message).toBe("Internal Server Error");

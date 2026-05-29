@@ -9,6 +9,16 @@ import {
 } from "../../controllers/reviewController";
 import Review from "../../models/review";
 import Player from "../../models/player";
+import {
+  emptyReviewUpdateBody,
+  mockReviewList,
+  mockSavedReview,
+  mockUpdatedReview,
+  reviewCreateMissingRatingBody,
+  reviewUpdateRatingBody,
+  reviewUpdateTextBody,
+  validReviewBody,
+} from "../utils/data/review.test.data";
 
 // 1. Mockeamos los modelos de Mongoose para aislar la base de datos
 jest.mock("../../models/review");
@@ -85,8 +95,6 @@ describe("ReviewController (Pruebas Unitarias)", () => {
     it("Debería retornar 200 y el array de reseñas si todo es correcto", async () => {
       mockRequest.params = { id: validObjectId };
 
-      const mockReviewsArray = [{ text: "Gran jugador", rating: 5 }];
-
       // Simulamos que el jugador existe
       (Player.findById as jest.Mock).mockReturnValue({
         exec: jest
@@ -96,7 +104,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
 
       // Simulamos que Review.find devuelve el array de reseñas
       (Review.find as jest.Mock).mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockReviewsArray),
+        exec: jest.fn().mockResolvedValue(mockReviewList),
       });
 
       await reviewsGetByPlayer(
@@ -107,7 +115,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
       // Verificamos el comportamiento esperado
       expect(Review.find).toHaveBeenCalledWith({ player: validObjectId });
       expect(responseStatusMock).toHaveBeenCalledWith(200);
-      expect(responseJsonMock).toHaveBeenCalledWith(mockReviewsArray);
+      expect(responseJsonMock).toHaveBeenCalledWith(mockReviewList);
     });
   });
 
@@ -128,7 +136,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
 
     it("Debería retornar 400 si faltan text o rating", async () => {
       mockRequest.params = { id: validObjectId };
-      mockRequest.body = { text: "Sin rating" };
+      mockRequest.body = reviewCreateMissingRatingBody;
 
       await reviewsCreate(mockRequest as Request, mockResponse as Response);
 
@@ -157,23 +165,13 @@ describe("ReviewController (Pruebas Unitarias)", () => {
 
     it("Debería crear y devolver una reseña", async () => {
       mockRequest.params = { id: validObjectId };
-      mockRequest.body = {
-        text: "Gran partido",
-        rating: 5,
-        latitude: 10,
-        longitude: 20,
-      };
+      mockRequest.body = validReviewBody;
       mockRequest.user = { _id: validObjectId, userName: "Tester" };
 
       (Player.findById as jest.Mock).mockReturnValue({
         exec: jest.fn().mockResolvedValue({ _id: validObjectId }),
       });
 
-      const mockSavedReview = {
-        _id: "review-id",
-        text: "Gran partido",
-        rating: 5,
-      };
       (Review as unknown as jest.Mock).mockImplementation(() => ({
         save: jest.fn().mockResolvedValue(mockSavedReview),
       }));
@@ -215,7 +213,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
   describe("reviewsUpdate", () => {
     it("Debería retornar 400 si no se envía ni text ni rating", async () => {
       mockRequest.params = { id: validObjectId };
-      mockRequest.body = {}; // Body vacío
+      mockRequest.body = emptyReviewUpdateBody; // Body vacío
 
       await reviewsUpdate(mockRequest as Request, mockResponse as Response);
 
@@ -227,7 +225,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
 
     it("Debería retornar 404 si la reseña a actualizar no existe", async () => {
       mockRequest.params = { id: validObjectId };
-      mockRequest.body = { text: "Texto editado" };
+      mockRequest.body = reviewUpdateTextBody;
 
       // Simulamos que findByIdAndUpdate devuelve null
       (Review.findByIdAndUpdate as jest.Mock).mockReturnValue({
@@ -244,13 +242,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
 
     it("Debería retornar 200 y la reseña actualizada", async () => {
       mockRequest.params = { id: validObjectId };
-      mockRequest.body = { rating: 4 }; // Solo actualizamos rating
-
-      const mockUpdatedReview = {
-        _id: validObjectId,
-        text: "Viejo",
-        rating: 4,
-      };
+      mockRequest.body = reviewUpdateRatingBody; // Solo actualizamos rating
 
       (Review.findByIdAndUpdate as jest.Mock).mockReturnValue({
         exec: jest.fn().mockResolvedValue(mockUpdatedReview),
@@ -260,7 +252,7 @@ describe("ReviewController (Pruebas Unitarias)", () => {
 
       expect(Review.findByIdAndUpdate).toHaveBeenCalledWith(
         validObjectId,
-        { $set: { rating: 4 } }, // Verificamos que construyó bien el $set condicional
+        { $set: reviewUpdateRatingBody }, // Verificamos que construyó bien el $set condicional
         { new: true },
       );
       expect(responseStatusMock).toHaveBeenCalledWith(200);

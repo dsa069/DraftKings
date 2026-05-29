@@ -25,6 +25,12 @@ jest.mock("@langchain/core/runnables", () => ({
 }));
 
 import { AiTacticService } from "../../services/aiTacticService";
+import {
+  singleEmptyTacticPositions,
+  tacticNoEmptyPositionsErrorMessage,
+  unitAiTacticResponse,
+  validTacticPositions,
+} from "../utils/data/tactic.test.data";
 
 describe("AiTacticService (Pruebas Unitarias)", () => {
   let aiTacticService: AiTacticService;
@@ -39,20 +45,16 @@ describe("AiTacticService (Pruebas Unitarias)", () => {
     it("Debería lanzar NO_EMPTY_POSITIONS si no hay huecos", async () => {
       await expect(
         aiTacticService.getRecommendations({ GK: "Courtois" }),
-      ).rejects.toThrow("NO_EMPTY_POSITIONS");
+      ).rejects.toThrow(tacticNoEmptyPositionsErrorMessage);
     });
 
     it("Debería invocar la cadena con el contexto correcto y devolver la respuesta parseada", async () => {
-      const chainResponse = {
-        message: "Based on the current layout, the team needs width.",
-        recommendations: { ST: "Haaland" },
-      };
+      const chainResponse = unitAiTacticResponse;
 
       invokeMock.mockResolvedValue(chainResponse);
 
       const result = await aiTacticService.getRecommendations({
-        GK: "Courtois",
-        ST: null,
+        ...validTacticPositions,
       });
 
       expect(invokeMock).toHaveBeenCalledWith({
@@ -70,7 +72,7 @@ describe("AiTacticService (Pruebas Unitarias)", () => {
       invokeMock.mockRejectedValue(new Error("timeout"));
 
       await expect(
-        aiTacticService.getRecommendations({ ST: null }),
+        aiTacticService.getRecommendations(singleEmptyTacticPositions),
       ).rejects.toThrow("AI_SERVICE_ERROR");
 
       expect(consoleErrorSpy).toHaveBeenCalled();

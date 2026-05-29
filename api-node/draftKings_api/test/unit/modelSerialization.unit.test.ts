@@ -3,6 +3,11 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import Player from "../../models/player";
 import Review from "../../models/review";
 import { User } from "../../models/user";
+import {
+  modelSerializationPlayerSeed,
+  modelSerializationReviewSeed,
+  modelSerializationUserSeed,
+} from "../utils/data/model.test.data";
 
 describe("Model serialization (Pruebas Unitarias)", () => {
   let mongoServer: MongoMemoryServer;
@@ -28,12 +33,10 @@ describe("Model serialization (Pruebas Unitarias)", () => {
 
   it("Player.toJSON debería mapear id, aplanar coords y formatear birthdate", async () => {
     const player = await Player.create({
-      name: "Serializado",
-      birthdate: new Date("2002-01-31T00:00:00.000Z"),
-      coords: { type: "Point", coordinates: [12.34, 56.78] },
+      ...modelSerializationPlayerSeed,
     });
 
-    const json = player.toJSON() as any;
+    const json = player.toJSON() as Record<string, unknown>;
 
     expect(json.id).toBeDefined();
     expect(json.longitude).toBeCloseTo(12.34);
@@ -46,26 +49,21 @@ describe("Model serialization (Pruebas Unitarias)", () => {
 
   it("Review.toJSON debería exponer user_id, aplanar coords y ocultar refs internas", async () => {
     const user = await User.create({
-      firebaseUid: "uid-model-test",
-      email: "model-test@example.com",
-      userName: "ModelUser",
+      ...modelSerializationUserSeed,
     });
 
     const player = await Player.create({
-      name: "Jugador Review",
+      ...modelSerializationPlayerSeed,
       coords: { type: "Point", coordinates: [1, 2] },
     });
 
     const review = await Review.create({
       user: user._id,
       player: player._id,
-      author: "Autor",
-      text: "Texto",
-      rating: 4,
-      coords: { type: "Point", coordinates: [-3.7, 40.4] },
+      ...modelSerializationReviewSeed,
     });
 
-    const json = review.toJSON() as any;
+    const json = review.toJSON() as Record<string, unknown>;
 
     expect(json.id).toBeDefined();
     expect(String(json.user_id)).toBe(String(user._id));

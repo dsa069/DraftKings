@@ -2,15 +2,26 @@ import mongoose from "mongoose";
 import Player from "../../models/player";
 import Review from "../../models/review";
 import { User } from "../../models/user";
+import {
+  modelPlayerInvalidSeed,
+  modelPlayerMinimalSeed,
+  modelPlayerMissingCoordsSeed,
+  modelPlayerSeed,
+  modelReviewPlayerId,
+  modelReviewLongSeed,
+  modelReviewMissingFieldsSeed,
+  modelReviewUserId,
+  modelReviewSeed,
+  modelReviewWithoutCoordsSeed,
+  modelUserMissingRequiredFieldsSeed,
+  modelUserSeed,
+} from "../utils/data/model.test.data";
 
 describe("Model schemas (Pruebas Unitarias)", () => {
   describe("Player model", () => {
     it("Debería aplicar defaults y validar un jugador mínimo válido", () => {
       const player = new Player({
-        name: "Lamine Yamal",
-        coords: {
-          coordinates: [2.12, 41.38],
-        },
+        ...modelPlayerMinimalSeed,
       });
 
       expect(player.birthdate).toBeNull();
@@ -20,7 +31,7 @@ describe("Model schemas (Pruebas Unitarias)", () => {
     });
 
     it("Debería devolver errores de validación cuando faltan campos obligatorios", () => {
-      const player = new Player({});
+      const player = new Player(modelPlayerInvalidSeed);
       const validationError = player.validateSync();
 
       expect(validationError).toBeDefined();
@@ -31,11 +42,8 @@ describe("Model schemas (Pruebas Unitarias)", () => {
     it("Debería transformar a JSON aplanando coordenadas y birthdate", () => {
       const birthdate = new Date("2007-07-13T00:00:00.000Z");
       const player = new Player({
-        name: "Lamine Yamal",
+        ...modelPlayerSeed,
         birthdate,
-        coords: {
-          coordinates: [2.12, 41.38],
-        },
       });
 
       const json = player.toJSON();
@@ -51,10 +59,7 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería conservar birthdate nulo cuando no se informa", () => {
       const player = new Player({
-        name: "Sin Fecha",
-        coords: {
-          coordinates: [0, 0],
-        },
+        ...modelPlayerMinimalSeed,
       });
 
       const json = player.toJSON();
@@ -64,7 +69,7 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería omitir longitude y latitude si no hay coords", () => {
       const player = new Player({
-        name: "Sin coords",
+        ...modelPlayerMissingCoordsSeed,
       });
 
       const json = player.toJSON();
@@ -75,19 +80,9 @@ describe("Model schemas (Pruebas Unitarias)", () => {
   });
 
   describe("Review model", () => {
-    const userId = new mongoose.Types.ObjectId();
-    const playerId = new mongoose.Types.ObjectId();
-
     it("Debería aplicar defaults y validar una reseña mínima válida", () => {
       const review = new Review({
-        user: userId,
-        player: playerId,
-        author: "Tester",
-        text: "Buen jugador",
-        rating: 5,
-        coords: {
-          coordinates: [2.12, 41.38],
-        },
+        ...modelReviewSeed,
       });
 
       expect(review.coords.type).toBe("Point");
@@ -97,9 +92,7 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería devolver errores cuando faltan campos obligatorios", () => {
       const review = new Review({
-        coords: {
-          type: "Point",
-        },
+        ...modelReviewMissingFieldsSeed,
       });
       const validationError = review.validateSync();
 
@@ -113,14 +106,9 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería rechazar un texto demasiado largo y una nota fuera de rango", () => {
       const review = new Review({
-        user: userId,
-        player: playerId,
-        author: "Tester",
-        text: "x".repeat(1001),
-        rating: 6,
-        coords: {
-          coordinates: [2.12, 41.38],
-        },
+        user: modelReviewUserId,
+        player: modelReviewPlayerId,
+        ...modelReviewLongSeed,
       });
 
       const validationError = review.validateSync();
@@ -132,20 +120,15 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería transformar a JSON ocultando campos internos y aplanando coordenadas", () => {
       const review = new Review({
-        user: userId,
-        player: playerId,
-        author: "Tester",
-        text: "Gran partido",
-        rating: 5,
-        coords: {
-          coordinates: [2.12, 41.38],
-        },
+        user: modelReviewUserId,
+        player: modelReviewPlayerId,
+        ...modelReviewSeed,
       });
 
       const json = review.toJSON();
 
       expect(json.id).toEqual(review._id);
-      expect(json.user_id).toEqual(userId);
+      expect(json.user_id).toEqual(modelReviewUserId);
       expect(json.longitude).toBe(2.12);
       expect(json.latitude).toBe(41.38);
       expect(json).not.toHaveProperty("_id");
@@ -156,11 +139,9 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería omitir longitude y latitude si no hay coords", () => {
       const review = new Review({
-        user: userId,
-        player: playerId,
-        author: "Tester",
-        text: "Sin coords",
-        rating: 4,
+        user: modelReviewUserId,
+        player: modelReviewPlayerId,
+        ...modelReviewWithoutCoordsSeed,
       });
 
       const json = review.toJSON();
@@ -171,14 +152,9 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería omitir longitude y latitude si coords no incluye coordinates", () => {
       const review = new Review({
-        user: userId,
-        player: playerId,
-        author: "Tester",
-        text: "Coords incompletas",
-        rating: 4,
-        coords: {
-          type: "Point",
-        },
+        user: modelReviewUserId,
+        player: modelReviewPlayerId,
+        ...modelReviewMissingFieldsSeed,
       });
 
       const json = review.toJSON();
@@ -191,8 +167,7 @@ describe("Model schemas (Pruebas Unitarias)", () => {
   describe("User model", () => {
     it("Debería aplicar defaults al crear un usuario válido", () => {
       const user = new User({
-        firebaseUid: "firebase-uid",
-        email: "user@example.com",
+        ...modelUserSeed,
       });
 
       expect(user.role).toBe("USER");
@@ -202,7 +177,7 @@ describe("Model schemas (Pruebas Unitarias)", () => {
     });
 
     it("Debería devolver errores cuando faltan firebaseUid o email", () => {
-      const user = new User({ userName: "Tester" });
+      const user = new User(modelUserMissingRequiredFieldsSeed);
       const validationError = user.validateSync();
 
       expect(validationError).toBeDefined();
