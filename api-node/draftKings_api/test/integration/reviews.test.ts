@@ -1,9 +1,9 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import app from "../../app"; // Ajusta el path a tu app.ts
-import Review from "../models/review";
-import Player from "../models/player";
+import app from "../../../app"; // Ajusta el path a tu app.ts
+import Review from "../../models/review";
+import Player from "../../models/player";
 
 // ============================================================================
 // 1. MOCKS DE DEPENDENCIAS EXTERNAS Y MIDDLEWARES
@@ -12,19 +12,37 @@ import Player from "../models/player";
 // Creamos un ObjectId válido para simular el usuario autenticado
 const mockUserId = new mongoose.Types.ObjectId();
 
-jest.mock("../middleware/auth.middleware", () => ({
+jest.mock("../../middleware/auth.middleware", () => ({
   authorizeRequest: jest.fn((req, res, next) => {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
+    const role = req.headers["x-test-role"] === "ADMIN" ? "ADMIN" : "USER";
+
     // Simulamos un usuario autenticado. Usamos _id porque Mongoose lo requiere para referencias
-    req.user = { _id: mockUserId, role: "ADMIN" }; // Le damos ADMIN para poder probar PUT/DELETE
+    req.user = { _id: mockUserId, role };
     next();
   }),
   authorizeRequestNoCreate: jest.fn((req, res, next) => {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
+    const role = req.headers["x-test-role"] === "ADMIN" ? "ADMIN" : "USER";
+
     // Mantenemos el mismo comportamiento base para rutas que exigen usuario existente
-    req.user = { _id: mockUserId, role: "ADMIN" };
+    req.user = { _id: mockUserId, role };
     next();
   }),
 
   requireAdmin: jest.fn((req, res, next) => {
+    if (req.user?.role !== "ADMIN") {
+      return res.status(403).json({
+        message: "Acceso denegado. Se requieren privilegios de Administrador.",
+      });
+    }
+
     next(); // Pase libre porque asumimos que ya pasó el authorizeRequest
   }),
 }));
@@ -160,6 +178,62 @@ describe("Review API Endpoints", () => {
   // ENDPOINTS EN /api/reviews/:id (Requieren ADMIN según el Swagger)
   // -------------------------------------------------------------------------
   describe("PUT /api/reviews/:id (Editar Comentario)", () => {
+    it("Debería retornar 401 si el usuario no está autenticado", async () => {
+      const response = await request(app)
+        .put(`/api/reviews/${new mongoose.Types.ObjectId()}`)
+        .send({ text: "Texto editado", rating: 5 });
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe("Petición no autorizada");
+    });
+
+    it("Debería retornar 403 si el usuario está autenticado pero no es admin", async () => {
+      const player = await createTestPlayer();
+      const review = await Review.create({
+        user: mockUserId,
+        player: player._id,
+        author: "Fan Original",
+        text: "Texto original",
+        rating: 3,
+        coords: { type: "Point", coordinates: [0, 0] },
+      });
+
+      const response = await request(app)
+        .put(`/api/reviews/${review._id}`)
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-role", "USER")
+        .send({ text: "Texto editado", rating: 5 });
+
+      expect(response.status).toBe(403);
+      expect(response.body.message).toBe(
+        "Acceso denegado. Se requieren privilegios de Administrador.",
+      );
+    });
+
+    it("Debería permitir la edición a un usuario admin autenticado", async () => {
+      const player = await createTestPlayer();
+      const review = await Review.create({
+        user: mockUserId,
+        player: player._id,
+        author: "Fan Original",
+        text: "Texto original",
+        rating: 3,
+        coords: { type: "Point", coordinates: [0, 0] },
+      });
+
+      const updateData = { text: "Texto editado", rating: 5 };
+
+      const response = await request(app)
+        .put(`/api/reviews/${review._id}`)
+        .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN")
+        .send(updateData);
+
+      expect(response.status).toBe(200);
+      expect(response.body.text).toBe("Texto editado");
+      expect(response.body.rating).toBe(5);
+    });
+
     it("Debería actualizar el texto y el rating retornando 200", async () => {
       const player = await createTestPlayer();
       const review = await Review.create({
@@ -176,6 +250,7 @@ describe("Review API Endpoints", () => {
       const response = await request(app)
         .put(`/api/reviews/${review._id}`)
         .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN")
         .send(updateData);
 
       expect(response.status).toBe(200);
@@ -187,6 +262,7 @@ describe("Review API Endpoints", () => {
       const response = await request(app)
         .put(`/api/reviews/${new mongoose.Types.ObjectId()}`)
         .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN")
         .send({}); // Enviamos un body vacío
 
       expect(response.status).toBe(400);
@@ -199,6 +275,7 @@ describe("Review API Endpoints", () => {
       const response = await request(app)
         .put(`/api/reviews/${fakeReviewId}`)
         .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN")
         .send({ text: "Algo", rating: 4 });
 
       expect(response.status).toBe(404);
@@ -207,6 +284,59 @@ describe("Review API Endpoints", () => {
   });
 
   describe("DELETE /api/reviews/:id (Eliminar Comentario)", () => {
+    it("Debería retornar 401 si el usuario no está autenticado", async () => {
+      const response = await request(app).delete(
+        `/api/reviews/${new mongoose.Types.ObjectId()}`,
+      );
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe("Petición no autorizada");
+    });
+
+    it("Debería retornar 403 si el usuario está autenticado pero no es admin", async () => {
+      const player = await createTestPlayer();
+      const review = await Review.create({
+        user: mockUserId,
+        player: player._id,
+        author: "Para borrar",
+        text: "Malo",
+        rating: 1,
+        coords: { type: "Point", coordinates: [0, 0] },
+      });
+
+      const response = await request(app)
+        .delete(`/api/reviews/${review._id}`)
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-role", "USER");
+
+      expect(response.status).toBe(403);
+      expect(response.body.message).toBe(
+        "Acceso denegado. Se requieren privilegios de Administrador.",
+      );
+    });
+
+    it("Debería permitir el borrado a un usuario admin autenticado", async () => {
+      const player = await createTestPlayer();
+      const review = await Review.create({
+        user: mockUserId,
+        player: player._id,
+        author: "Para borrar",
+        text: "Malo",
+        rating: 1,
+        coords: { type: "Point", coordinates: [0, 0] },
+      });
+
+      const response = await request(app)
+        .delete(`/api/reviews/${review._id}`)
+        .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN");
+
+      expect([200, 204]).toContain(response.status);
+
+      const reviewInDb = await Review.findById(review._id);
+      expect(reviewInDb).toBeNull();
+    });
+
     it("Debería eliminar un comentario y retornar 204 o 200", async () => {
       const player = await createTestPlayer();
       const review = await Review.create({
@@ -220,7 +350,8 @@ describe("Review API Endpoints", () => {
 
       const response = await request(app)
         .delete(`/api/reviews/${review._id}`)
-        .set("Authorization", "Bearer mock-token-admin");
+        .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN");
 
       // Verificamos si tu controlador devuelve 204 No Content o un 200 con mensaje JSON.
       // Dependiendo de tu implementación exacta, ajusta el expect a .toBe(200) o .toBe(204)
@@ -234,7 +365,8 @@ describe("Review API Endpoints", () => {
     it("Debería retornar 400 si el ID tiene formato inválido", async () => {
       const response = await request(app)
         .delete(`/api/reviews/id-mal-formado`)
-        .set("Authorization", "Bearer mock-token-admin");
+        .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN");
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Invalid Review ID");

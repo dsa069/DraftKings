@@ -1,15 +1,19 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import app from "../../app"; // Ajusta el path a tu app.ts
-import { User } from "../models/user";
+import app from "../../../app"; // Ajusta el path a tu app.ts
+import { User } from "../../models/user";
 // ============================================================================
 // 1. MOCKS DE MIDDLEWARES
 // ============================================================================
 
 // Mockeamos el auth.middleware para inyectar el req.user y req.isNewUser dinámicamente
-jest.mock("../middleware/auth.middleware", () => ({
+jest.mock("../../middleware/auth.middleware", () => ({
   authorizeRequest: jest.fn(async (req, res, next) => {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
     // Buscamos el usuario de prueba recién creado en el beforeEach
     const user = await User.findOne();
     req.user = user;
@@ -18,6 +22,10 @@ jest.mock("../middleware/auth.middleware", () => ({
     next();
   }),
   authorizeRequestNoCreate: jest.fn(async (req, res, next) => {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Petición no autorizada" });
+    }
+
     const user = await User.findOne();
     req.user = user;
     next();
@@ -63,6 +71,42 @@ describe("User API Endpoints (/api/user)", () => {
   };
 
   describe("POST /api/user/sync (Sincronizar Perfil)", () => {
+    it("Debería retornar 401 si el usuario no está autenticado", async () => {
+      const response = await request(app)
+        .post("/api/user/sync")
+        .send({ userName: "NuevoNombre" });
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe("Petición no autorizada");
+    });
+
+    it("Debería retornar 200 si el usuario está autenticado", async () => {
+      await createTestUser();
+
+      const response = await request(app)
+        .post("/api/user/sync")
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-is-new", "true")
+        .send({ userName: "NuevoNombre" });
+
+      expect(response.status).toBe(200);
+      expect(response.body.userName).toBe("NuevoNombre");
+    });
+
+    it("Debería retornar 200 si el usuario autenticado es admin", async () => {
+      await createTestUser();
+
+      const response = await request(app)
+        .post("/api/user/sync")
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-is-new", "true")
+        .set("x-test-role", "ADMIN")
+        .send({ userName: "NuevoNombre", role: "ADMIN" });
+
+      expect(response.status).toBe(200);
+      expect(response.body.role).toBe("ADMIN");
+    });
+
     it("Debería retornar 200 y actualizar el usuario si es nuevo (isNewUser=true)", async () => {
       await createTestUser();
 
@@ -93,6 +137,36 @@ describe("User API Endpoints (/api/user)", () => {
   });
 
   describe("GET /api/user/profile (Obtener Perfil)", () => {
+    it("Debería retornar 401 si el usuario no está autenticado", async () => {
+      const response = await request(app).get("/api/user/profile");
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe("Petición no autorizada");
+    });
+
+    it("Debería retornar 200 si el usuario está autenticado", async () => {
+      await createTestUser();
+
+      const response = await request(app)
+        .get("/api/user/profile")
+        .set("Authorization", "Bearer mock-token");
+
+      expect(response.status).toBe(200);
+      expect(response.body.email).toBe("test@example.com");
+    });
+
+    it("Debería retornar 200 si el usuario autenticado es admin", async () => {
+      await createTestUser();
+
+      const response = await request(app)
+        .get("/api/user/profile")
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-role", "ADMIN");
+
+      expect(response.status).toBe(200);
+      expect(response.body.firebaseUid).toBe("testUid123");
+    });
+
     it("Debería retornar 200 y los datos del perfil del usuario", async () => {
       await createTestUser();
 
