@@ -137,6 +137,53 @@ describe("Review API Endpoints", () => {
       expect(response.status).toBe(400);
       expect(response.body.message).toContain("inválido");
     });
+
+    it("Debería usar el autor por defecto cuando no se envía author", async () => {
+      const player = await createTestPlayer();
+
+      const response = await request(app)
+        .post(`/api/players/${player._id}/reviews`)
+        .set("Authorization", "Bearer mock-token")
+        .send({ text: "Sin autor", rating: 4, latitude: 0, longitude: 0 });
+
+      expect(response.status).toBe(201);
+      expect(response.body.author).toBe("Anónimo");
+    });
+
+    it("Debería retornar 503 cuando hay error de red/timeout en persistencia", async () => {
+      const player = await createTestPlayer();
+      const saveSpy = jest
+        .spyOn(Review.prototype, "save")
+        .mockRejectedValueOnce({
+          name: "MongoNetworkError",
+          message: "connection timeout",
+        });
+
+      const response = await request(app)
+        .post(`/api/players/${player._id}/reviews`)
+        .set("Authorization", "Bearer mock-token")
+        .send(validReviewBody);
+
+      expect(response.status).toBe(503);
+      expect(response.body.message).toBe("Servicio de reseñas no disponible");
+      saveSpy.mockRestore();
+    });
+
+    it("Debería retornar 500 en error inesperado al crear reseña", async () => {
+      const player = await createTestPlayer();
+      const saveSpy = jest
+        .spyOn(Review.prototype, "save")
+        .mockRejectedValueOnce(new Error("REVIEW_CREATE_FAIL"));
+
+      const response = await request(app)
+        .post(`/api/players/${player._id}/reviews`)
+        .set("Authorization", "Bearer mock-token")
+        .send(validReviewBody);
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Error interno inesperado");
+      saveSpy.mockRestore();
+    });
   });
 
   describe("GET /api/players/:id/reviews (Obtener Comentarios)", () => {
@@ -281,6 +328,34 @@ describe("Review API Endpoints", () => {
       expect(response.status).toBe(404);
       expect(response.body.message).toBe("Comentario no existe");
     });
+
+    it("Debería retornar 500 en error inesperado al actualizar", async () => {
+      const player = await createTestPlayer();
+      const review = await Review.create({
+        user: mockUserId,
+        player: player._id,
+        author: "Fan",
+        text: "Texto",
+        rating: 2,
+        coords: { type: "Point", coordinates: [0, 0] },
+      });
+
+      const updateSpy = jest
+        .spyOn(Review, "findByIdAndUpdate")
+        .mockReturnValueOnce({
+          exec: jest.fn().mockRejectedValueOnce(new Error("UPDATE_FAIL")),
+        } as any);
+
+      const response = await request(app)
+        .put(`/api/reviews/${review._id}`)
+        .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN")
+        .send({ text: "Nuevo texto" });
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Error interno inesperado");
+      updateSpy.mockRestore();
+    });
   });
 
   describe("DELETE /api/reviews/:id (Eliminar Comentario)", () => {
@@ -370,6 +445,33 @@ describe("Review API Endpoints", () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Invalid Review ID");
+    });
+
+    it("Debería retornar 500 en error inesperado al eliminar", async () => {
+      const player = await createTestPlayer();
+      const review = await Review.create({
+        user: mockUserId,
+        player: player._id,
+        author: "Fan",
+        text: "Texto",
+        rating: 2,
+        coords: { type: "Point", coordinates: [0, 0] },
+      });
+
+      const deleteSpy = jest
+        .spyOn(Review, "findByIdAndDelete")
+        .mockReturnValueOnce({
+          exec: jest.fn().mockRejectedValueOnce(new Error("DELETE_FAIL")),
+        } as any);
+
+      const response = await request(app)
+        .delete(`/api/reviews/${review._id}`)
+        .set("Authorization", "Bearer mock-token-admin")
+        .set("x-test-role", "ADMIN");
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Error interno inesperado");
+      deleteSpy.mockRestore();
     });
   });
 });

@@ -49,6 +49,12 @@ jest.mock("../../services/aiTacticService");
 describe("Tactics API Endpoints (/api/tactics)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Cinturón de seguridad: ningún test debe tocar proveedor real de IA.
+    (AiTacticService.prototype.getRecommendations as jest.Mock).mockReset();
+    (
+      AiTacticService.prototype.getRecommendations as jest.Mock
+    ).mockRejectedValue(new Error("UNMOCKED_AI_CALL"));
   });
 
   describe("POST /api/tactics/recommendations", () => {
@@ -187,6 +193,20 @@ describe("Tactics API Endpoints (/api/tactics)", () => {
       expect(response.body.message).toContain(
         "Error de comunicación o timeout con el proveedor",
       );
+    });
+
+    it("Debería retornar 500 si ocurre un error desconocido", async () => {
+      (
+        AiTacticService.prototype.getRecommendations as jest.Mock
+      ).mockRejectedValueOnce(new Error("UNHANDLED_ERROR"));
+
+      const response = await request(app)
+        .post("/api/tactics/recommendations")
+        .set("Authorization", "Bearer mock-token")
+        .send({ positions: { ST: null } });
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Unknown Error");
     });
   });
 });
