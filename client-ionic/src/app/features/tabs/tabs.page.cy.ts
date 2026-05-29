@@ -9,15 +9,20 @@ describe('TabsPage Component', () => {
   let isAuthenticatedMock: WritableSignal<boolean>;
 
   beforeEach(() => {
-    // Inicializamos el Signal reactivo
+    // Inicializamos el Signal reactivo de control local para el test
     isAuthenticatedMock = signal(false);
 
-    // Mock del AuthService
+    // Mock de AuthService adaptado estrictamente a las señales abstractas reales
     authServiceMock = {
-      isAuthenticated: isAuthenticatedMock as any,
+      isAuthenticated: (() => isAuthenticatedMock()) as any,
+      userProfile: (() => null) as any,
+      isAdmin: (() => false) as any,
+      isUser: (() => false) as any,
+      logout: cy.stub().resolves(),
+      getToken: cy.stub().resolves(null),
     };
 
-    // Mock del ToastController
+    // Mock del ToastController de Ionic con una simulación del ciclo de vida resuelta
     toastControllerMock = {
       create: cy.stub().resolves({
         present: cy.stub().resolves(),
@@ -25,6 +30,7 @@ describe('TabsPage Component', () => {
     };
   });
 
+  // Función auxiliar para montar el componente inyectando los stubs correspondientes
   const mountComponent = () => {
     cy.mount(TabsPage, {
       providers: [
@@ -78,7 +84,7 @@ describe('TabsPage Component', () => {
     it('NO debe disparar el Toast informativo al hacer clic en "Players"', () => {
       cy.contains('ion-tab-button', 'Players').click();
 
-      // Aseguramos que la lógica de Auth no interfiera con pestañas públicas
+      // Aseguramos que la lógica de Auth no interfiera con pestañas de libre acceso
       cy.wrap(toastControllerMock.create).should('not.have.been.called');
     });
 
@@ -95,15 +101,17 @@ describe('TabsPage Component', () => {
       mountComponent();
     });
 
-    it('debe renderizar "My Squad" SIN el atributo "tab" para bloquear navegación nativa', () => {
+    it('debe renderizar "My Squad" SIN el atributo "tab" para bloquear el enrutamiento nativo', () => {
+      // Valida la directiva estructural @if (!authService.isAuthenticated()) del template
       cy.contains('ion-tab-button', 'My Squad')
         .should('exist')
         .and('not.have.attr', 'tab');
     });
 
-    it('debe interceptar el clic en "My Squad" y mostrar un Toast informativo', () => {
+    it('debe interceptar el clic en "My Squad" y disparar un Toast informativo al usuario', () => {
       cy.contains('ion-tab-button', 'My Squad').click();
 
+      // Verifica los parámetros exactos requeridos por el método KISS de la clase
       cy.wrap(toastControllerMock.create).should('have.been.calledOnceWith', {
         message: 'Please log in or register to build your squad.',
         duration: 3000,
@@ -120,6 +128,7 @@ describe('TabsPage Component', () => {
     });
 
     it('debe renderizar "My Squad" CON el atributo "tab=\'my-team\'" habilitando el router', () => {
+      // Valida el bloque estructural @else del template reactivo
       cy.contains('ion-tab-button', 'My Squad')
         .should('exist')
         .and('have.attr', 'tab', 'my-team');
@@ -128,7 +137,7 @@ describe('TabsPage Component', () => {
     it('NO debe disparar el Toast informativo al hacer clic en "My Squad"', () => {
       cy.contains('ion-tab-button', 'My Squad').click();
 
-      // El evento click nativo será manejado por el enrutador de Ionic, no por el Toast
+      // El evento click nativo será manejado por el enrutador dinámico de las tabs, evitando el Toast
       cy.wrap(toastControllerMock.create).should('not.have.been.called');
     });
   });
