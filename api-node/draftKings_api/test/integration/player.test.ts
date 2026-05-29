@@ -2,7 +2,9 @@ import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import app from "../../../app";
+import axios from "axios";
 import Player from "../../models/player";
+import { ApiFootballService } from "../../services/apiFootballService";
 
 // ============================================================================
 // 1. MOCKS DE DEPENDENCIAS EXTERNAS Y MIDDLEWARES
@@ -45,19 +47,7 @@ jest.mock("../../middleware/auth.middleware", () => ({
   }),
 }));
 
-// Mockeamos el servicio externo de API Football para no hacer peticiones HTTP reales
-jest.mock("../../services/apiFootballService", () => {
-  return {
-    ApiFootballService: jest.fn().mockImplementation(() => ({
-      searchPlayers: jest
-        .fn()
-        .mockResolvedValue([
-          { name: "External Player Mock", latitude: 0, longitude: 0 },
-        ]),
-      importPlayers: jest.fn().mockResolvedValue(true),
-    })),
-  };
-});
+jest.mock("axios");
 
 // ============================================================================
 // 2. CONFIGURACIÓN DE BASE DE DATOS EN MEMORIA (SETUP & TEARDOWN)
@@ -88,6 +78,10 @@ beforeEach(async () => {
   // Limpiamos la colección de jugadores antes de CADA prueba para asegurar aislamiento
   await Player.deleteMany({});
   jest.clearAllMocks();
+
+  // Cinturón de seguridad: si un test no define mock explícito, nunca salimos a red.
+  (axios.get as jest.Mock).mockReset();
+  (axios.get as jest.Mock).mockRejectedValue(new Error("UNMOCKED_AXIOS_CALL"));
 });
 
 // ============================================================================
@@ -123,6 +117,46 @@ describe("Player API Endpoints (/api/players)", () => {
       expect(response.body.name).toBe(validPlayerBody.name);
       expect(response.body.id).toBeDefined(); // Verificamos el toJSON del schema
       expect(response.body.latitude).toBe(validPlayerBody.latitude);
+    });
+
+    it("Debería serializar birthdate en formato YYYY-MM-DD", async () => {
+      const response = await request(app)
+        .post("/api/players")
+        .set("Authorization", "Bearer mock-token")
+        .send({
+          ...validPlayerBody,
+          birthdate: "2001-10-30T00:00:00.000Z",
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.birthdate).toBe("2001-10-30");
+      expect(response.body.longitude).toBe(validPlayerBody.longitude);
+      expect(response.body.latitude).toBe(validPlayerBody.latitude);
+    });
+
+    it("Debería retornar 400 si Mongoose lanza ValidationError", async () => {
+      const response = await request(app)
+        .post("/api/players")
+        .set("Authorization", "Bearer mock-token")
+        .send({ ...validPlayerBody, age: -1 });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("Bad Request");
+    });
+
+    it("Debería retornar 500 si falla el guardado del jugador", async () => {
+      const saveSpy = jest
+        .spyOn(Player.prototype, "save")
+        .mockRejectedValueOnce(new Error("DB_DOWN"));
+
+      const response = await request(app)
+        .post("/api/players")
+        .set("Authorization", "Bearer mock-token")
+        .send(validPlayerBody);
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Internal Server Error");
+      saveSpy.mockRestore();
     });
 
     it("Debería retornar 400 si faltan campos obligatorios (name, latitude, longitude)", async () => {
@@ -346,6 +380,20 @@ describe("Player API Endpoints (/api/players)", () => {
     });
 
     it("GET /api/players/external - Debería retornar datos del mock de la API externa (200)", async () => {
+      (axios.get as jest.Mock).mockResolvedValueOnce({
+        data: {
+          response: [
+            {
+              player: {
+                name: "External Player Mock",
+                firstname: "External",
+                lastname: "Mock",
+              },
+            },
+          ],
+        },
+      });
+
       const response = await request(app)
         .get("/api/players/external?search=Mock")
         .set("Authorization", "Bearer token");
@@ -353,6 +401,36 @@ describe("Player API Endpoints (/api/players)", () => {
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
       expect(response.body[0].name).toBe("External Player Mock");
+    });
+
+    it("GET /api/players/external - Debería retornar 503 cuando la API externa falla por timeout/network", async () => {
+      const externalSpy = jest
+        .spyOn(ApiFootballService.prototype, "searchPlayers")
+        .mockRejectedValueOnce({
+          isAxiosError: true,
+          message: "network down",
+        } as any);
+
+      const response = await request(app)
+        .get("/api/players/external?search=Mock")
+        .set("Authorization", "Bearer token");
+
+      expect(response.status).toBe(503);
+      expect(response.body.message).toContain("Service Unavailable");
+      externalSpy.mockRestore();
+    });
+
+    it("GET /api/players/external - Debería retornar 500 en error inesperado", async () => {
+      (axios.get as jest.Mock).mockRejectedValueOnce(
+        new Error("UNEXPECTED_ERROR"),
+      );
+
+      const response = await request(app)
+        .get("/api/players/external?search=Mock")
+        .set("Authorization", "Bearer token");
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Internal Server Error");
     });
 
     it("POST /api/players/import - Debería retornar 201 al importar un array válido", async () => {
@@ -394,6 +472,47 @@ describe("Player API Endpoints (/api/players)", () => {
       expect(response.body.message).toContain(
         "Cada elemento debe incluir al menos",
       );
+    });
+
+    it("POST /api/players/import - Debería retornar 400 si el body no es array", async () => {
+      const response = await request(app)
+        .post("/api/players/import")
+        .set("Authorization", "Bearer token")
+        .send({ name: "NoArray", latitude: 1, longitude: 2 });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("Expected an array of players");
+    });
+
+    it("POST /api/players/import - Debería retornar 400 si importPlayers lanza ValidationError", async () => {
+      const insertSpy = jest.spyOn(Player, "insertMany").mockRejectedValueOnce({
+        name: "ValidationError",
+        message: "Validation failed",
+      } as any);
+
+      const response = await request(app)
+        .post("/api/players/import")
+        .set("Authorization", "Bearer token")
+        .send([{ name: "Jugador 1", latitude: 10, longitude: 20 }]);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("Bad Request");
+      insertSpy.mockRestore();
+    });
+
+    it("POST /api/players/import - Debería retornar 500 en error inesperado", async () => {
+      const insertSpy = jest
+        .spyOn(Player, "insertMany")
+        .mockRejectedValueOnce(new Error("DB_WRITE_FAIL"));
+
+      const response = await request(app)
+        .post("/api/players/import")
+        .set("Authorization", "Bearer token")
+        .send([{ name: "Jugador 1", latitude: 10, longitude: 20 }]);
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Internal Server Error");
+      insertSpy.mockRestore();
     });
   });
 });

@@ -76,6 +76,42 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
       expect(result.coords.coordinates[0]).toBe(0);
       expect(result.coords.coordinates[1]).toBe(0);
     });
+
+    it("Debería crear un jugador con todos los campos opcionales y convertir birthdate", async () => {
+      const playerData = {
+        name: "Completo",
+        firstName: "CompletoFirst",
+        lastName: "CompletoLast",
+        age: 25,
+        team: "Equipo X",
+        latitude: 10.1,
+        longitude: 20.2,
+        birthdate: "2000-01-02T00:00:00.000Z",
+        nationality: "Pais",
+        height: 180,
+        weight: 75,
+        number: 9,
+        position: "ST",
+        photoUrl: "http://example.com/photo.jpg",
+        league: "Liga 1",
+      };
+
+      const result = await playerService.createPlayer(playerData);
+
+      expect(result).toBeDefined();
+      expect(result.name).toBe("Completo");
+      expect(result.firstName).toBe("CompletoFirst");
+      expect(result.lastName).toBe("CompletoLast");
+      expect(result.birthdate).toBeInstanceOf(Date);
+      expect(result.birthdate?.toISOString()).toBe(
+        new Date(playerData.birthdate).toISOString(),
+      );
+      expect(result.number).toBe(9);
+      expect(result.position).toBe("ST");
+      expect(result.photoUrl).toBe("http://example.com/photo.jpg");
+      expect(result.coords.coordinates[0]).toBeCloseTo(20.2);
+      expect(result.coords.coordinates[1]).toBeCloseTo(10.1);
+    });
   });
 
   describe("updatePlayerPartial()", () => {
@@ -101,6 +137,23 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
       expect(result.name).toBe("Jugador Original");
     });
 
+    it("Debería actualizar firstName y lastName cuando se envían", async () => {
+      const player = await playerService.createPlayer({
+        name: "Jugador Nombre",
+        firstName: "Viejo",
+        lastName: "ApellidoViejo",
+      });
+
+      const result = await playerService.updatePlayerPartial(
+        player._id.toString(),
+        { firstName: "Nuevo", lastName: "ApellidoNuevo" },
+      );
+
+      expect(result.firstName).toBe("Nuevo");
+      expect(result.lastName).toBe("ApellidoNuevo");
+      expect(result.name).toBe("Jugador Nombre");
+    });
+
     it("Debería actualizar parcialmente las coordenadas sin perder la latitud/longitud anterior", async () => {
       // 1. Creamos jugador con coordenadas iniciales
       const player = await playerService.createPlayer({
@@ -119,6 +172,57 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
       // 3. Verificamos que la longitud inicial (-3.0) se mantuvo intacta
       expect(result.coords.coordinates[1]).toBe(45.0); // Nueva latitud
       expect(result.coords.coordinates[0]).toBe(-3.0); // Longitud conservada
+    });
+
+    it("Debería actualizar solo la longitud sin perder la latitud anterior", async () => {
+      const player = await playerService.createPlayer({
+        name: "Jugador GPS 2",
+        latitude: 12.34,
+        longitude: 56.78,
+      });
+
+      const result = await playerService.updatePlayerPartial(
+        player._id.toString(),
+        { longitude: 99.99 },
+      );
+
+      expect(result.coords.coordinates[0]).toBeCloseTo(99.99); // Longitud nueva
+      expect(result.coords.coordinates[1]).toBeCloseTo(12.34); // Latitud conservada
+    });
+
+    it("Debería actualizar campos adicionales y permitir establecer birthdate a null", async () => {
+      const player = await playerService.createPlayer({
+        name: "ToUpdate",
+        birthdate: "1990-05-05T00:00:00.000Z",
+        nationality: "Old",
+        height: 170,
+        weight: 70,
+      });
+
+      const updateData = {
+        birthdate: null,
+        nationality: "NuevoPais",
+        height: 175,
+        weight: 72,
+        photoUrl: "http://example.com/new.jpg",
+        number: 11,
+        position: "CM",
+        league: "NewLeague",
+      };
+
+      const result = await playerService.updatePlayerPartial(
+        player._id.toString(),
+        updateData,
+      );
+
+      expect(result.birthdate).toBeNull();
+      expect(result.nationality).toBe("NuevoPais");
+      expect(result.height).toBe(175);
+      expect(result.weight).toBe(72);
+      expect(result.photoUrl).toBe("http://example.com/new.jpg");
+      expect(result.number).toBe(11);
+      expect(result.position).toBe("CM");
+      expect(result.league).toBe("NewLeague");
     });
 
     it("Debería lanzar un error 'NOT_FOUND' si el ID del jugador no existe en BD", async () => {

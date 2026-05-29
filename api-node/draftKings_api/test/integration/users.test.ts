@@ -14,6 +14,12 @@ jest.mock("../../middleware/auth.middleware", () => ({
       return res.status(401).json({ message: "Petición no autorizada" });
     }
 
+    if (req.headers["x-test-no-user"] === "true") {
+      req.user = undefined;
+      req.isNewUser = true;
+      return next();
+    }
+
     // Buscamos el usuario de prueba recién creado en el beforeEach
     const user = await User.findOne();
     req.user = user;
@@ -93,6 +99,19 @@ describe("User API Endpoints (/api/user)", () => {
       expect(response.body.userName).toBe("NuevoNombre");
     });
 
+    it("Debería retornar 401 cuando el middleware no inyecta req.user", async () => {
+      await createTestUser();
+
+      const response = await request(app)
+        .post("/api/user/sync")
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-no-user", "true")
+        .send({ userName: "NoDebeAplicar" });
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe("Petición no autorizada");
+    });
+
     it("Debería retornar 200 si el usuario autenticado es admin", async () => {
       await createTestUser();
 
@@ -133,6 +152,37 @@ describe("User API Endpoints (/api/user)", () => {
 
       expect(response.status).toBe(409);
       expect(response.body.message).toBe("Usuario ya sincronizado");
+    });
+
+    it("Debería devolver el usuario actual si no hay campos válidos para actualizar", async () => {
+      await createTestUser();
+
+      const response = await request(app)
+        .post("/api/user/sync")
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-is-new", "true")
+        .send({ userName: "   ", role: "SUPERADMIN" });
+
+      expect(response.status).toBe(200);
+      expect(response.body.userName).toBe("UsuarioTest");
+      expect(response.body.role).toBe("USER");
+    });
+
+    it("Debería retornar 500 cuando falla la actualización en BD", async () => {
+      await createTestUser();
+      const updateSpy = jest
+        .spyOn(User, "findByIdAndUpdate")
+        .mockRejectedValueOnce(new Error("SYNC_FAIL"));
+
+      const response = await request(app)
+        .post("/api/user/sync")
+        .set("Authorization", "Bearer mock-token")
+        .set("x-test-is-new", "true")
+        .send({ userName: "NuevoNombre" });
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Error en el servidor");
+      updateSpy.mockRestore();
     });
   });
 
