@@ -28,6 +28,8 @@
     "mongoose": "^9.6.1",
     "morgan": "^1.10.1",
     "pug": "^3.0.4",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
     "zod": "^4.4.3"
@@ -40,6 +42,8 @@
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "eslint": "^10.3.0",
     "jest": "^30.3.0",
     "jest-environment-node": "^30.3.0",

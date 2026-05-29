@@ -15,7 +15,7 @@ dotenv.config({
     path.resolve(process.cwd(), "enviroments", envFile), // 2º Prioridad: Local para desarrollo
   ],
 });
-
+import { setupSwagger } from "./draftKings_api/swagger.config";
 import indexRouter from "./dashboard_server/routes/index";
 import usersRouter from "./dashboard_server/routes/users";
 import userApiRouter from "./draftKings_api/routes/userRoutes";
@@ -70,6 +70,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+setupSwagger(app);
 
 // Rutas del Dashboard
 app.use("/", indexRouter);
