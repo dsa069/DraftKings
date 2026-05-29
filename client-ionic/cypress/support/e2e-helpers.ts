@@ -4,6 +4,8 @@ export const firebaseSignUpUrl =
   /https:\/\/identitytoolkit\.googleapis\.com\/v1\/accounts:signUp\?key=.*/;
 export const firebaseDeleteUserUrl =
   /https:\/\/identitytoolkit\.googleapis\.com\/v1\/accounts:delete\?key=.*/;
+export const firebaseTokenUrl =
+  /https:\/\/securetoken\.googleapis\.com\/v1\/token\?key=.*/;
 
 export function visitApp(path: string): void {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
@@ -25,7 +27,15 @@ export function visitApp(path: string): void {
 }
 
 export function getIonInput(selector: string) {
-  return cy.get(selector).shadow().find('input, textarea');
+  return cy.get(selector).then(($host) => {
+    const shadowRoot = $host[0].shadowRoot;
+
+    if (shadowRoot) {
+      return cy.wrap(shadowRoot).find('input, textarea');
+    }
+
+    return cy.wrap($host).find('input, textarea');
+  });
 }
 
 export function typeIntoIonInput(
@@ -43,6 +53,25 @@ export function typeIntoIonInput(
 
 export function clearIonInput(selector: string): Cypress.Chainable<any> {
   return getIonInput(selector).clear({ force: true });
+}
+
+export function setIonInputHostValue(
+  selector: string,
+  value: string
+): Cypress.Chainable<any> {
+  return cy.get(selector).then(($host) => {
+    const ionInput = $host[0] as unknown as HTMLIonInputElement & {
+      value: string;
+    };
+    ionInput.value = value;
+    ionInput.dispatchEvent(
+      new CustomEvent('ionChange', {
+        bubbles: true,
+        composed: true,
+        detail: { value },
+      })
+    );
+  });
 }
 
 export function setIonSelectValue(
@@ -71,5 +100,13 @@ export function openAccordion(label: string): Cypress.Chainable<any> {
 }
 
 export function getToastMessage() {
-  return cy.get('ion-toast').shadow().find('.toast-message');
+  return cy.get('ion-toast').then(($host) => {
+    const shadowRoot = $host[0].shadowRoot;
+
+    if (shadowRoot) {
+      return cy.wrap(shadowRoot).find('.toast-message');
+    }
+
+    return cy.wrap($host).find('.toast-message');
+  });
 }
