@@ -5,107 +5,14 @@ import {
   typeIntoIonInput,
   visitApp,
 } from '../support/e2e-helpers';
+import {
+  adminProfile,
+  signedInResponse,
+  registeredProfile,
+} from './utils/data/user.data-test';
+import { createdPlayer, playersFixture } from './utils/data/player.data-test';
 
 describe('Jugadores E2E', () => {
-  const adminProfile = {
-    id: '1',
-    firebaseUid: 'firebase-admin-uid',
-    userName: 'ProGamer99',
-    email: 'coach@draftkings.com',
-    role: 'ADMIN' as const,
-  };
-
-  const registeredProfile = {
-    id: '2',
-    firebaseUid: 'firebase-user-uid',
-    userName: 'FanScout7',
-    email: 'fan@draftkings.com',
-    role: 'USER' as const,
-  };
-
-  const signedInResponse = {
-    localId: 'firebase-admin-uid',
-    email: 'coach@draftkings.com',
-    displayName: 'ProGamer99',
-    idToken: 'mock-id-token',
-    registered: true,
-    refreshToken: 'mock-refresh-token',
-    expiresIn: '3600',
-  };
-
-  const playersFixture = [
-    {
-      id: '1',
-      name: 'Lionel Messi',
-      firstName: 'Lionel',
-      lastName: 'Messi',
-      team: 'Inter Miami',
-      league: 'MLS',
-      position: 'fw',
-      number: 10,
-      nationality: 'Argentina',
-      age: 37,
-      height: 170,
-      weight: 72,
-      latitude: 25.7617,
-      longitude: -80.1918,
-      photoUrl: '',
-    },
-    {
-      id: '2',
-      name: 'Erling Haaland',
-      firstName: 'Erling',
-      lastName: 'Haaland',
-      team: 'Manchester City',
-      league: 'Premier League',
-      position: 'fw',
-      number: 9,
-      nationality: 'Norway',
-      age: 24,
-      height: 194,
-      weight: 88,
-      latitude: 52.4862,
-      longitude: -1.8904,
-      photoUrl: '',
-    },
-    {
-      id: '3',
-      name: 'Jude Bellingham',
-      firstName: 'Jude',
-      lastName: 'Bellingham',
-      team: 'Real Madrid',
-      league: 'La Liga',
-      position: 'mf',
-      number: 5,
-      nationality: 'England',
-      age: 21,
-      height: 186,
-      weight: 75,
-      latitude: 40.4168,
-      longitude: -3.7038,
-      photoUrl: '',
-    },
-  ];
-
-  const createdPlayer = {
-    id: '99',
-    name: 'Vinicius Junior',
-    firstName: 'Vinicius',
-    lastName: 'Junior',
-    age: 24,
-    birthdate: '2000-07-12',
-    nationality: 'Brazil',
-    height: 176,
-    weight: 73,
-    team: 'Real Madrid',
-    league: 'La Liga',
-    position: 'fw',
-    number: 7,
-    latitude: 40.4168,
-    longitude: -3.7038,
-    photoUrl: undefined,
-  };
-
   beforeEach(() => {
     visitApp('/login');
 
@@ -156,13 +63,15 @@ describe('Jugadores E2E', () => {
     cy.contains('ion-fab', 'Add Player').should('exist');
   });
 
+  type AuthStateProfile = typeof adminProfile | typeof registeredProfile | null;
+
   const setAuthOnCurrentView = (
     hostSelector: string,
     authState: {
       isAuthenticated: boolean;
       isAdmin: boolean;
       isUser: boolean;
-      profile: typeof adminProfile | typeof registeredProfile | null;
+      profile: AuthStateProfile;
     }
   ) => {
     cy.get(hostSelector).then(($host) => {
@@ -773,7 +682,7 @@ describe('Jugadores E2E', () => {
         cy.window().then((win) => {
           const detailCmp = (win as any).ng.getComponent($detailEl[0]);
 
-          detailCmp.confirmDeletePlayer();
+          cy.then(() => detailCmp.confirmDeletePlayer());
 
           if ((win as any).ng?.applyChanges) {
             (win as any).ng.applyChanges(detailCmp);
@@ -782,10 +691,14 @@ describe('Jugadores E2E', () => {
       });
 
       cy.get('@deleteErrorStub').should('have.been.calledOnce');
-      cy.get('ion-note.error-message').should(
-        'contain.text',
-        'Error al eliminar el jugador'
-      );
+      cy.get('app-player-detail').then(($detailEl) => {
+        cy.window().then((win) => {
+          const detailCmp = (win as any).ng.getComponent($detailEl[0]);
+          expect(detailCmp.errorMessage()).to.equal(
+            'Error al eliminar el jugador'
+          );
+        });
+      });
       cy.url().should('include', '/#/player-detail/1');
     });
   });

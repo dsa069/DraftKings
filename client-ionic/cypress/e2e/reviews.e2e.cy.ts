@@ -5,76 +5,29 @@ import {
   typeIntoIonInput,
   visitApp,
 } from '../support/e2e-helpers';
+import { adminProfile, signedInResponse } from './utils/data/user.data-test';
+import { playerDetail } from './utils/data/player.data-test';
+import { reviewsFixture } from './utils/data/review.data-test';
 
 describe('Comentarios E2E', () => {
-  const adminProfile = {
-    id: '1',
-    firebaseUid: 'firebase-admin-uid',
-    userName: 'ProGamer99',
-    email: 'coach@draftkings.com',
-    role: 'ADMIN' as const,
-  };
-
-  const signedInResponse = {
-    localId: 'firebase-admin-uid',
-    email: 'coach@draftkings.com',
-    displayName: 'ProGamer99',
-    idToken: 'mock-id-token',
-    registered: true,
-    refreshToken: 'mock-refresh-token',
-    expiresIn: '3600',
-  };
-
-  const playerDetail = {
-    id: '1',
-    name: 'Lionel Messi',
-    firstName: 'Lionel',
-    lastName: 'Messi',
-    team: 'Inter Miami',
-    league: 'MLS',
-    position: 'fw',
-    number: 10,
-    nationality: 'Argentina',
-    age: 37,
-    height: 170,
-    weight: 72,
-    latitude: 25.7617,
-    longitude: -80.1918,
-    photoUrl: '',
-  };
-
-  const reviewsFixture = [
-    {
-      id: 101,
-      playerId: 1,
-      userId: '1',
-      author: 'TacticalGenius99 (ProGamer99)',
-      text: 'Excellent movement between lines.',
-      rating: 5,
-      latitude: 40.4168,
-      longitude: -3.7038,
-    },
-    {
-      id: 102,
-      playerId: 1,
-      userId: '1',
-      author: 'ScoutOne (ProGamer99)',
-      text: 'Can still improve pressing intensity.',
-      rating: 4,
-      latitude: 40.4168,
-      longitude: -3.7038,
-    },
-  ];
-
   beforeEach(() => {
     visitApp('/login');
 
-    cy.intercept(
-      'POST',
-      /https:\/\/identitytoolkit\.googleapis\.com\/v1\/accounts:signInWithPassword\?key=.*/,
-      signedInResponse
-    ).as('firebaseSignIn');
-    cy.intercept('GET', '**/user/profile', adminProfile).as('userProfile');
+    cy.get('app-login').then(($loginEl) => {
+      cy.window().then((win) => {
+        const loginCmp = (win as any).ng.getComponent($loginEl[0]);
+        const authService = loginCmp.authService;
+
+        authService.loginFirebase = cy.stub().resolves(signedInResponse);
+        authService.verifyBackend = cy.stub().resolves();
+        authService.getToken = cy.stub().resolves('mock-jwt-token');
+        authService.isAuthenticated = () => true;
+        authService.userProfile = () => adminProfile;
+        authService.isAdmin = () => true;
+        authService.isUser = () => false;
+      });
+    });
+
     cy.intercept('GET', '**/players', [playerDetail]).as('players');
 
     typeIntoIonInput(
@@ -84,8 +37,6 @@ describe('Comentarios E2E', () => {
     typeIntoIonInput('ion-input[formControlName="password"]', 'ValidPass123!');
     clickIonButton('Login');
 
-    cy.wait('@firebaseSignIn');
-    cy.wait('@userProfile');
     cy.wait('@players');
 
     cy.intercept('GET', '**/players/1', playerDetail).as('playerDetail');

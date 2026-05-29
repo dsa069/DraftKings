@@ -5,26 +5,9 @@ import {
   typeIntoIonInput,
   visitApp,
 } from '../support/e2e-helpers';
+import { adminProfile, signedInResponse } from './utils/data/user.data-test';
 
 describe('Autenticación E2E', () => {
-  const adminProfile = {
-    id: '1',
-    firebaseUid: 'firebase-admin-uid',
-    userName: 'ProGamer99',
-    email: 'coach@draftkings.com',
-    role: 'ADMIN' as const,
-  };
-
-  const signedInResponse = {
-    localId: 'firebase-admin-uid',
-    email: 'coach@draftkings.com',
-    displayName: 'ProGamer99',
-    idToken: 'mock-id-token',
-    registered: true,
-    refreshToken: 'mock-refresh-token',
-    expiresIn: '3600',
-  };
-
   beforeEach(() => {
     visitApp('/login');
   });
