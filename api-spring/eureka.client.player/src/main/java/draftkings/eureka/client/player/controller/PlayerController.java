@@ -125,9 +125,13 @@ public class PlayerController {
     @Operation(summary = "Editar datos de un jugador", description = "Actualiza parcialmente un jugador existente")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Jugador actualizado", content = @Content(schema = @Schema(implementation = Player.class))),
+            @ApiResponse(responseCode = "400", description = "El identificador no es válido o no se pudo interpretar como id", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"Player id must be greater than zero\",\"path\":\"/api/players/1\"}"))),
             @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1\"}"))),
             @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error updating player\",\"path\":\"/api/players/1\"}"))) })
     public ResponseEntity<Player> updatePlayer(@PathVariable Long id, @RequestBody Player playerDetails) {
+        if (id == null || id <= 0) {
+            throw new BadRequestException("Player id must be greater than zero");
+        }
         Player updatedPlayer = playerService.updatePlayerPartial(id, playerDetails);
         return ResponseEntity.ok(updatedPlayer);
     }
@@ -137,9 +141,13 @@ public class PlayerController {
     @Operation(summary = "Eliminar un jugador", description = "Borra un jugador permanentemente")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Eliminación exitosa"),
+            @ApiResponse(responseCode = "400", description = "El identificador no es válido o no se pudo interpretar como id", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"Player id must be greater than zero\",\"path\":\"/api/players/1\"}"))),
             @ApiResponse(responseCode = "404", description = "Jugador no encontrado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":404,\"error\":\"Player not found: 1\",\"path\":\"/api/players/1\"}"))),
             @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error deleting player\",\"path\":\"/api/players/1\"}"))) })
     public ResponseEntity<Void> deletePlayer(@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            throw new BadRequestException("Player id must be greater than zero");
+        }
         if (playerRepository.existsById(id)) {
             playerRepository.deleteById(id);
             return ResponseEntity.noContent().build();

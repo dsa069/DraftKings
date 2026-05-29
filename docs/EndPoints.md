@@ -99,6 +99,25 @@
 }
 ```
 
+```json
+{
+  "content": [
+    {
+      "id": 12,
+      "name": "Cristiano Ronaldo",
+      "position": "Delantero",
+      "number": 7,
+      "team": "Al-Nassr",
+      "photoUrl": "https://cdn.example.com/cr7.png"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "number": 0,
+  "size": 10
+}
+```
+
 - `400 Bad Request` — Parámetros de paginación inválidos.
 - `500 Internal Server Error` — Error interno inesperado.
 
@@ -296,6 +315,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 - **Respuestas:**
   - `200 OK` — Modificación procesada con éxito.
+  - `400 Bad Request` — El identificador no es válido o no se pudo interpretar como ObjectId.
   - `401 Unauthorized` — El token JWT falta o no es válido.
   - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
   - `404 Not Found` — Jugador no encontrado.
@@ -311,6 +331,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Respuestas:**
   - `204 No Content` — Eliminación exitosa.
+  - `400 Bad Request` — El identificador no es válido o no se pudo interpretar como ObjectId.
   - `401 Unauthorized` — El token JWT falta o no es válido.
   - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
   - `404 Not Found` — Jugador no encontrado.
@@ -397,10 +418,11 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Tags:** `unused`
 - **Respuestas:**
   - `200 OK` — Comentario actualizado.
+  - `400 Bad Request` — El identificador no es válido, el body está vacío o no contiene campos editables.
   - `401 Unauthorized` — El token JWT falta o no es válido.
   - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
-  - `400 Bad Request` — Body de la reseña inválido.
   - `404 Not Found` — Comentario no existe.
+  - `500 Internal Server Error` — Error interno inesperado.
 
 ### 13) Eliminar comentario
 
@@ -412,9 +434,11 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
 - **Respuestas:**
   - `204 No Content` — Comentario eliminado.
+  - `400 Bad Request` — El identificador no es válido o no se pudo interpretar como ObjectId.
   - `401 Unauthorized` — El token JWT falta o no es válido.
   - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
   - `404 Not Found` — Comentario no existe.
+  - `500 Internal Server Error` — Error interno inesperado.
 
 ---
 

@@ -95,13 +95,17 @@ public class ReviewController {
     @Operation(summary = "Editar comentario", description = "Edita el texto y/o la puntuación de una reseña existente.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Comentario actualizado con éxito", content = @Content(schema = @Schema(implementation = Review.class))),
-            @ApiResponse(responseCode = "400", description = "Cuerpo de la petición inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":400,\"error\":\"At least text or rating must be provided\",\"path\":\"/api/reviews/1\"}"))),
-            @ApiResponse(responseCode = "404", description = "La reseña con el ID proporcionado no existe", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"Review not found with ID: 999\",\"path\":\"/api/reviews/999\"}")))
+            @ApiResponse(responseCode = "400", description = "El identificador no es válido, el body está vacío o no contiene campos editables.", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":400,\"error\":\"At least text or rating must be provided\",\"path\":\"/api/reviews/1\"}"))),
+            @ApiResponse(responseCode = "404", description = "La reseña con el ID proporcionado no existe", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"Review not found with ID: 999\",\"path\":\"/api/reviews/999\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":500,\"error\":\"Error updating review\",\"path\":\"/api/reviews/1\"}")))
     })
     public ResponseEntity<Review> updateReview(
             @Parameter(description = "ID de la reseña a modificar", required = true) @PathVariable("id") Long id,
             @RequestBody Review reviewDetails) {
 
+        if (id == null || id <= 0) {
+            throw new BadRequestException("Review id must be greater than zero");
+        }
         if (reviewDetails == null || (reviewDetails.getText() == null && reviewDetails.getRating() == null)) {
             throw new BadRequestException("At least text or rating must be provided");
         }
@@ -135,11 +139,16 @@ public class ReviewController {
     @Operation(summary = "Eliminar comentario", description = "Elimina de forma lógica/física una reseña por moderación. Exclusivo para administradores.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Comentario eliminado correctamente (Sin Contenido)"),
-            @ApiResponse(responseCode = "404", description = "El comentario no existe", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"Review cannot be deleted. ID not found: 999\",\"path\":\"/api/reviews/999\"}")))
+            @ApiResponse(responseCode = "400", description = "El identificador no es válido o no se pudo interpretar como id", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":400,\"error\":\"Review id must be greater than zero\",\"path\":\"/api/reviews/1\"}"))),
+            @ApiResponse(responseCode = "404", description = "El comentario no existe", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"Review cannot be deleted. ID not found: 999\",\"path\":\"/api/reviews/999\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":500,\"error\":\"Error deleting review\",\"path\":\"/api/reviews/1\"}")))
     })
     public ResponseEntity<Void> deleteReview(
             @Parameter(description = "ID de la reseña a eliminar", required = true) @PathVariable("id") Long id) {
 
+        if (id == null || id <= 0) {
+            throw new BadRequestException("Review id must be greater than zero");
+        }
         try {
             if (!reviewRepository.existsById(id)) {
                 throw new ResourceNotFoundException(HttpStatus.NOT_FOUND,
