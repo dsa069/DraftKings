@@ -46,6 +46,12 @@ jobs:
         run: npm run lint:json
         continue-on-error: true
 
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v4
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          report-json: "./api-node/coverage/eslint-result.json"
+
       - name: Prepare development environment for tests
         env:
           NODE_ENV_DEV: ${{ secrets.NODE_ENV_DEV }}
@@ -70,12 +76,6 @@ jobs:
           path: |
             ./api-node/junit.xml
             ./api-node/coverage/
-
-      - name: Annotate Code Linting Results
-        uses: ataylorme/eslint-annotate-action@v4
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-          report-json: "./api-node/coverage/eslint-result.json"
 
       - name: Test Report
         uses: dorny/test-reporter@v3.0.0
