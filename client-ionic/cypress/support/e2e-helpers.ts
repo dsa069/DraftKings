@@ -27,15 +27,9 @@ export function visitApp(path: string): void {
 }
 
 export function getIonInput(selector: string) {
-  return cy.get(selector).then(($host) => {
-    const shadowRoot = $host[0].shadowRoot;
-
-    if (shadowRoot) {
-      return cy.wrap(shadowRoot).find('input, textarea');
-    }
-
-    return cy.wrap($host).find('input, textarea');
-  });
+  // En Ionic 7, ion-input usa Light DOM, así que buscamos el 'input' como hijo directo.
+  // Al usar .find() directo, Cypress reintentará automáticamente sin fallar por timeouts de renderizado.
+  return cy.get(selector).find('input, textarea');
 }
 
 export function typeIntoIonInput(
@@ -44,8 +38,9 @@ export function typeIntoIonInput(
   options: Partial<Cypress.TypeOptions> = {}
 ): Cypress.Chainable<any> {
   const typeOptions = {
-    ...options,
     force: true,
+    delay: 15, // <- CRÍTICO PARA FIREFOX: Evita que "pierda" letras al teclear rápido
+    ...options,
   } as Cypress.TypeOptions;
 
   return getIonInput(selector).clear({ force: true }).type(value, typeOptions);
@@ -100,13 +95,5 @@ export function openAccordion(label: string): Cypress.Chainable<any> {
 }
 
 export function getToastMessage() {
-  return cy.get('ion-toast').then(($host) => {
-    const shadowRoot = $host[0].shadowRoot;
-
-    if (shadowRoot) {
-      return cy.wrap(shadowRoot).find('.toast-message');
-    }
-
-    return cy.wrap($host).find('.toast-message');
-  });
+  return cy.get('ion-toast').shadow().find('.toast-message');
 }
