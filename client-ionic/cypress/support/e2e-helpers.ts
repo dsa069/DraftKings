@@ -39,15 +39,16 @@ export function typeIntoIonInput(
 ): Cypress.Chainable<any> {
   const typeOptions = {
     force: true,
-    delay: 15, // <- CRÍTICO PARA FIREFOX: Evita que "pierda" letras al teclear rápido
+    delay: 15, // <- Sigue siendo clave para Firefox
     ...options,
   } as Cypress.TypeOptions;
 
-  return getIonInput(selector).clear({ force: true }).type(value, typeOptions);
-}
+  // 1. Primero limpiamos el input (esto dispara la detección de cambios de Angular)
+  getIonInput(selector).clear({ force: true });
 
-export function clearIonInput(selector: string): Cypress.Chainable<any> {
-  return getIonInput(selector).clear({ force: true });
+  // 2. ROMPEMOS LA CADENA. Volvemos a buscar el input en el DOM para asegurarnos
+  // de tener la referencia nueva, evitando el error de "Detached from DOM", y escribimos.
+  return getIonInput(selector).type(value, typeOptions);
 }
 
 export function setIonInputHostValue(
