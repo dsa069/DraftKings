@@ -56,18 +56,30 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
         { provide: ToastController, useValue: toastCtrlMock },
       ],
     }).then((wrapper) => {
-      // Guardamos la instancia para comprobaciones internas si fuera necesario
       cy.wrap(wrapper.component).as('componentInstance');
     });
   };
 
+  // 🛠️ CORRECCIÓN AQUÍ: Usamos búsqueda dinámica del form para evitar errores de undefined
   const fillLoginForm = (email: string, password: string) => {
     cy.get('@componentInstance').then((instance: any) => {
-      expect(instance.loginForm).to.exist;
-      instance.loginForm.patchValue({ email, password });
-      instance.loginForm.updateValueAndValidity();
+      // Soporta diferentes nomenclaturas comunes en el .ts (loginForm, form, authForm)
+      const formGroup =
+        instance.loginForm || instance.form || instance.authForm;
+      expect(
+        formGroup,
+        'Se esperaba encontrar una instancia del FormGroup en el componente'
+      ).to.exist;
+
+      formGroup.patchValue({ email, password });
+      formGroup.markAllAsTouched(); // Asegura que los validadores visuales de Ionic salten
+      formGroup.updateValueAndValidity();
     });
   };
+
+  // Función auxiliar para recuperar el FormGroup de forma segura en los tests
+  const getSafeFormGroup = (instance: any) =>
+    instance.loginForm || instance.form || instance.authForm;
 
   describe('1. Renderizado Inicial e Interfaz Base', () => {
     beforeEach(() => mountComponent());
@@ -79,10 +91,7 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
         'Enter the arena. Manage your squad.'
       );
 
-      // Verifica el componente custom hijo
       cy.get('app-login-card').should('exist');
-
-      // Verifica los inputs
       cy.get('ion-input[formControlName="email"]').should('exist');
       cy.get('ion-input[formControlName="password"]').should('exist');
     });
@@ -118,26 +127,32 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     beforeEach(() => mountComponent());
 
     it('debe iniciar como inválido', () => {
-      cy.get('@componentInstance').its('loginForm.valid').should('be.false');
+      cy.get('@componentInstance').then((instance: any) => {
+        const formGroup = getSafeFormGroup(instance);
+        expect(formGroup.valid).to.be.false;
+      });
     });
 
     it('debe validar el formato del correo electrónico', () => {
       fillLoginForm('correo-invalido', 'ValidPass123');
-      cy.get('@componentInstance')
-        .its('loginForm.controls.email.valid')
-        .should('be.false');
+      cy.get('@componentInstance').then((instance: any) => {
+        const formGroup = getSafeFormGroup(instance);
+        expect(formGroup.controls.email.valid).to.be.false;
+      });
 
       fillLoginForm('coach@draftkings.com', 'ValidPass123');
-      cy.get('@componentInstance')
-        .its('loginForm.controls.email.valid')
-        .should('be.true');
+      cy.get('@componentInstance').then((instance: any) => {
+        const formGroup = getSafeFormGroup(instance);
+        expect(formGroup.controls.email.valid).to.be.true;
+      });
     });
 
     it('debe validar que la contraseña sea requerida', () => {
-      fillLoginForm('coach@draftkings.com', '');
-      cy.get('@componentInstance')
-        .its('loginForm.controls.password.valid')
-        .should('be.false');
+      fillLoginForm('coach@draftkings.com', ''); // Lo dejamos vacío
+      cy.get('@componentInstance').then((instance: any) => {
+        const formGroup = getSafeFormGroup(instance);
+        expect(formGroup.controls.password.valid).to.be.false;
+      });
     });
   });
 
@@ -147,34 +162,29 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     it('debe hacer login en Firebase, verificar Backend, mostrar Toast y navegar', () => {
       fillLoginForm('coach@draftkings.com', 'ValidPass123');
 
-      // Interceptamos el submit (ya sea porque le dimos submit al form o a través del componente hijo)
-      cy.get('form#loginFormId').submit();
+      // 🛠️ CORRECCIÓN AQUÍ: Evitamos buscar por 'form#loginFormId' (puede fallar por el shadow-dom o proyecciones de ng-content).
+      // Es más seguro simular el click del usuario en el botón submit.
+      cy.get('ion-button[type="submit"]').click({ force: true });
 
-      // Verificamos la secuencia
       cy.then(() => {
-        // 1. Llama a Firebase
         cy.wrap(authServiceMock.loginFirebase).should(
           'have.been.calledOnceWith',
           'coach@draftkings.com',
           'ValidPass123'
         );
 
-        // 2. Como el backend es el mismo ('firebase' == 'firebase'), verifica el backend
         cy.wrap(authServiceMock.verifyBackend).should('have.been.calledOnce');
 
-        // 3. Muestra mensaje de éxito
         cy.wrap(toastCtrlMock.create).should('have.been.calledWithMatch', {
           message: 'Login successful!',
           color: 'success',
         });
         cy.wrap(toastPresentSpy).should('have.been.calledOnce');
 
-        // 4. Navega a la home
         cy.wrap(navCtrlMock.navigateRoot).should('have.been.calledWith', [
           '/tabs/players',
         ]);
 
-        // 5. NO aplica cambio de backend
         cy.wrap(configServiceMock.applyBackendChange).should(
           'not.have.been.called'
         );
@@ -187,26 +197,20 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
 
     it('debe hacer login, detectar cambio de entorno y solicitar recarga sin verificar el backend', () => {
       cy.get('@componentInstance').then((instance: any) => {
-        // Simulamos que el usuario en el LoginCardComponent seleccionó un backend distinto ('bun')
-        // mientras que el backend activo en el ConfigService sigue siendo 'firebase'
         instance.selectedBackend = 'bun';
       });
 
       fillLoginForm('coach@draftkings.com', 'ValidPass123');
-
-      cy.get('form#loginFormId').submit();
+      cy.get('ion-button[type="submit"]').click({ force: true });
 
       cy.then(() => {
-        // 1. Llama a Firebase con credenciales correctas
         cy.wrap(authServiceMock.loginFirebase).should('have.been.calledOnce');
 
-        // 2. Ejecuta applyBackendChange debido a que 'bun' !== 'firebase'
         cy.wrap(configServiceMock.applyBackendChange).should(
           'have.been.calledOnceWith',
           'bun'
         );
 
-        // 3. SE DETIENE EL FLUJO AQUÍ. NO verifica backend, NO muestra toast, NO navega.
         cy.wrap(authServiceMock.verifyBackend).should('not.have.been.called');
         cy.wrap(toastCtrlMock.create).should('not.have.been.called');
         cy.wrap(navCtrlMock.navigateRoot).should('not.have.been.called');
@@ -218,33 +222,27 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     beforeEach(() => mountComponent());
 
     it('debe capturar el error, imprimir en consola y mostrar Toast rojo de fallo', () => {
-      // Forzamos a que Firebase rechace el login
       authServiceMock.loginFirebase = cy
         .stub()
         .rejects(new Error('Invalid credentials'));
 
-      // Espiamos la consola para asegurar el catch
       cy.spy(console, 'error').as('consoleError');
 
       fillLoginForm('bad@coach.com', 'WrongPass');
-
-      cy.get('form#loginFormId').submit();
+      cy.get('ion-button[type="submit"]').click({ force: true });
 
       cy.then(() => {
-        // Verificamos el log de error
         cy.get('@consoleError').should(
           'have.been.calledWith',
           'Login fallido:'
         );
 
-        // Verificamos el Toast de error
         cy.wrap(toastCtrlMock.create).should('have.been.calledWithMatch', {
           message: 'Login failed. Please check your credentials.',
-          color: 'danger', // Valor por defecto del toast de error en el componente
+          color: 'danger',
         });
         cy.wrap(toastPresentSpy).should('have.been.calledOnce');
 
-        // Nos aseguramos que NO avanzó en el flujo
         cy.wrap(authServiceMock.verifyBackend).should('not.have.been.called');
         cy.wrap(navCtrlMock.navigateRoot).should('not.have.been.called');
       });
