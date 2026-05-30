@@ -4,6 +4,7 @@ import { PlayersPage } from './players.page';
 import { NavController } from '@ionic/angular';
 import { PlayerService } from '../../../core/services/abstract/player.service';
 import { AuthService } from '../../../core/services/abstract/auth.service';
+import { TeamService } from '../../../core/services/abstract/team.service';
 import { Player } from '../../../core/models/player.model';
 
 describe('PlayersPage Component', () => {
@@ -11,6 +12,7 @@ describe('PlayersPage Component', () => {
   let navCtrlMock: Partial<NavController>;
   let playerServiceMock: Partial<PlayerService>;
   let authServiceMock: Partial<AuthService>;
+  let teamServiceMock: Partial<TeamService>;
 
   // 2. Controladores de Reactividad y Asincronía
   let isAuthenticatedMock: WritableSignal<boolean>;
@@ -44,6 +46,10 @@ describe('PlayersPage Component', () => {
       navigateForward: cy.stub().resolves(true),
     };
 
+    teamServiceMock = {
+      clearTeam: cy.stub().resolves(),
+    };
+
     // Mock de AuthService adaptado estrictamente a los miembros públicos de la clase abstracta
     authServiceMock = {
       isAuthenticated: (() => isAuthenticatedMock()) as any, // Envoltorio funcional para leer dinámicamente el WritableSignal
@@ -71,6 +77,7 @@ describe('PlayersPage Component', () => {
         { provide: NavController, useValue: navCtrlMock },
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: TeamService, useValue: teamServiceMock },
       ],
     }).then((mountResponse) => {
       // Guardamos la instancia real del componente bajo un alias para interactuar directamente si es necesario

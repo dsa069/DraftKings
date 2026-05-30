@@ -25,7 +25,7 @@ describe('MyTeamPage Component', () => {
     message:
       'Your team looks solid, but you lack defensive depth. Consider signing a strong CB.',
     recommendations: {
-      RCB: { id: '2', name: 'Virgil van Dijk', position: 'CB' } as any,
+      RCB: 'Virgil van Dijk',
     },
   };
 
@@ -127,11 +127,11 @@ describe('MyTeamPage Component', () => {
       // 2. Verifica el cambio de estado del componente (Signals)
       cy.get('@componentInstance').then((instance: any) => {
         expect(instance.isModalOpen()).to.be.true;
-        expect(instance.selectedPositionToFill()).to.equal('ST');
+        expect(instance.currentEditingPosition()).to.equal('ST');
         expect(instance.availablePlayers()).to.deep.equal(mockPlayers);
 
         // 3. Simulamos que el usuario selecciona a Messi en la lista
-        instance.selectPlayer(mockPlayers[0]);
+        instance.onPlayerSelected(mockPlayers[0].id);
       });
 
       // 4. Verifica que se guarda en el servicio y se actualiza el estado
@@ -224,7 +224,7 @@ describe('MyTeamPage Component', () => {
       // Verificamos que muestra el mensaje de error por defecto en la interfaz
       cy.get('.ai-response-text').should(
         'contain.text',
-        'Could not load AI advice at this time. Please try again later.'
+        'Could not load AI advice at this time. Please try again.'
       );
       cy.get('@consoleError').should('have.been.called');
     });

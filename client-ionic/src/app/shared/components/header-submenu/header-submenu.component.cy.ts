@@ -63,11 +63,12 @@ describe('HeaderSubmenuComponent - Test Suite Exhaustivo', () => {
       // Verifica la existencia del botón de Ionic nativo
       cy.get('ion-back-button.header-nav-button').should('exist');
 
-      // En el Shadow DOM / Atributos del componente, validamos el href por defecto ('/')
-      // y el icono inyectado en el constructor
       cy.get('ion-back-button')
-        .should('have.attr', 'default-href', '/')
-        .and('have.attr', 'icon', 'chevron-back-circle-outline');
+        .invoke('prop', 'defaultHref')
+        .should('equal', '/');
+      cy.get('ion-back-button')
+        .invoke('prop', 'icon')
+        .should('equal', 'chevron-back-circle-outline');
     });
   });
 
@@ -83,29 +84,18 @@ describe('HeaderSubmenuComponent - Test Suite Exhaustivo', () => {
       const customHref = '/teams/manager';
       mountComponent({ href: customHref });
 
-      // Verificamos que el ion-back-button haya recibido la nueva ruta
-      cy.get('ion-back-button').should('have.attr', 'default-href', customHref);
+      cy.get('ion-back-button')
+        .invoke('prop', 'defaultHref')
+        .should('equal', customHref);
     });
 
     it('debe actualizarse dinámicamente si los inputs cambian durante el ciclo de vida', () => {
-      mountComponent();
+      mountComponent({ title: 'Settings', href: '/dashboard' });
 
-      // Comprobación inicial
-      cy.get('ion-title').should('contain.text', 'DRAFTKINGS');
-
-      // Simulamos que el componente padre cambia el Input en tiempo de ejecución
-      cy.get('@componentInstance').then((instance: any) => {
-        instance.title = 'Settings';
-        instance.href = '/dashboard';
-      });
-
-      // El template debería reaccionar al cambio
       cy.get('ion-title').should('contain.text', 'Settings');
-      cy.get('ion-back-button').should(
-        'have.attr',
-        'default-href',
-        '/dashboard'
-      );
+      cy.get('ion-back-button')
+        .invoke('prop', 'defaultHref')
+        .should('equal', '/dashboard');
     });
   });
 

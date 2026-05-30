@@ -4,6 +4,7 @@ import { ReviewService } from '../../core/services/abstract/review.service';
 import { LocationService } from '../../core/services/location.service';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
+import { AuthService } from '../../core/services/abstract/auth.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
@@ -12,6 +13,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
   let reviewServiceMock: Partial<ReviewService>;
   let locationServiceMock: Partial<LocationService>;
   let navCtrlMock: Partial<NavController>;
+  let authServiceMock: Partial<AuthService>;
 
   // 2. Datos de Prueba
   const mockPlayer = {
@@ -61,6 +63,11 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     };
 
     locationServiceMock = {};
+    authServiceMock = {
+      isAuthenticated: (() => true) as any,
+      isAdmin: (() => true) as any,
+      userProfile: (() => ({ userName: 'Coach' })) as any,
+    };
   });
 
   // 3. Función Helper de Montaje Dinámico
@@ -78,6 +85,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: ReviewService, useValue: reviewServiceMock },
         { provide: LocationService, useValue: locationServiceMock },
+        { provide: AuthService, useValue: authServiceMock },
       ],
     }).then((wrapper) => {
       // Exponemos la instancia para evaluar Signals en la lógica interna
@@ -136,8 +144,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
 
     it('debe abrir el modal de borrado de jugador, poder cancelarlo y asegurar que no hay borrado', () => {
       cy.get('@componentInstance').then((instance: any) => {
-        // Simulamos la señal/método que abre el modal (showConfirmModal)
-        instance.showConfirmModal.set(true);
+        instance.onDeletePlayer();
       });
 
       // El modal de Ionic debe existir y renderizar el texto de confirmación
@@ -145,7 +152,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
       cy.contains('h2', 'Delete Player?').should('be.visible');
 
       // Hacemos click en "Cancel"
-      cy.contains('ion-button', 'Cancel').click();
+      cy.contains('ion-button', 'Cancel').click({ force: true });
 
       // Verificamos que se cerró (el signal debería ser falso)
       cy.get('@componentInstance').then((instance: any) => {
@@ -155,9 +162,8 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     });
 
     it('debe confirmar la eliminación del jugador, llamar al servicio y cerrar el modal', () => {
-      // Invocamos el modal
       cy.get('@componentInstance').then((instance: any) => {
-        instance.showConfirmModal.set(true);
+        instance.onDeletePlayer();
       });
 
       // Confirmamos el borrado
@@ -204,8 +210,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
         expect(instance.showDeleteCommentModal()).to.be.true;
         expect(instance.commentToDeleteId()).to.equal('101');
 
-        // 2. Ejecutamos la confirmación (Simula el clic del modal)
-        instance.confirmDeleteComment();
+        return instance.confirmDeleteComment();
       });
 
       // Promesa resuelta

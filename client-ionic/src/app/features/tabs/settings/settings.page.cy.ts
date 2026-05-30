@@ -2,12 +2,14 @@ import { signal, WritableSignal } from '@angular/core';
 import { SettingsPage } from './settings.page';
 import { AuthService } from '../../../core/services/abstract/auth.service';
 import { ConfigService } from '../../../core/services/config.service';
+import { TeamService } from '../../../core/services/abstract/team.service';
 import { of, throwError } from 'rxjs';
 import { User } from '../../../core/models/user.model';
 
 describe('SettingsPage Component', () => {
   let authServiceMock: Partial<AuthService>;
   let configServiceMock: Partial<ConfigService>;
+  let teamServiceMock: Partial<TeamService>;
 
   // Variables para controlar reactivamente los Signals en los tests
   let isAuthenticatedMock: WritableSignal<boolean>;
@@ -36,6 +38,10 @@ describe('SettingsPage Component', () => {
     configServiceMock = {
       selectedBackend: (() => selectedBackendMock()) as any,
     };
+
+    teamServiceMock = {
+      clearTeam: cy.stub().resolves(),
+    };
   });
 
   // Función auxiliar para montar el componente de manera limpia inyectando los mocks
@@ -44,6 +50,7 @@ describe('SettingsPage Component', () => {
       providers: [
         { provide: AuthService, useValue: authServiceMock },
         { provide: ConfigService, useValue: configServiceMock },
+        { provide: TeamService, useValue: teamServiceMock },
       ],
     });
   };
