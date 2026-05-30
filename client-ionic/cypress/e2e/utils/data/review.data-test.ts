@@ -20,3 +20,8 @@ export const reviewsFixture = [
     longitude: -3.7038,
   },
 ];
+
+export const commentLocationCoords = {
+  lat: 40.4168,
+  lng: -3.7038,
+};
