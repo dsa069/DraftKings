@@ -41,7 +41,9 @@ export class PlayerList {
   }
 
   render() {
-    if (this.loading) return <div>Buscando jugadores en el sistema...</div>;
+    if (this.loading) {
+      return <div class="loading-box">Buscando jugadores en el sistema...</div>;
+    }
 
     return (
       <div class="list-container">
@@ -49,21 +51,21 @@ export class PlayerList {
 
         <div class="grid">
           {this.players.map(player => (
-            // Al hacer click en la tarjeta, emitimos el id del jugador
             <div class="player-card" onClick={() => this.playerSelected.emit(player.id)}>
               <img src={player.photoUrl || 'https://via.placeholder.com/150'} alt={player.name} />
               <div class="card-body">
                 <h3>{player.name}</h3>
                 <p>
-                  {player.team} - {player.position}
+                  {player.team} • {player.position}
                 </p>
-                <span class="view-more">Ver detalles ➡️</span>
+                <span class="view-more">
+                  Ver detalles <span>➡️</span>
+                </span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Paginación simple basada en la respuesta de tu backend */}
         <div class="pagination">
           <button disabled={this.currentPage === 0} onClick={() => this.fetchPlayers(this.currentPage - 1)}>
             Anterior

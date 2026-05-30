@@ -13,7 +13,7 @@ export class PlayerDetail {
   @Event() backToList!: EventEmitter<void>;
 
   render() {
-    if (!this.player) return <div>No hay datos del jugador.</div>;
+    if (!this.player) return <div class="loading-box">No hay datos del jugador.</div>;
 
     return (
       <div class="detail-container">
@@ -28,7 +28,7 @@ export class PlayerDetail {
               {this.player.firstName} {this.player.lastName}
             </h1>
             <p class="badge">
-              {this.player.position} #{this.player.number}
+              {this.player.position} #{this.player.number || 'N/A'}
             </p>
           </div>
         </div>
@@ -36,38 +36,41 @@ export class PlayerDetail {
         <div class="info-grid">
           <div class="info-card">
             <h3>Datos Personales</h3>
-            <p>
-              <strong>Edad:</strong> {this.player.age} años
-            </p>
-            <p>
-              <strong>Nacimiento:</strong> {this.player.birthdate}
-            </p>
-            <p>
-              <strong>Nacionalidad:</strong> {this.player.nationality}
-            </p>
-            <p>
-              <strong>Físico:</strong> {this.player.height}m / {this.player.weight}kg
-            </p>
+            <div class="info-row">
+              <strong>Edad:</strong> <span>{this.player.age} años</span>
+            </div>
+            <div class="info-row">
+              <strong>Nacimiento:</strong> <span>{this.player.birthdate}</span>
+            </div>
+            <div class="info-row">
+              <strong>Nacionalidad:</strong> <span>{this.player.nationality}</span>
+            </div>
+            <div class="info-row">
+              <strong>Físico:</strong>{' '}
+              <span>
+                {this.player.height}m / {this.player.weight}kg
+              </span>
+            </div>
           </div>
 
           <div class="info-card">
             <h3>Club Actual</h3>
-            <p>
-              <strong>Equipo:</strong> {this.player.team}
-            </p>
-            <p>
-              <strong>Liga:</strong> {this.player.league}
-            </p>
+            <div class="info-row">
+              <strong>Equipo:</strong> <span>{this.player.team}</span>
+            </div>
+            <div class="info-row">
+              <strong>Liga:</strong> <span>{this.player.league || 'No especificada'}</span>
+            </div>
           </div>
 
           <div class="info-card">
             <h3>Ubicación</h3>
-            <p>
-              <strong>Latitud:</strong> {this.player.latitude}
-            </p>
-            <p>
-              <strong>Longitud:</strong> {this.player.longitude}
-            </p>
+            <div class="info-row">
+              <strong>Latitud:</strong> <span>{this.player.latitude}</span>
+            </div>
+            <div class="info-row">
+              <strong>Longitud:</strong> <span>{this.player.longitude}</span>
+            </div>
           </div>
         </div>
       </div>
