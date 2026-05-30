@@ -5,14 +5,15 @@ import {
   IonHeader,
   IonText,
   IonButtons,
+  IonButton,
   IonBackButton,
+  IonIcon,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { arrowForwardOutline, arrowBackOutline } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 import { ConfigService, BackendType } from '../../core/services/config.service';
-
+import { addIcons } from 'ionicons';
+import { arrowForwardOutline } from 'ionicons/icons';
 // Asegúrate de usar la ruta correcta hacia el componente
 import { BackendToggleComponent } from '../../shared/components/backend-toggle/backend-toggle.component';
 
@@ -28,6 +29,8 @@ import { BackendToggleComponent } from '../../shared/components/backend-toggle/b
     IonText,
     IonButtons,
     IonBackButton,
+    IonButton,
+    IonIcon,
     LoginCardComponent,
     BackendToggleComponent,
   ],
@@ -41,7 +44,6 @@ export class SwitchBackPage implements OnInit {
   constructor() {
     addIcons({
       arrowForwardOutline,
-      arrowBackOutline,
     });
   }
 
@@ -49,15 +51,15 @@ export class SwitchBackPage implements OnInit {
     console.log('Backend actual:', this.selectedBackend);
   }
 
-  // <-- Nuevo método para manejar el cambio
   onBackendChange(backend: BackendType): void {
     this.selectedBackend = backend;
-    // this.configService.setBackend(backend); // Opcional: si necesitas actualizar el servicio global
   }
 
-  gotoSignUp(): void {
-    const activeElement = document.activeElement as HTMLElement | null;
-    activeElement?.blur();
+  confirmBackendChange(): void {
+    console.log('Confirmando cambio de backend a:', this.selectedBackend);
+    if (this.selectedBackend !== this.configService.selectedBackend()) {
+      this.configService.applyBackendChange(this.selectedBackend);
+    }
     this.navCtrl.navigateForward(['/login']);
   }
 }

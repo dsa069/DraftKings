@@ -4,7 +4,7 @@ import {
   Output,
   EventEmitter,
   ViewEncapsulation,
-  inject, // <-- Añadido
+  inject,
 } from '@angular/core';
 import {
   IonCard,
@@ -13,12 +13,13 @@ import {
   IonIcon,
   IonFooter,
   IonText,
-  IonItem, // <-- Añadido
-  IonLabel, // <-- Añadido
+  IonItem,
+  IonLabel,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForwardOutline, serverOutline } from 'ionicons/icons'; // <-- serverOutline añadido
-import { NavController } from '@ionic/angular'; // <-- Añadido
+import { arrowForwardOutline, serverOutline } from 'ionicons/icons';
+import { NavController } from '@ionic/angular';
+import { ConfigService } from '../../../core/services/config.service';
 
 @Component({
   selector: 'app-login-card',
@@ -32,8 +33,8 @@ import { NavController } from '@ionic/angular'; // <-- Añadido
     IonIcon,
     IonFooter,
     IonText,
-    IonItem, // <-- Añadido
-    IonLabel, // <-- Añadido
+    IonItem,
+    IonLabel,
   ],
   encapsulation: ViewEncapsulation.None,
 })
@@ -44,13 +45,12 @@ export class LoginCardComponent {
   @Input() formId: string = '';
   @Input() showBackendHint: boolean = true;
 
-  // Nuevo Input para recibir el backend actual desde el padre
-  @Input() currentBackend: string = 'node';
-
   @Output() footerActionClick = new EventEmitter<void>();
 
-  // Inyectamos NavController para la redirección
   private navCtrl = inject(NavController);
+  private configService = inject(ConfigService);
+
+  public currentBackend = this.configService.selectedBackend();
 
   constructor() {
     addIcons({ arrowForwardOutline, serverOutline });

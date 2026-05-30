@@ -23,7 +23,7 @@
         }
       </ion-label>
     </ion-item>
-
+    @if (showBackendHint) {
     <ion-button
       type="submit"
       [attr.form]="formId"
@@ -33,9 +33,10 @@
       {{ submitText }}
       <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
     </ion-button>
+    }
   </ion-card-content>
 </ion-card>
-
+@if (showBackendHint) {
 <ion-footer class="signup-section ion-no-border">
   <ion-text class="signup-text ion-no-margin">
     {{ footerText }}
@@ -44,3 +45,4 @@
     </ion-button>
   </ion-text>
 </ion-footer>
+}

@@ -52,3 +52,35 @@ ion-text.login-subtitle {
   color: var(--ion-color-on-surface-variant);
   display: block;
 }
+
+.login-button {
+  --background: var(--ion-color-pitch-green);
+  --background-hover: var(--ion-color-primary);
+  --color: var(--ion-color-sideline-black);
+  --padding-bottom: 12px;
+  --border-radius: var(--border-radius-lg);
+  font-family: var(--font-family-headline-sm);
+  font-size: var(--font-size-headline-sm);
+  font-weight: var(--font-weight-headline-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-gutter);
+  transition: all 200ms ease-in-out;
+  text-transform: none;
+  &:hover {
+    --background: var(--ion-color-primary);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ion-color-pitch-green),
+      0 0 0 4px var(--ion-color-surface);
+  }
+  ion-icon {
+    font-size: 24px;
+    color: var(--ion-color-on-primary-fixed);
+  }
+}
