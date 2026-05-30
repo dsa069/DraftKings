@@ -51,4 +51,11 @@ export const routes: Routes = [
         (m) => m.ImportPlayersPage
       ),
   },
+  {
+    path: 'switch-back',
+    loadComponent: () =>
+      import('./features/switch-back/switch-back.page').then(
+        (m) => m.SwitchBackPage
+      ),
+  },
 ];
