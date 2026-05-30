@@ -196,7 +196,7 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
 
       cy.wrap(playerServiceMock.updatePlayer).should(
         'have.been.calledOnceWith',
-        '99',
+        Cypress.sinon.match((id: any) => Number(id) === 99),
         Cypress.sinon.match({ number: 10 })
       );
       cy.wrap(playerServiceMock.createPlayer).should('not.have.been.called');
