@@ -176,7 +176,21 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
 
     it('debe actualizar el jugador existente en lugar de crear uno nuevo al hacer submit', () => {
       cy.get('@componentInstance').then((instance: any) => {
-        instance.playerForm.patchValue({ number: 10 });
+        instance.playerForm.patchValue({
+          displayName: 'Mbappe',
+          firstName: 'Kylian',
+          lastName: 'Mbappe Lottin',
+          age: 26,
+          birthdate: '1998-12-20',
+          nationality: 'France',
+          height: 178,
+          weight: 73,
+          team: 'PSG',
+          league: 'Ligue 1',
+          position: 'fw',
+          number: 10,
+        });
+        instance.playerForm.updateValueAndValidity();
         return instance.onSavePlayer();
       });
 
