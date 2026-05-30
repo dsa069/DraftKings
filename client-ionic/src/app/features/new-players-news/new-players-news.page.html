@@ -22,22 +22,18 @@
         <form>
           <ion-card class="form-card">
             <ion-card-content class="form-content">
-              <ion-item lines="none" class="input-field-wrapper">
-                <ion-label position="stacked" class="field-label"
-                  >DATE</ion-label
-                >
+              <section class="input-field-wrapper">
+                <ion-label class="field-label">DATE</ion-label>
                 <ion-input
                   type="date"
                   value="2023-10-27"
                   class="field-input"
                 ></ion-input>
-              </ion-item>
+              </section>
 
-              <ion-item lines="none" class="input-field-wrapper">
-                <ion-label position="stacked" class="field-label"
-                  >IMPACT LEVEL</ion-label
-                >
-                <ion-segment value="Medium" class="custom-segment">
+              <section class="input-field-wrapper">
+                <ion-label class="field-label">IMPACT LEVEL</ion-label>
+                <ion-segment value="Medium" class="custom-segment" mode="ios">
                   <ion-segment-button value="Low">
                     <ion-label>LOW</ion-label>
                   </ion-segment-button>
@@ -48,12 +44,10 @@
                     <ion-label>HIGH</ion-label>
                   </ion-segment-button>
                 </ion-segment>
-              </ion-item>
+              </section>
 
-              <ion-item lines="none" class="input-field-wrapper">
-                <ion-label position="stacked" class="field-label"
-                  >LINKED PLAYER</ion-label
-                >
+              <section class="input-field-wrapper">
+                <ion-label class="field-label">LINKED PLAYER</ion-label>
                 <ion-item class="player-card" lines="none">
                   <ion-avatar slot="start" class="player-avatar">
                     <img
@@ -69,35 +63,29 @@
                     <ion-icon name="close"></ion-icon>
                   </ion-button>
                 </ion-item>
-              </ion-item>
+              </section>
 
-              <ion-item lines="none" class="input-field-wrapper">
-                <ion-label position="stacked" class="field-label"
-                  >HEADLINE</ion-label
-                >
+              <section class="input-field-wrapper">
+                <ion-label class="field-label">HEADLINE</ion-label>
                 <ion-input
                   type="text"
                   placeholder="e.g. Minor ankle tweak in training"
                   class="field-input"
                 ></ion-input>
-              </ion-item>
+              </section>
 
-              <ion-item lines="none" class="input-field-wrapper">
-                <ion-label position="stacked" class="field-label"
-                  >DETAILS</ion-label
-                >
+              <section class="input-field-wrapper">
+                <ion-label class="field-label">DETAILS</ion-label>
                 <ion-textarea
                   placeholder="Add full context, source links, or tactical implications..."
                   rows="4"
                   class="field-textarea"
                 ></ion-textarea>
-              </ion-item>
+              </section>
 
-              <ion-item lines="none" class="input-field-wrapper">
-                <ion-label position="stacked" class="field-label"
-                  >TAGS</ion-label
-                >
-                <div class="tags-container">
+              <section class="input-field-wrapper">
+                <ion-label class="field-label">TAGS</ion-label>
+                <section class="tags-container">
                   <ion-chip class="custom-chip">
                     <ion-label>Injury</ion-label>
                     <ion-icon name="close"></ion-icon>
@@ -110,8 +98,8 @@
                     placeholder="Add tag..."
                     class="tag-input"
                   ></ion-input>
-                </div>
-              </ion-item>
+                </section>
+              </section>
 
               <ion-button type="submit" expand="block" class="submit-btn">
                 <ion-icon name="send" slot="start"></ion-icon>

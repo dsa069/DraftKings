@@ -44,23 +44,22 @@
   padding: var(--spacing-margin-mobile);
 }
 
-// Envoltorio de los inputs y labels
 .input-field-wrapper {
-  --padding-start: 0;
-  --inner-padding-end: 0;
-  --background: transparent;
-  --min-height: auto;
-  align-items: flex-start;
+  display: flex;
+  flex-direction: column; // Fuerza a que el título se posicione EN CIMA del campo
+  align-items: flex-start; // Alinea el contenido a la izquierda de forma correcta
+  width: 100%;
+  overflow: visible;
+  margin-bottom: 20px; // Espaciado vertical ordenado entre cada bloque del formulario
+}
 
-  .field-label {
-    font-family: var(--font-family-label-bold);
-    font-size: var(--font-size-label-bold);
-    line-height: var(--font-line-height-label-bold);
-    font-weight: var(--font-weight-label-bold);
-    color: var(--ion-color-on-surface-variant);
-    margin-bottom: var(--spacing-stack-sm);
-    transform: none; // Evita el salto animado clásico de ionic
-  }
+.field-label {
+  color: var(--ion-color-on-surface-variant);
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  margin-bottom: 8px; // Crea la separación vertical exacta entre el título y el campo
+  text-transform: uppercase;
 }
 
 // Estilos globales de Input y Textarea
@@ -73,13 +72,20 @@
   --padding-end: 12px;
   --padding-top: 12px;
   --padding-bottom: 12px;
+
   border: 1px solid var(--ion-color-outline-variant);
   border-radius: var(--border-radius-lg);
+
   font-family: var(--font-family-body-lg);
   font-size: var(--font-size-body-lg);
   line-height: var(--font-line-height-body-lg);
   transition: all 0.2s ease-in-out;
+
   width: 100%;
+  box-sizing: border-box;
+  margin: 2px 0;
+
+  overflow: hidden; // Corta cualquier elemento interno que sobresalga del border-radius
 
   &.has-focus {
     border-color: var(--ion-color-pitch-green);
@@ -89,28 +95,26 @@
 
 // Control segmentado
 .custom-segment {
-  background: var(--ion-color-stadium-grey);
+  // Contenedor principal de la barra
+  --background: var(--ion-color-stadium-grey);
+  border: 1px solid var(--ion-color-outline-variant);
   border-radius: var(--border-radius-lg);
   padding: 4px;
-  border: 1px solid rgba(60, 74, 60, 0.5); // outline-variant/50
 
   ion-segment-button {
+    // 2. COLORES DE TEXTO: Normal y Seleccionado
     --color: var(--ion-color-on-surface-variant);
-    --color-checked: var(--ion-color-sideline-black);
-    --indicator-color: var(--ion-color-pitch-green);
-    --border-radius: var(--border-radius-lg);
+    --color-checked: var(--ion-color-primary);
+
+    // 3. TIPOGRAFÍA Y AJUSTES
     font-family: var(--font-family-label-bold);
     font-size: var(--font-size-label-bold);
     font-weight: var(--font-weight-label-bold);
-    min-height: 36px;
+    margin: 0;
 
-    &::part(native) {
-      padding: 8px 0;
-    }
-
-    &:hover:not(.segment-button-checked) {
-      --color: var(--ion-color-chalk-white);
-    }
+    // Anulamos cualquier otro indicador remanente
+    --indicator-box-shadow: none;
+    --indicator-color: transparent;
   }
 }
 
