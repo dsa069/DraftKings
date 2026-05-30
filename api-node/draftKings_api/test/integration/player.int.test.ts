@@ -37,7 +37,8 @@ import {
 // Esto permite que las peticiones pasen directamente al controlador.
 jest.mock("../../middleware/auth.middleware", () => ({
   authorizeRequest: jest.fn((req, res, next) => {
-    if (!req.headers.authorization) {
+    // Permitimos pasar si tiene token clásico o si viene de un helper de test (x-test-role)
+    if (!req.headers.authorization && !req.headers["x-test-role"]) {
       return res.status(401).json({ message: "Petición no autorizada" });
     }
 
@@ -48,7 +49,7 @@ jest.mock("../../middleware/auth.middleware", () => ({
     next();
   }),
   authorizeRequestNoCreate: jest.fn((req, res, next) => {
-    if (!req.headers.authorization) {
+    if (!req.headers.authorization && !req.headers["x-test-role"]) {
       return res.status(401).json({ message: "Petición no autorizada" });
     }
 
