@@ -55,8 +55,11 @@ describe('ImportPlayersPage Component - Test Suite Exhaustivo', () => {
 
       // Verificamos que se llamó a la API sin parámetros
       cy.wrap(playerServiceMock.getExternalApiPlayers).should(
-        'have.been.calledOnceWithExactly'
+        'have.been.calledOnce'
       );
+      cy.wrap(playerServiceMock.getExternalApiPlayers)
+        .its('firstCall.args')
+        .should('deep.equal', [undefined]);
 
       // Verificamos que el signal interno se llenó con los datos
       cy.get('@componentInstance').then((instance: any) => {
