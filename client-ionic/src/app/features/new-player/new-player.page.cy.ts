@@ -191,6 +191,10 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
           number: 10,
         });
         instance.playerForm.updateValueAndValidity();
+        instance.selectedLocation = { lat: 48.8566, lng: 2.3522 };
+        instance.isEditMode = true;
+        instance.editingPlayerId = 99;
+        expect(instance.playerForm.valid).to.be.true;
         return instance.onSavePlayer();
       });
 
