@@ -108,6 +108,7 @@ describe('Autenticación E2E', () => {
           email: 'newcoach@draftkings.com',
           role: 'ADMIN',
         });
+        authService.verifyBackend = cy.stub().resolves();
         authService.isAuthenticated = () => true;
         authService.userProfile = () => adminProfile;
         authService.isAdmin = () => true;

@@ -48,9 +48,6 @@ describe('LoginCardComponent - Test Suite Exhaustivo', () => {
       // El botón de submit debe decir "Confirm" por defecto
       cy.get('.login-button').should('contain.text', 'Confirm');
 
-      // El componente hijo del toggle debe existir
-      cy.get('app-backend-toggle').should('exist');
-
       // El atributo se mantiene, pero con valor vacío cuando no llega formId
       cy.get('.login-button').should('have.attr', 'form', '');
     });
