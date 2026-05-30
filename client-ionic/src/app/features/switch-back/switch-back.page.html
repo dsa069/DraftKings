@@ -15,9 +15,9 @@
     </ion-header>
 
     <app-login-card
-      footerText="Ready to compete?"
-      footerActionText="The stage is set"
-      (footerActionClick)="gotoSignUp()"
+      footerText=""
+      footerActionText=""
+      (footerActionClick)="null"
       [showBackendHint]="false"
     >
       <app-backend-toggle
@@ -26,5 +26,14 @@
       >
       </app-backend-toggle>
     </app-login-card>
+    <ion-button
+      type="submit"
+      (click)="confirmBackendChange()"
+      expand="block"
+      class="login-button"
+    >
+      Confirm
+      <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+    </ion-button>
   </ion-grid>
 </ion-content>
