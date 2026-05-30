@@ -1,5 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, Signal, signal } from '@angular/core';
+import {
+  computed,
+  effect,
+  inject,
+  Injectable,
+  Signal,
+  signal,
+} from '@angular/core';
 import {
   Auth,
   signInWithEmailAndPassword,
@@ -9,7 +16,7 @@ import {
   deleteUser,
 } from '@angular/fire/auth';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { User } from '../../models/user.model';
 
 @Injectable()
@@ -27,6 +34,23 @@ export abstract class AuthService {
 
   // Estado global del perfil del usuario obtenido del backend
   protected readonly _userProfile = signal<User | null>(null);
+
+  constructor() {
+    // Efecto común para todos los backends: Sincronizar perfil al cambiar el usuario de Firebase o recargar la app
+    effect(
+      () => {
+        const firebaseUser = this._user();
+
+        if (!firebaseUser) {
+          this._userProfile.set(null);
+          return;
+        }
+
+        void this.restoreBackendProfile();
+      },
+      { allowSignalWrites: true }
+    );
+  }
 
   public readonly userProfile = this._userProfile.asReadonly();
   public readonly isAdmin = computed(
@@ -53,6 +77,18 @@ export abstract class AuthService {
   async getToken(): Promise<string | null> {
     const user = this.firebaseAuth.currentUser;
     return user ? await user.getIdToken() : null;
+  }
+
+  protected async restoreBackendProfile(): Promise<void> {
+    try {
+      const profile = await firstValueFrom(this.getProfile());
+      this._userProfile.set(profile);
+    } catch (error) {
+      console.warn(
+        'No se pudo restaurar el perfil del backend automáticamente',
+        error
+      );
+    }
   }
 
   // 4. NUEVO: Lógica de Rollback (Borrar cuenta si el backend falla)

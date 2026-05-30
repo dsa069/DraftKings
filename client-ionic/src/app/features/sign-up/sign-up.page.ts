@@ -150,6 +150,7 @@ export class SignUpPage implements OnInit {
 
       // 4. Si es el mismo backend (Sin reload)
       await this.authService.registerBackend({ userName, role });
+      await this.authService.verifyBackend();
 
       // Limpieza total y navegación
       this.showToast('Registration successful!', 'success');
