@@ -40,7 +40,8 @@ const mockUserId = new mongoose.Types.ObjectId();
 
 jest.mock("../../middleware/auth.middleware", () => ({
   authorizeRequest: jest.fn((req, res, next) => {
-    if (!req.headers.authorization) {
+    // Aceptamos la petición si trae Authorization normal O si viene de los helpers (x-test-role)
+    if (!req.headers.authorization && !req.headers["x-test-role"]) {
       return res.status(401).json({ message: "Petición no autorizada" });
     }
 
@@ -51,17 +52,15 @@ jest.mock("../../middleware/auth.middleware", () => ({
     next();
   }),
   authorizeRequestNoCreate: jest.fn((req, res, next) => {
-    if (!req.headers.authorization) {
+    if (!req.headers.authorization && !req.headers["x-test-role"]) {
       return res.status(401).json({ message: "Petición no autorizada" });
     }
 
     const role = req.headers["x-test-role"] === "ADMIN" ? "ADMIN" : "USER";
 
-    // Mantenemos el mismo comportamiento base para rutas que exigen usuario existente
     req.user = { _id: mockUserId, role };
     next();
   }),
-
   requireAdmin: jest.fn((req, res, next) => {
     if (req.user?.role !== "ADMIN") {
       return res.status(403).json({
