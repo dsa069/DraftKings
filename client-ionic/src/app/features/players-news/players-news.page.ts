@@ -1,12 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
+  IonGrid,
+  IonRow,
+  IonText,
+  IonIcon,
+  IonBadge,
+  IonCard,
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/angular/standalone';
-import { HeaderComponent } from '../../shared/components/header/header.component';
+import { addIcons } from 'ionicons';
+import { calendarOutline, personOutline } from 'ionicons/icons';
+import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
 
 @Component({
   selector: 'app-players-news',
@@ -14,19 +19,24 @@ import { HeaderComponent } from '../../shared/components/header/header.component
   styleUrls: ['./players-news.page.scss'],
   standalone: true,
   imports: [
+    IonGrid,
+    IonRow,
+    IonText,
+    IonIcon,
+    IonBadge,
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
     FormsModule,
-    HeaderComponent,
+    IonCard,
+    HeaderSubmenuComponent,
   ],
 })
 export class PlayersNewsPage implements OnInit {
-  constructor() {}
+  constructor() {
+    // Registramos los iconos localmente (Buena práctica en Standalone)
+    addIcons({ calendarOutline, personOutline });
+  }
 
   ngOnInit() {
-    // Temporal para que el linter no de error
     console.log('PlayersNewsPage inicializado');
   }
 }

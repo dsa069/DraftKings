@@ -38,10 +38,10 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'create-players-news',
+    path: 'players-news',
     loadComponent: () =>
-      import('./features/create-players-news/create-players-news.page').then(
-        (m) => m.CreatePlayersNewsPage
+      import('./features/players-news/players-news.page').then(
+        (m) => m.PlayersNewsPage
       ),
   },
   {
