@@ -33,7 +33,8 @@ spring:
 app:
   cors:
     allowed-origins:
-      - "http://localhost:8100"            
+      - "http://localhost:8100"
+      - "http://localhost:3333"          
 
 eureka:
   instance:
