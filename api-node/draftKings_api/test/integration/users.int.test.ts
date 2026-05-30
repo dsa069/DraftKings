@@ -1,5 +1,4 @@
 import request from "supertest";
-import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import app from "../../../app"; // Ajusta el path a tu app.ts
 import { User } from "../../models/user";
