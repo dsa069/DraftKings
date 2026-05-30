@@ -321,7 +321,7 @@ describe("Review API Endpoints", () => {
         .spyOn(Review, "findByIdAndUpdate")
         .mockReturnValueOnce({
           exec: jest.fn().mockRejectedValueOnce(new Error("UPDATE_FAIL")),
-        } as unknown as { exec: jest.Mock });
+        } as never);
 
       const response = await withAdminAuth(
         request(app).put(`/api/reviews/${review._id}`),
@@ -422,7 +422,7 @@ describe("Review API Endpoints", () => {
         .spyOn(Review, "findByIdAndDelete")
         .mockReturnValueOnce({
           exec: jest.fn().mockRejectedValueOnce(new Error("DELETE_FAIL")),
-        } as unknown as { exec: jest.Mock });
+        } as never);
 
       const response = await withAdminAuth(
         request(app).delete(`/api/reviews/${review._id}`),

@@ -71,7 +71,9 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
 
     it("Debería no hacer nada si recibe undefined", async () => {
       await apiFootballService.importPlayers(
-        undefined as Parameters<ApiFootballService["importPlayers"]>[0],
+        undefined as unknown as Parameters<
+          ApiFootballService["importPlayers"]
+        >[0],
       );
 
       expect(Player.insertMany).not.toHaveBeenCalled();
