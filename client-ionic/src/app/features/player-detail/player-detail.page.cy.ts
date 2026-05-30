@@ -163,6 +163,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
 
     it('debe confirmar la eliminación del jugador, llamar al servicio y cerrar el modal', () => {
       cy.get('@componentInstance').then((instance: any) => {
+        instance.player.set(mockPlayer);
         instance.onDeletePlayer();
         return instance.confirmDeletePlayer();
       });

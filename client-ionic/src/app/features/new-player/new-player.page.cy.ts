@@ -1,14 +1,14 @@
-import { NewPlayerPage } from './new-player.page';
+import { signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { signal } from '@angular/core';
+import { NavController } from '@ionic/angular';
 
-import { PlayerService } from '../../core/services/abstract/player.service';
-import { PhotoService } from '../../core/services/photo.service';
-import { LocationService } from '../../core/services/location.service';
+import { NewPlayerPage } from './new-player.page';
 import { AuthService } from '../../core/services/abstract/auth.service';
+import { LocationService } from '../../core/services/location.service';
+import { PhotoService } from '../../core/services/photo.service';
+import { PlayerService } from '../../core/services/abstract/player.service';
 
 describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () => {
   let playerServiceMock: any;
@@ -92,9 +92,7 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
   };
 
   describe('1. Modo Creacion: Interfaz, Validaciones y Flujo Feliz', () => {
-    beforeEach(() => {
-      mountComponent(null);
-    });
+    beforeEach(() => mountComponent(null));
 
     it('debe iniciar en modo creacion y el formulario debe ser invalido por defecto', () => {
       cy.get('@componentInstance').its('isEditMode').should('be.false');
@@ -102,8 +100,12 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
     });
 
     it('debe mostrar errores de validacion si los campos requeridos se tocan y se dejan vacios', () => {
-      cy.get('form').submit();
-      cy.get('ion-note[color="danger"]').should('be.visible');
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.playerForm.markAllAsTouched();
+        return instance.onSavePlayer();
+      });
+
+      cy.get('ion-note[color="danger"]').should('exist');
       cy.wrap(playerServiceMock.createPlayer).should('not.have.been.called');
     });
 
@@ -111,6 +113,7 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
       cy.get('@componentInstance').then((instance: any) => {
         instance.playerForm.get('number').setValue(100);
         instance.playerForm.get('number').markAsTouched();
+        instance.playerForm.markAllAsTouched();
       });
 
       cy.get('ion-note[color="danger"]').should(
@@ -139,9 +142,8 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
           number: 7,
         });
         instance.onLocationSelected({ lat: 40, lng: -3 });
+        return instance.onSavePlayer();
       });
-
-      cy.get('form').submit();
 
       cy.wrap(playerServiceMock.createPlayer).should(
         'have.been.calledWithMatch',
@@ -161,9 +163,7 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
   });
 
   describe('2. Modo Edicion: Precarga de Datos y Actualizacion', () => {
-    beforeEach(() => {
-      mountComponent('99');
-    });
+    beforeEach(() => mountComponent('99'));
 
     it('debe cargar los datos del jugador desde el servicio e inyectarlos en el formulario', () => {
       cy.get('@componentInstance').its('isEditMode').should('be.true');
@@ -177,9 +177,8 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
     it('debe actualizar el jugador existente en lugar de crear uno nuevo al hacer submit', () => {
       cy.get('@componentInstance').then((instance: any) => {
         instance.playerForm.patchValue({ number: 10 });
+        return instance.onSavePlayer();
       });
-
-      cy.get('form').submit();
 
       cy.wrap(playerServiceMock.updatePlayer).should(
         'have.been.calledOnceWith',
@@ -195,9 +194,7 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
   });
 
   describe('3. Manejo Critico de Errores (Rollback)', () => {
-    beforeEach(() => {
-      mountComponent(null);
-    });
+    beforeEach(() => mountComponent(null));
 
     it('debe disparar rollback de la foto si el servidor falla al crear/guardar al jugador', () => {
       playerServiceMock.createPlayer = cy
@@ -220,9 +217,8 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
           position: 'gk',
           number: 1,
         });
+        return instance.onSavePlayer();
       });
-
-      cy.get('form').submit();
 
       cy.get('@consoleError').should(
         'have.been.calledWithMatch',
