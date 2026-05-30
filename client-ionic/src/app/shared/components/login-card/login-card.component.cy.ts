@@ -29,7 +29,6 @@ describe('LoginCardComponent - Test Suite Exhaustivo', () => {
         cy.spy(wrapper.component.footerActionClick, 'emit').as(
           'footerActionSpy'
         );
-        cy.spy(wrapper.component.backendChange, 'emit').as('backendChangeSpy');
 
         // Guardamos la instancia
         cy.wrap(wrapper.component).as('componentInstance');
@@ -87,14 +86,6 @@ describe('LoginCardComponent - Test Suite Exhaustivo', () => {
       // Vital para accesibilidad y funcionamiento de formularios HTML5
       cy.get('.login-button').should('have.attr', 'form', dummyFormId);
     });
-
-    it('debe pasar el backend seleccionado por defecto hacia la propiedad del componente', () => {
-      mountComponent({ selectedBackend: 'springboot' });
-
-      cy.get('@componentInstance')
-        .its('selectedBackend')
-        .should('equal', 'springboot');
-    });
   });
 
   describe('3. Interacciones y Emisión de Eventos (@Outputs)', () => {
@@ -110,18 +101,8 @@ describe('LoginCardComponent - Test Suite Exhaustivo', () => {
       cy.get('@footerActionSpy').should('have.been.calledOnce');
     });
 
-    it('debe delegar y re-emitir el evento backendChange cuando se invoca internamente', () => {
-      // Simulamos que el componente hijo <app-backend-toggle> emite su evento
-      cy.get('@componentInstance').then((instance: any) => {
-        instance.onBackendChange('springboot');
-      });
-
-      // El LoginCardComponent debe haberlo atrapado y re-emitido por su propio Output
-      cy.get('@backendChangeSpy').should(
-        'have.been.calledOnceWithExactly',
-        'springboot'
-      );
-    });
+    // Nota: las pruebas relacionadas con el EventEmitter `backendChange`
+    // se han eliminado intencionadamente para separar responsabilidades.
   });
 
   describe('4. Proyección de Contenido (<ng-content>)', () => {
