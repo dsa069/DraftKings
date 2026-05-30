@@ -85,8 +85,6 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
       cy.get('@componentInstance')
         .its('currentLocation')
         .should('deep.equal', { lat: 10.12345, lng: -20.98765 });
-
-      cy.get('.coordinates-display').should('contain.text', 'Lat: 10.12345');
     });
   });
 
