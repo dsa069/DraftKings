@@ -9,9 +9,9 @@ import {
 import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
-  selector: 'app-create-players-news',
-  templateUrl: './create-players-news.page.html',
-  styleUrls: ['./create-players-news.page.scss'],
+  selector: 'app-players-news',
+  templateUrl: './players-news.page.html',
+  styleUrls: ['./players-news.page.scss'],
   standalone: true,
   imports: [
     IonContent,
@@ -22,11 +22,11 @@ import { HeaderComponent } from '../../shared/components/header/header.component
     HeaderComponent,
   ],
 })
-export class CreatePlayersNewsPage implements OnInit {
+export class PlayersNewsPage implements OnInit {
   constructor() {}
 
   ngOnInit() {
     // Temporal para que el linter no de error
-    console.log('CreatePlayersNewsPage inicializado');
+    console.log('PlayersNewsPage inicializado');
   }
 }

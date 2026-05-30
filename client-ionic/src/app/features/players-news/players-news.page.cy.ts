@@ -1,4 +1,4 @@
-import { CreatePlayersNewsPage } from './create-players-news.page';
+import { PlayersNewsPage } from './players-news.page';
 
 import {
   IonContent,
@@ -8,9 +8,9 @@ import {
 } from '@ionic/angular/standalone';
 import { TeamService } from '../../core/services/abstract/team.service';
 
-describe('CreatePlayersNews Component', () => {
+describe('PlayersNews Component', () => {
   it('should render title', () => {
-    cy.mount(CreatePlayersNewsPage, {
+    cy.mount(PlayersNewsPage, {
       imports: [IonContent, IonHeader, IonTitle, IonToolbar],
       providers: [
         {

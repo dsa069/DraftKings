@@ -59,6 +59,7 @@ import {
   chatboxOutline,
   checkmark,
   close,
+  add,
 } from 'ionicons/icons';
 import { AuthService } from '../../core/services/abstract/auth.service';
 
@@ -155,6 +156,7 @@ export class PlayerDetailPage implements OnInit {
       chatboxOutline,
       checkmark,
       close,
+      add,
     });
 
     effect(() => {
@@ -421,5 +423,13 @@ export class PlayerDetailPage implements OnInit {
     } else {
       this.editTempRating.set(rating);
     }
+  }
+
+  onCreateNews(): void {
+    this.navCtrl.navigateForward(`/new-players-news`);
+  }
+
+  onViewNews(): void {
+    this.navCtrl.navigateForward(`/players-news`);
   }
 }
