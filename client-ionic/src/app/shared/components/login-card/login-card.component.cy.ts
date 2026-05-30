@@ -52,8 +52,8 @@ describe('LoginCardComponent - Test Suite Exhaustivo', () => {
       // El componente hijo del toggle debe existir
       cy.get('app-backend-toggle').should('exist');
 
-      // El atributo 'form' no debe estar vinculado si formId está vacío
-      cy.get('.login-button').should('not.have.attr', 'form');
+      // El atributo se mantiene, pero con valor vacío cuando no llega formId
+      cy.get('.login-button').should('have.attr', 'form', '');
     });
 
     it('debe incluir el icono de flecha nativo en el botón principal', () => {

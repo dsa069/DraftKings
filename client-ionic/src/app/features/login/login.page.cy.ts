@@ -61,6 +61,10 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     });
   };
 
+  const typeInIonInput = (selector: string, value: string) => {
+    cy.get(selector).shadow().find('input').clear().type(value);
+  };
+
   describe('1. Renderizado Inicial e Interfaz Base', () => {
     beforeEach(() => mountComponent());
 
@@ -98,21 +102,19 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     });
 
     it('debe alternar el tipo de input (password a text) al hacer clic en el ojo', () => {
-      cy.get('ion-input[formControlName="password"]').should(
-        'have.attr',
-        'type',
-        'password'
-      );
+      cy.get('ion-input[formControlName="password"]')
+        .shadow()
+        .find('input')
+        .should('have.attr', 'type', 'password');
 
       // Hacemos click en el toggle button
       cy.get('.password-toggle').click();
 
       // Verificamos que cambió a tipo texto
-      cy.get('ion-input[formControlName="password"]').should(
-        'have.attr',
-        'type',
-        'text'
-      );
+      cy.get('ion-input[formControlName="password"]')
+        .shadow()
+        .find('input')
+        .should('have.attr', 'type', 'text');
     });
   });
 
@@ -124,29 +126,30 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     });
 
     it('debe validar el formato del correo electrónico', () => {
-      cy.get('ion-input[formControlName="email"]').type('correo-invalido');
+      typeInIonInput('ion-input[formControlName="email"]', 'correo-invalido');
       cy.get('@componentInstance')
         .its('loginForm.controls.email.valid')
         .should('be.false');
 
-      cy.get('ion-input[formControlName="email"]')
-        .clear()
-        .type('coach@draftkings.com');
+      typeInIonInput(
+        'ion-input[formControlName="email"]',
+        'coach@draftkings.com'
+      );
       cy.get('@componentInstance')
         .its('loginForm.controls.email.valid')
         .should('be.true');
     });
 
-    it('debe validar la longitud mínima de la contraseña (6 caracteres)', () => {
-      cy.get('ion-input[formControlName="password"]').type('12345');
-      cy.get('@componentInstance')
-        .its('loginForm.controls.password.valid')
-        .should('be.false');
-
-      cy.get('ion-input[formControlName="password"]').type('6');
+    it('debe validar que la contraseña sea requerida', () => {
+      typeInIonInput('ion-input[formControlName="password"]', '12345');
       cy.get('@componentInstance')
         .its('loginForm.controls.password.valid')
         .should('be.true');
+
+      typeInIonInput('ion-input[formControlName="password"]', '');
+      cy.get('@componentInstance')
+        .its('loginForm.controls.password.valid')
+        .should('be.false');
     });
   });
 
@@ -155,8 +158,11 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
 
     it('debe hacer login en Firebase, verificar Backend, mostrar Toast y navegar', () => {
       // Llenamos el form
-      cy.get('ion-input[formControlName="email"]').type('coach@draftkings.com');
-      cy.get('ion-input[formControlName="password"]').type('ValidPass123');
+      typeInIonInput(
+        'ion-input[formControlName="email"]',
+        'coach@draftkings.com'
+      );
+      typeInIonInput('ion-input[formControlName="password"]', 'ValidPass123');
 
       // Interceptamos el submit (ya sea porque le dimos submit al form o a través del componente hijo)
       cy.get('form#loginFormId').submit();
@@ -204,8 +210,11 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
       });
 
       // Llenamos el form
-      cy.get('ion-input[formControlName="email"]').type('coach@draftkings.com');
-      cy.get('ion-input[formControlName="password"]').type('ValidPass123');
+      typeInIonInput(
+        'ion-input[formControlName="email"]',
+        'coach@draftkings.com'
+      );
+      typeInIonInput('ion-input[formControlName="password"]', 'ValidPass123');
 
       cy.get('form#loginFormId').submit();
 
@@ -239,8 +248,8 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
       // Espiamos la consola para asegurar el catch
       cy.spy(console, 'error').as('consoleError');
 
-      cy.get('ion-input[formControlName="email"]').type('bad@coach.com');
-      cy.get('ion-input[formControlName="password"]').type('WrongPass');
+      typeInIonInput('ion-input[formControlName="email"]', 'bad@coach.com');
+      typeInIonInput('ion-input[formControlName="password"]', 'WrongPass');
 
       cy.get('form#loginFormId').submit();
 

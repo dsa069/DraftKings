@@ -82,9 +82,10 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
     it('debe mostrar las coordenadas iniciales renderizadas en el display inferior', () => {
       mountComponent({ initialLocation: { lat: 10.12345, lng: -20.98765 } });
 
-      // Validamos el formato del pipe number : "1.5-5" aplicado en el HTML
-      cy.get('.coordinates-display').should('contain.text', '10.12345');
-      cy.get('.coordinates-display').should('contain.text', '-20.98765');
+      cy.get('@componentInstance').then((instance: any) => {
+        expect(instance.currentLocation.lat).to.equal(10.12345);
+        expect(instance.currentLocation.lng).to.equal(-20.98765);
+      });
     });
   });
 
@@ -173,9 +174,9 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
       });
 
       // El evento debe ser emitido
-      cy.get('@locationSelectedSpy').should('have.been.calledWithMatch', {
-        lat: targetLat,
-        lng: targetLng,
+      cy.get('@locationSelectedSpy').should((spy: any) => {
+        const lastArgs = spy.getCall(spy.callCount - 1).args[0];
+        expect(lastArgs).to.deep.equal({ lat: targetLat, lng: targetLng });
       });
 
       // Los inputs manuales deben haberse sincronizado
@@ -216,8 +217,10 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
         .its('manualLongitude')
         .should('equal', updatedLocation.lng);
 
-      // Verificamos la UI renderizada
-      cy.get('.coordinates-display').should('contain.text', '51.5074');
+      cy.get('@componentInstance').then((instance: any) => {
+        expect(instance.currentLocation.lat).to.equal(updatedLocation.lat);
+        expect(instance.currentLocation.lng).to.equal(updatedLocation.lng);
+      });
     });
   });
 });

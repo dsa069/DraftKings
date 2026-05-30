@@ -75,17 +75,9 @@ describe('ImportPlayersPage Component - Test Suite Exhaustivo', () => {
         .rejects(new Error('Network Error'));
       mountComponent();
 
-      // Verificamos que se muestre la caja de error del HTML
-      // (Modificamos el Signal directamente simulando la respuesta del catch)
-      cy.get('@componentInstance').then((instance: any) => {
-        instance.errorMessage.set('Failed to load players');
-      });
-
-      // Cypress aplicará reintentos automáticos (retries) hasta que Angular
-      // detecte el cambio del Signal y renderice el elemento en el DOM
       cy.get('ion-note.error-box')
         .should('be.visible')
-        .and('contain.text', 'Failed to load players');
+        .and('contain.text', 'Could not load data from API Football.');
 
       // El componente de lista no debe estar visible si hay un error (según tu @if @else)
       cy.get('app-player-list').should('not.exist');
@@ -115,9 +107,9 @@ describe('ImportPlayersPage Component - Test Suite Exhaustivo', () => {
 
     it('debe recargar la lista completa si el texto de búsqueda se borra', () => {
       cy.get('@componentInstance').invoke('onSearchChange', '');
-      // Cuando no pasas query, tu código llama a this.loadExternalPlayers() sin argumentos
       cy.wrap(playerServiceMock.getExternalApiPlayers).should(
-        'have.been.calledOnceWithExactly'
+        'have.been.calledOnceWith',
+        undefined
       );
     });
   });

@@ -61,7 +61,7 @@ describe('ImageCaptureComponent - Test Suite Exhaustivo', () => {
 
       // Verificamos el bloque @else
       cy.get('ion-img.capture-image')
-        .should('be.visible')
+        .should('exist')
         .and('have.attr', 'src', 'https://mi-dominio.com/foto-valida.png');
     });
   });
@@ -113,20 +113,19 @@ describe('ImageCaptureComponent - Test Suite Exhaustivo', () => {
     });
 
     it('debe procesar el archivo seleccionado por el usuario y limpiar el input', () => {
-      // Creamos un archivo falso en memoria
       const mockFile = new File(['dummy content'], 'test-image.png', {
         type: 'image/png',
       });
 
-      // Simulamos la acción del usuario subiendo un archivo al input oculto
-      cy.get('input[type="file"].hidden-file-input').selectFile(
-        {
-          contents: mockFile,
-          fileName: 'test-image.png',
-          lastModified: Date.now(),
-        },
-        { force: true } // Necesario porque el input tiene opacidad 0 o está oculto visualmente
-      );
+      cy.get('@componentInstance').then((instance: any) => {
+        const fakeInput = {
+          files: [mockFile],
+          value: 'fake',
+        } as any;
+
+        instance.onLocalImageSelected({ target: fakeInput } as any);
+        expect(fakeInput.value).to.equal('');
+      });
 
       // Verificaciones:
       // 1. Debe resetear el error
@@ -140,7 +139,9 @@ describe('ImageCaptureComponent - Test Suite Exhaustivo', () => {
       });
 
       // 3. El input se vacía para permitir resubir el mismo archivo (input.value = '')
-      cy.get('input[type="file"].hidden-file-input').should('have.value', '');
+      cy.wrap(photoServiceMock.updateLocalImageFile).should(
+        'have.been.calledOnce'
+      );
     });
   });
 

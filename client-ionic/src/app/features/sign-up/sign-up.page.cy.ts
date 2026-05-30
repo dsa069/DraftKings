@@ -1,47 +1,47 @@
 import { SignUpPage } from './sign-up.page';
 import { AuthService } from '../../core/services/abstract/auth.service';
+import { ConfigService } from '../../core/services/config.service';
 import { NavController, ToastController } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
-import { of, throwError } from 'rxjs';
 
 describe('SignUpPage Component', () => {
-  // 1. Mocks y Stubs de Servicios
   let authServiceMock: any;
+  let configServiceMock: any;
   let navCtrlMock: Partial<NavController>;
   let toastCtrlMock: Partial<ToastController>;
   let toastPresentSpy: any;
 
   beforeEach(() => {
-    // Inicializamos el espía para el present() del Toast
     toastPresentSpy = cy.stub().resolves();
-
-    // Mock del ToastController de Ionic
     toastCtrlMock = {
       create: cy.stub().resolves({
         present: toastPresentSpy,
       } as any),
     };
 
-    // Mock de Navegación
     navCtrlMock = {
       navigateRoot: cy.stub().resolves(true),
       navigateBack: cy.stub().resolves(true),
     };
 
-    // Mock de Autenticación
+    configServiceMock = {
+      selectedBackend: cy.stub().returns('node'),
+      applyBackendChange: cy.stub(),
+    };
+
     authServiceMock = {
-      register: cy.stub().returns(of({ id: '123', email: 'test@test.com' })),
       registerFirebase: cy.stub().resolves({ user: { uid: '123' } }),
       registerBackend: cy.stub().resolves({}),
+      deleteCurrentUser: cy.stub().resolves(),
     };
   });
 
-  // Función global para montar el componente de manera limpia
   const mountComponent = () => {
     cy.mount(SignUpPage, {
-      imports: [ReactiveFormsModule], // Requerido si usa Formularios Reactivos
+      imports: [ReactiveFormsModule],
       providers: [
         { provide: AuthService, useValue: authServiceMock },
+        { provide: ConfigService, useValue: configServiceMock },
         { provide: NavController, useValue: navCtrlMock },
         { provide: ToastController, useValue: toastCtrlMock },
       ],
@@ -50,160 +50,153 @@ describe('SignUpPage Component', () => {
     });
   };
 
+  const typeInIonInput = (selector: string, value: string) => {
+    cy.get(selector)
+      .shadow()
+      .find('input')
+      .clear()
+      .type(value, { force: true });
+  };
+
   describe('1. Renderizado Inicial e Interfaz Base', () => {
     beforeEach(() => mountComponent());
 
-    it('debe renderizar el título, el formulario y los inputs correctamente', () => {
-      cy.get('ion-title').should('contain.text', 'Sign Up');
-
-      // Verificamos que existan los inputs principales
-      cy.get('ion-input[formControlName="username"]').should('exist');
+    it('debe renderizar el formulario y los inputs correctamente', () => {
+      cy.get('.hero-title').should('contain.text', 'Build Your');
+      cy.get('app-login-card').should('exist');
+      cy.get('ion-input[formControlName="userName"]').should('exist');
       cy.get('ion-input[formControlName="email"]').should('exist');
       cy.get('ion-input[formControlName="password"]').should('exist');
       cy.get('ion-input[formControlName="confirmPassword"]').should('exist');
     });
 
     it('el botón de submit debe estar deshabilitado por defecto (formulario inválido)', () => {
-      cy.get('ion-button[type="submit"]')
-        .should('exist')
-        .and('have.attr', 'disabled');
+      cy.get('.login-button').should('have.attr', 'form', 'signUpFormId');
+      cy.get('@componentInstance').its('signUpForm.invalid').should('be.true');
     });
   });
 
   describe('2. Validaciones de Formulario Reactivo', () => {
     beforeEach(() => mountComponent());
 
-    it('debe mostrar error si el email tiene un formato inválido', () => {
-      cy.get('ion-input[formControlName="email"]').type('email-invalido');
-      cy.get('ion-input[formControlName="email"]').blur(); // Desencadenar touched
+    it('debe mostrar toast si el email tiene un formato inválido', () => {
+      typeInIonInput('ion-input[formControlName="userName"]', 'CoachTest');
+      typeInIonInput('ion-input[formControlName="email"]', 'email-invalido');
+      typeInIonInput('ion-input[formControlName="password"]', 'Password1!');
+      typeInIonInput(
+        'ion-input[formControlName="confirmPassword"]',
+        'Password1!'
+      );
 
-      // Asumimos que tienes un ion-note o un span para los mensajes de error
-      cy.get('.error-message')
-        .should('be.visible')
-        .and('contain.text', 'formato de correo inválido');
+      cy.get('form#signUpFormId').submit();
 
-      cy.get('ion-button[type="submit"]').should('have.attr', 'disabled');
+      cy.wrap(toastCtrlMock.create).should('have.been.calledWithMatch', {
+        message: 'Invalid email format.',
+        color: 'danger',
+      });
     });
 
     it('debe mostrar error si las contraseñas no coinciden (Custom Validator)', () => {
-      cy.get('ion-input[formControlName="password"]').type('Password123!');
-      cy.get('ion-input[formControlName="confirmPassword"]').type(
-        'PasswordDistinta456'
+      typeInIonInput('ion-input[formControlName="userName"]', 'CoachTest');
+      typeInIonInput(
+        'ion-input[formControlName="email"]',
+        'test@draftkings.com'
       );
-      cy.get('ion-input[formControlName="confirmPassword"]').blur();
+      typeInIonInput('ion-input[formControlName="password"]', 'Password1!');
+      typeInIonInput(
+        'ion-input[formControlName="confirmPassword"]',
+        'Password2!'
+      );
 
-      cy.get('.error-message')
-        .should('be.visible')
-        .and('contain.text', 'Las contraseñas no coinciden');
+      cy.get('form#signUpFormId').submit();
 
-      cy.get('ion-button[type="submit"]').should('have.attr', 'disabled');
+      cy.wrap(toastCtrlMock.create).should('have.been.calledWithMatch', {
+        message: 'Passwords do not match.',
+        color: 'danger',
+      });
     });
 
-    it('debe habilitar el botón de submit cuando todos los campos son válidos', () => {
-      cy.get('ion-input[formControlName="username"]').type('TestUser');
-      cy.get('ion-input[formControlName="email"]').type('test@draftkings.com');
-      cy.get('ion-input[formControlName="password"]').type('ValidPass123!');
-      cy.get('ion-input[formControlName="confirmPassword"]').type(
+    it('debe habilitar el submit cuando todos los campos son válidos', () => {
+      typeInIonInput('ion-input[formControlName="userName"]', 'TestUser');
+      typeInIonInput(
+        'ion-input[formControlName="email"]',
+        'test@draftkings.com'
+      );
+      typeInIonInput('ion-input[formControlName="password"]', 'ValidPass123!');
+      typeInIonInput(
+        'ion-input[formControlName="confirmPassword"]',
         'ValidPass123!'
       );
 
-      // El botón ya no debe tener el atributo disabled
-      cy.get('ion-button[type="submit"]').should('not.have.attr', 'disabled');
+      cy.get('@componentInstance').its('signUpForm.valid').should('be.true');
     });
   });
 
   describe('3. Flujo Asíncrono: Registro Exitoso', () => {
     beforeEach(() => mountComponent());
 
-    it('debe llamar al AuthService, mostrar spinner, notificar éxito y navegar', () => {
-      // 1. Llenamos el formulario
-      cy.get('ion-input[formControlName="username"]').type('TestUser');
-      cy.get('ion-input[formControlName="email"]').type('test@draftkings.com');
-      cy.get('ion-input[formControlName="password"]').type('ValidPass123!');
-      cy.get('ion-input[formControlName="confirmPassword"]').type(
+    it('debe llamar al AuthService, notificar éxito y navegar', () => {
+      typeInIonInput('ion-input[formControlName="userName"]', 'TestUser');
+      typeInIonInput(
+        'ion-input[formControlName="email"]',
+        'test@draftkings.com'
+      );
+      typeInIonInput('ion-input[formControlName="password"]', 'ValidPass123!');
+      typeInIonInput(
+        'ion-input[formControlName="confirmPassword"]',
         'ValidPass123!'
       );
 
-      // 2. Interceptamos el register para que demore y podamos ver el Loading state
-      authServiceMock.register = cy
-        .stub()
-        .returns(
-          new Cypress.Promise((resolve) =>
-            setTimeout(() => resolve({ id: '1' }), 300)
-          )
-        );
+      cy.get('form#signUpFormId').submit();
 
-      // 3. Enviamos el formulario
-      cy.get('ion-button[type="submit"]').click();
-
-      // 4. Verificamos el estado "Cargando"
-      cy.get('@componentInstance').its('isLoading').should('equal', true);
-      cy.get('ion-spinner').should('exist'); // Suponiendo que muestras un spinner en el botón o vista
-
-      // 5. Verificamos que el servicio fue llamado con los datos correctos
-      cy.wrap(authServiceMock.register).should(
+      cy.wrap(authServiceMock.registerFirebase).should(
         'have.been.calledOnceWith',
-        Cypress.sinon.match({
-          email: 'test@draftkings.com',
-          username: 'TestUser',
-          password: 'ValidPass123!',
-        })
+        'test@draftkings.com',
+        'ValidPass123!'
       );
-
-      // 6. Verificamos el resultado posterior a la promesa
-      cy.then(() => {
-        // El loader desaparece
-        cy.get('@componentInstance').its('isLoading').should('equal', false);
-
-        // Verifica que se creó el Toast de éxito
-        cy.wrap(toastCtrlMock.create).should('have.been.calledOnce');
-        cy.wrap(toastPresentSpy).should('have.been.calledOnce');
-
-        // Verifica que el usuario es redirigido a la app
-        cy.wrap(navCtrlMock.navigateRoot).should(
-          'have.been.calledOnceWith',
-          '/tabs/home'
-        );
+      cy.wrap(authServiceMock.registerBackend).should(
+        'have.been.calledOnceWithMatch',
+        { userName: 'TestUser', role: 'USER' }
+      );
+      cy.wrap(toastCtrlMock.create).should('have.been.calledWithMatch', {
+        message: 'Registration successful!',
+        color: 'success',
       });
+      cy.wrap(navCtrlMock.navigateRoot).should(
+        'have.been.calledOnceWith',
+        '/tabs/players'
+      );
     });
   });
 
   describe('4. Flujo Asíncrono: Manejo de Errores (Backend / Firebase)', () => {
     beforeEach(() => mountComponent());
 
-    it('debe capturar el error, detener el spinner y mostrar un Toast de error', () => {
-      // Simulamos que el backend rechaza el registro (ej. Email ya existe)
-      authServiceMock.register = cy
+    it('debe capturar el error y mostrar un Toast de error', () => {
+      authServiceMock.registerFirebase = cy
         .stub()
-        .returns(throwError(() => new Error('Email already in use')));
-
-      // Espiamos la consola para asegurar que el catch block lo procesa
+        .rejects(new Error('Email already in use'));
       cy.spy(console, 'error').as('consoleError');
 
-      // Llenamos el form
-      cy.get('ion-input[formControlName="username"]').type('Hacker');
-      cy.get('ion-input[formControlName="email"]').type(
+      typeInIonInput('ion-input[formControlName="userName"]', 'Hacker');
+      typeInIonInput(
+        'ion-input[formControlName="email"]',
         'hacker@draftkings.com'
       );
-      cy.get('ion-input[formControlName="password"]').type('Pass123!');
-      cy.get('ion-input[formControlName="confirmPassword"]').type('Pass123!');
-
-      cy.get('ion-button[type="submit"]').click();
-
-      // Verificaciones
-      cy.get('@consoleError').should('have.been.called');
-
-      cy.get('@componentInstance').its('isLoading').should('equal', false);
-
-      cy.wrap(toastCtrlMock.create).should(
-        'have.been.calledOnceWith',
-        Cypress.sinon.match({
-          message: 'Email already in use',
-          color: 'danger',
-        })
+      typeInIonInput('ion-input[formControlName="password"]', 'Pass1234!');
+      typeInIonInput(
+        'ion-input[formControlName="confirmPassword"]',
+        'Pass1234!'
       );
 
-      // NO debe navegar a la app
+      cy.get('form#signUpFormId').submit();
+
+      cy.get('@consoleError').should('have.been.called');
+      cy.wrap(authServiceMock.deleteCurrentUser).should('have.been.calledOnce');
+      cy.wrap(toastCtrlMock.create).should('have.been.calledWithMatch', {
+        message: 'Registration error. Please try again.',
+        color: 'danger',
+      });
       cy.wrap(navCtrlMock.navigateRoot).should('not.have.been.called');
     });
   });
@@ -211,29 +204,24 @@ describe('SignUpPage Component', () => {
   describe('5. Navegación Secundaria e Interacciones Menores', () => {
     beforeEach(() => mountComponent());
 
-    it('debe navegar a la pantalla de Login al hacer clic en "Ya tengo una cuenta"', () => {
-      cy.get('.login-link').click(); // Asumiendo que tienes un link para ir atrás
-      cy.wrap(navCtrlMock.navigateBack).should(
+    it('debe navegar a la pantalla de Login al hacer clic en Log In', () => {
+      cy.get('.signup-link').click();
+      cy.wrap(navCtrlMock.navigateRoot).should(
         'have.been.calledOnceWith',
         '/login'
       );
     });
 
     it('debe alternar la visibilidad de la contraseña al hacer clic en el ícono del ojo', () => {
-      // Asumiendo que usas el componente nativo type="password" y un botón de toggle
-      cy.get('ion-input[formControlName="password"]').should(
-        'have.attr',
-        'type',
-        'password'
-      );
-
-      cy.get('.toggle-password-btn').first().click(); // Haces click al ojo
-
-      cy.get('ion-input[formControlName="password"]').should(
-        'have.attr',
-        'type',
-        'text'
-      );
+      cy.get('ion-input[formControlName="password"]')
+        .shadow()
+        .find('input')
+        .should('have.attr', 'type', 'password');
+      cy.get('.password-toggle').first().click();
+      cy.get('ion-input[formControlName="password"]')
+        .shadow()
+        .find('input')
+        .should('have.attr', 'type', 'text');
     });
   });
 });

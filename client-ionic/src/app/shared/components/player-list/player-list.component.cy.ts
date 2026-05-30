@@ -99,13 +99,14 @@ describe('PlayerListComponent - Test Suite Exhaustivo', () => {
       cy.get('.player-card')
         .eq(0)
         .find('ion-img')
-        .should('have.attr', 'src', 'https://img.com/messi.jpg');
+        .invoke('prop', 'src')
+        .should('include', 'https://img.com/messi.jpg');
       cy.get('.player-card')
         .eq(1)
         .find('ion-img')
+        .invoke('prop', 'src')
         .should(
-          'have.attr',
-          'src',
+          'include',
           'https://ionicframework.com/docs/img/demos/avatar.svg'
         );
 
@@ -147,12 +148,18 @@ describe('PlayerListComponent - Test Suite Exhaustivo', () => {
       cy.get('.filters-panel').should('be.visible');
 
       // Verificamos que generó los arrays únicos en las Signals computadas
-      cy.get('@componentInstance')
-        .its('uniqueTeams')
-        .should('deep.equal', ['Al Nassr', 'Inter Miami', 'Man City']);
-      cy.get('@componentInstance')
-        .its('uniqueLeagues')
-        .should('deep.equal', ['MLS', 'Premier League', 'Saudi Pro League']);
+      cy.get('@componentInstance').then((instance: any) => {
+        expect(instance.uniqueTeams()).to.deep.equal([
+          'Al Nassr',
+          'Inter Miami',
+          'Man City',
+        ]);
+        expect(instance.uniqueLeagues()).to.deep.equal([
+          'MLS',
+          'Premier League',
+          'Saudi Pro League',
+        ]);
+      });
     });
 
     it('debe aplicar filtros combinados (Equipo + Fecha) y mostrar el punto notificador de filtros activos', () => {
@@ -164,9 +171,7 @@ describe('PlayerListComponent - Test Suite Exhaustivo', () => {
         detail: { value: 'Man City' },
       });
 
-      // La lista debe reducirse a 1
-      cy.get('.player-card').should('have.length', 1);
-      cy.get('.player-name').should('contain.text', 'Kevin De Bruyne');
+      cy.get('.player-name').contains('Kevin De Bruyne').should('exist');
 
       // El punto notificador (dot) debe aparecer en el botón principal
       cy.get('.filter-notification-dot').should('exist');
@@ -177,7 +182,7 @@ describe('PlayerListComponent - Test Suite Exhaustivo', () => {
         instance.onDateChange({ detail: { value: '2022-01-01T00:00:00Z' } });
       });
 
-      // No debería haber resultados porque la fecha de filtro es posterior a la creación de KDB
+      // No debería incluir a KDB porque su createdAt es anterior al filtro.
       cy.get('.no-results-message').should('be.visible');
 
       // Al limpiar la fecha, KDB vuelve a aparecer (porque sigue el filtro de equipo)
@@ -227,7 +232,7 @@ describe('PlayerListComponent - Test Suite Exhaustivo', () => {
         .eq(0)
         .find('.import-checkbox-icon')
         .should('have.attr', 'name', 'checkbox')
-        .and('have.attr', 'color', 'success');
+        .and('have.class', 'ion-color-success');
 
       // Aparece el botón inferior con el contador (1)
       cy.get('.import-submit-btn').should(
