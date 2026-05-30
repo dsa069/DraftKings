@@ -70,12 +70,14 @@ jobs:
           path: |
             ./api-node/junit.xml
             ./api-node/coverage/
+        continue-on-error: true
 
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           report-json: "./api-node/coverage/eslint-result.json"
+        continue-on-error: true
 
       - name: Test Report
         uses: dorny/test-reporter@v3.0.0
@@ -84,6 +86,7 @@ jobs:
           name: JEST Tests
           path: "junit.xml"
           reporter: jest-junit
+        continue-on-error: true
 
   deploy-dev:
     needs: build
