@@ -1,9 +1,56 @@
-<app-header></app-header>
+<app-header-submenu
+  title="Player Detail"
+  href="/tabs/players"
+></app-header-submenu>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">create-players-news</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="bg-content">
+  <ion-card class="news-content">
+    <ion-grid class="news-container ion-no-padding">
+      <ion-row>
+        <ion-text class="headline">
+          Haaland's Ankle Injury: Impact on Upcoming Derby and Fantasy Values
+        </ion-text>
+      </ion-row>
+      <ion-row class="metadata-row">
+        <ion-text class="meta-item">
+          <ion-icon name="calendar-outline"></ion-icon>
+          Oct 24, 2023
+        </ion-text>
+
+        <ion-text class="dot-separator"></ion-text>
+
+        <ion-text class="interest-badge">
+          <ion-text class="warning-dot"></ion-text>
+          High Interest
+        </ion-text>
+
+        <ion-text class="dot-separator"></ion-text>
+
+        <ion-text class="meta-item">
+          <ion-icon name="person-outline"></ion-icon>
+          Related to: Erling Haaland
+        </ion-text>
+      </ion-row>
+
+      <ion-row class="tags-row">
+        <ion-badge class="tag-badge">INJURY UPDATE</ion-badge>
+        <ion-badge class="tag-badge">PREMIER LEAGUE</ion-badge>
+        <ion-badge class="tag-badge">FANTASY IMPACT</ion-badge>
+      </ion-row>
+    </ion-grid>
+
+    <ion-row class="custom-divider"></ion-row>
+
+    <ion-grid class="content-container ion-no-padding">
+      <ion-row>
+        <ion-text class="article-content">
+          In a stunning turn of events during Tuesday's training session, star
+          striker Erling Haaland pulled up with an apparent ankle issue, casting
+          serious doubt on his availability for the highly anticipated
+          Manchester Derby this weekend. Team medical staff rushed to the pitch,
+          and he was seen leaving the facility shortly after.
+        </ion-text>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
 </ion-content>
