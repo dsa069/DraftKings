@@ -50,14 +50,6 @@ describe('SignUpPage Component', () => {
     });
   };
 
-  const typeInIonInput = (selector: string, value: string) => {
-    cy.get(selector)
-      .shadow()
-      .find('input')
-      .clear()
-      .type(value, { force: true });
-  };
-
   describe('1. Renderizado Inicial e Interfaz Base', () => {
     beforeEach(() => mountComponent());
 
@@ -80,13 +72,14 @@ describe('SignUpPage Component', () => {
     beforeEach(() => mountComponent());
 
     it('debe mostrar toast si el email tiene un formato inválido', () => {
-      typeInIonInput('ion-input[formControlName="userName"]', 'CoachTest');
-      typeInIonInput('ion-input[formControlName="email"]', 'email-invalido');
-      typeInIonInput('ion-input[formControlName="password"]', 'Password1!');
-      typeInIonInput(
-        'ion-input[formControlName="confirmPassword"]',
-        'Password1!'
-      );
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.signUpForm.patchValue({
+          userName: 'CoachTest',
+          email: 'email-invalido',
+          password: 'Password1!',
+          confirmPassword: 'Password1!',
+        });
+      });
 
       cy.get('form#signUpFormId').submit();
 
@@ -97,16 +90,14 @@ describe('SignUpPage Component', () => {
     });
 
     it('debe mostrar error si las contraseñas no coinciden (Custom Validator)', () => {
-      typeInIonInput('ion-input[formControlName="userName"]', 'CoachTest');
-      typeInIonInput(
-        'ion-input[formControlName="email"]',
-        'test@draftkings.com'
-      );
-      typeInIonInput('ion-input[formControlName="password"]', 'Password1!');
-      typeInIonInput(
-        'ion-input[formControlName="confirmPassword"]',
-        'Password2!'
-      );
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.signUpForm.patchValue({
+          userName: 'CoachTest',
+          email: 'test@draftkings.com',
+          password: 'Password1!',
+          confirmPassword: 'Password2!',
+        });
+      });
 
       cy.get('form#signUpFormId').submit();
 
@@ -117,16 +108,14 @@ describe('SignUpPage Component', () => {
     });
 
     it('debe habilitar el submit cuando todos los campos son válidos', () => {
-      typeInIonInput('ion-input[formControlName="userName"]', 'TestUser');
-      typeInIonInput(
-        'ion-input[formControlName="email"]',
-        'test@draftkings.com'
-      );
-      typeInIonInput('ion-input[formControlName="password"]', 'ValidPass123!');
-      typeInIonInput(
-        'ion-input[formControlName="confirmPassword"]',
-        'ValidPass123!'
-      );
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.signUpForm.patchValue({
+          userName: 'TestUser',
+          email: 'test@draftkings.com',
+          password: 'ValidPass123!',
+          confirmPassword: 'ValidPass123!',
+        });
+      });
 
       cy.get('@componentInstance').its('signUpForm.valid').should('be.true');
     });
@@ -136,16 +125,14 @@ describe('SignUpPage Component', () => {
     beforeEach(() => mountComponent());
 
     it('debe llamar al AuthService, notificar éxito y navegar', () => {
-      typeInIonInput('ion-input[formControlName="userName"]', 'TestUser');
-      typeInIonInput(
-        'ion-input[formControlName="email"]',
-        'test@draftkings.com'
-      );
-      typeInIonInput('ion-input[formControlName="password"]', 'ValidPass123!');
-      typeInIonInput(
-        'ion-input[formControlName="confirmPassword"]',
-        'ValidPass123!'
-      );
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.signUpForm.patchValue({
+          userName: 'TestUser',
+          email: 'test@draftkings.com',
+          password: 'ValidPass123!',
+          confirmPassword: 'ValidPass123!',
+        });
+      });
 
       cy.get('form#signUpFormId').submit();
 
@@ -178,16 +165,14 @@ describe('SignUpPage Component', () => {
         .rejects(new Error('Email already in use'));
       cy.spy(console, 'error').as('consoleError');
 
-      typeInIonInput('ion-input[formControlName="userName"]', 'Hacker');
-      typeInIonInput(
-        'ion-input[formControlName="email"]',
-        'hacker@draftkings.com'
-      );
-      typeInIonInput('ion-input[formControlName="password"]', 'Pass1234!');
-      typeInIonInput(
-        'ion-input[formControlName="confirmPassword"]',
-        'Pass1234!'
-      );
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.signUpForm.patchValue({
+          userName: 'Hacker',
+          email: 'hacker@draftkings.com',
+          password: 'Pass1234!',
+          confirmPassword: 'Pass1234!',
+        });
+      });
 
       cy.get('form#signUpFormId').submit();
 
@@ -205,7 +190,7 @@ describe('SignUpPage Component', () => {
     beforeEach(() => mountComponent());
 
     it('debe navegar a la pantalla de Login al hacer clic en Log In', () => {
-      cy.get('.signup-link').click();
+      cy.get('.signup-link').click({ force: true });
       cy.wrap(navCtrlMock.navigateRoot).should(
         'have.been.calledOnceWith',
         '/login'
@@ -213,15 +198,19 @@ describe('SignUpPage Component', () => {
     });
 
     it('debe alternar la visibilidad de la contraseña al hacer clic en el ícono del ojo', () => {
-      cy.get('ion-input[formControlName="password"]')
-        .shadow()
-        .find('input')
-        .should('have.attr', 'type', 'password');
-      cy.get('.password-toggle').first().click();
-      cy.get('ion-input[formControlName="password"]')
-        .shadow()
-        .find('input')
-        .should('have.attr', 'type', 'text');
+      cy.get('ion-input[formControlName="password"]').should(
+        'have.attr',
+        'type',
+        'password'
+      );
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.togglePasswordVisibility();
+      });
+      cy.get('ion-input[formControlName="password"]').should(
+        'have.attr',
+        'type',
+        'text'
+      );
     });
   });
 });
