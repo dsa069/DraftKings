@@ -40,7 +40,6 @@ import {
   peopleOutline,
 } from 'ionicons/icons';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
-import { ConfigService, BackendType } from '../../core/services/config.service';
 import { AuthService } from '../../core/services/abstract/auth.service';
 
 @Component({
@@ -71,7 +70,6 @@ import { AuthService } from '../../core/services/abstract/auth.service';
 export class SignUpPage implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly navCtrl = inject(NavController);
-  private readonly configService = inject(ConfigService);
   private readonly authService = inject(AuthService);
   private readonly toastCtrl = inject(ToastController);
   passwordMatchValidator: ValidatorFn = (
@@ -85,7 +83,6 @@ export class SignUpPage implements OnInit {
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
   signUpForm!: FormGroup;
-  selectedBackend: BackendType = this.configService.selectedBackend();
 
   constructor() {
     addIcons({
@@ -148,34 +145,13 @@ export class SignUpPage implements OnInit {
     const { email, password, userName, role } = this.signUpForm.value;
 
     try {
-      // 1. Bloqueamos al centinela temporalmente para que no interfiera en caliente
-      localStorage.setItem('bypass_centinela', 'true');
-
       // 2. Registro en Firebase (Paso común)
       await this.authService.registerFirebase(email, password);
-
-      // 3. ¿Hay cambio de backend?
-      if (this.selectedBackend !== this.configService.selectedBackend()) {
-        // Preparamos las banderas EXCLUSIVAS para el post-reload
-        localStorage.setItem(
-          'pending_sync_data',
-          JSON.stringify({ userName, role })
-        );
-        localStorage.setItem('execute_sync_on_reload', 'true');
-
-        // Liberamos el bypass para que el centinela despierte al recargar
-        localStorage.removeItem('bypass_centinela');
-
-        // Provoca el window.location.reload()
-        this.configService.applyBackendChange(this.selectedBackend);
-        return;
-      }
 
       // 4. Si es el mismo backend (Sin reload)
       await this.authService.registerBackend({ userName, role });
 
       // Limpieza total y navegación
-      localStorage.removeItem('bypass_centinela');
       this.showToast('Registration successful!', 'success');
       this.navCtrl.navigateRoot('/tabs/players');
     } catch (error) {
@@ -183,10 +159,6 @@ export class SignUpPage implements OnInit {
       console.error('❌ Error en el registro, iniciando ROLLBACK:', error);
       await this.authService.deleteCurrentUser();
       this.showToast('Registration error. Please try again.');
-      localStorage.removeItem('bypass_centinela');
-      localStorage.removeItem('pending_sync_data');
-      localStorage.removeItem('execute_sync_on_reload');
-      console.error('Error en el registro:', error);
     }
   }
 
