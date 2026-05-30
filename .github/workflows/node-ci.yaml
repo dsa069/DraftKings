@@ -51,8 +51,8 @@ jobs:
           NODE_ENV_DEV: ${{ secrets.NODE_ENV_DEV }}
         run: |
           mkdir -p enviroments
-          clean_env="$(printf '%s' "$NODE_ENV_DEV" | sed "s/^'//; s/'$//")"
-          printf '%s' "$clean_env" > enviroments/env
+          # Simplemente volcamos el contenido tal cual al archivo
+          echo "$NODE_ENV_DEV" > enviroments/env
 
       - name: Test
         uses: mattallty/jest-github-action@v1.0.3
