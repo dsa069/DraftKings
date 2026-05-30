@@ -1,9 +1,126 @@
-<app-header></app-header>
+<app-header-submenu
+  title="Write News"
+  href="/tabs/players"
+></app-header-submenu>
+<ion-content class="page-content">
+  <ion-grid class="main-canvas">
+    <ion-row>
+      <ion-col class="header-col">
+        <ion-text>
+          <h1 class="header-title">Create News</h1>
+        </ion-text>
+        <ion-text>
+          <p class="header-subtitle">
+            Log a new event or intel update for your squad.
+          </p>
+        </ion-text>
+      </ion-col>
+    </ion-row>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">new-players-news</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <ion-row>
+      <ion-col>
+        <form>
+          <ion-card class="form-card">
+            <ion-card-content class="form-content">
+              <ion-item lines="none" class="input-field-wrapper">
+                <ion-label position="stacked" class="field-label"
+                  >DATE</ion-label
+                >
+                <ion-input
+                  type="date"
+                  value="2023-10-27"
+                  class="field-input"
+                ></ion-input>
+              </ion-item>
+
+              <ion-item lines="none" class="input-field-wrapper">
+                <ion-label position="stacked" class="field-label"
+                  >IMPACT LEVEL</ion-label
+                >
+                <ion-segment value="Medium" class="custom-segment">
+                  <ion-segment-button value="Low">
+                    <ion-label>LOW</ion-label>
+                  </ion-segment-button>
+                  <ion-segment-button value="Medium">
+                    <ion-label>MEDIUM</ion-label>
+                  </ion-segment-button>
+                  <ion-segment-button value="High">
+                    <ion-label>HIGH</ion-label>
+                  </ion-segment-button>
+                </ion-segment>
+              </ion-item>
+
+              <ion-item lines="none" class="input-field-wrapper">
+                <ion-label position="stacked" class="field-label"
+                  >LINKED PLAYER</ion-label
+                >
+                <ion-item class="player-card" lines="none">
+                  <ion-avatar slot="start" class="player-avatar">
+                    <img
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuACKn5FSIre9DHrwQQuHyTWzGDup9wuOuLhNz2hSSVO4KE_ZnnC2GcjtKTTdz4fZkxo68s_PaXZcZ9jJv77ia6kvNW65wQ8fAkxr6YgAgV7Wf7o1w71GnwUabcb8F265ABpT6CpNcyK1w-TlSHwVrYoKDexLD7tpGzyKuJO4t0Is0-_kwMJnL8ytFaZVtgk2-76AohIKGrlJbmvdicEal8Zwyw2BOejVohJgu3PaAKGpNv73Kl7TGghNScb_gt1r9JDyS1EaetlVK8"
+                      alt="Erling Haaland"
+                    />
+                  </ion-avatar>
+                  <ion-label>
+                    <h2>Erling Haaland</h2>
+                    <p>FWD • MCI</p>
+                  </ion-label>
+                  <ion-button fill="clear" slot="end" class="player-close-btn">
+                    <ion-icon name="close"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </ion-item>
+
+              <ion-item lines="none" class="input-field-wrapper">
+                <ion-label position="stacked" class="field-label"
+                  >HEADLINE</ion-label
+                >
+                <ion-input
+                  type="text"
+                  placeholder="e.g. Minor ankle tweak in training"
+                  class="field-input"
+                ></ion-input>
+              </ion-item>
+
+              <ion-item lines="none" class="input-field-wrapper">
+                <ion-label position="stacked" class="field-label"
+                  >DETAILS</ion-label
+                >
+                <ion-textarea
+                  placeholder="Add full context, source links, or tactical implications..."
+                  rows="4"
+                  class="field-textarea"
+                ></ion-textarea>
+              </ion-item>
+
+              <ion-item lines="none" class="input-field-wrapper">
+                <ion-label position="stacked" class="field-label"
+                  >TAGS</ion-label
+                >
+                <div class="tags-container">
+                  <ion-chip class="custom-chip">
+                    <ion-label>Injury</ion-label>
+                    <ion-icon name="close"></ion-icon>
+                  </ion-chip>
+                  <ion-chip class="custom-chip">
+                    <ion-label>Training</ion-label>
+                    <ion-icon name="close"></ion-icon>
+                  </ion-chip>
+                  <ion-input
+                    placeholder="Add tag..."
+                    class="tag-input"
+                  ></ion-input>
+                </div>
+              </ion-item>
+
+              <ion-button type="submit" expand="block" class="submit-btn">
+                <ion-icon name="send" slot="start"></ion-icon>
+                <ion-label>PUBLISH NEWS</ion-label>
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
+        </form>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
