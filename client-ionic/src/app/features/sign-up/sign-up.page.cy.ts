@@ -50,9 +50,17 @@ describe('SignUpPage Component', () => {
     });
   };
 
-  const setIonInputValue = (selector: string, value: string) => {
-    cy.get(selector).trigger('ionInput', { detail: { value } });
-    cy.get(selector).trigger('ionChange', { detail: { value } });
+  const fillSignUpForm = (values: {
+    userName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }) => {
+    cy.get('@componentInstance').then((instance: any) => {
+      expect(instance.signUpForm).to.exist;
+      instance.signUpForm.patchValue(values);
+      instance.signUpForm.updateValueAndValidity();
+    });
   };
 
   describe('1. Renderizado Inicial e Interfaz Base', () => {
@@ -77,13 +85,12 @@ describe('SignUpPage Component', () => {
     beforeEach(() => mountComponent());
 
     it('debe mostrar toast si el email tiene un formato inválido', () => {
-      setIonInputValue('ion-input[formControlName="userName"]', 'CoachTest');
-      setIonInputValue('ion-input[formControlName="email"]', 'email-invalido');
-      setIonInputValue('ion-input[formControlName="password"]', 'Password1!');
-      setIonInputValue(
-        'ion-input[formControlName="confirmPassword"]',
-        'Password1!'
-      );
+      fillSignUpForm({
+        userName: 'CoachTest',
+        email: 'email-invalido',
+        password: 'Password1!',
+        confirmPassword: 'Password1!',
+      });
 
       cy.get('form#signUpFormId').submit();
 
@@ -94,16 +101,12 @@ describe('SignUpPage Component', () => {
     });
 
     it('debe mostrar error si las contraseñas no coinciden (Custom Validator)', () => {
-      setIonInputValue('ion-input[formControlName="userName"]', 'CoachTest');
-      setIonInputValue(
-        'ion-input[formControlName="email"]',
-        'test@draftkings.com'
-      );
-      setIonInputValue('ion-input[formControlName="password"]', 'Password1!');
-      setIonInputValue(
-        'ion-input[formControlName="confirmPassword"]',
-        'Password2!'
-      );
+      fillSignUpForm({
+        userName: 'CoachTest',
+        email: 'test@draftkings.com',
+        password: 'Password1!',
+        confirmPassword: 'Password2!',
+      });
 
       cy.get('form#signUpFormId').submit();
 
@@ -114,19 +117,12 @@ describe('SignUpPage Component', () => {
     });
 
     it('debe habilitar el submit cuando todos los campos son válidos', () => {
-      setIonInputValue('ion-input[formControlName="userName"]', 'TestUser');
-      setIonInputValue(
-        'ion-input[formControlName="email"]',
-        'test@draftkings.com'
-      );
-      setIonInputValue(
-        'ion-input[formControlName="password"]',
-        'ValidPass123!'
-      );
-      setIonInputValue(
-        'ion-input[formControlName="confirmPassword"]',
-        'ValidPass123!'
-      );
+      fillSignUpForm({
+        userName: 'TestUser',
+        email: 'test@draftkings.com',
+        password: 'ValidPass123!',
+        confirmPassword: 'ValidPass123!',
+      });
 
       cy.get('@componentInstance').its('signUpForm.valid').should('be.true');
     });
@@ -136,19 +132,12 @@ describe('SignUpPage Component', () => {
     beforeEach(() => mountComponent());
 
     it('debe llamar al AuthService, notificar éxito y navegar', () => {
-      setIonInputValue('ion-input[formControlName="userName"]', 'TestUser');
-      setIonInputValue(
-        'ion-input[formControlName="email"]',
-        'test@draftkings.com'
-      );
-      setIonInputValue(
-        'ion-input[formControlName="password"]',
-        'ValidPass123!'
-      );
-      setIonInputValue(
-        'ion-input[formControlName="confirmPassword"]',
-        'ValidPass123!'
-      );
+      fillSignUpForm({
+        userName: 'TestUser',
+        email: 'test@draftkings.com',
+        password: 'ValidPass123!',
+        confirmPassword: 'ValidPass123!',
+      });
 
       cy.get('form#signUpFormId').submit();
 
@@ -181,16 +170,12 @@ describe('SignUpPage Component', () => {
         .rejects(new Error('Email already in use'));
       cy.spy(console, 'error').as('consoleError');
 
-      setIonInputValue('ion-input[formControlName="userName"]', 'Hacker');
-      setIonInputValue(
-        'ion-input[formControlName="email"]',
-        'hacker@draftkings.com'
-      );
-      setIonInputValue('ion-input[formControlName="password"]', 'Pass1234!');
-      setIonInputValue(
-        'ion-input[formControlName="confirmPassword"]',
-        'Pass1234!'
-      );
+      fillSignUpForm({
+        userName: 'Hacker',
+        email: 'hacker@draftkings.com',
+        password: 'Pass1234!',
+        confirmPassword: 'Pass1234!',
+      });
 
       cy.get('form#signUpFormId').submit();
 

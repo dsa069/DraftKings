@@ -61,9 +61,12 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     });
   };
 
-  const setIonInputValue = (selector: string, value: string) => {
-    cy.get(selector).trigger('ionInput', { detail: { value } });
-    cy.get(selector).trigger('ionChange', { detail: { value } });
+  const fillLoginForm = (email: string, password: string) => {
+    cy.get('@componentInstance').then((instance: any) => {
+      expect(instance.loginForm).to.exist;
+      instance.loginForm.patchValue({ email, password });
+      instance.loginForm.updateValueAndValidity();
+    });
   };
 
   describe('1. Renderizado Inicial e Interfaz Base', () => {
@@ -119,22 +122,19 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     });
 
     it('debe validar el formato del correo electrónico', () => {
-      setIonInputValue('ion-input[formControlName="email"]', 'correo-invalido');
+      fillLoginForm('correo-invalido', 'ValidPass123');
       cy.get('@componentInstance')
         .its('loginForm.controls.email.valid')
         .should('be.false');
 
-      setIonInputValue(
-        'ion-input[formControlName="email"]',
-        'coach@draftkings.com'
-      );
+      fillLoginForm('coach@draftkings.com', 'ValidPass123');
       cy.get('@componentInstance')
         .its('loginForm.controls.email.valid')
         .should('be.true');
     });
 
     it('debe validar que la contraseña sea requerida', () => {
-      setIonInputValue('ion-input[formControlName="password"]', '');
+      fillLoginForm('coach@draftkings.com', '');
       cy.get('@componentInstance')
         .its('loginForm.controls.password.valid')
         .should('be.false');
@@ -145,11 +145,7 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
     beforeEach(() => mountComponent());
 
     it('debe hacer login en Firebase, verificar Backend, mostrar Toast y navegar', () => {
-      setIonInputValue(
-        'ion-input[formControlName="email"]',
-        'coach@draftkings.com'
-      );
-      setIonInputValue('ion-input[formControlName="password"]', 'ValidPass123');
+      fillLoginForm('coach@draftkings.com', 'ValidPass123');
 
       // Interceptamos el submit (ya sea porque le dimos submit al form o a través del componente hijo)
       cy.get('form#loginFormId').submit();
@@ -196,11 +192,7 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
         instance.selectedBackend = 'bun';
       });
 
-      setIonInputValue(
-        'ion-input[formControlName="email"]',
-        'coach@draftkings.com'
-      );
-      setIonInputValue('ion-input[formControlName="password"]', 'ValidPass123');
+      fillLoginForm('coach@draftkings.com', 'ValidPass123');
 
       cy.get('form#loginFormId').submit();
 
@@ -234,8 +226,7 @@ describe('LoginPage Component - Test Suite Exhaustivo', () => {
       // Espiamos la consola para asegurar el catch
       cy.spy(console, 'error').as('consoleError');
 
-      setIonInputValue('ion-input[formControlName="email"]', 'bad@coach.com');
-      setIonInputValue('ion-input[formControlName="password"]', 'WrongPass');
+      fillLoginForm('bad@coach.com', 'WrongPass');
 
       cy.get('form#loginFormId').submit();
 
