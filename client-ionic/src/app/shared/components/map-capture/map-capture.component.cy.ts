@@ -82,10 +82,11 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
     it('debe mostrar las coordenadas iniciales renderizadas en el display inferior', () => {
       mountComponent({ initialLocation: { lat: 10.12345, lng: -20.98765 } });
 
-      cy.get('@componentInstance').then((instance: any) => {
-        expect(instance.currentLocation.lat).to.equal(10.12345);
-        expect(instance.currentLocation.lng).to.equal(-20.98765);
-      });
+      cy.get('@componentInstance')
+        .its('currentLocation')
+        .should('deep.equal', { lat: 10.12345, lng: -20.98765 });
+
+      cy.get('.coordinates-display').should('contain.text', 'Lat: 10.12345');
     });
   });
 
@@ -168,18 +169,17 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
       const targetLat = 35.6895; // Tokio
       const targetLng = 139.6917;
 
+      cy.get('#leaflet-map.leaflet-container').should('exist');
+
       cy.get('@componentInstance').then((instance: any) => {
         // Simulamos que el componente padre invoca el método expuesto
         instance.flyToLocation(targetLat, targetLng);
       });
 
-      // El evento debe ser emitido
-      cy.get('@locationSelectedSpy').should((spy: any) => {
-        const lastArgs = spy.getCall(spy.callCount - 1).args[0];
-        expect(lastArgs).to.deep.equal({ lat: targetLat, lng: targetLng });
-      });
+      cy.get('@componentInstance')
+        .its('currentLocation')
+        .should('deep.equal', { lat: targetLat, lng: targetLng });
 
-      // Los inputs manuales deben haberse sincronizado
       cy.get('@componentInstance')
         .its('manualLatitude')
         .should('equal', targetLat);

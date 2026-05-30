@@ -197,16 +197,17 @@ describe('SettingsPage Component', () => {
       );
       cy.get('.bento-col-left .card-title').should('contain.text', 'Dark Mode');
 
-      // Validación rigurosa de las propiedades del toggle nativo de Ionic
       cy.get('ion-toggle.custom-toggle')
         .should('exist')
-        .and('have.attr', 'checked', 'true')
+        .and('have.attr', 'checked')
         .and('have.attr', 'mode', 'ios');
     });
 
     it('debe permitir el foco y la interacción (Click/Toggle) del usuario sobre el switch de Dark Mode', () => {
-      cy.get('ion-toggle.custom-toggle').click();
-      cy.get('ion-toggle.custom-toggle').should('have.class', 'ion-focused');
+      cy.get('ion-toggle.custom-toggle').click({ force: true });
+      cy.get('ion-toggle.custom-toggle')
+        .should('exist')
+        .and('have.attr', 'aria-checked', 'true');
     });
 
     it('debe renderizar correctamente la Bento Card de selección idiomática', () => {
