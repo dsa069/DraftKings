@@ -420,12 +420,89 @@
           class="comments-icon"
         ></ion-icon>
         <ion-text class="comments-title">Related News</ion-text>
-        <ion-badge slot="end" class="comments-count">0</ion-badge>
+        <ion-badge slot="end" class="comments-count">2</ion-badge>
       </ion-item>
 
       <ion-list slot="content" class="news-list">
-        <ion-item lines="none">
-          <ion-note>No news available for this player</ion-note>
+        <ion-item class="comment-form-item" lines="none">
+          <ion-grid class="ion-no-padding">
+            <ion-row>
+              <ion-col class="ion-no-padding">
+                <ion-button
+                  expand="block"
+                  class="add-news-btn"
+                  routerLink="/create-news"
+                  (click)="onCreateNews()"
+                >
+                  <ion-icon name="add" slot="start"></ion-icon>
+                  Create News
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item
+          class="news-item"
+          lines="full"
+          button="true"
+          (click)="onViewNews()"
+        >
+          <ion-label class="ion-text-wrap">
+            <ion-grid class="ion-no-padding">
+              <ion-row>
+                <ion-col class="ion-no-padding">
+                  <ion-text class="news-title"
+                    >Stunning Hat-Trick Secures Victory</ion-text
+                  >
+                  <ion-text class="news-date"
+                    >October 15, 2023 • Local Chronicle</ion-text
+                  >
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="ion-no-padding">
+                  <ion-text class="comment-text" style="margin-top: 8px">
+                    An incredible performance yesterday saw the player score
+                    three consecutive goals in the second half, securing a
+                    much-needed win for the team and solidifying his position as
+                    the top scorer of the league.
+                  </ion-text>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
+        </ion-item>
+
+        <ion-item
+          class="news-item"
+          lines="full"
+          button="true"
+          (click)="onViewNews()"
+        >
+          <ion-label class="ion-text-wrap">
+            <ion-grid class="ion-no-padding">
+              <ion-row>
+                <ion-col class="ion-no-padding">
+                  <ion-text class="news-title"
+                    >Contract Extension Confirmed</ion-text
+                  >
+                  <ion-text class="news-date"
+                    >September 02, 2023 • Daily Sports</ion-text
+                  >
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="ion-no-padding">
+                  <ion-text class="comment-text" style="margin-top: 8px">
+                    The club management has officially confirmed a two-year
+                    contract extension, putting to rest all rumors of a
+                    potential transfer during the upcoming winter window.
+                  </ion-text>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
         </ion-item>
       </ion-list>
     </ion-accordion>
