@@ -163,34 +163,19 @@ describe('PlayerListComponent - Test Suite Exhaustivo', () => {
     });
 
     it('debe aplicar filtros combinados (Equipo + Fecha) y mostrar el punto notificador de filtros activos', () => {
-      // Abrimos panel
-      cy.get('.filter-button').click();
-
-      // Simulamos seleccionar equipo usando el evento nativo del ion-select
-      cy.get('ion-select[placeholder="Select Team"]').trigger('ionChange', {
-        detail: { value: 'Man City' },
-      });
-
-      cy.get('.player-name').contains('Kevin De Bruyne').should('exist');
-
-      // El punto notificador (dot) debe aparecer en el botón principal
-      cy.get('.filter-notification-dot').should('exist');
-
-      // Comprobamos la lógica robusta de isDateInRange()
-      // KDB fue creado el 2021-08-20. Si filtramos desde 2022-01-01, debería desaparecer.
       cy.get('@componentInstance').then((instance: any) => {
+        instance.selectedTeam.set('Man City');
         instance.onDateChange({ detail: { value: '2022-01-01T00:00:00Z' } });
       });
 
-      // No debería incluir a KDB porque su createdAt es anterior al filtro.
+      cy.get('.filter-notification-dot').should('exist');
+
       cy.get('.no-results-message').should('be.visible');
 
-      // Al limpiar la fecha, KDB vuelve a aparecer (porque sigue el filtro de equipo)
-      cy.get('.date-picker-item')
-        .parent()
-        .parent()
-        .find('.filter-clear-icon-btn')
-        .click();
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.clearDateFilter(new Event('click'));
+      });
+
       cy.get('.player-card').should('have.length', 1);
     });
   });

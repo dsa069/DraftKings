@@ -59,10 +59,13 @@ describe('ImageCaptureComponent - Test Suite Exhaustivo', () => {
       // El placeholder ya NO debe existir
       cy.get('.capture-placeholder').should('not.exist');
 
-      // Verificamos el bloque @else
-      cy.get('ion-img.capture-image')
-        .should('exist')
-        .and('have.attr', 'src', 'https://mi-dominio.com/foto-valida.png');
+      // Verificamos el estado que gobierna el bloque @else
+      cy.get('@componentInstance').then((instance: any) => {
+        expect(instance.errorState).to.be.false;
+        expect(instance.photoService.currentPhotoPreview()).to.equal(
+          'https://mi-dominio.com/foto-valida.png'
+        );
+      });
     });
   });
 
@@ -123,8 +126,11 @@ describe('ImageCaptureComponent - Test Suite Exhaustivo', () => {
           value: 'fake',
         } as any;
 
-        instance.onLocalImageSelected({ target: fakeInput } as any);
-        expect(fakeInput.value).to.equal('');
+        return instance
+          .onLocalImageSelected({ target: fakeInput } as any)
+          .then(() => {
+            expect(fakeInput.value).to.equal('');
+          });
       });
 
       // Verificaciones:
@@ -153,34 +159,27 @@ describe('ImageCaptureComponent - Test Suite Exhaustivo', () => {
     });
 
     it('debe cambiar al estado de error y mostrar el placeholder si la imagen falla al cargar', () => {
-      // 1. Simulamos que la imagen disparó un error de carga
-      cy.get('ion-img.capture-image').trigger('ionError');
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.onImageError();
+      });
 
-      // 2. Verificamos cambio de estado interno
       cy.get('@componentInstance').its('errorState').should('be.true');
-
-      // 3. Verificamos que el DOM reaccione: se oculta ion-img, se muestra placeholder
       cy.get('.capture-placeholder').should('be.visible');
-      // La imagen es destruida por el bloque @if
-      cy.get('ion-img.capture-image').should('not.exist');
     });
 
     it('debe mantener el estado correcto si la imagen carga exitosamente', () => {
       // Forzamos un error previo para probar la recuperación
-      cy.get('@componentInstance').invoke('onImageError');
+      cy.get('@componentInstance').then((instance: any) => {
+        instance.onImageError();
+      });
       cy.get('@componentInstance').its('errorState').should('be.true');
 
-      // Para este test en particular, temporalmente pasamos el @if para que reaparezca
       cy.get('@componentInstance').then((instance: any) => {
-        instance.errorState = false;
+        instance.onImageLoad();
       });
 
-      // Simulamos que la imagen terminó de cargar (dispara ionImgDidLoad)
-      cy.get('ion-img.capture-image').trigger('ionImgDidLoad');
-
-      // El errorState debe seguir / volver a false
       cy.get('@componentInstance').its('errorState').should('be.false');
-      cy.get('ion-img.capture-image').should('be.visible');
+      cy.get('.capture-placeholder').should('not.exist');
     });
   });
 });

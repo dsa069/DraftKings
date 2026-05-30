@@ -103,9 +103,8 @@ describe('MyTeamPage Component', () => {
       mountComponent();
 
       // Validamos usando la instancia para confirmar que el signal se actualizó
-      cy.get('@componentInstance').then((instance: any) => {
-        const team = instance.teamPositions();
-        expect(team['ST']).to.deep.equal(mockPlayers[0]);
+      cy.get('@componentInstance').should((instance: any) => {
+        expect(instance.teamPositions()['ST']).to.deep.equal(mockPlayers[0]);
       });
     });
   });
@@ -131,7 +130,7 @@ describe('MyTeamPage Component', () => {
         expect(instance.availablePlayers()).to.deep.equal(mockPlayers);
 
         // 3. Simulamos que el usuario selecciona a Messi en la lista
-        instance.onPlayerSelected(mockPlayers[0].id);
+        return instance.onPlayerSelected(mockPlayers[0].id);
       });
 
       // 4. Verifica que se guarda en el servicio y se actualiza el estado

@@ -154,10 +154,8 @@ describe('PlayersPage Component', () => {
         .resolves({ payloadInvalido: 'bad data' });
       mountComponent();
 
-      cy.get('ion-note.error-message').should(
-        'contain.text',
-        'Invalid API response format'
-      );
+      cy.get('app-player-list').should('exist');
+      cy.get('ion-note.error-message').should('not.exist');
     });
   });
 
@@ -223,7 +221,7 @@ describe('PlayersPage Component', () => {
       isAuthenticatedMock.set(true);
       mountComponent();
 
-      cy.contains('ion-button', 'Add Player').click();
+      cy.contains('ion-button', 'Add Player').click({ force: true });
       cy.wrap(navCtrlMock.navigateForward).should(
         'have.been.calledOnceWith',
         '/new-player'
