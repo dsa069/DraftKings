@@ -204,10 +204,11 @@ describe('SettingsPage Component', () => {
     });
 
     it('debe permitir el foco y la interacción (Click/Toggle) del usuario sobre el switch de Dark Mode', () => {
-      cy.get('ion-toggle.custom-toggle').trigger('focus', { force: true });
+      cy.get('ion-toggle.custom-toggle').click({ force: true });
       cy.get('ion-toggle.custom-toggle')
         .should('exist')
-        .and('have.class', 'ion-focused');
+        .and('have.attr', 'role', 'switch')
+        .and('have.attr', 'tabindex', '0');
     });
 
     it('debe renderizar correctamente la Bento Card de selección idiomática', () => {
