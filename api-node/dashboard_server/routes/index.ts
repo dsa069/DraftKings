@@ -5,12 +5,11 @@ import { Request, Response } from "express";
 const router = Router();
 
 router.get("/", (req: Request, res: Response) => {
-  // Cogemos la variable de entorno
-  const mensajeParaFrontend = process.env.APP_MESSAGE;
+  // Si process.env.APP_MESSAGE no existe, usará el texto de respaldo
+  const mensajeParaFrontend = process.env.APP_MESSAGE || "Servidor API en ejecución correctamente";
 
-  // Se la pasamos a la vista Pug
   res.render("index", {
-    title: "Mi App",
+    title: "DraftKings Rest API",
     welcomeMessage: mensajeParaFrontend,
   });
 });

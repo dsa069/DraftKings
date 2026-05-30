@@ -17,7 +17,7 @@ dotenv.config({
 });
 import { setupSwagger } from "./draftKings_api/swagger.config";
 import indexRouter from "./dashboard_server/routes/index";
-import usersRouter from "./dashboard_server/routes/users";
+import statusRouter from "./dashboard_server/routes/status";
 import userApiRouter from "./draftKings_api/routes/userRoutes";
 import playerApiRouter from "./draftKings_api/routes/playerRoutes";
 import reviewApiRouter from "./draftKings_api/routes/reviewRoutes";
@@ -75,8 +75,8 @@ setupSwagger(app);
 
 // Rutas del Dashboard
 app.use("/", indexRouter);
+app.use("/status", statusRouter);
 // Rutas de usuarios del Dashboard SOLO VISTA (POSIBLE BORRARDA)(CRUD, etc.)
-app.use("/users", usersRouter);
 
 // Rutas de la API
 app.use("/api/user", userApiRouter);
