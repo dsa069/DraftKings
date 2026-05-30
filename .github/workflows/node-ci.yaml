@@ -51,7 +51,8 @@ jobs:
           NODE_ENV_DEV: ${{ secrets.NODE_ENV_DEV }}
         run: |
           mkdir -p enviroments
-          printf '%s' "$NODE_ENV_DEV" > enviroments/env
+          clean_env="$(printf '%s' "$NODE_ENV_DEV" | sed "s/^'//; s/'$//")"
+          printf '%s' "$clean_env" > enviroments/env
 
       - name: Test
         uses: mattallty/jest-github-action@v1.0.3
@@ -60,7 +61,6 @@ jobs:
         with:
           test-command: "npm run coverage"
           working-directory: "api-node"
-        continue-on-error: true
 
       - name: Upload Test Results and Coverage
         if: success() || failure()
@@ -70,14 +70,12 @@ jobs:
           path: |
             ./api-node/junit.xml
             ./api-node/coverage/
-        continue-on-error: true
 
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v4
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           report-json: "./api-node/coverage/eslint-result.json"
-        continue-on-error: true
 
       - name: Test Report
         uses: dorny/test-reporter@v3.0.0
@@ -86,7 +84,6 @@ jobs:
           name: JEST Tests
           path: "junit.xml"
           reporter: jest-junit
-        continue-on-error: true
 
   deploy-dev:
     needs: build
