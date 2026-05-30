@@ -15,11 +15,9 @@
     <app-login-card
       footerText="New to the game?"
       footerActionText="Create an account"
-      [selectedBackend]="selectedBackend"
       [submitText]="'Login'"
       [formId]="'loginFormId'"
       (footerActionClick)="gotoSignUp()"
-      (backendChange)="selectedBackend = $event"
     >
       <form
         (ngSubmit)="onLogin()"

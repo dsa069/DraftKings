@@ -1,8 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import {
   IonContent,
-  IonButton,
-  IonIcon,
   IonGrid,
   IonHeader,
   IonText,
@@ -15,6 +13,9 @@ import { NavController } from '@ionic/angular';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
 import { ConfigService, BackendType } from '../../core/services/config.service';
 
+// Asegúrate de usar la ruta correcta hacia el componente
+import { BackendToggleComponent } from '../../shared/components/backend-toggle/backend-toggle.component';
+
 @Component({
   selector: 'app-switch-back',
   templateUrl: './switch-back.page.html',
@@ -22,14 +23,13 @@ import { ConfigService, BackendType } from '../../core/services/config.service';
   standalone: true,
   imports: [
     IonContent,
-    IonButton,
-    IonIcon,
     IonGrid,
     IonHeader,
     IonText,
     IonButtons,
     IonBackButton,
     LoginCardComponent,
+    BackendToggleComponent,
   ],
 })
 export class SwitchBackPage implements OnInit {
@@ -47,6 +47,12 @@ export class SwitchBackPage implements OnInit {
 
   ngOnInit(): void {
     console.log('Backend actual:', this.selectedBackend);
+  }
+
+  // <-- Nuevo método para manejar el cambio
+  onBackendChange(backend: BackendType): void {
+    this.selectedBackend = backend;
+    // this.configService.setBackend(backend); // Opcional: si necesitas actualizar el servicio global
   }
 
   gotoSignUp(): void {

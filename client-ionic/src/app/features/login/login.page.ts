@@ -125,7 +125,7 @@ export class LoginPage implements OnInit {
   gotoSignUp(): void {
     const activeElement = document.activeElement as HTMLElement | null;
     activeElement?.blur();
-    this.navCtrl.navigateForward(['/sign-up']);
+    this.navCtrl.navigateForward(['/switch-back']);
   }
 
   goToPlayers(): void {
