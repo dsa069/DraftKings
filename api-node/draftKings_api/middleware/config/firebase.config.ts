@@ -1,10 +1,19 @@
 import * as admin from "firebase-admin";
 
-// Lee las credenciales de la variable de entorno (más seguro para producción)
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-  : undefined;
+let rawServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
 
+// Si la variable viene envuelta en comillas simples ('), se las quitamos.
+if (
+  rawServiceAccount &&
+  rawServiceAccount.startsWith("'") &&
+  rawServiceAccount.endsWith("'")
+) {
+  rawServiceAccount = rawServiceAccount.slice(1, -1);
+}
+
+const serviceAccount = rawServiceAccount
+  ? JSON.parse(rawServiceAccount)
+  : undefined;
 if (!serviceAccount) {
   console.error(
     "Credenciales de Firebase no encontradas. Asegúrate de definir la variable de entorno FIREBASE_SERVICE_ACCOUNT.",
