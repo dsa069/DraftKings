@@ -43,11 +43,9 @@
     <app-login-card
       footerText="Already on the roster?"
       footerActionText="Log In"
-      [selectedBackend]="selectedBackend"
       [submitText]="'Enter the Draft'"
       [formId]="'signUpFormId'"
       (footerActionClick)="gotoLogin()"
-      (backendChange)="selectedBackend = $event"
     >
       <form
         [formGroup]="signUpForm"

@@ -2,12 +2,6 @@
   <ion-card-content class="login-form-wrapper">
     <ng-content></ng-content>
 
-    <app-backend-toggle
-      [selectedBackend]="selectedBackend"
-      (selectionChange)="onBackendChange($event)"
-    >
-    </app-backend-toggle>
-
     <ion-button
       type="submit"
       [attr.form]="formId"

@@ -10,17 +10,20 @@
     <ion-header class="login-header ion-no-border">
       <ion-text class="login-title">DRAFTKINGS</ion-text>
       <ion-text class="login-subtitle ion-no-margin">
-        Enter the arena. Manage your squad.
+        Backend Switcher - Choose Your Arena
       </ion-text>
     </ion-header>
 
     <app-login-card
-      footerText="New to the game?"
-      footerActionText="Create an account"
-      [selectedBackend]="selectedBackend"
+      footerText="Ready to compete?"
+      footerActionText="The stage is set"
       (footerActionClick)="gotoSignUp()"
-      (backendChange)="selectedBackend = $event"
     >
+      <app-backend-toggle
+        [selectedBackend]="selectedBackend"
+        (selectionChange)="onBackendChange($event)"
+      >
+      </app-backend-toggle>
     </app-login-card>
   </ion-grid>
 </ion-content>
