@@ -40,11 +40,15 @@ export class PlayerDashboard {
   render() {
     // Escenario 1: Cargando expediente
     if (this.loadingDetail) {
-      return <div>Cargando expediente del jugador...</div>;
+      // Usamos la misma clase de loading estilizada
+      return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', color: '#64748b', fontWeight: '600' }}>
+          Cargando expediente del jugador...
+        </div>
+      );
     }
 
     // Escenario 2: Ya tenemos los datos del jugador individual descargados
-    // CAMBIA ESTA LÍNEA para pasar 'this.detailedPlayer.player' en lugar de 'this.detailedPlayer'
     if (this.selectedPlayerId && this.detailedPlayer) {
       return <player-detail player={this.detailedPlayer.player} onBackToList={() => this.handleBackToList()}></player-detail>;
     }
