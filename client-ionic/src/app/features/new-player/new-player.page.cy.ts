@@ -194,11 +194,12 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
         return instance.onSavePlayer();
       });
 
-      cy.wrap(playerServiceMock.updatePlayer).should(
-        'have.been.calledOnceWith',
-        Cypress.sinon.match((id: any) => Number(id) === 99),
-        Cypress.sinon.match({ number: 10 })
-      );
+      cy.wrap(playerServiceMock.updatePlayer).should((stub: any) => {
+        expect(stub).to.have.been.calledOnce;
+        const call = stub.getCall(0);
+        expect(Number(call.args[0])).to.equal(99);
+        expect(call.args[1]).to.include({ number: 10 });
+      });
       cy.wrap(playerServiceMock.createPlayer).should('not.have.been.called');
       cy.wrap(navCtrlMock.navigateForward).should(
         'have.been.calledWith',
