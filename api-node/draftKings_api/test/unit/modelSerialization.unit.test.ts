@@ -34,7 +34,7 @@ describe("Model serialization (Pruebas Unitarias)", () => {
       ...modelSerializationPlayerSeed,
     });
 
-    const json = player.toJSON() as Record<string, unknown>;
+    const json = player.toJSON() as unknown as Record<string, unknown>;
 
     expect(json.id).toBeDefined();
     expect(json.longitude).toBeCloseTo(12.34);
@@ -61,7 +61,7 @@ describe("Model serialization (Pruebas Unitarias)", () => {
       ...modelSerializationReviewSeed,
     });
 
-    const json = review.toJSON() as Record<string, unknown>;
+    const json = review.toJSON() as unknown as Record<string, unknown>;
 
     expect(json.id).toBeDefined();
     expect(String(json.user_id)).toBe(String(user._id));

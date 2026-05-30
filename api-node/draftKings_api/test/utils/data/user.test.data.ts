@@ -46,7 +46,7 @@ export const adminSyncUserBody = {
 
 export const blankSyncUserBody = {
   userName: "   ",
-  role: "SUPERADMIN",
+  role: "SUPERADMIN" as unknown as SyncUserRole,
 } satisfies SyncUserUpdateBody;
 
 export const updatedSyncUser = {

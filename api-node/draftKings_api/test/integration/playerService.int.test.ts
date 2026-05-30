@@ -84,7 +84,6 @@ describe("PlayerService (Pruebas de Integración con BD)", () => {
 
     it("Debería crear un jugador con todos los campos opcionales y convertir birthdate", async () => {
       const playerData = {
-        name: "Completo",
         ...completePlayerCreateServiceBody,
       };
 

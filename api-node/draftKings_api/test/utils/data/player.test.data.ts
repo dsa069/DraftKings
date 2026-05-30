@@ -164,7 +164,7 @@ export const playerExtendedUpdateBody = {
   nationality: "Old",
   height: 170,
   weight: 70,
-} satisfies PlayerCreateBody;
+} satisfies PlayerUpdateBody;
 
 export const playerSingleFieldUpdateBody = {
   age: 21,

@@ -47,14 +47,15 @@ describe("Model schemas (Pruebas Unitarias)", () => {
       });
 
       const json = player.toJSON();
+      const serialized = json as unknown as Record<string, unknown>;
 
-      expect(json.id).toEqual(player._id);
-      expect(json.longitude).toBe(2.12);
-      expect(json.latitude).toBe(41.38);
-      expect(json.birthdate).toBe("2007-07-13");
-      expect(json).not.toHaveProperty("_id");
-      expect(json).not.toHaveProperty("coords");
-      expect(json).not.toHaveProperty("__v");
+      expect(serialized.id).toEqual(player._id);
+      expect(serialized.longitude).toBe(2.12);
+      expect(serialized.latitude).toBe(41.38);
+      expect(serialized.birthdate).toBe("2007-07-13");
+      expect(serialized).not.toHaveProperty("_id");
+      expect(serialized).not.toHaveProperty("coords");
+      expect(serialized).not.toHaveProperty("__v");
     });
 
     it("Debería conservar birthdate nulo cuando no se informa", () => {
@@ -63,8 +64,9 @@ describe("Model schemas (Pruebas Unitarias)", () => {
       });
 
       const json = player.toJSON();
+      const serialized = json as unknown as Record<string, unknown>;
 
-      expect(json.birthdate).toBeNull();
+      expect(serialized.birthdate).toBeNull();
     });
 
     it("Debería omitir longitude y latitude si no hay coords", () => {
@@ -73,9 +75,10 @@ describe("Model schemas (Pruebas Unitarias)", () => {
       });
 
       const json = player.toJSON();
+      const serialized = json as unknown as Record<string, unknown>;
 
-      expect(json.longitude).toBeUndefined();
-      expect(json.latitude).toBeUndefined();
+      expect(serialized.longitude).toBeUndefined();
+      expect(serialized.latitude).toBeUndefined();
     });
   });
 
@@ -106,8 +109,6 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería rechazar un texto demasiado largo y una nota fuera de rango", () => {
       const review = new Review({
-        user: modelReviewUserId,
-        player: modelReviewPlayerId,
         ...modelReviewLongSeed,
       });
 
@@ -120,34 +121,32 @@ describe("Model schemas (Pruebas Unitarias)", () => {
 
     it("Debería transformar a JSON ocultando campos internos y aplanando coordenadas", () => {
       const review = new Review({
-        user: modelReviewUserId,
-        player: modelReviewPlayerId,
         ...modelReviewSeed,
       });
 
       const json = review.toJSON();
+      const serialized = json as unknown as Record<string, unknown>;
 
-      expect(json.id).toEqual(review._id);
-      expect(json.user_id).toEqual(modelReviewUserId);
-      expect(json.longitude).toBe(2.12);
-      expect(json.latitude).toBe(41.38);
-      expect(json).not.toHaveProperty("_id");
-      expect(json).not.toHaveProperty("coords");
-      expect(json).not.toHaveProperty("user");
-      expect(json).not.toHaveProperty("player");
+      expect(serialized.id).toEqual(review._id);
+      expect(serialized.user_id).toEqual(modelReviewUserId);
+      expect(serialized.longitude).toBe(2.12);
+      expect(serialized.latitude).toBe(41.38);
+      expect(serialized).not.toHaveProperty("_id");
+      expect(serialized).not.toHaveProperty("coords");
+      expect(serialized).not.toHaveProperty("user");
+      expect(serialized).not.toHaveProperty("player");
     });
 
     it("Debería omitir longitude y latitude si no hay coords", () => {
       const review = new Review({
-        user: modelReviewUserId,
-        player: modelReviewPlayerId,
         ...modelReviewWithoutCoordsSeed,
       });
 
       const json = review.toJSON();
+      const serialized = json as unknown as Record<string, unknown>;
 
-      expect(json.longitude).toBeUndefined();
-      expect(json.latitude).toBeUndefined();
+      expect(serialized.longitude).toBeUndefined();
+      expect(serialized.latitude).toBeUndefined();
     });
 
     it("Debería omitir longitude y latitude si coords no incluye coordinates", () => {
@@ -158,9 +157,10 @@ describe("Model schemas (Pruebas Unitarias)", () => {
       });
 
       const json = review.toJSON();
+      const serialized = json as unknown as Record<string, unknown>;
 
-      expect(json.longitude).toBeUndefined();
-      expect(json.latitude).toBeUndefined();
+      expect(serialized.longitude).toBeUndefined();
+      expect(serialized.latitude).toBeUndefined();
     });
   });
 
