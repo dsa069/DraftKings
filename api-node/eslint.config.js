@@ -8,7 +8,7 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ["**/*.ts"],
+    files: ["**/*.{js,ts}"],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "module",
