@@ -30,7 +30,6 @@ import {
 } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { LoginCardComponent } from '../../shared/components/login-card/login-card.component';
-import { ConfigService, BackendType } from '../../core/services/config.service';
 import { AuthService } from '../../core/services/abstract/auth.service';
 
 @Component({
@@ -57,12 +56,10 @@ import { AuthService } from '../../core/services/abstract/auth.service';
 export class LoginPage implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly navCtrl = inject(NavController);
-  private readonly configService = inject(ConfigService);
   private readonly authService = inject(AuthService);
   private readonly toastCtrl = inject(ToastController);
   loginForm!: FormGroup;
   showPassword: boolean = false;
-  selectedBackend: BackendType = this.configService.selectedBackend();
 
   constructor() {
     addIcons({
@@ -104,13 +101,6 @@ export class LoginPage implements OnInit {
     try {
       // Paso 1: Logueamos en Firebase (común a todos)
       await this.authService.loginFirebase(email!, password!);
-
-      // Paso 2: ¿Cambio de backend?
-      if (this.selectedBackend !== this.configService.selectedBackend()) {
-        // Si cambia, recargamos. El AppComponent terminará el trabajo al volver.
-        this.configService.applyBackendChange(this.selectedBackend);
-        return;
-      }
 
       // Paso 3: Si es el mismo backend, verificamos ya mismo
       await this.authService.verifyBackend();
