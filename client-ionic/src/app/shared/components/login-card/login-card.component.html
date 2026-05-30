@@ -2,6 +2,28 @@
   <ion-card-content class="login-form-wrapper">
     <ng-content></ng-content>
 
+    <ion-item
+      button
+      lines="none"
+      class="backend-switch-item"
+      (click)="goToSwitchBack()"
+    >
+      <ion-icon
+        slot="start"
+        name="server-outline"
+        class="backend-icon"
+      ></ion-icon>
+      <ion-label>
+        <ion-text class="backend-current">
+          Backend actual:
+          <ion-text class="backend-highlight">{{ currentBackend }}</ion-text>
+        </ion-text>
+        @if (showBackendHint) {
+        <ion-text class="backend-hint">¿Quieres cambiarlo? Pulsa aquí</ion-text>
+        }
+      </ion-label>
+    </ion-item>
+
     <ion-button
       type="submit"
       [attr.form]="formId"

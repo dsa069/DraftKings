@@ -177,3 +177,53 @@ ion-text.signup-text {
 ion-content {
   --background: var(--ion-color-surface);
 }
+
+/* --- NUEVOS ESTILOS PARA LA SECCIÓN DEL BACKEND --- */
+.backend-switch-item {
+  --background: var(--ion-color-surface-container-low);
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  border: 1px solid var(--ion-color-outline);
+  border-radius: var(--border-radius-lg);
+  transition: all 200ms ease-in-out;
+
+  /* Aplica el border-radius también a la parte nativa interactiva de Ionic */
+  &::part(native) {
+    border-radius: var(--border-radius-lg);
+  }
+
+  &:hover {
+    border-color: var(--ion-color-pitch-green);
+    --background: var(--ion-color-surface-container-high);
+  }
+
+  .backend-icon {
+    color: var(--ion-color-primary);
+    font-size: 24px;
+    margin-right: var(--spacing-gutter);
+  }
+
+  .backend-current {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-body-md);
+    font-weight: var(--font-weight-label-bold);
+    color: var(--ion-color-on-surface); /* Color gris/blanco base de tu app */
+    text-transform: uppercase;
+    display: block; /* Obliga a saltar a la siguiente línea */
+    margin-bottom: 2px;
+
+    /* Cambia de color únicamente el valor seleccionado */
+    .backend-highlight {
+      color: var(
+        --ion-color-primary
+      ); /* El verde brillante #4dfd85 de tus variables */
+    }
+  }
+
+  .backend-hint {
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-label-bold);
+    color: var(--ion-color-on-surface-variant);
+    display: block;
+  }
+}

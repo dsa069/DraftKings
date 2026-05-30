@@ -18,6 +18,7 @@
       footerText="Ready to compete?"
       footerActionText="The stage is set"
       (footerActionClick)="gotoSignUp()"
+      [showBackendHint]="false"
     >
       <app-backend-toggle
         [selectedBackend]="selectedBackend"
