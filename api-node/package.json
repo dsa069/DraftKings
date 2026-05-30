@@ -8,8 +8,8 @@
     "build": "tsc",
     "test": "jest",
     "coverage": "jest --reporters=default --reporters=jest-junit --coverage --coverageReporters=text --coverageReporters=html --coverageDirectory=./coverage/",
-    "lint": "eslint src/**/*.ts -f checkstyle -o coverage/eslint-result.xml",
-    "lint:json": "mkdir -p coverage && eslint src/**/*.ts --format json -o coverage/eslint-result.json"
+    "lint": "eslint . --ext .ts -f checkstyle -o coverage/eslint-result.xml",
+    "lint:json": "mkdir -p coverage && eslint . --ext .ts --format json -o coverage/eslint-result.json"
   },
   "dependencies": {
     "@langchain/core": "^1.1.48",
