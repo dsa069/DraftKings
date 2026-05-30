@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Player from "../../models/player";
 import Review from "../../models/review";
 import { User } from "../../models/user";
