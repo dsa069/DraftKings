@@ -1,0 +1,26 @@
+<ion-content class="login-container">
+  <ion-grid class="login-wrapper ion-no-padding">
+    <ion-buttons class="back-button-container">
+      <ion-back-button
+        defaultHref="/login"
+        class="circular-back-btn"
+      ></ion-back-button>
+    </ion-buttons>
+
+    <ion-header class="login-header ion-no-border">
+      <ion-text class="login-title">DRAFTKINGS</ion-text>
+      <ion-text class="login-subtitle ion-no-margin">
+        Enter the arena. Manage your squad.
+      </ion-text>
+    </ion-header>
+
+    <app-login-card
+      footerText="New to the game?"
+      footerActionText="Create an account"
+      [selectedBackend]="selectedBackend"
+      (footerActionClick)="gotoSignUp()"
+      (backendChange)="selectedBackend = $event"
+    >
+    </app-login-card>
+  </ion-grid>
+</ion-content>
