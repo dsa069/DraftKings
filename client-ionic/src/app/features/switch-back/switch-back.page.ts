@@ -58,6 +58,6 @@ export class SwitchBackPage implements OnInit {
   gotoSignUp(): void {
     const activeElement = document.activeElement as HTMLElement | null;
     activeElement?.blur();
-    this.navCtrl.navigateForward(['/switch-back']);
+    this.navCtrl.navigateForward(['/login']);
   }
 }
