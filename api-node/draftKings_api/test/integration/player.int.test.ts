@@ -70,7 +70,19 @@ jest.mock("../../middleware/auth.middleware", () => ({
   }),
 }));
 
-jest.mock("axios");
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  },
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+}));
 
 // ============================================================================
 // 2. CONFIGURACIÓN DE BASE DE DATOS EN MEMORIA (SETUP & TEARDOWN)
