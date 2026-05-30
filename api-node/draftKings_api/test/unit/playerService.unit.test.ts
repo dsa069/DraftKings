@@ -93,6 +93,7 @@ describe("PlayerService (Pruebas Unitarias)", () => {
       const mockExistingPlayer = {
         ...playerOriginalServiceBody,
         _id: "id-real",
+        team: "Equipo A",
         save: jest.fn().mockResolvedValue(true),
       };
 
