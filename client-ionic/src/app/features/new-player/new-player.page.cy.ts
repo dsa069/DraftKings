@@ -3,6 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { signal } from '@angular/core';
 
 import { PlayerService } from '../../core/services/abstract/player.service';
 import { PhotoService } from '../../core/services/photo.service';
@@ -48,7 +49,8 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
     };
 
     photoServiceMock = {
-      currentPhotoPreview: cy.stub().returns(null),
+      currentPhotoPreview: signal<string | null>(null),
+      urlInputValue: signal<string>(''),
       uploadCurrentImage: cy.stub().resolves('https://img/new-player.png'),
       updateUrlInput: cy.stub().resolves(),
       clearPreviewCache: cy.stub().resolves(),

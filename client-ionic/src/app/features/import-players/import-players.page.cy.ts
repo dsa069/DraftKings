@@ -108,7 +108,7 @@ describe('ImportPlayersPage Component - Test Suite Exhaustivo', () => {
     it('debe recargar la lista completa si el texto de búsqueda se borra', () => {
       cy.get('@componentInstance').invoke('onSearchChange', '');
       cy.wrap(playerServiceMock.getExternalApiPlayers).should(
-        'have.been.calledOnceWith',
+        'have.been.calledOnceWithExactly',
         undefined
       );
     });

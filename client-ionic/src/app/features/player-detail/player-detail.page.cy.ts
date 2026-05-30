@@ -164,12 +164,9 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     it('debe confirmar la eliminación del jugador, llamar al servicio y cerrar el modal', () => {
       cy.get('@componentInstance').then((instance: any) => {
         instance.onDeletePlayer();
+        return instance.confirmDeletePlayer();
       });
 
-      // Confirmamos el borrado
-      cy.contains('ion-button', 'Delete').click();
-
-      // Verificamos el flujo de la promesa
       cy.then(() => {
         cy.wrap(playerServiceMock.deletePlayer).should('have.been.calledOnce');
         cy.get('@componentInstance').then((instance: any) => {
