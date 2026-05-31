@@ -67,14 +67,6 @@ public class ServletImpl extends HttpServlet {
 		}
 	}
 
-	protected void actionLeer(PrintWriter out) {
-		actionObtenerNoticia(out, false);
-	}
-
-	protected void actionRecibir(PrintWriter out) {
-		actionObtenerNoticia(out, true);
-	}
-
 	protected void actionObtenerTodas(PrintWriter out) {
 		try {
 			getreference();
@@ -128,30 +120,6 @@ public class ServletImpl extends HttpServlet {
 		}
 	}
 
-	private void actionObtenerNoticia(PrintWriter out, boolean consumir) {
-		try {
-			getreference();
-			StringHolder aux = new StringHolder();
-			boolean estado = consumir ? bufferImpl.get(aux) : bufferImpl.read(aux);
-			if (!estado) {
-				printResultado(out,
-						"<font color='#DF0101'>" + safeValue(aux.value, "El buffer esta vacio.") + "</font>");
-				return;
-			}
-
-			List<Noticia> noticiasLeidas = XMLDecoder.decodeXML(aux.value, 1);
-			if (noticiasLeidas.isEmpty()) {
-				throw new IllegalStateException("No se ha podido decodificar la noticia recibida del buffer.");
-			}
-
-			Noticia noticia = noticiasLeidas.get(0);
-			String accion = consumir ? "extraida" : "leida";
-			printResultado(out, "<font color='#2EFE64'>Noticia " + accion + ": " + formatNoticia(noticia) + "</font>");
-		} catch (Exception e) {
-			printResultado(out, "<font color='#DF0101'>" + getErrorMessage(e) + "</font>");
-		}
-	}
-
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
@@ -179,10 +147,6 @@ public class ServletImpl extends HttpServlet {
 			Noticia noticia = new Noticia(fecha, jugador, parseInteres(interes), titulo, descripcion,
 					NoticiaValidator.parseEtiquetas(etiquetasRaw));
 			actionEnviar(out, noticia);
-		} else if ("Recibir".equals(action)) {
-			actionRecibir(out);
-		} else if ("Leer".equals(action)) {
-			actionLeer(out);
 		} else if ("Obtener todas".equals(action)) {
 			actionObtenerTodas(out);
 		} else if ("Leer en".equals(action)) {
@@ -432,8 +396,6 @@ public class ServletImpl extends HttpServlet {
 	private void printActions(PrintWriter out) {
 		out.println("<div class='actions'>"
 				+ "<input value='Enviar' type='submit' name='action'>"
-				+ "<input value='Recibir' type='submit' name='action'>"
-				+ "<input value='Leer' type='submit' name='action'>"
 				+ "<input value='Obtener todas' type='submit' name='action'>"
 				+ "<input value='Leer en' type='submit' name='action'>"
 				+ "<input value='Reset' type='reset' name='resetAction'>"

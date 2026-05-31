@@ -17,7 +17,7 @@ class BufferImplTest {
     }
 
     @Test
-    void putGetReadAndCount() {
+    void putAndIndexedRead() {
         assertEquals(0, buffer.num_elementos());
 
         // entradas inválidas
@@ -29,12 +29,11 @@ class BufferImplTest {
         assertEquals(1, buffer.num_elementos());
 
         StringHolder sh = new StringHolder();
-        assertTrue(buffer.read(sh));
+        assertTrue(buffer.read_en(0, sh));
         assertEquals("noticia1", sh.value);
 
-        assertTrue(buffer.get(sh));
-        assertEquals("noticia1", sh.value);
-        assertEquals(0, buffer.num_elementos());
+        assertArrayEquals(new String[] { "0|noticia1" }, buffer.obtener_todas());
+        assertEquals(1, buffer.num_elementos());
     }
 
     @Test
@@ -66,7 +65,6 @@ class BufferImplTest {
         assertEquals(30, buffer.num_elementos());
         assertFalse(buffer.put("noticia30"));
         assertEquals(30, buffer.num_elementos());
-        assertFalse(buffer.fijarLimiteNoticias(2));
         assertEquals(30, buffer.num_elementos());
     }
 }

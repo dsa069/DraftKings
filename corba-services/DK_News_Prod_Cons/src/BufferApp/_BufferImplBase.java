@@ -18,12 +18,9 @@ public abstract class _BufferImplBase extends org.omg.CORBA.portable.ObjectImpl
   static {
     _methods.put("num_elementos", new java.lang.Integer(0));
     _methods.put("put", new java.lang.Integer(1));
-    _methods.put("get", new java.lang.Integer(2));
-    _methods.put("read", new java.lang.Integer(3));
-    _methods.put("obtener_todas", new java.lang.Integer(4));
-    _methods.put("read_en", new java.lang.Integer(5));
-    _methods.put("fijarLimiteNoticias", new java.lang.Integer(6));
-    _methods.put("shutdown", new java.lang.Integer(7));
+    _methods.put("obtener_todas", new java.lang.Integer(2));
+    _methods.put("read_en", new java.lang.Integer(3));
+    _methods.put("shutdown", new java.lang.Integer(4));
   }
 
   public org.omg.CORBA.portable.OutputStream _invoke(String $method,
@@ -54,29 +51,7 @@ public abstract class _BufferImplBase extends org.omg.CORBA.portable.ObjectImpl
         break;
       }
 
-      case 2: // BufferApp/Buffer/get
-      {
-        org.omg.CORBA.StringHolder elemento = new org.omg.CORBA.StringHolder();
-        boolean $result = false;
-        $result = this.get(elemento);
-        out = $rh.createReply();
-        out.write_boolean($result);
-        out.write_string(elemento.value);
-        break;
-      }
-
-      case 3: // BufferApp/Buffer/read
-      {
-        org.omg.CORBA.StringHolder elemento = new org.omg.CORBA.StringHolder();
-        boolean $result = false;
-        $result = this.read(elemento);
-        out = $rh.createReply();
-        out.write_boolean($result);
-        out.write_string(elemento.value);
-        break;
-      }
-
-      case 4: // BufferApp/Buffer/obtener_todas
+      case 2: // BufferApp/Buffer/obtener_todas
       {
         String[] $result = null;
         $result = this.obtener_todas();
@@ -87,7 +62,7 @@ public abstract class _BufferImplBase extends org.omg.CORBA.portable.ObjectImpl
         break;
       }
 
-      case 5: // BufferApp/Buffer/read_en
+      case 3: // BufferApp/Buffer/read_en
       {
         int indice = in.read_long();
         org.omg.CORBA.StringHolder elemento = new org.omg.CORBA.StringHolder();
@@ -99,17 +74,7 @@ public abstract class _BufferImplBase extends org.omg.CORBA.portable.ObjectImpl
         break;
       }
 
-      case 6: // BufferApp/Buffer/fijarLimiteNoticias
-      {
-        int numero_maximo = in.read_long();
-        boolean $result = false;
-        $result = this.fijarLimiteNoticias(numero_maximo);
-        out = $rh.createReply();
-        out.write_boolean($result);
-        break;
-      }
-
-      case 7: // BufferApp/Buffer/shutdown
+      case 4: // BufferApp/Buffer/shutdown
       {
         this.shutdown();
         out = $rh.createReply();
