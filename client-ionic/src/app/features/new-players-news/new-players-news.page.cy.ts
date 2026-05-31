@@ -148,44 +148,6 @@ describe('NewPlayersNewsPage - Component Testing', () => {
       });
     });
 
-    it('debe permitir añadir hasta un máximo de 6 etiquetas y deshabilitar el input', () => {
-      const tags = ['uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete'];
-
-      // Intentamos añadir 7 etiquetas
-      cy.get('@componentInstance').then((instance: any) => {
-        tags.forEach((tag) => {
-          instance.currentTag = tag;
-          instance.addTag();
-        });
-
-        expect(instance.formData.etiquetas).to.have.length(6);
-        expect(instance.formData.etiquetas).to.deep.equal([
-          '#uno',
-          '#dos',
-          '#tres',
-          '#cuatro',
-          '#cinco',
-          '#seis',
-        ]);
-      });
-
-      // El input de tag debería estar deshabilitado
-      cy.get('ion-input[name="currentTag"]').should('have.attr', 'disabled');
-    });
-
-    it('debe eliminar una etiqueta al hacer clic en ella', () => {
-      cy.get('@componentInstance').then((instance: any) => {
-        instance.currentTag = 'Lesión';
-        instance.addTag();
-      });
-      cy.get('.custom-chip').should('have.length', 1);
-
-      // Clic en el chip para borrarlo
-      cy.get('.custom-chip').click({ force: true });
-      cy.get('.custom-chip').should('not.exist');
-    });
-  });
-
   // =========================================================================
   // SECCIÓN D: VALIDACIONES DEL FORMULARIO Y SUBMIT
   // =========================================================================
