@@ -1,6 +1,7 @@
 package Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,6 +56,25 @@ public class BufferUnitTest {
 		}
 
 		@Override
+		public synchronized String[] obtener_todas() {
+			String[] resultado = new String[datos.size()];
+			for (int i = 0; i < datos.size(); i++) {
+				resultado[i] = i + "|" + datos.get(i);
+			}
+			return resultado;
+		}
+
+		@Override
+		public synchronized boolean read_en(int indice, StringHolder elemento) {
+			if (indice < 0 || indice >= datos.size()) {
+				elemento.value = "";
+				return false;
+			}
+			elemento.value = datos.get(indice);
+			return true;
+		}
+
+		@Override
 		public synchronized boolean fijarLimiteNoticias(int numero_maximo) {
 			return false;
 		}
@@ -104,6 +124,26 @@ public class BufferUnitTest {
 		assertTrue(holder.value.contains("<titulo>n1</titulo>"));
 		assertTrue(buffer.get(holder));
 		assertTrue(holder.value.contains("<titulo>n2</titulo>"));
+	}
+
+	@Test
+	public void obtenerTodasYReadEn() {
+		buffer.put(noticia("n1", "#uno"));
+		buffer.put(noticia("n2", "#dos"));
+		buffer.put(noticia("n3", "#tres"));
+
+		assertArrayEquals(new String[] {
+				"0|" + noticia("n1", "#uno"),
+				"1|" + noticia("n2", "#dos"),
+				"2|" + noticia("n3", "#tres")
+		}, buffer.obtener_todas());
+
+		assertTrue(buffer.read_en(1, holder));
+		assertTrue(holder.value.contains("<titulo>n2</titulo>"));
+		assertTrue(buffer.read_en(0, holder));
+		assertTrue(holder.value.contains("<titulo>n1</titulo>"));
+		assertFalse(buffer.read_en(3, holder));
+		assertEquals("", holder.value);
 	}
 
 	@Test

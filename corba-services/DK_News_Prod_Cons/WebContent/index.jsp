@@ -204,6 +204,11 @@
                </div>
 
                <div class='field'>
+                  <label for='indice'>Indice para leer en:</label>
+                  <input id='indice' name='indice' type='number' min='0' size='10'>
+               </div>
+
+               <div class='field'>
                   <label>Límite máximo fijo:</label>
                   <div class='buffer-count'>30 noticias</div>
                </div>
@@ -212,6 +217,8 @@
                   <input value='Enviar' alt='Press button to export' type='submit' name='action'>
                   <input value='Recibir' alt='Press button to export' type='submit' name='action'>
                   <input value='Leer' alt='Press button to export' type='submit' name='action'>
+                  <input value='Obtener todas' alt='Press button to export' type='submit' name='action'>
+                  <input value='Leer en' alt='Press button to export' type='submit' name='action'>
                   <input value=' Reset ' type='reset' name='action'>
                </div>
             </form>

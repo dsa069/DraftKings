@@ -69,6 +69,23 @@ class BufferImpl extends _BufferImplBase {
 		return true;
 	}
 
+	public synchronized String[] obtener_todas() {
+		String[] resultado = new String[buf.size()];
+		for (int i = 0; i < buf.size(); i++) {
+			resultado[i] = i + "|" + buf.get(i);
+		}
+		return resultado;
+	}
+
+	public synchronized boolean read_en(int indice, StringHolder elemento) {
+		if (indice < 0 || indice >= buf.size()) {
+			elemento.value = "";
+			return false;
+		}
+		elemento.value = buf.get(indice);
+		return true;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
