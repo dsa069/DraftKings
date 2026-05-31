@@ -1,0 +1,16 @@
+# Build outputs
+/bin/
+/build/
+/target/
+
+# Generated docs
+/doc/
+
+# Eclipse / Java IDE metadata
+/.settings/
+*.launch
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*~
