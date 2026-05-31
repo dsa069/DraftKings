@@ -424,6 +424,7 @@
       </ion-item>
 
       <ion-list slot="content" class="news-list">
+        @if (authService.isAdmin()) {
         <ion-item class="comment-form-item" lines="none">
           <ion-grid class="ion-no-padding">
             <ion-row>
@@ -441,6 +442,7 @@
             </ion-row>
           </ion-grid>
         </ion-item>
+        }
 
         <ion-item
           class="news-item"
