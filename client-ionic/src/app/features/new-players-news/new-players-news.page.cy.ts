@@ -157,10 +157,17 @@ describe('NewPlayersNewsPage - Component Testing', () => {
           instance.currentTag = tag;
           instance.addTag();
         });
-      });
 
-      // Solo deben existir 6 en el DOM
-      cy.get('.custom-chip').should('have.length', 6);
+        expect(instance.formData.etiquetas).to.have.length(6);
+        expect(instance.formData.etiquetas).to.deep.equal([
+          '#uno',
+          '#dos',
+          '#tres',
+          '#cuatro',
+          '#cinco',
+          '#seis',
+        ]);
+      });
 
       // El input de tag debería estar deshabilitado
       cy.get('ion-input[name="currentTag"]').should('have.attr', 'disabled');
