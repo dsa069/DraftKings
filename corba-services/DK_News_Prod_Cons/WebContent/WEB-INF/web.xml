@@ -14,11 +14,11 @@
        <servlet-class>ual.dss.servlet.ServletImpl</servlet-class>
       <init-param>
         <param-name>orb.initial.host</param-name>
-        <param-value>34.69.229.246</param-value>
+        <param-value>localhost</param-value>
       </init-param>
       <init-param>
         <param-name>orb.initial.port</param-name>
-        <param-value>3000</param-value>
+        <param-value>1050</param-value>
       </init-param>
       <init-param>
         <param-name>orb.buffer.name</param-name>

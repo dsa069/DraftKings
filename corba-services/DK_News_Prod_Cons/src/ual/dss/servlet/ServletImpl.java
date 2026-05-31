@@ -31,8 +31,8 @@ import ual.dss.xmlib.XMLDecoder;
 
 public class ServletImpl extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_ORB_HOST = "34.69.229.246";
-	private static final String DEFAULT_ORB_PORT = "3000";
+	private static final String DEFAULT_ORB_HOST = "localhost";
+	private static final String DEFAULT_ORB_PORT = "1050";
 	private static final String DEFAULT_BUFFER_NAME = "Buffer";
 	private static final String XSD_NOTICIAS = "noticias.xsd";
 	private static final int DEFAULT_LIMITE_NOTICIAS = 5;
@@ -293,10 +293,6 @@ public class ServletImpl extends HttpServlet {
 		}
 
 		String normalizedPath = configuredPath.trim();
-		File configuredFile = new File(normalizedPath);
-		if (configuredFile.isAbsolute()) {
-			return Validator.validateXMLContent(noticiaXML, configuredFile.getPath());
-		}
 
 		String webPath = normalizedPath.startsWith("/") ? normalizedPath : "/" + normalizedPath;
 		InputStream schemaStream = getServletContext().getResourceAsStream(webPath);
@@ -310,6 +306,11 @@ public class ServletImpl extends HttpServlet {
 					// ignore close exception
 				}
 			}
+		}
+
+		File configuredFile = new File(normalizedPath);
+		if (configuredFile.exists()) {
+			return Validator.validateXMLContent(noticiaXML, configuredFile.getPath());
 		}
 
 		String realPath = getServletContext().getRealPath(webPath);
