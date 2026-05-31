@@ -83,6 +83,21 @@ const options: Options = {
             updatedAt: { type: "string", format: "date-time" },
           },
         },
+        News: {
+          type: "object",
+          properties: {
+            id: { type: "integer" },
+            fecha: { type: "string" },
+            jugador: { type: "string" },
+            interes: { type: "string" },
+            titulo: { type: "string" },
+            descripcion: { type: "string" },
+            etiquetas: {
+              type: "array",
+              items: { type: "string" },
+            },
+          },
+        },
       },
     },
   },

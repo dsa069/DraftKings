@@ -485,20 +485,18 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 ### 14) Obtener noticias de jugadores
 
-* **Caso de uso:** `UC_ver_noticias`
+- **Caso de uso:** `UC_ver_noticias`
 
-* **Método:** `GET`
+- **Método:** `GET`
 
-* **URL:**
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/news`
+  - Node: `http://localhost:3000/api/news`
 
-  * Spring: `http://localhost:8092/api/news`
-  * Node: `No implementado en el backend Node actual`
+- **Headers:**
+  - `Authorization: Bearer {tu_token_JWT}`
 
-* **Headers:**
-
-  * `Authorization: Bearer {tu_token_JWT}`
-
-* **Respuesta 200 (JSON) ejemplo:**
+- **Respuesta 200 (JSON) ejemplo:**
 
 ```json
 [
@@ -509,40 +507,33 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
     "interes": "alta",
     "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
     "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
-    "etiquetas": [
-      "#LaLiga",
-      "#LamineYamal",
-      "#Fantasy"
-    ]
+    "etiquetas": ["#LaLiga", "#LamineYamal", "#Fantasy"]
   }
 ]
 ```
 
-* **Respuestas:**
-
-  * `200 OK` — Lista de noticias devuelta correctamente.
-  * `401 Unauthorized` — El token JWT falta o no es válido.
-  * `500 Internal Server Error` — Error al comunicarse con el sistema de noticias.
-  * `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
+- **Respuestas:**
+  - `200 OK` — Lista de noticias devuelta correctamente.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `500 Internal Server Error` — Error al comunicarse con el sistema de noticias.
+  - `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
 
 ---
 
 ### 15) Ver noticia en detalle
 
-* **Caso de uso:** `UC_ver_noticia`
+- **Caso de uso:** `UC_ver_noticia`
 
-* **Método:** `GET`
+- **Método:** `GET`
 
-* **URL:**
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/news/{id}`
+  - Node: `http://localhost:3000/api/news/{id}`
 
-  * Spring: `http://localhost:8092/api/news/{id}`
-  * Node: `No implementado en el backend Node actual`
+- **Headers:**
+  - `Authorization: Bearer {tu_token_JWT}`
 
-* **Headers:**
-
-  * `Authorization: Bearer {tu_token_JWT}`
-
-* **Respuesta 200 (JSON) ejemplo:**
+- **Respuesta 200 (JSON) ejemplo:**
 
 ```json
 {
@@ -552,42 +543,35 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   "interes": "alta",
   "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
   "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
-  "etiquetas": [
-    "#LaLiga",
-    "#LamineYamal",
-    "#Fantasy"
-  ]
+  "etiquetas": ["#LaLiga", "#LamineYamal", "#Fantasy"]
 }
 ```
 
-* **Respuestas:**
-
-  * `200 OK` — Noticia encontrada.
-  * `400 Bad Request` — El ID de la noticia debe ser válido.
-  * `401 Unauthorized` — El token JWT falta o no es válido.
-  * `404 Not Found` — La noticia no existe.
-  * `500 Internal Server Error` — Error al comunicarse con el sistema de noticias.
-  * `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
+- **Respuestas:**
+  - `200 OK` — Noticia encontrada.
+  - `400 Bad Request` — El ID de la noticia debe ser válido.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `404 Not Found` — La noticia no existe.
+  - `500 Internal Server Error` — Error al comunicarse con el sistema de noticias.
+  - `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
 
 ---
 
 ### 16) Publicar una noticia
 
-* **Caso de uso:** `UC_crear_noticia`
+- **Caso de uso:** `UC_crear_noticia`
 
-* **Método:** `POST`
+- **Método:** `POST`
 
-* **URL:**
+- **URL:**
+  - Spring: `http://localhost:8080/playerms/api/news`
+  - Node: `http://localhost:3000/api/news`
 
-  * Spring: `http://localhost:8092/api/news`
-  * Node: `No implementado en el backend Node actual`
+- **Headers:**
+  - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
+  - `Content-Type: application/json`
 
-* **Headers:**
-
-  * `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
-  * `Content-Type: application/json`
-
-* **Body (JSON) ejemplo:**
+- **Body (JSON) ejemplo:**
 
 ```json
 {
@@ -597,22 +581,17 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   "interes": "alta",
   "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
   "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
-  "etiquetas": [
-    "#LaLiga",
-    "#LamineYamal",
-    "#Fantasy"
-  ]
+  "etiquetas": ["#LaLiga", "#LamineYamal", "#Fantasy"]
 }
 ```
 
-* **Respuestas:**
-
-  * `201 Created` — Noticia publicada correctamente.
-  * `400 Bad Request` — Body inválido.
-  * `401 Unauthorized` — El token JWT falta o no es válido.
-  * `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
-  * `500 Internal Server Error` — Error publicando la noticia en el sistema externo.
-  * `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
+- **Respuestas:**
+  - `201 Created` — Noticia publicada correctamente.
+  - `400 Bad Request` — Body inválido.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
+  - `500 Internal Server Error` — Error publicando la noticia en el sistema externo.
+  - `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
 
 ---
 

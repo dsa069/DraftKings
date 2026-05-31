@@ -22,6 +22,7 @@ import userApiRouter from "./draftKings_api/routes/userRoutes";
 import playerApiRouter from "./draftKings_api/routes/playerRoutes";
 import reviewApiRouter from "./draftKings_api/routes/reviewRoutes";
 import tacticRoutes from "./draftKings_api/routes/tacticRoutes";
+import newsRoutes from "./draftKings_api/routes/newsRoutes";
 
 const app = express();
 
@@ -83,6 +84,7 @@ app.use("/api/user", userApiRouter);
 app.use("/api/players", playerApiRouter);
 app.use("/api/reviews", reviewApiRouter);
 app.use("/api/tactics", tacticRoutes);
+app.use("/api/news", newsRoutes);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
