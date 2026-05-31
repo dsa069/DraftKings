@@ -43,6 +43,10 @@ import { PlayerService } from '../../core/services/abstract/player.service';
 import { Review } from '../../core/models/review.model';
 import { ReviewService } from '../../core/services/abstract/review.service';
 import { LocationService } from '../../core/services/location.service';
+// --- NUEVAS IMPORTACIONES DE NOTICIAS ---
+import { News } from '../../core/models/news.model';
+import { NewsService } from '../../core/services/abstract/news.service';
+// ----------------------------------------
 import { addIcons } from 'ionicons';
 import {
   pencil,
@@ -110,6 +114,9 @@ export class PlayerDetailPage implements OnInit {
   private readonly playerService = inject(PlayerService);
   private readonly reviewService = inject(ReviewService);
   private readonly locationService = inject(LocationService);
+  // --- INYECTAR EL SERVICIO DE NOTICIAS ---
+  private readonly newsService = inject(NewsService);
+  // ----------------------------------------
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly ngZone = inject(NgZone);
   private readonly navCtrl = inject(NavController);
@@ -120,29 +127,27 @@ export class PlayerDetailPage implements OnInit {
   errorMessage = signal<string | null>(null);
   private isLeavingPage = false;
 
-  // Modal state para confirmación de delete
   private _showConfirmModal = signal(false);
   public showConfirmModal = this._showConfirmModal.asReadonly();
 
-  // Lógica y estados reales para Comentarios (Reviews)
   comments = signal<ReviewUI[]>([]);
   isLoadingComments = signal<boolean>(false);
 
-  // Formulario de nuevo comentario
+  // --- SIGNAL PARA ALMACENAR NOTICIAS RELACIONADAS ---
+  relatedNews = signal<News[]>([]);
+  // ---------------------------------------------------
+
   newCommentAuthor = signal<string>('');
   newCommentText = signal<string>('');
-  newCommentRating = signal<number>(5); // Reemplaza "stars" por el rating numérico
+  newCommentRating = signal<number>(5);
 
-  // Formulario de edición temporal
   editTempText = signal<string>('');
   editTempRating = signal<number>(5);
 
-  // Modales de eliminación
   showDeleteCommentModal = signal<boolean>(false);
   commentToDeleteId = signal<string | number | null>(null);
 
   constructor() {
-    // Registramos los íconos globalmente para este componente standalone
     addIcons({
       pencil,
       informationCircle,
@@ -181,14 +186,10 @@ export class PlayerDetailPage implements OnInit {
   }
 
   async ionViewWillEnter(): Promise<void> {
-    // No recargar si estamos saliendo de esta página
     if (this.isLeavingPage) {
       this.isLeavingPage = false;
       return;
     }
-
-    // Recargar el jugador cada vez que la vista se muestra
-    // Esto asegura que los datos estén actualizados después de editar
     const playerId = this.route.snapshot.paramMap.get('id');
     if (playerId) {
       await this.loadPlayerDetail(playerId);
@@ -196,7 +197,6 @@ export class PlayerDetailPage implements OnInit {
   }
 
   ionViewDidLeave(): void {
-    // Marcar que estamos saliendo para evitar recargas innecesarias
     this.isLeavingPage = true;
   }
 
@@ -205,15 +205,16 @@ export class PlayerDetailPage implements OnInit {
     this.errorMessage.set(null);
 
     try {
-      // Convertir playerId a número si es necesario
       const playerIdNum = isNaN(Number(playerId)) ? playerId : Number(playerId);
       const playerData = await this.playerService.getPlayerById(
         playerIdNum as any
       );
 
-      // Usar ngZone para evitar ExpressionChangedAfterItHasBeenCheckedError
       this.ngZone.run(() => {
         this.player.set(playerData);
+        // --- CARGAR LAS NOTICIAS CUANDO YA TENEMOS EL JUGADOR ---
+        this.loadRelatedNews(playerData.name);
+        // --------------------------------------------------------
         this.cdr.markForCheck();
       });
     } catch (error) {
@@ -227,7 +228,34 @@ export class PlayerDetailPage implements OnInit {
     }
   }
 
-  // Métodos para manejar delete player
+  // --- NUEVA FUNCIÓN PARA OBTENER Y FILTRAR NOTICIAS ---
+  private async loadRelatedNews(playerName: string): Promise<void> {
+    try {
+      await this.waitForAuthReady();
+      const allNews = await this.newsService.getNews();
+      const filteredNews = allNews.filter((n) => n.jugador === playerName);
+      this.relatedNews.set(filteredNews);
+    } catch (error) {
+      console.error('Error cargando las noticias:', error);
+    } finally {
+      this.cdr.markForCheck();
+    }
+  }
+
+  private async waitForAuthReady(
+    maxAttempts = 20,
+    delayMs = 150
+  ): Promise<void> {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      if (this.authService.isAuthenticated()) {
+        return;
+      }
+
+      await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+  // -----------------------------------------------------
+
   onDeletePlayer(): void {
     this._showConfirmModal.set(true);
   }
@@ -235,7 +263,6 @@ export class PlayerDetailPage implements OnInit {
   onEditPlayer(): void {
     if (this.player()?.id) {
       const playerId = String(this.player()!.id);
-      console.log('[PlayerDetailPage] Navegando a edición con ID:', playerId);
       this.navCtrl.navigateForward(`/new-player?id=${playerId}`);
     }
   }
@@ -253,7 +280,6 @@ export class PlayerDetailPage implements OnInit {
     try {
       await this.playerService.deletePlayer(playerId);
       this._showConfirmModal.set(false);
-      // Navegar a la lista de jugadores después de eliminar
       await this.navCtrl.navigateRoot('/tabs/players');
     } catch (error) {
       const errorMsg =
@@ -272,16 +298,11 @@ export class PlayerDetailPage implements OnInit {
   onModalDismiss(event: any): void {
     this._showConfirmModal.set(false);
   }
-  // ==========================================
-  // FUNCIONALIDADES REALES DE COMENTARIOS (BD)
-  // ==========================================
 
-  // 1. Cargar automáticamente de la Base de Datos
   async loadReviews(playerId: string | number): Promise<void> {
     this.isLoadingComments.set(true);
     try {
       const reviews = await this.reviewService.getReviewsByPlayer(playerId);
-      // Ordenar por ID o fecha para mostrar los más recientes arriba si tu backend no lo hace
       this.comments.set(reviews.reverse());
     } catch (error) {
       console.error('Error cargando comentarios de la BD:', error);
@@ -291,7 +312,6 @@ export class PlayerDetailPage implements OnInit {
     }
   }
 
-  // 2. Crear Comentario Real en la BD
   async addComment(): Promise<void> {
     const targetPlayer = this.player();
     if (!targetPlayer || !targetPlayer.id) return;
@@ -314,7 +334,6 @@ export class PlayerDetailPage implements OnInit {
         author: finalAuthor,
         text: this.newCommentText(),
         rating: this.newCommentRating(),
-        //DEBIDO A LA FALTA DE TIEMPO Y A QUE NO ES REALMENTE NECESARIO, NO GUARDAMOS EL ID REAL DEL USUARIO
         userId: '1',
         latitude: deviceCoords?.lat ?? 0,
         longitude: deviceCoords?.lng ?? 0,
@@ -324,10 +343,8 @@ export class PlayerDetailPage implements OnInit {
         targetPlayer.id,
         reviewPayload
       );
-      // Actualizamos el Signal agregando el nuevo comentario al inicio del array
       this.comments.update((curr) => [savedReview, ...curr]);
 
-      // Limpiamos el formulario
       this.newCommentAuthor.set('');
       this.newCommentText.set('');
       this.newCommentRating.set(5);
@@ -338,7 +355,6 @@ export class PlayerDetailPage implements OnInit {
     }
   }
 
-  // 3. Activar Modo Edición (Local)
   editComment(comment: ReviewUI) {
     this.editTempText.set(comment.text);
     this.editTempRating.set(comment.rating || 5);
@@ -347,7 +363,6 @@ export class PlayerDetailPage implements OnInit {
     );
   }
 
-  // 4. Guardar Edición Real en la BD
   async saveComment(comment: ReviewUI): Promise<void> {
     if (!comment.id || !this.editTempText().trim()) return;
 
@@ -380,7 +395,6 @@ export class PlayerDetailPage implements OnInit {
     );
   }
 
-  // 5. Borrado Real en la BD
   promptDeleteComment(commentId: string | number) {
     this.commentToDeleteId.set(commentId);
     this.showDeleteCommentModal.set(true);
@@ -392,7 +406,6 @@ export class PlayerDetailPage implements OnInit {
 
     try {
       await this.reviewService.deleteReview(id);
-      // Removemos el comentario eliminado del Signal local de forma reactiva
       this.comments.update((curr) => curr.filter((c) => c.id !== id));
       this.showDeleteCommentModal.set(false);
       this.commentToDeleteId.set(null);
@@ -407,10 +420,9 @@ export class PlayerDetailPage implements OnInit {
     this.showDeleteCommentModal.set(false);
     this.commentToDeleteId.set(null);
   }
-  updateNewRating(event: Event, rating: number) {
-    event.stopPropagation(); // Evita que el clic detecte que hemos tocado el "fondo" vacío
 
-    // Si tocas la misma estrella que ya tienes seleccionada, se resetea a 0
+  updateNewRating(event: Event, rating: number) {
+    event.stopPropagation();
     if (this.newCommentRating() === rating) {
       this.newCommentRating.set(0);
     } else {
@@ -420,7 +432,6 @@ export class PlayerDetailPage implements OnInit {
 
   updateEditRating(event: Event, rating: number) {
     event.stopPropagation();
-
     if (this.editTempRating() === rating) {
       this.editTempRating.set(0);
     } else {
@@ -441,7 +452,9 @@ export class PlayerDetailPage implements OnInit {
     }
   }
 
-  onViewNews(): void {
-    this.navCtrl.navigateForward(`/players-news`);
+  // --- ACTUALIZADO: RECIBE EL OBJETO Y NAVEGA A SU DETALLE ---
+  onViewNews(news: News): void {
+    this.navCtrl.navigateForward(`/players-news/${news.id}`);
   }
+  // ---------------------------------------------------------
 }
