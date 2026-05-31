@@ -38,7 +38,7 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'players-news',
+    path: 'players-news/:id',
     loadComponent: () =>
       import('./features/players-news/players-news.page').then(
         (m) => m.PlayersNewsPage

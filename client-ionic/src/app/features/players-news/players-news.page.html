@@ -4,38 +4,50 @@
 ></app-header-submenu>
 
 <ion-content class="bg-content">
+  @if (isLoading()) {
+  <div
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 50px 0;
+    "
+  >
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
+  } @else if (selectedNews(); as noticia) {
   <ion-card class="news-content">
     <ion-grid class="news-container ion-no-padding">
       <ion-row>
-        <ion-text class="headline">
-          Haaland's Ankle Injury: Impact on Upcoming Derby and Fantasy Values
-        </ion-text>
+        <ion-text class="headline"> {{ noticia.titulo }} </ion-text>
       </ion-row>
+
       <ion-row class="metadata-row">
         <ion-text class="meta-item">
           <ion-icon name="calendar-outline"></ion-icon>
-          Oct 24, 2023
+          {{ noticia.fecha }}
         </ion-text>
 
         <ion-text class="dot-separator"></ion-text>
 
         <ion-text class="interest-badge">
           <ion-text class="warning-dot"></ion-text>
-          High Interest
+          {{ noticia.interes === 'alta' ? 'High Interest' : noticia.interes ===
+          'media' ? 'Medium Interest' : 'Low Interest' }}
         </ion-text>
 
         <ion-text class="dot-separator"></ion-text>
 
         <ion-text class="meta-item">
           <ion-icon name="person-outline"></ion-icon>
-          Related to: Erling Haaland
+          Related to: {{ noticia.jugador }}
         </ion-text>
       </ion-row>
 
       <ion-row class="tags-row">
-        <ion-badge class="tag-badge">INJURY UPDATE</ion-badge>
-        <ion-badge class="tag-badge">PREMIER LEAGUE</ion-badge>
-        <ion-badge class="tag-badge">FANTASY IMPACT</ion-badge>
+        @for (tag of noticia.etiquetas; track tag) {
+        <ion-badge class="tag-badge">{{ tag }}</ion-badge>
+        }
       </ion-row>
     </ion-grid>
 
@@ -43,14 +55,19 @@
 
     <ion-grid class="content-container ion-no-padding">
       <ion-row>
-        <ion-text class="article-content">
-          In a stunning turn of events during Tuesday's training session, star
-          striker Erling Haaland pulled up with an apparent ankle issue, casting
-          serious doubt on his availability for the highly anticipated
-          Manchester Derby this weekend. Team medical staff rushed to the pitch,
-          and he was seen leaving the facility shortly after.
-        </ion-text>
+        <ion-text class="article-content"> {{ noticia.descripcion }} </ion-text>
       </ion-row>
     </ion-grid>
   </ion-card>
+  } @else {
+  <div
+    style="
+      text-align: center;
+      padding: 30px;
+      color: var(--ion-color-on-surface-variant);
+    "
+  >
+    <ion-text>No se pudo encontrar el detalle de esta noticia.</ion-text>
+  </div>
+  }
 </ion-content>
