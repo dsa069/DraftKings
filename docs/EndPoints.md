@@ -522,7 +522,8 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
   * `200 OK` — Lista de noticias devuelta correctamente.
   * `401 Unauthorized` — El token JWT falta o no es válido.
-  * `500 Internal Server Error` — Error interno del servidor.
+  * `500 Internal Server Error` — Error al comunicarse con el sistema de noticias.
+  * `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
 
 ---
 
@@ -562,9 +563,11 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 * **Respuestas:**
 
   * `200 OK` — Noticia encontrada.
+  * `400 Bad Request` — El ID de la noticia debe ser válido.
   * `401 Unauthorized` — El token JWT falta o no es válido.
   * `404 Not Found` — La noticia no existe.
-  * `500 Internal Server Error` — Error interno del servidor.
+  * `500 Internal Server Error` — Error al comunicarse con el sistema de noticias.
+  * `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
 
 ---
 
@@ -608,7 +611,8 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   * `400 Bad Request` — Body inválido.
   * `401 Unauthorized` — El token JWT falta o no es válido.
   * `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
-  * `500 Internal Server Error` — Error interno del servidor.
+  * `500 Internal Server Error` — Error publicando la noticia en el sistema externo.
+  * `503 Service Unavailable` — El sistema externo de noticias (CORBA) no está disponible.
 
 ---
 
