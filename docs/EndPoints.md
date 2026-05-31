@@ -505,7 +505,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
     "fecha": "15/04/2026",
     "jugador": "Lamine Yamal",
     "interes": "alta",
-    "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
+    "titulo": "Lamine Yamal vuelve a ser decisivo",
     "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
     "etiquetas": ["#LaLiga", "#LamineYamal", "#Fantasy"]
   }
@@ -541,7 +541,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   "fecha": "15/04/2026",
   "jugador": "Lamine Yamal",
   "interes": "alta",
-  "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
+  "titulo": "Lamine Yamal vuelve a ser decisivo",
   "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
   "etiquetas": ["#LaLiga", "#LamineYamal", "#Fantasy"]
 }
@@ -575,11 +575,10 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 ```json
 {
-  "id": 0,
   "fecha": "15/04/2026",
   "jugador": "Lamine Yamal",
   "interes": "alta",
-  "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
+  "titulo": "Lamine Yamal vuelve a ser decisivo",
   "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
   "etiquetas": ["#LaLiga", "#LamineYamal", "#Fantasy"]
 }

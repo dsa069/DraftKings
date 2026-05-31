@@ -32,7 +32,7 @@ api:
   football:
     key: ${API_FOOTBALL_KEY:}
   news:
-    url: ${URL_CORBA_NEWS:}
+    url: http://host.docker.internal:8070/DK_News_Prod_Cons/servlet
     
 eureka:
   instance:
