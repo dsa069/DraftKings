@@ -30,6 +30,8 @@ spring:
 api:
   football:
     key: ${API_FOOTBALL_KEY:}
+  news:
+    url: ${URL_CORBA_NEWS:}
 
 openapi:
   title: DraftKings Player Microservice API (Prod)

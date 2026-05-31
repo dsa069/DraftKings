@@ -31,6 +31,9 @@ spring:
 api:
   football:
     key: ${API_FOOTBALL_KEY:}
+  news:
+    url: ${URL_CORBA_NEWS:}
+    
 eureka:
   instance:
     hostname: localhost
