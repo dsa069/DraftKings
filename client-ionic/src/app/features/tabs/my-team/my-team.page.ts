@@ -47,6 +47,7 @@ import {
   arrowUndoOutline,
   chatbubblesOutline,
 } from 'ionicons/icons';
+import { AuthService } from '../../../core/services/abstract/auth.service';
 
 @Component({
   selector: 'app-my-team',
@@ -85,6 +86,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
   private teamClearedSub?: Subscription;
   private teamService = inject(TeamService);
   private playerService = inject(PlayerService);
+  private authService = inject(AuthService);
 
   public teamPositions = signal<Record<string, Player>>({});
   public allPlayers = signal<Player[]>([]);
@@ -98,6 +100,8 @@ export class MyTeamPage implements OnInit, OnDestroy {
   public aiRecommendations = signal<Record<string, string>>({});
   public hasAiResponse = signal<boolean>(false);
   public isAiLoading = signal<boolean>(false);
+
+  public readonly isAuthenticated = this.authService.isAuthenticated;
 
   public aiRecommendationsArray = computed(() => {
     const recommendations = this.aiRecommendations();

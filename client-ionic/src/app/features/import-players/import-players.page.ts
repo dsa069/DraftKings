@@ -7,6 +7,7 @@ import { Player } from '../../core/models/player.model';
 import { NavController } from '@ionic/angular';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
 import { LocationService } from '../../core/services/location.service';
+import { AuthService } from '../../core/services/abstract/auth.service';
 
 @Component({
   selector: 'app-import-players',
@@ -26,6 +27,9 @@ export class ImportPlayersPage implements OnInit {
   private readonly playerService = inject(PlayerService);
   private readonly navCtrl = inject(NavController);
   private readonly locationService = inject(LocationService);
+  private readonly authService = inject(AuthService);
+
+  public readonly isAuthenticated = this.authService.isAuthenticated;
 
   externalPlayers = signal<Player[]>([]);
   isLoading = signal<boolean>(false);

@@ -91,6 +91,8 @@ export class NewPlayerPage implements OnInit {
   public editingPlayerId: string | number | null = null;
   public isEditMode: boolean = false;
 
+  public readonly isAuthenticated = this.authService.isAuthenticated;
+
   @ViewChild(MapCaptureComponent) mapComponent!: MapCaptureComponent;
 
   constructor() {
