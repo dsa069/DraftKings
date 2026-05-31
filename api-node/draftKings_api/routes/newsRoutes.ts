@@ -162,6 +162,6 @@ router.get("/:id", authorizeRequest, newsReadOne);
  *       503:
  *         description: El sistema externo de noticias (CORBA) no está disponible.
  */
-router.post("/", authorizeRequest, requireAdmin, newsCreate);
+router.post("/", authorizeRequest, newsCreate);
 
 export default router;
