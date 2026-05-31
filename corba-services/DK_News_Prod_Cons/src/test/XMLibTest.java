@@ -18,10 +18,12 @@ public class XMLibTest {
 
 	List<Noticia> noticias;
 	String resultado;
+
 	@Before
 	public void setUp() throws Exception {
 		Noticia noticia = new Noticia(
 				"25/12/2025",
+				"Jugador Demo",
 				Interes.ALTA,
 				"Festival de musica local",
 				"Descripcion extensa para pruebas unitarias del codificador y decodificador XML en el flujo productor consumidor.",
@@ -38,6 +40,7 @@ public class XMLibTest {
 			assertTrue(xml.contains("<gestorNoticias>"));
 			assertTrue(xml.contains("<noticia>"));
 			assertTrue(xml.contains("<fecha>25/12/2025</fecha>"));
+			assertTrue(xml.contains("<jugador>Jugador Demo</jugador>"));
 			assertTrue(xml.contains("<interes>alta</interes>"));
 			assertTrue(xml.contains("<titulo>Festival de musica local</titulo>"));
 			assertTrue(xml.contains("<etiqueta>#musica</etiqueta>"));
@@ -52,6 +55,7 @@ public class XMLibTest {
 		try {
 			Noticia noticiaDecodificada = XMLDecoder.decodeXML(resultado, 0).get(0);
 			assertEquals(noticias.get(0).getFecha(), noticiaDecodificada.getFecha());
+			assertEquals(noticias.get(0).getJugador(), noticiaDecodificada.getJugador());
 			assertEquals(noticias.get(0).getInteres(), noticiaDecodificada.getInteres());
 			assertEquals(noticias.get(0).getTitulo(), noticiaDecodificada.getTitulo());
 			assertEquals(noticias.get(0).getDescripcion(), noticiaDecodificada.getDescripcion());

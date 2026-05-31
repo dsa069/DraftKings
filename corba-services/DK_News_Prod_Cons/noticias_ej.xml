@@ -3,6 +3,7 @@
                 xsi:noNamespaceSchemaLocation="noticias.xsd">
     <noticia>
         <fecha>25/12/2025</fecha>
+        <jugador>Jugador Demo</jugador>
         <interes>alta</interes>
         <titulo>Nuevo festival en Almería</titulo>
         <descripcion>

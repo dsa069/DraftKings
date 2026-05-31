@@ -25,6 +25,11 @@ public class NoticiaValidator {
 			errores.add("La fecha debe tener formato dd/mm/aaaa.");
 		}
 
+		int jugadorLen = countWithoutSpaces(noticia.getJugador());
+		if (jugadorLen < 2 || jugadorLen > 50) {
+			errores.add("El nombre del jugador debe tener entre 2 y 50 caracteres.");
+		}
+
 		if (noticia.getInteres() == null) {
 			errores.add("El interes debe ser: alta, media o baja.");
 		}

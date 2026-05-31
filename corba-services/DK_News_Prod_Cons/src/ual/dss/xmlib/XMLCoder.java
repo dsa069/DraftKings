@@ -25,6 +25,7 @@ public class XMLCoder {
 
 			salida.append("<noticia>");
 			salida.append("<fecha>").append(escapeXml(noticia.getFecha())).append("</fecha>");
+			salida.append("<jugador>").append(escapeXml(noticia.getJugador())).append("</jugador>");
 			salida.append("<interes>").append(escapeXml(noticia.getInteresValue())).append("</interes>");
 			salida.append("<titulo>").append(escapeXml(noticia.getTitulo())).append("</titulo>");
 			salida.append("<descripcion>").append(escapeXml(noticia.getDescripcion())).append("</descripcion>");

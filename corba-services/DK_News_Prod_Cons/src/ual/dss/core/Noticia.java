@@ -6,6 +6,7 @@ import java.util.List;
 public class Noticia {
 
 	private String fecha;
+	private String jugador;
 	private Interes interes;
 	private String titulo;
 	private String descripcion;
@@ -13,6 +14,7 @@ public class Noticia {
 
 	public Noticia() {
 		this.fecha = "";
+		this.jugador = "";
 		this.interes = null;
 		this.titulo = "";
 		this.descripcion = "";
@@ -20,7 +22,13 @@ public class Noticia {
 	}
 
 	public Noticia(String fecha, Interes interes, String titulo, String descripcion, List<String> etiquetas) {
+		this(fecha, "", interes, titulo, descripcion, etiquetas);
+	}
+
+	public Noticia(String fecha, String jugador, Interes interes, String titulo, String descripcion,
+			List<String> etiquetas) {
 		this.fecha = fecha;
+		this.jugador = jugador;
 		this.interes = interes;
 		this.titulo = titulo;
 		this.descripcion = descripcion;
@@ -28,7 +36,12 @@ public class Noticia {
 	}
 
 	public Noticia(String fecha, String interes, String titulo, String descripcion, List<String> etiquetas) {
-		this(fecha, Interes.fromValue(interes), titulo, descripcion, etiquetas);
+		this(fecha, "", Interes.fromValue(interes), titulo, descripcion, etiquetas);
+	}
+
+	public Noticia(String fecha, String interes, String jugador, String titulo, String descripcion,
+			List<String> etiquetas) {
+		this(fecha, jugador, Interes.fromValue(interes), titulo, descripcion, etiquetas);
 	}
 
 	public String getFecha() {
@@ -37,6 +50,14 @@ public class Noticia {
 
 	public void setFecha(String fecha) {
 		this.fecha = fecha;
+	}
+
+	public String getJugador() {
+		return jugador;
+	}
+
+	public void setJugador(String jugador) {
+		this.jugador = jugador;
 	}
 
 	public Interes getInteres() {
@@ -81,7 +102,8 @@ public class Noticia {
 
 	@Override
 	public String toString() {
-		return "Noticia [fecha=" + fecha + ", interes=" + getInteresValue() + ", titulo=" + titulo + ", descripcion=" + descripcion
+		return "Noticia [fecha=" + fecha + ", jugador=" + jugador + ", interes=" + getInteresValue() + ", titulo="
+				+ titulo + ", descripcion=" + descripcion
 				+ ", etiquetas=" + etiquetas + "]";
 	}
 }

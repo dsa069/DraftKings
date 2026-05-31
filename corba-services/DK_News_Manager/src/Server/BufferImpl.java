@@ -13,15 +13,15 @@ import BufferApp._BufferImplBase;
  * The Class BufferImpl.
  */
 class BufferImpl extends _BufferImplBase {
-	
+
 	/** The orb. */
 	private ORB orb;
-	
+
 	/** Lista FIFO de noticias serializadas. */
 	private final List<String> buf;
 
 	/** The max elementos. */
-	private int maxElementos = 5;
+	private static final int MAX_ELEMENTOS = 30;
 
 	/**
 	 * Instantiates a new buffer impl.
@@ -40,7 +40,7 @@ class BufferImpl extends _BufferImplBase {
 		if (elemento == null || elemento.trim().isEmpty()) {
 			return false;
 		}
-		if (buf.size() >= maxElementos) {
+		if (buf.size() >= MAX_ELEMENTOS) {
 			System.out.println("BUFFER LLENO");
 			return false;
 		}
@@ -69,7 +69,9 @@ class BufferImpl extends _BufferImplBase {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see BufferApp.BufferOperations#num_elementos()
 	 */
 	public synchronized int num_elementos() {
@@ -77,17 +79,12 @@ class BufferImpl extends _BufferImplBase {
 	}
 
 	public synchronized boolean fijarLimiteNoticias(int numero_maximo) {
-		if (numero_maximo <= 0) {
-			return false;
-		}
-		maxElementos = numero_maximo;
-		while (buf.size() > maxElementos) {
-			buf.remove(buf.size() - 1);
-		}
-		return true;
+		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see BufferApp.BufferOperations#shutdown()
 	 */
 	// implementa el metodo shutdown()

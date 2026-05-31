@@ -38,14 +38,14 @@ class BufferImplTest {
     }
 
     @Test
-    void fijarLimiteRecortaSiEsNecesario() {
-        buffer.put("a");
-        buffer.put("b");
-        buffer.put("c");
-        assertEquals(3, buffer.num_elementos());
-
-        assertFalse(buffer.fijarLimiteNoticias(0));
-        assertTrue(buffer.fijarLimiteNoticias(2));
-        assertEquals(2, buffer.num_elementos());
+    void limiteFijoDe30() {
+        for (int i = 0; i < 30; i++) {
+            assertTrue(buffer.put("noticia" + i));
+        }
+        assertEquals(30, buffer.num_elementos());
+        assertFalse(buffer.put("noticia30"));
+        assertEquals(30, buffer.num_elementos());
+        assertFalse(buffer.fijarLimiteNoticias(2));
+        assertEquals(30, buffer.num_elementos());
     }
 }
