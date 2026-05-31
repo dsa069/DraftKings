@@ -31,6 +31,8 @@ import { ConfigService } from './app/core/services/config.service';
 import { environment } from './environments/environment';
 import { teamFactory } from './app/core/services/factory/team.factory';
 import { TeamService } from './app/core/services/abstract/team.service';
+import { NewsService } from './app/core/services/abstract/news.service';
+import { NewsFactory } from './app/core/services/factory/news.factory';
 
 console.log('🚀 Configuración cargada:', {
   produccion: environment.production,
@@ -71,5 +73,6 @@ bootstrapApplication(AppComponent, {
       deps: [ConfigService],
     },
     { provide: TeamService, useFactory: teamFactory, deps: [ConfigService] },
+    { provide: NewsService, useFactory: NewsFactory, deps: [ConfigService] },
   ],
 });
