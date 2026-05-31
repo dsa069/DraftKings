@@ -121,7 +121,12 @@ export class NewsService {
       // idealmente deberías volver a consultar, pero podemos devolver el partial temporalmente)
       return { ...newsData, fecha } as INews;
     } catch (error: any) {
-      if (error.message.startsWith("VALIDATION_ERROR")) throw error;
+      if (
+        typeof error?.message === "string" &&
+        error.message.startsWith("VALIDATION_ERROR")
+      ) {
+        throw error;
+      }
       if (this.isConnectionError(error)) {
         throw new Error("CORBA_UNAVAILABLE", { cause: error });
       }
