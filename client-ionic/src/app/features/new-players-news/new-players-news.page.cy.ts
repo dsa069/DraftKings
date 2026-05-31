@@ -74,6 +74,7 @@ describe('NewPlayersNewsPage - Component Testing', () => {
       cy.wrap(wrapper.component).as('componentInstance');
     });
   });
+  
 
   // =========================================================================
   // SECCIÓN A: SEGURIDAD Y RENDERIZADO CONDICIONAL
@@ -147,6 +148,8 @@ describe('NewPlayersNewsPage - Component Testing', () => {
         expect(instance.formData.etiquetas).to.deep.equal(['#tacticanueva']);
       });
     });
+
+  });
 
   // =========================================================================
   // SECCIÓN D: VALIDACIONES DEL FORMULARIO Y SUBMIT
