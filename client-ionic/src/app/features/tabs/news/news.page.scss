@@ -1,0 +1,317 @@
+ion-content {
+  --background: var(--ion-color-background);
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+ion-list {
+  background: transparent !important;
+  padding: 0;
+}
+
+ion-card {
+  margin: 0;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+}
+
+ion-button {
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --border-radius: 0;
+  margin: 0;
+  height: auto;
+  min-height: auto;
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+ion-badge {
+  --background: transparent;
+  --color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+}
+
+ion-avatar {
+  --border-radius: 50%;
+  width: auto;
+  height: auto;
+}
+
+ion-row,
+ion-col {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+// ==========================================
+// ESTRUCTURA SEMÁNTICA COMPONENTE (NEWS)
+// ==========================================
+
+.news-content {
+  width: 100%;
+}
+
+.news-card-content {
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-margin-mobile);
+  padding-right: var(--spacing-margin-mobile);
+  padding-top: var(--spacing-stack-lg);
+  padding-bottom: var(--spacing-stack-lg);
+
+  @media (min-width: 768px) {
+    padding-left: var(--spacing-stack-lg);
+    padding-right: var(--spacing-stack-lg);
+  }
+}
+
+.news-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--spacing-stack-lg);
+}
+
+.news-title {
+  display: block;
+  font-family: var(--font-family-headline-md);
+  font-size: var(--font-size-headline-md);
+  line-height: var(--font-line-height-headline-md);
+  font-weight: var(--font-weight-headline-md);
+  color: var(--ion-color-on-surface);
+  margin-bottom: 4px; // mb-1
+}
+
+.news-subtitle {
+  display: block;
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  line-height: var(--font-line-height-body-md);
+  font-weight: var(--font-weight-body-md);
+  color: var(--ion-color-on-surface-variant);
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+}
+
+// Estructura Base de la Tarjeta
+.news-card {
+  background-color: var(--ion-color-stadium-grey);
+  border-radius: var(--border-radius-xl);
+  border: 1px solid var(--ion-color-surface-container-highest);
+  padding: var(--spacing-stack-md);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+
+  // Interacciones Hover coordinadas
+  &:hover {
+    border-color: var(--ion-color-outline-variant);
+
+    .card-title {
+      color: var(--ion-color-primary);
+    }
+
+    .btn-bookmark {
+      opacity: 1;
+    }
+  }
+
+  // Modificadores según nivel de prioridad/impacto
+  &.high-impact {
+    .card-indicator-bar {
+      background-color: var(--ion-color-pitch-green);
+    }
+    .badge-priority {
+      background-color: rgba(30, 224, 108, 0.2); // bg-pitch-green-alpha
+      color: var(--ion-color-pitch-green);
+      border: 1px solid rgba(30, 224, 108, 0.3); // border-pitch-green-border
+    }
+    .pulse-dot {
+      background-color: var(--ion-color-pitch-green);
+    }
+  }
+
+  &.medium-impact {
+    .card-indicator-bar {
+      background-color: var(--ion-color-stat-gold);
+    }
+    .badge-priority {
+      background-color: rgba(255, 204, 0, 0.2); // bg-stat-gold-alpha
+      color: var(--ion-color-stat-gold);
+      border: 1px solid rgba(255, 204, 0, 0.3); // border-stat-gold-border
+    }
+    .pulse-dot {
+      background-color: var(--ion-color-stat-gold);
+    }
+  }
+
+  &.low-priority {
+    .card-indicator-bar {
+      background-color: var(--ion-color-on-surface-variant);
+    }
+    .badge-priority {
+      background-color: rgba(187, 203, 184, 0.2); // bg-on-surface-variant-alpha
+      color: var(--ion-color-on-surface-variant);
+      border: 1px solid rgba(187, 203, 184, 0.3); // border-on-surface-variant-border
+    }
+    .pulse-dot {
+      background-color: var(--ion-color-on-surface-variant);
+    }
+  }
+}
+
+// Elementos internos de la Tarjeta
+.card-indicator-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-gutter);
+}
+
+.badge-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-date {
+  background-color: var(--ion-color-surface-container);
+  color: var(--ion-color-on-surface-variant);
+  padding: 4px 8px;
+  border-radius: var(--border-radius);
+  font-family: var(--font-family-label-bold);
+  font-size: 10px;
+  font-weight: var(--font-weight-label-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-priority {
+  padding: 4px 8px;
+  border-radius: var(--border-radius);
+  font-family: var(--font-family-label-bold);
+  font-size: 10px;
+  font-weight: var(--font-weight-label-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--border-radius-full);
+
+  &.animate {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+.card-title {
+  display: block;
+  font-family: var(--font-family-headline-sm);
+  font-size: var(--font-size-headline-sm);
+  line-height: 1.25; // leading-tight
+  font-weight: var(--font-weight-headline-sm);
+  color: var(--ion-color-on-surface);
+  margin-bottom: 8px; // mb-2
+  padding-right: 16px; // pr-4
+  transition: color 0.2s;
+}
+
+.player-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--spacing-stack-md);
+}
+
+.player-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--border-radius-full);
+  background-color: var(--ion-color-surface-container);
+  border: 1px solid var(--ion-color-surface-container-highest);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-color-on-surface-variant);
+
+  .player-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.player-name {
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  line-height: var(--font-line-height-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  color: var(--ion-color-secondary);
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge-tag {
+  background-color: var(--ion-color-surface-container);
+  color: var(--ion-color-on-surface-variant);
+  padding: 4px 8px;
+  border-radius: var(--border-radius-full);
+  font-family: var(--font-family-label-bold);
+  font-size: 10px;
+  font-weight: var(--font-weight-label-bold);
+  border: 1px solid rgba(60, 42, 60, 0.3); // border-outline-variant-alpha
+}
+
+// Animaciones de sistema
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
