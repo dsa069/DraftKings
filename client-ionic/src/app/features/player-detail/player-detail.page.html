@@ -24,7 +24,9 @@
     <ion-card-content class="hero-content">
       <ion-grid class="ion-no-padding">
         <ion-row class="badges-row">
-          <ion-badge class="badge-position">{{ player()!.position }}</ion-badge>
+          <ion-badge class="badge-position"
+            >{{ player()!.position | uppercase }}</ion-badge
+          >
           <ion-badge class="badge-rating">4,5 STARTS</ion-badge>
         </ion-row>
 

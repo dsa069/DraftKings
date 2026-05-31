@@ -7,7 +7,7 @@ import {
   computed,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonGrid,
@@ -75,6 +75,7 @@ import {
     IonDatetimeButton,
     IonPopover,
     IonNote,
+    UpperCasePipe,
   ],
 })
 export class PlayerListComponent {

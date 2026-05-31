@@ -212,7 +212,8 @@
         <ion-label>
           <ion-text class="player-name">{{ player.name }}</ion-text>
           <ion-text class="player-position">
-            {{ player.position || "Unknown Position" }} • {{ player.team }}
+            {{ (player.position | uppercase) || "Unknown Position" }} •
+            {{ player.team }}
           </ion-text>
         </ion-label>
 

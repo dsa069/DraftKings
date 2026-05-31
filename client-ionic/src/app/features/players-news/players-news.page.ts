@@ -15,6 +15,7 @@ import { addIcons } from 'ionicons';
 import { calendarOutline, personOutline } from 'ionicons/icons';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
 import { NewsService } from '../../core/services/abstract/news.service';
+import { AuthService } from '../../core/services/abstract/auth.service';
 @Component({
   selector: 'app-players-news',
   templateUrl: './players-news.page.html',
@@ -36,10 +37,13 @@ import { NewsService } from '../../core/services/abstract/news.service';
 export class PlayersNewsPage implements OnInit {
   private route = inject(ActivatedRoute);
   private newsService = inject(NewsService);
+  private authService = inject(AuthService);
 
   // Enlazamos directamente con las señales reactivas del servicio centralizado
   public selectedNews = this.newsService.selectedNews;
   public isLoading = this.newsService.loading;
+
+  public readonly isAuthenticated = this.authService.isAuthenticated;
 
   constructor() {
     // Registramos los iconos localmente

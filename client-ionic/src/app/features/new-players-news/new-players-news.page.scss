@@ -136,7 +136,8 @@
     background: var(--ion-color-stadium-grey);
   }
 
-  h2 {
+  .player-name {
+    display: block; // Añadido para comportarse como un h2
     font-family: var(--font-family-label-bold);
     font-size: var(--font-size-label-bold);
     font-weight: var(--font-weight-label-bold);
@@ -146,7 +147,8 @@
     text-overflow: ellipsis;
   }
 
-  p {
+  .player-pos {
+    display: block; // Añadido para comportarse como un p
     font-family: var(--font-family-body-md);
     font-size: var(--font-size-body-md);
     color: var(--ion-color-on-surface-variant);

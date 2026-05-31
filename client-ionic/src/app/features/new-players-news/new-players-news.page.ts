@@ -1,8 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { UpperCasePipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NavController, ToastController } from '@ionic/angular'; // <-- Para navegar hacia atrás
 import { NewsService } from '../../core/services/abstract/news.service';
 import { News } from '../../core/models/news.model';
+import { AuthService } from '../../core/services/abstract/auth.service';
 import {
   IonContent,
   IonGrid,
@@ -21,7 +24,8 @@ import {
   IonButton,
   IonIcon,
   IonChip,
-  IonSpinner, // <-- AGREGADO
+  IonSpinner,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { close, send } from 'ionicons/icons';
@@ -50,7 +54,9 @@ import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/h
     IonButton,
     IonIcon,
     IonChip,
-    IonSpinner, // <-- AGREGADO
+    IonSpinner,
+    IonImg,
+    UpperCasePipe,
     FormsModule,
     HeaderSubmenuComponent,
   ],
@@ -59,7 +65,14 @@ export class NewPlayersNewsPage implements OnInit {
   private navCtrl = inject(NavController);
   private newsService = inject(NewsService);
   private toastController = inject(ToastController);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+
+  public readonly isAuthenticated = this.authService.isAuthenticated;
+  public readonly isAdmin = this.authService.isAdmin;
+
   public isLoading = this.newsService.loading;
+  public playerData: any = null;
 
   // Estado del formulario
   public formData = {
@@ -78,8 +91,26 @@ export class NewPlayersNewsPage implements OnInit {
     addIcons({ close, send });
   }
 
+  removeLinkedPlayer() {
+    this.playerData = null;
+    this.formData.jugador = ''; // Limpiamos el nombre para que el formulario pida rellenarlo de nuevo
+  }
+
   ngOnInit() {
-    console.log('NewPlayersNewsPage initialized');
+    this.route.queryParams.subscribe((params) => {
+      if (params['nombre']) {
+        this.playerData = {
+          name: params['nombre'],
+          position: params['posicion'] || 'N/A',
+          photoUrl:
+            params['foto'] ||
+            'https://ionicframework.com/docs/img/demos/avatar.svg',
+        };
+
+        // Asignamos el nombre al formData para que se envíe al endpoint
+        this.formData.jugador = params['nombre'];
+      }
+    });
   }
 
   // Lógica de Etiquetas (Tags)

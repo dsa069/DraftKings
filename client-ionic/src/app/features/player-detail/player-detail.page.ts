@@ -9,7 +9,7 @@ import {
   effect,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DatePipe, NgStyle } from '@angular/common';
+import { DatePipe, NgStyle, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -60,6 +60,7 @@ import {
   checkmark,
   close,
   add,
+  documentTextOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../core/services/abstract/auth.service';
 
@@ -98,6 +99,7 @@ export interface ReviewUI extends Review {
     IonTextarea,
     DatePipe,
     NgStyle,
+    UpperCasePipe,
     HeaderSubmenuComponent,
     MapCaptureComponent,
     FormsModule,
@@ -157,6 +159,7 @@ export class PlayerDetailPage implements OnInit {
       checkmark,
       close,
       add,
+      documentTextOutline,
     });
 
     effect(() => {
@@ -425,8 +428,17 @@ export class PlayerDetailPage implements OnInit {
     }
   }
 
-  onCreateNews(): void {
-    this.navCtrl.navigateForward(`/new-players-news`);
+  onCreateNews() {
+    const player = this.player();
+    if (player) {
+      this.navCtrl.navigateForward('/new-players-news', {
+        queryParams: {
+          nombre: player.name,
+          posicion: player.position,
+          foto: player.photoUrl,
+        },
+      });
+    }
   }
 
   onViewNews(): void {
