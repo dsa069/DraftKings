@@ -19,6 +19,22 @@ describe('NewPlayersNewsPage - Component Testing', () => {
   let toastCreateStub: sinon.SinonStub;
   let toastPresentStub: sinon.SinonStub;
 
+  const typeInIonInput = (name: string, value: string) => {
+    cy.get(`ion-input[name="${name}"]`)
+      .shadow()
+      .find('input')
+      .clear({ force: true })
+      .type(value, { force: true });
+  };
+
+  const typeInIonTextarea = (name: string, value: string) => {
+    cy.get(`ion-textarea[name="${name}"]`)
+      .shadow()
+      .find('textarea')
+      .clear({ force: true })
+      .type(value, { force: true });
+  };
+
   beforeEach(() => {
     // Inicializar señales por defecto (Usuario Autenticado y Administrador)
     mockIsAuthenticated = signal(true);
@@ -70,6 +86,8 @@ describe('NewPlayersNewsPage - Component Testing', () => {
         { provide: NavController, useValue: mockNavController },
         { provide: ToastController, useValue: mockToastController },
       ],
+    }).then((wrapper) => {
+      cy.wrap(wrapper.component).as('componentInstance');
     });
   });
 
@@ -84,13 +102,11 @@ describe('NewPlayersNewsPage - Component Testing', () => {
 
     it('no debe mostrar el lienzo principal si el usuario NO está autenticado', () => {
       mockIsAuthenticated.set(false);
-      cy.tick(0);
       cy.get('.main-canvas').should('not.exist');
     });
 
     it('no debe mostrar el lienzo principal si el usuario autenticado NO es Admin', () => {
       mockIsAdmin.set(false);
-      cy.tick(0);
       cy.get('.main-canvas').should('not.exist');
     });
   });
@@ -110,7 +126,6 @@ describe('NewPlayersNewsPage - Component Testing', () => {
         nombre: 'Erling Haaland',
         posicion: 'Delantero',
       });
-      cy.tick(0);
 
       cy.get('.player-card').should('exist');
       cy.get('.player-name').should('contain.text', 'Erling Haaland');
@@ -120,15 +135,17 @@ describe('NewPlayersNewsPage - Component Testing', () => {
 
     it('debe limpiar el jugador vinculado al hacer clic en el botón cerrar', () => {
       queryParamsSubject.next({ nombre: 'Jude Bellingham' });
-      cy.tick(0);
 
       // Clic en el botón "close"
       cy.get('.player-close-btn').click();
-      cy.tick(0);
 
       // Debería desaparecer la tarjeta y volver a aparecer el input manual
       cy.get('.player-card').should('not.exist');
-      cy.get('ion-input[name="jugador"]').should('exist').and('have.value', ''); // Debe estar limpio
+      cy.get('ion-input[name="jugador"]').should('exist');
+      cy.get('ion-input[name="jugador"]')
+        .shadow()
+        .find('input')
+        .should('have.value', '');
     });
   });
 
@@ -138,7 +155,7 @@ describe('NewPlayersNewsPage - Component Testing', () => {
   describe('Gestión de Etiquetas (Tags)', () => {
     it('debe agregar una etiqueta, añadir el prefijo "#" y quitar espacios', () => {
       // Escribimos en el input y disparamos el enter
-      cy.get('ion-input[name="currentTag"]').type('  tactica nueva  {enter}');
+      typeInIonInput('currentTag', '  tactica nueva  {enter}');
 
       cy.get('.custom-chip')
         .should('have.length', 1)
@@ -150,18 +167,20 @@ describe('NewPlayersNewsPage - Component Testing', () => {
 
       // Intentamos añadir 7 etiquetas
       tags.forEach((tag) => {
-        cy.get('ion-input[name="currentTag"]').type(`${tag}{enter}`);
+        typeInIonInput('currentTag', `${tag}{enter}`);
       });
 
       // Solo deben existir 6 en el DOM
       cy.get('.custom-chip').should('have.length', 6);
 
       // El input de tag debería estar deshabilitado
-      cy.get('ion-input[name="currentTag"]').should('have.attr', 'disabled');
+      cy.get('ion-input[name="currentTag"]').should(($el) => {
+        expect(($el[0] as HTMLIonInputElement).disabled).to.equal(true);
+      });
     });
 
     it('debe eliminar una etiqueta al hacer clic en ella', () => {
-      cy.get('ion-input[name="currentTag"]').type('Lesión{enter}');
+      typeInIonInput('currentTag', 'Lesión{enter}');
       cy.get('.custom-chip').should('have.length', 1);
 
       // Clic en el chip para borrarlo
@@ -176,7 +195,7 @@ describe('NewPlayersNewsPage - Component Testing', () => {
   describe('Validaciones y Envío del Formulario', () => {
     it('debe mostrar Toast de error si el nombre del jugador es muy corto (< 2)', () => {
       // Dejamos todo vacío y disparamos Submit
-      cy.get('ion-input[name="jugador"]').type('A');
+      typeInIonInput('jugador', 'A');
       cy.get('form').submit();
 
       cy.get('@toastCreate').should(
@@ -191,9 +210,10 @@ describe('NewPlayersNewsPage - Component Testing', () => {
 
     it('debe mostrar Toast de error si falta agregar etiquetas', () => {
       // Rellenamos el resto pero sin etiquetas
-      cy.get('ion-input[name="jugador"]').type('Leo Messi');
-      cy.get('ion-input[name="titulo"]').type('Titulo válido');
-      cy.get('ion-textarea[name="descripcion"]').type(
+      typeInIonInput('jugador', 'Leo Messi');
+      typeInIonInput('titulo', 'Titulo válido');
+      typeInIonTextarea(
+        'descripcion',
         'Esto es una descripción de prueba lo suficientemente larga.'
       );
 
@@ -209,13 +229,14 @@ describe('NewPlayersNewsPage - Component Testing', () => {
 
     it('debe enviar el formulario correctamente, transformar la fecha y navegar atrás', () => {
       // Rellenar formulario válido
-      cy.get('ion-input[name="jugador"]').type('Leo Messi');
+      typeInIonInput('jugador', 'Leo Messi');
       cy.get('ion-segment-button[value="alta"]').click();
-      cy.get('ion-input[name="titulo"]').type('Noticia Importante');
-      cy.get('ion-textarea[name="descripcion"]').type(
+      typeInIonInput('titulo', 'Noticia Importante');
+      typeInIonTextarea(
+        'descripcion',
         'Esta descripción es válida porque tiene más de veinte caracteres.'
       );
-      cy.get('ion-input[name="currentTag"]').type('exclusiva{enter}');
+      typeInIonInput('currentTag', 'exclusiva{enter}');
 
       // Enviar formulario
       cy.get('form').submit();
@@ -242,12 +263,13 @@ describe('NewPlayersNewsPage - Component Testing', () => {
       createNewsStub.rejects(new Error('Backend Timeout'));
 
       // Rellenar formulario válido mínimo
-      cy.get('ion-input[name="jugador"]').type('Jugador X');
-      cy.get('ion-input[name="titulo"]').type('Titulo de test');
-      cy.get('ion-textarea[name="descripcion"]').type(
+      typeInIonInput('jugador', 'Jugador X');
+      typeInIonInput('titulo', 'Titulo de test');
+      typeInIonTextarea(
+        'descripcion',
         'Texto descriptivo muy largo para que pase la validación.'
       );
-      cy.get('ion-input[name="currentTag"]').type('tag{enter}');
+      typeInIonInput('currentTag', 'tag{enter}');
 
       cy.get('form').submit();
 
@@ -268,7 +290,6 @@ describe('NewPlayersNewsPage - Component Testing', () => {
   describe('Estado Visual de Carga (Loading)', () => {
     it('debe deshabilitar el botón y mostrar spinner si isLoading() es true', () => {
       mockIsLoading.set(true);
-      cy.tick(0);
 
       cy.get('ion-button.submit-btn').should('have.attr', 'disabled');
       cy.get('ion-button.submit-btn ion-spinner').should('exist');
