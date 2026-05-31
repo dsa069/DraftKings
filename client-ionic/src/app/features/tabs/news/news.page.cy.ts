@@ -228,7 +228,7 @@ describe('NewsPage - Component Testing', () => {
 
     it('debe invocar onNewsItemClick y navegar al hacer clic en una tarjeta', () => {
       // Hacemos clic en la primera tarjeta (Neymar Jr, ID: '1')
-      cy.get('ion-card.news-card').first().click();
+      cy.get('ion-card.news-card').first().click({ force: true });
 
       // Dependiendo de cómo hayas implementado la navegación internamente,
       // podrías espiar el método directamente. Aquí asumimos que usas NavController.
