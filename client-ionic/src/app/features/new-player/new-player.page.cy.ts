@@ -65,6 +65,7 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
 
     authServiceMock = {
       getToken: cy.stub().resolves('mock-token'),
+      isAuthenticated: (() => true) as any,
     };
   });
 

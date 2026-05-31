@@ -1,4 +1,5 @@
 import { ImportPlayersPage } from './import-players.page';
+import { AuthService } from '../../core/services/abstract/auth.service';
 import { PlayerService } from '../../core/services/abstract/player.service';
 import { LocationService } from '../../core/services/location.service';
 import { NavController } from '@ionic/angular';
@@ -9,6 +10,7 @@ describe('ImportPlayersPage Component - Test Suite Exhaustivo', () => {
   let playerServiceMock: any;
   let locationServiceMock: any;
   let navCtrlMock: Partial<NavController>;
+  let authServiceMock: any;
 
   // 2. Datos de Prueba
   const mockExternalPlayers: Player[] = [
@@ -34,6 +36,14 @@ describe('ImportPlayersPage Component - Test Suite Exhaustivo', () => {
         .stub()
         .resolves({ lat: 40.4167, lng: -3.7032 }), // Coordenadas de Madrid
     };
+
+    authServiceMock = {
+      isAuthenticated: () => true,
+      isAdmin: () => false,
+      isUser: () => true,
+      userProfile: () => null,
+      getToken: cy.stub().resolves('mock-jwt-token'),
+    };
   });
 
   // 3. Función de Montaje
@@ -41,6 +51,7 @@ describe('ImportPlayersPage Component - Test Suite Exhaustivo', () => {
     cy.mount(ImportPlayersPage, {
       providers: [
         { provide: NavController, useValue: navCtrlMock },
+        { provide: AuthService, useValue: authServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: LocationService, useValue: locationServiceMock },
       ],

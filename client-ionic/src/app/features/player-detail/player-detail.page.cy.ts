@@ -5,6 +5,7 @@ import { LocationService } from '../../core/services/location.service';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { AuthService } from '../../core/services/abstract/auth.service';
+import { NewsService } from '../../core/services/abstract/news.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
@@ -14,6 +15,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
   let locationServiceMock: Partial<LocationService>;
   let navCtrlMock: Partial<NavController>;
   let authServiceMock: Partial<AuthService>;
+  let newsServiceMock: Partial<NewsService>;
 
   // 2. Datos de Prueba
   const mockPlayer = {
@@ -68,6 +70,10 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
       isAdmin: (() => true) as any,
       userProfile: (() => ({ userName: 'Coach' })) as any,
     };
+
+    newsServiceMock = {
+      getNews: cy.stub().resolves([]),
+    };
   });
 
   // 3. Función Helper de Montaje Dinámico
@@ -86,6 +92,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
         { provide: ReviewService, useValue: reviewServiceMock },
         { provide: LocationService, useValue: locationServiceMock },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: NewsService, useValue: newsServiceMock },
       ],
     }).then((wrapper) => {
       // Exponemos la instancia para evaluar Signals en la lógica interna
@@ -230,6 +237,83 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
           expect(remainingComments[0].id).to.equal('102');
         });
       });
+    });
+  });
+  // =========================================================================
+  // SECCIÓN: NOTICIAS (PLAYER INTEL)
+  // =========================================================================
+  describe('Sección de Noticias (Player Intel)', () => {
+    const mockNews = [
+      {
+        id: 'n1',
+        titulo: 'Lesión muscular',
+        fecha: '10/10/2023',
+        descripcion: 'Estará de baja por 2 semanas tras el entrenamiento.',
+        interes: 'alta',
+        jugador: 'Lionel Messi',
+        etiquetas: ['lesion'],
+      },
+      {
+        id: 'n2',
+        titulo: 'Cambio de posición',
+        fecha: '15/10/2023',
+        descripcion: 'El entrenador probará colocarlo de falso 9.',
+        interes: 'media',
+        jugador: 'Lionel Messi',
+        etiquetas: ['tactica'],
+      },
+    ];
+
+    it('debe mostrar la lista de noticias cuando el Signal playerNews tiene datos', () => {
+      cy.get('@componentInstance').then((instance: any) => {
+        // Poblamos el Signal de noticias con los mocks
+        instance.playerNews.set(mockNews);
+        instance.cdr.markForCheck(); // Disparamos la detección de cambios
+      });
+
+      // Validamos que se pinten en el DOM
+      cy.contains('Lesión muscular').should('exist');
+      cy.contains('Estará de baja por 2 semanas').should('exist');
+      cy.contains('Cambio de posición').should('exist');
+    });
+
+    it('debe mostrar el mensaje @empty de "No related news" cuando el Signal está vacío', () => {
+      cy.get('@componentInstance').then((instance: any) => {
+        // Vaciamos el Signal simulando que el backend no trajo nada
+        instance.playerNews.set([]);
+        instance.cdr.markForCheck();
+      });
+
+      // Validamos que el template @empty se renderice correctamente
+      cy.contains('No related news for this player.').should('be.visible');
+    });
+
+    it('debe navegar correctamente a crear noticia con los queryParams del jugador (onCreateNews)', () => {
+      cy.get('@componentInstance').then((instance: any) => {
+        // Aseguramos que el Signal del jugador tenga datos
+        instance.player.set({
+          id: '1',
+          name: 'Lionel Messi',
+          position: 'Forward',
+          photoUrl: 'https://example.com/messi.jpg',
+        });
+
+        // Ejecutamos el método que gatilla el botón "Create News"
+        instance.onCreateNews();
+      });
+
+      // Verificamos el espía del NavController inyectado en el archivo base
+      cy.wrap(navCtrlMock.navigateForward).should(
+        'have.been.calledOnceWith',
+        '/new-players-news',
+        {
+          queryParams: {
+            nombre: 'Lionel Messi',
+            posicion: 'Forward',
+            foto: 'https://example.com/messi.jpg',
+          },
+        }
+      );
     });
   });
 });

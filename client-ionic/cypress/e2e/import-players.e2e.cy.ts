@@ -22,6 +22,25 @@ describe('Importar jugadores E2E', () => {
 
     visitApp('/import-players');
 
+    cy.get('app-import-players').then(($host) => {
+      cy.window().then((win) => {
+        const cmp = (win as any).ng.getComponent($host[0]);
+        const authService = cmp.authService;
+
+        authService.getToken = cy.stub().resolves('mock-jwt-token');
+        authService.isAuthenticated = () => true;
+        authService.isAdmin = () => false;
+        authService.isUser = () => true;
+        authService.userProfile = () => null;
+
+        cmp.isAuthenticated = () => true;
+
+        if ((win as any).ng?.applyChanges) {
+          (win as any).ng.applyChanges(cmp);
+        }
+      });
+    });
+
     cy.wait('@externalPlayers');
     cy.contains('.player-card', 'Lionel Messi').should('be.visible');
     cy.contains('.player-card', 'Erling Haaland').should('be.visible');
