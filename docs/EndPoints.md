@@ -483,51 +483,132 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 ## 📰 Noticias (News System)
 
-<!-- TO DO -->
-
 ### 14) Obtener noticias de jugadores
 
-- **Caso de uso:** `UC_ver_noticias`
-- **Método:** `GET`
-- **URL:**
-  - Spring: `http://localhost:8092/api/news`
-  - Node: `No implementado en el backend Node actual`
-- **Headers:**
-  - `Authorization: Bearer {tu_token_JWT}`
+* **Caso de uso:** `UC_ver_noticias`
 
-- **Respuestas:**
-  - `200 OK` — Lista de noticias devuelta correctamente.
-  - `401 Unauthorized` — El token JWT falta o no es válido.
-  - `500 Internal Server Error` — Error interno del servidor.
+* **Método:** `GET`
 
-### 15) Publicar una noticia
+* **URL:**
 
-- **Caso de uso:** `UC_crear_noticia`
-- **Método:** `POST`
-- **URL:**
-  - Spring: `http://localhost:8092/api/news`
-  - Node: `No implementado en el backend Node actual`
-- **Headers:**
-  - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
-  - `Content-Type: application/json`
-- **Body (JSON) ejemplo:**
+  * Spring: `http://localhost:8092/api/news`
+  * Node: `No implementado en el backend Node actual`
+
+* **Headers:**
+
+  * `Authorization: Bearer {tu_token_JWT}`
+
+* **Respuesta 200 (JSON) ejemplo:**
+
+```json
+[
+  {
+    "id": 0,
+    "fecha": "15/04/2026",
+    "jugador": "Lamine Yamal",
+    "interes": "alta",
+    "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
+    "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
+    "etiquetas": [
+      "#LaLiga",
+      "#LamineYamal",
+      "#Fantasy"
+    ]
+  }
+]
+```
+
+* **Respuestas:**
+
+  * `200 OK` — Lista de noticias devuelta correctamente.
+  * `401 Unauthorized` — El token JWT falta o no es válido.
+  * `500 Internal Server Error` — Error interno del servidor.
+
+---
+
+### 15) Ver noticia en detalle
+
+* **Caso de uso:** `UC_ver_noticia`
+
+* **Método:** `GET`
+
+* **URL:**
+
+  * Spring: `http://localhost:8092/api/news/{id}`
+  * Node: `No implementado en el backend Node actual`
+
+* **Headers:**
+
+  * `Authorization: Bearer {tu_token_JWT}`
+
+* **Respuesta 200 (JSON) ejemplo:**
 
 ```json
 {
-  "title": "Fichaje Bomba en la liga",
-  "summary": "Resumen corto de la noticia",
-  "body": "Texto largo con todo el desarrollo informativo...",
-  "player_id": 12,
-  "tags": "Fichajes, Exclusiva"
+  "id": 0,
+  "fecha": "15/04/2026",
+  "jugador": "Lamine Yamal",
+  "interes": "alta",
+  "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
+  "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
+  "etiquetas": [
+    "#LaLiga",
+    "#LamineYamal",
+    "#Fantasy"
+  ]
 }
 ```
 
-- **Respuestas:**
-  - `201 Created` — Noticia publicada correctamente.
-  - `401 Unauthorized` — El token JWT falta o no es válido.
-  - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
-  - `400 Bad Request` — Body inválido.
-  - `500 Internal Server Error` — Error interno del servidor.
+* **Respuestas:**
+
+  * `200 OK` — Noticia encontrada.
+  * `401 Unauthorized` — El token JWT falta o no es válido.
+  * `404 Not Found` — La noticia no existe.
+  * `500 Internal Server Error` — Error interno del servidor.
+
+---
+
+### 16) Publicar una noticia
+
+* **Caso de uso:** `UC_crear_noticia`
+
+* **Método:** `POST`
+
+* **URL:**
+
+  * Spring: `http://localhost:8092/api/news`
+  * Node: `No implementado en el backend Node actual`
+
+* **Headers:**
+
+  * `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
+  * `Content-Type: application/json`
+
+* **Body (JSON) ejemplo:**
+
+```json
+{
+  "id": 0,
+  "fecha": "15/04/2026",
+  "jugador": "Lamine Yamal",
+  "interes": "alta",
+  "titulo": "Lamine Yamal vuelve a ser decisivo en la lucha por el campeonato",
+  "descripcion": "El joven extremo fue protagonista en la última jornada tras participar directamente en dos goles, aumentando su valor para los usuarios fantasy y confirmando su gran estado de forma.",
+  "etiquetas": [
+    "#LaLiga",
+    "#LamineYamal",
+    "#Fantasy"
+  ]
+}
+```
+
+* **Respuestas:**
+
+  * `201 Created` — Noticia publicada correctamente.
+  * `400 Bad Request` — Body inválido.
+  * `401 Unauthorized` — El token JWT falta o no es válido.
+  * `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
+  * `500 Internal Server Error` — Error interno del servidor.
 
 ---
 
