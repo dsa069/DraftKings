@@ -123,4 +123,3 @@ Date: Sun, 31 May 2026 15:45:59 GMT
 Notas rápidas:
 - Los endpoints devuelven `application/json` cuando se solicita (`format=json` o `Accept: application/json`).
 - La validación de campos aplica (ej. `descripcion` entre 20 y 250 caracteres; `jugador` entre 2 y 50 caracteres).
-- Si quieres que genere ejemplos curl adicionales (por ejemplo, con JSON en body multipart o con encabezados), o un README con pasos de despliegue, lo hago ahora.
