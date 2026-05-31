@@ -113,7 +113,7 @@ describe('TabsPage Component', () => {
 
       // Verifica los parámetros exactos requeridos por el método KISS de la clase
       cy.wrap(toastControllerMock.create).should('have.been.calledOnceWith', {
-        message: 'Please log in or register to build your squad.',
+        message: 'Please log in or register to access this feature.',
         duration: 3000,
         position: 'bottom',
         color: 'tertiary',

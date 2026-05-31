@@ -20,7 +20,7 @@ describe('Smoke de navegación de tabs', () => {
 
     getToastMessage().should(
       'contain.text',
-      'Please log in or register to build your squad.'
+      'Please log in or register to access this feature.'
     );
     cy.url().should('include', '/#/tabs/players');
   });
