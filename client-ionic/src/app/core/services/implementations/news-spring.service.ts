@@ -22,10 +22,11 @@ export class NewsSpringService extends NewsService {
       const res = await firstValueFrom(
         this.http.get<News[]>(this.apiUrl, { headers })
       );
+      const cleanedRes = res.map((n) => this.cleanTags(n));
 
       // Sincronizamos la señal reactiva
-      this._newsList.set(res);
-      return res;
+      this._newsList.set(cleanedRes);
+      return cleanedRes;
     } finally {
       this._loading.set(false);
     }
@@ -43,10 +44,9 @@ export class NewsSpringService extends NewsService {
       const res = await firstValueFrom(
         this.http.get<News>(`${this.apiUrl}/${id}`, { headers })
       );
-
-      // Sincronizamos la señal de la noticia seleccionada
-      this._selectedNews.set(res);
-      return res;
+      const cleanedRes = this.cleanTags(res);
+      this._selectedNews.set(cleanedRes);
+      return cleanedRes;
     } finally {
       this._loading.set(false);
     }
@@ -61,17 +61,32 @@ export class NewsSpringService extends NewsService {
       let headers = new HttpHeaders();
       if (token) headers = headers.set('Authorization', `Bearer ${token}`);
 
+      const cleanNews = this.cleanTags(news);
+
       const createdNews = await firstValueFrom(
-        this.http.post<News>(this.apiUrl, news, { headers })
+        this.http.post<News>(this.apiUrl, cleanNews, { headers })
       );
 
       // 🔥 REACTIVIDAD PURA CON SIGNALS:
       // Insertamos la nueva noticia directamente al principio de la lista actual en memoria
       this._newsList.update((currentNews) => [createdNews, ...currentNews]);
-
       return createdNews;
     } finally {
       this._loading.set(false);
     }
+  }
+  private cleanTags(news: News): News {
+    if (news.etiquetas) {
+      // Por si llega un string puro o un array mal formado, unificamos
+      const tags = Array.isArray(news.etiquetas)
+        ? news.etiquetas
+        : [news.etiquetas as any];
+
+      news.etiquetas = tags
+        .flatMap((tag: string) => tag.split(',')) // Separa obligatoriamente por comas
+        .map((tag: string) => tag.trim()) // Elimina espacios a los lados
+        .filter((tag: string) => tag.length > 0); // Elimina elementos vacíos que dejen las comas seguidas
+    }
+    return news;
   }
 }
