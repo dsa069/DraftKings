@@ -168,10 +168,15 @@
                <p>Formulario Productor-Consumidor</p>
             </header>
 
-            <form action='http://localhost:8070/DK_News_Prod_Cons/servlet' method='post'>
+            <form action='<%= request.getContextPath() %>/servlet' method='post'>
                <div class='field'>
                   <label for='fecha'>Fecha (dd/mm/aaaa):</label>
                   <input id='fecha' name='fecha' size='20'>
+               </div>
+
+               <div class='field'>
+                  <label for='jugador'>Nombre del jugador (2-50 caracteres):</label>
+                  <input id='jugador' name='jugador' size='60'>
                </div>
 
                <div class='field'>
@@ -199,15 +204,14 @@
                </div>
 
                <div class='field'>
-                  <label for='limiteNoticias'>Limite maximo de noticias:</label>
-                  <input id='limiteNoticias' name='limiteNoticias' size='10' value='5'>
+                  <label>Límite máximo fijo:</label>
+                  <div class='buffer-count'>30 noticias</div>
                </div>
 
                <div class='actions'>
                   <input value='Enviar' alt='Press button to export' type='submit' name='action'>
                   <input value='Recibir' alt='Press button to export' type='submit' name='action'>
                   <input value='Leer' alt='Press button to export' type='submit' name='action'>
-                  <input value='Fijar limite' type='submit' name='action'>
                   <input value=' Reset ' type='reset' name='action'>
                </div>
             </form>

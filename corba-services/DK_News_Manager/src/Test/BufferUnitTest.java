@@ -17,7 +17,7 @@ public class BufferUnitTest {
 
 	private static class FakeBuffer implements BufferOperations {
 		private final List<String> datos = new ArrayList<String>();
-		private int limite = 2;
+		private int limite = 30;
 		private boolean apagado;
 
 		@Override
@@ -56,14 +56,7 @@ public class BufferUnitTest {
 
 		@Override
 		public synchronized boolean fijarLimiteNoticias(int numero_maximo) {
-			if (numero_maximo <= 0) {
-				return false;
-			}
-			limite = numero_maximo;
-			while (datos.size() > limite) {
-				datos.remove(datos.size() - 1);
-			}
-			return true;
+			return false;
 		}
 
 		@Override
@@ -91,10 +84,11 @@ public class BufferUnitTest {
 
 	@Test
 	public void putYLimite() {
-		assertTrue(buffer.put(noticia("n1", "#uno")));
-		assertTrue(buffer.put(noticia("n2", "#dos")));
-		assertFalse(buffer.put(noticia("n3", "#tres")));
-		assertEquals(2, buffer.num_elementos());
+		for (int i = 1; i <= 30; i++) {
+			assertTrue(buffer.put(noticia("n" + i, "#" + i)));
+		}
+		assertFalse(buffer.put(noticia("n31", "#31")));
+		assertEquals(30, buffer.num_elementos());
 	}
 
 	@Test
@@ -120,11 +114,11 @@ public class BufferUnitTest {
 	}
 
 	@Test
-	public void fijarLimiteRecortaYShutdown() {
+	public void limiteNoCambiaYShutdown() {
 		buffer.put(noticia("a", "#a"));
 		buffer.put(noticia("b", "#b"));
-		assertTrue(buffer.fijarLimiteNoticias(1));
-		assertEquals(1, buffer.num_elementos());
+		assertFalse(buffer.fijarLimiteNoticias(1));
+		assertEquals(2, buffer.num_elementos());
 		assertTrue(buffer.read(holder));
 		assertTrue(holder.value.contains("<titulo>a</titulo>"));
 		buffer.shutdown();

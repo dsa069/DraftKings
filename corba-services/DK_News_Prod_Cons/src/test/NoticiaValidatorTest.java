@@ -18,6 +18,7 @@ public class NoticiaValidatorTest {
 	private Noticia noticiaBase() {
 		return new Noticia(
 				"20/03/2026",
+				"Jugador Base",
 				Interes.MEDIA,
 				"Nuevo mercado local",
 				"Descripcion de prueba con contenido suficiente para cumplir longitudes minimas sin espacios.",
@@ -34,6 +35,7 @@ public class NoticiaValidatorTest {
 	public void noticiaInvalidaPorFechaInteresYEtiquetas() {
 		Noticia noticia = new Noticia(
 				"2026-03-20",
+				"Jugador Base",
 				"urgente",
 				"Titulo corto",
 				"Descripcion de prueba con contenido suficiente para cumplir longitudes minimas sin espacios.",
@@ -45,6 +47,7 @@ public class NoticiaValidatorTest {
 	public void noticiaInvalidaPorLongitudes() {
 		Noticia noticia = new Noticia(
 				"20/03/2026",
+				"Jugador Base",
 				Interes.BAJA,
 				"a b",
 				"demasiado corta",
@@ -56,11 +59,26 @@ public class NoticiaValidatorTest {
 	public void noticiaValidaConMuchosEspaciosNoContados() {
 		Noticia noticia = new Noticia(
 				"20/03/2026",
+				"Jugador Con Espacios",
 				Interes.ALTA,
 				"    Titulo      con       espacios    ",
 				"Esta      descripcion   incluye     multiples espacios y debe seguir siendo valida por longitud no blanca.",
 				Arrays.asList("#espacios", "#prueba"));
 		assertTrue(NoticiaValidator.validate(noticia).isEmpty());
+	}
+
+	@Test
+	public void noticiaInvalidaPorJugadorCorto() {
+		Noticia noticia = new Noticia(
+				"20/03/2026",
+				"A",
+				Interes.ALTA,
+				"Titulo valido",
+				"Descripcion valida con contenido suficiente para cumplir longitudes minimas sin espacios.",
+				Arrays.asList("#uno"));
+		List<String> errores = NoticiaValidator.validate(noticia);
+		assertFalse(errores.isEmpty());
+		assertTrue(errores.toString().contains("jugador"));
 	}
 
 	@Test

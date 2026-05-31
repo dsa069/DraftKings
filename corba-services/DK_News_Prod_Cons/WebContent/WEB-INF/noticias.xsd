@@ -13,6 +13,13 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
+                                <xs:element name="jugador">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:pattern value="(\s*\S\s*){2,50}"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
                             <xs:element name="interes">
                                 <xs:simpleType>
                                     <xs:restriction base="xs:string">

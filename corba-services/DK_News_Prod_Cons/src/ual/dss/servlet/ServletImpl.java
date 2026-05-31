@@ -35,10 +35,9 @@ public class ServletImpl extends HttpServlet {
 	private static final String DEFAULT_ORB_PORT = "1050";
 	private static final String DEFAULT_BUFFER_NAME = "Buffer";
 	private static final String XSD_NOTICIAS = "noticias.xsd";
-	private static final int DEFAULT_LIMITE_NOTICIAS = 5;
+	private static final int MAX_NOTICIAS = 30;
 
 	static Buffer bufferImpl;
-	private static int limiteNoticias = DEFAULT_LIMITE_NOTICIAS;
 
 	protected void actionEnviar(PrintWriter out, Noticia noticia) throws IOException {
 		try {
@@ -76,32 +75,6 @@ public class ServletImpl extends HttpServlet {
 		actionObtenerNoticia(out, true);
 	}
 
-	protected void actionFijarLimite(PrintWriter out, String nuevoLimite) {
-		try {
-			if (nuevoLimite == null || nuevoLimite.trim().isEmpty()) {
-				throw new IllegalArgumentException("Debes indicar un limite maximo de noticias.");
-			}
-			int limite = Integer.parseInt(nuevoLimite.trim());
-			if (limite <= 0) {
-				throw new IllegalArgumentException("El limite maximo debe ser mayor que 0.");
-			}
-
-			getreference();
-			boolean actualizado = bufferImpl.fijarLimiteNoticias(limite);
-			if (!actualizado) {
-				throw new IllegalStateException("El servidor no ha podido actualizar el limite de noticias.");
-			}
-
-			limiteNoticias = limite;
-			printResultado(out, "<font color='#2EFE64'>Nuevo limite aplicado: " + limite
-					+ ". Si se reduce por debajo de la cardinalidad, se recortan las noticias mas recientes.</font>");
-		} catch (NumberFormatException e) {
-			printResultado(out, "<font color='#DF0101'>El limite debe ser un numero entero.</font>");
-		} catch (Exception e) {
-			printResultado(out, "<font color='#DF0101'>" + getErrorMessage(e) + "</font>");
-		}
-	}
-
 	private void actionObtenerNoticia(PrintWriter out, boolean consumir) {
 		try {
 			getreference();
@@ -135,11 +108,11 @@ public class ServletImpl extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse response) throws IOException, ServletException {
 		String action = req.getParameter("action");
 		String fecha = req.getParameter("fecha");
+		String jugador = req.getParameter("jugador");
 		String interes = req.getParameter("interes");
 		String titulo = req.getParameter("titulo");
 		String descripcion = req.getParameter("descripcion");
 		String etiquetasRaw = req.getParameter("etiquetas");
-		String nuevoLimite = req.getParameter("limiteNoticias");
 
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
@@ -150,15 +123,13 @@ public class ServletImpl extends HttpServlet {
 		}
 
 		if ("Enviar".equals(action)) {
-			Noticia noticia = new Noticia(fecha, parseInteres(interes), titulo, descripcion,
+			Noticia noticia = new Noticia(fecha, jugador, parseInteres(interes), titulo, descripcion,
 					NoticiaValidator.parseEtiquetas(etiquetasRaw));
 			actionEnviar(out, noticia);
 		} else if ("Recibir".equals(action)) {
 			actionRecibir(out);
 		} else if ("Leer".equals(action)) {
 			actionLeer(out);
-		} else if ("Fijar limite".equals(action)) {
-			actionFijarLimite(out, nuevoLimite);
 		} else {
 			printResultado(out, "<font color='#DF0101'>Accion '" + action + "' no reconocida.</font>");
 		}
@@ -400,7 +371,6 @@ public class ServletImpl extends HttpServlet {
 				+ "<input value='Enviar' type='submit' name='action'>"
 				+ "<input value='Recibir' type='submit' name='action'>"
 				+ "<input value='Leer' type='submit' name='action'>"
-				+ "<input value='Fijar limite' type='submit' name='action'>"
 				+ "<input value='Reset' type='reset' name='resetAction'>"
 				+ "</div>");
 	}
@@ -409,6 +379,8 @@ public class ServletImpl extends HttpServlet {
 		out.println("<form action='http://localhost:8070/DK_News_Prod_Cons/servlet' method='post'>");
 		out.println("<div class='field'><label for='fecha'>Fecha (dd/mm/aaaa):</label>");
 		out.println("<input id='fecha' name='fecha' size='20'></div>");
+		out.println("<div class='field'><label for='jugador'>Nombre del jugador (2-50 caracteres):</label>");
+		out.println("<input id='jugador' name='jugador' size='60'></div>");
 		out.println("<div class='field'><label for='interes'>Interes:</label>"
 				+ "<select id='interes' name='interes'>"
 				+ "<option value='alta'>alta</option>"
@@ -421,8 +393,8 @@ public class ServletImpl extends HttpServlet {
 		out.println("<textarea id='descripcion' name='descripcion' rows='8' cols='70'></textarea></div>");
 		out.println("<div class='field'><label for='etiquetas'>Etiquetas (ej: #musica #festival):</label>"
 				+ "<input id='etiquetas' name='etiquetas' size='60'></div>");
-		out.println("<div class='field'><label for='limiteNoticias'>Limite maximo de noticias:</label>"
-				+ "<input id='limiteNoticias' name='limiteNoticias' size='10' value='" + limiteNoticias + "'></div>");
+		out.println("<div class='field'><label>Límite máximo fijo:</label>"
+				+ "<div class='buffer-count'>" + MAX_NOTICIAS + " noticias</div></div>");
 		out.println("<p class='buffer-count'><strong>Numero de noticias en el Buffer:</strong> " + nelementos + "</p>");
 	}
 
@@ -485,7 +457,8 @@ public class ServletImpl extends HttpServlet {
 	}
 
 	private String formatNoticia(Noticia noticia) {
-		return "fecha=" + noticia.getFecha() + ", interes=" + noticia.getInteresValue() + ", titulo="
+		return "fecha=" + noticia.getFecha() + ", jugador=" + noticia.getJugador() + ", interes="
+				+ noticia.getInteresValue() + ", titulo="
 				+ noticia.getTitulo()
 				+ ", descripcion=" + noticia.getDescripcion() + ", etiquetas=" + noticia.getEtiquetas();
 	}
