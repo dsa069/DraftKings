@@ -9,15 +9,17 @@ import {
   IonCard,
   IonBadge,
   IonAvatar,
-  IonImg,
   IonText,
   IonSpinner,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { NavController } from '@ionic/angular';
 import { NewsService } from '../../../core/services/abstract/news.service';
 import { News } from '../../../core/models/news.model';
 import { AuthService } from '../../../core/services/abstract/auth.service';
+import { addIcons } from 'ionicons';
+import { personCircleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-news',
@@ -32,9 +34,9 @@ import { AuthService } from '../../../core/services/abstract/auth.service';
     IonCard,
     IonBadge,
     IonAvatar,
-    IonImg,
     IonText,
     IonSpinner,
+    IonIcon,
     CommonModule,
     FormsModule,
     HeaderComponent,
@@ -49,6 +51,12 @@ export class NewsPage implements OnInit {
   public newsList = signal<News[]>([]);
   public isLoading = this.newsService.loading;
   public readonly isAuthenticated = this.authService.isAuthenticated;
+
+  constructor() {
+    addIcons({
+      personCircleOutline,
+    });
+  }
 
   async ngOnInit() {
     console.log('NewsPage initialized');

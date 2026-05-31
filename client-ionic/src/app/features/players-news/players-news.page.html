@@ -4,7 +4,7 @@
 ></app-header-submenu>
 
 <ion-content class="bg-content">
-  @if (isLoading()) {
+  @if (isAuthenticated()) { @if (isLoading()) {
   <div
     style="
       display: flex;
@@ -69,5 +69,5 @@
   >
     <ion-text>No se pudo encontrar el detalle de esta noticia.</ion-text>
   </div>
-  }
+  } }
 </ion-content>

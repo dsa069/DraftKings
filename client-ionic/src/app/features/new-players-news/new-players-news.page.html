@@ -3,6 +3,7 @@
   href="/tabs/players"
 ></app-header-submenu>
 <ion-content class="page-content">
+  @if (isAuthenticated() && isAdmin()) {
   <ion-grid class="main-canvas">
     <ion-row>
       <ion-col class="header-col">
@@ -22,17 +23,57 @@
         <form #newsForm="ngForm" (ngSubmit)="onSubmit()">
           <ion-card class="form-card">
             <ion-card-content class="form-content">
+              @if (playerData) {
               <section class="input-field-wrapper">
-                <ion-label class="field-label">DATE</ion-label>
+                <ion-label class="field-label">LINKED PLAYER</ion-label>
+                <ion-item
+                  class="player-card"
+                  lines="none"
+                  style="
+                    --background: transparent;
+                    border: 1px solid rgba(var(--ion-color-medium-rgb), 0.2);
+                    border-radius: 8px;
+                    margin-top: 8px;
+                  "
+                >
+                  <ion-avatar slot="start" class="player-avatar">
+                    <ion-img
+                      [src]="playerData.photoUrl"
+                      [alt]="playerData.name"
+                    ></ion-img>
+                  </ion-avatar>
+                  <ion-label>
+                    <ion-text class="player-name"
+                      >{{ playerData.name }}</ion-text
+                    >
+                    <ion-text class="player-pos"
+                      >{{ playerData.position | uppercase }}</ion-text
+                    >
+                  </ion-label>
+                  <ion-button
+                    fill="clear"
+                    slot="end"
+                    class="player-close-btn"
+                    (click)="removeLinkedPlayer()"
+                  >
+                    <ion-icon name="close" color="medium"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </section>
+              } @else {
+              <section class="input-field-wrapper">
+                <ion-label class="field-label">PLAYER</ion-label>
                 <ion-input
-                  type="date"
-                  name="fecha"
-                  [(ngModel)]="formData.fecha"
+                  placeholder="e.g. Erling Haaland"
+                  name="jugador"
+                  [(ngModel)]="formData.jugador"
                   class="field-input"
+                  minlength="2"
+                  maxlength="50"
                   required
                 ></ion-input>
               </section>
-
+              }
               <section class="input-field-wrapper">
                 <ion-label class="field-label">IMPACT LEVEL</ion-label>
                 <ion-segment
@@ -51,19 +92,6 @@
                     ><ion-label>HIGH</ion-label></ion-segment-button
                   >
                 </ion-segment>
-              </section>
-
-              <section class="input-field-wrapper">
-                <ion-label class="field-label">PLAYER</ion-label>
-                <ion-input
-                  placeholder="e.g. Erling Haaland"
-                  name="jugador"
-                  [(ngModel)]="formData.jugador"
-                  class="field-input"
-                  minlength="2"
-                  maxlength="50"
-                  required
-                ></ion-input>
               </section>
 
               <section class="input-field-wrapper">
@@ -141,4 +169,5 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+  }
 </ion-content>
