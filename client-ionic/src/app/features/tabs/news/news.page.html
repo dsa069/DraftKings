@@ -1,6 +1,7 @@
 <app-header></app-header>
 
 <ion-content class="news-content">
+  @if (isAuthenticated()) {
   <ion-card class="news-card-content">
     <ion-row class="news-header-row">
       <ion-col>
@@ -10,99 +11,80 @@
         </ion-text>
       </ion-col>
     </ion-row>
-
+    @if (isLoading()) {
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 0;
+      "
+    >
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+    } @else {
     <ion-list class="news-list">
-      <ion-card class="news-card high-impact" (click)="onNewsItemClick()">
+      @for (noticia of newsList(); track noticia.id) {
+      <ion-card
+        class="news-card"
+        [ngClass]="{
+            'high-impact': noticia.interes === 'alta',
+            'medium-impact': noticia.interes === 'media',
+            'low-priority': noticia.interes === 'baja'
+          }"
+        (click)="onNewsItemClick(noticia.id)"
+      >
         <ion-row class="card-indicator-bar"></ion-row>
-        <ion-row class="card-header">
-          <ion-row class="badge-group">
-            <ion-badge class="badge-date"> Oct 24, 2023 </ion-badge>
-            <ion-badge class="badge-priority">
-              <ion-row class="pulse-dot animate"></ion-row>
-              High Impact
-            </ion-badge>
-          </ion-row>
-        </ion-row>
-        <ion-text class="card-title">
-          Mahomes expected to start Sunday despite minor ankle tweak
-        </ion-text>
-        <ion-row class="player-meta">
-          <ion-avatar class="player-avatar">
-            <ion-img
-              alt="Player Headshot"
-              class="player-img"
-              data-alt="Close up portrait of a professional football player in uniform, serious expression, high contrast lighting, modern sports broadcast aesthetic, dark background with subtle neon green edge light."
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXdD8EOwIWfYY9IIvYxjVRDap2U4AyZSXir5WgrZ5Y0NnyEL7udcV36nh0JJQuQGhLnwMiYljZqwKB6rnFaoyYlpArrPSix1Ohpapkl6PagO_fkQGNwVCEbxqgzoi0CyZcp0OM4geD1s58Fx5cvnCgI5_tEEqHc4zPtDsGO5RCbT88qNCMsSD3r_lw_XNXGOLj2sMtce4d2KORg0EajXYKgP3gFU9WKRRb8XvH63u175P0BWsbPCgb1LpAZfRMjFiBxemQjTBi6MA"
-            ></ion-img>
-          </ion-avatar>
-          <ion-text class="player-name">Patrick Mahomes</ion-text>
-        </ion-row>
-        <ion-row class="card-tags">
-          <ion-badge class="badge-tag"> Injury Report </ion-badge>
-          <ion-badge class="badge-tag"> Starter </ion-badge>
-        </ion-row>
-      </ion-card>
 
-      <ion-card class="news-card medium-impact" (click)="onNewsItemClick()">
-        <ion-row class="card-indicator-bar"></ion-row>
         <ion-row class="card-header">
           <ion-row class="badge-group">
-            <ion-badge class="badge-date"> Oct 23, 2023 </ion-badge>
-            <ion-badge class="badge-priority">
-              <ion-row class="pulse-dot"></ion-row>
-              Medium
-            </ion-badge>
-          </ion-row>
-        </ion-row>
-        <ion-text class="card-title">
-          Offensive line shifts could impact running game efficiency
-        </ion-text>
-        <ion-row class="player-meta">
-          <ion-avatar class="player-avatar">
-            <ion-img
-              alt="Player Headshot"
-              class="player-img"
-              data-alt="Close up portrait of a professional football player in uniform, serious expression, high contrast lighting, modern sports broadcast aesthetic, dark background with subtle neon green edge light."
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXdD8EOwIWfYY9IIvYxjVRDap2U4AyZSXir5WgrZ5Y0NnyEL7udcV36nh0JJQuQGhLnwMiYljZqwKB6rnFaoyYlpArrPSix1Ohpapkl6PagO_fkQGNwVCEbxqgzoi0CyZcp0OM4geD1s58Fx5cvnCgI5_tEEqHc4zPtDsGO5RCbT88qNCMsSD3r_lw_XNXGOLj2sMtce4d2KORg0EajXYKgP3gFU9WKRRb8XvH63u175P0BWsbPCgb1LpAZfRMjFiBxemQjTBi6MA"
-            ></ion-img>
-          </ion-avatar>
-          <ion-text class="player-name">Saquon Barkley</ion-text>
-        </ion-row>
-        <ion-row class="card-tags">
-          <ion-badge class="badge-tag"> Team News </ion-badge>
-          <ion-badge class="badge-tag"> Matchup </ion-badge>
-        </ion-row>
-      </ion-card>
+            <ion-badge class="badge-date"> {{ noticia.fecha }} </ion-badge>
 
-      <ion-card class="news-card low-priority" (click)="onNewsItemClick()">
-        <ion-row class="card-indicator-bar"></ion-row>
-        <ion-row class="card-header">
-          <ion-row class="badge-group">
-            <ion-badge class="badge-date"> Oct 22, 2023 </ion-badge>
             <ion-badge class="badge-priority">
-              <ion-row class="pulse-dot"></ion-row>
-              Low Priority
+              <ion-row
+                class="pulse-dot"
+                [class.animate]="noticia.interes === 'alta'"
+              ></ion-row>
+              {{ noticia.interes === 'alta' ? 'High Impact' : noticia.interes
+              === 'media' ? 'Medium' : 'Low Priority' }}
             </ion-badge>
           </ion-row>
         </ion-row>
-        <ion-text class="card-title">
-          Practice squad elevations announced ahead of Thursday Night
-        </ion-text>
+
+        <ion-text class="card-title"> {{ noticia.titulo }} </ion-text>
+
         <ion-row class="player-meta">
           <ion-avatar class="player-avatar">
             <ion-img
               alt="Player Headshot"
               class="player-img"
-              data-alt="Close up portrait of a professional football player in uniform, serious expression, high contrast lighting, modern sports broadcast aesthetic, dark background with subtle neon green edge light."
+              data-alt="Close up portrait of a professional football player in uniform..."
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXdD8EOwIWfYY9IIvYxjVRDap2U4AyZSXir5WgrZ5Y0NnyEL7udcV36nh0JJQuQGhLnwMiYljZqwKB6rnFaoyYlpArrPSix1Ohpapkl6PagO_fkQGNwVCEbxqgzoi0CyZcp0OM4geD1s58Fx5cvnCgI5_tEEqHc4zPtDsGO5RCbT88qNCMsSD3r_lw_XNXGOLj2sMtce4d2KORg0EajXYKgP3gFU9WKRRb8XvH63u175P0BWsbPCgb1LpAZfRMjFiBxemQjTBi6MA"
             ></ion-img>
           </ion-avatar>
-          <ion-text class="player-name">General Roster</ion-text>
+          <ion-text class="player-name">{{ noticia.jugador }}</ion-text>
         </ion-row>
+
         <ion-row class="card-tags">
-          <ion-badge class="badge-tag"> Roster Move </ion-badge>
+          @for (tag of noticia.etiquetas; track tag) {
+          <ion-badge class="badge-tag"> {{ tag }} </ion-badge>
+          }
         </ion-row>
       </ion-card>
+      } @empty {
+      <ion-text
+        style="
+          text-align: center;
+          display: block;
+          margin-top: 20px;
+          color: var(--ion-color-on-surface-variant);
+        "
+      >
+        There are no news to display at the moment. Please check back later.
+      </ion-text>
+      }
     </ion-list>
+    }
   </ion-card>
+  }
 </ion-content>

@@ -2,6 +2,7 @@
   [title]="isEditMode ? 'Edit Player' : 'Add Player'"
 ></app-header-submenu>
 
+@if (isAuthenticated()) {
 <ion-content class="custom-content">
   <form [formGroup]="playerForm" (ngSubmit)="onSavePlayer()">
     <ion-grid class="form-section ion-no-padding">
@@ -298,3 +299,4 @@
     </ion-button>
   </ion-toolbar>
 </ion-footer>
+}

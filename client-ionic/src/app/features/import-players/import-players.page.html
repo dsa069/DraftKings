@@ -1,7 +1,7 @@
 <app-header-submenu title="Import Players"></app-header-submenu>
 
 <ion-content class="ion-padding">
-  @if (errorMessage()) {
+  @if (isAuthenticated()) { @if (errorMessage()) {
   <ion-note color="danger" class="error-box"> {{ errorMessage() }} </ion-note>
   } @else {
 
@@ -23,4 +23,5 @@
     (didDismiss)="showToast.set(false)"
   >
   </ion-toast>
+  }
 </ion-content>

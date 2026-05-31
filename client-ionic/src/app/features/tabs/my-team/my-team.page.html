@@ -1,6 +1,7 @@
 <app-header></app-header>
 
 <ion-content class="main-content" scroll-y="true">
+  @if (isAuthenticated()) {
   <ion-grid class="content-grid">
     <ion-row class="strategy-header">
       <ion-col class="title-col">
@@ -382,4 +383,5 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+  }
 </ion-content>

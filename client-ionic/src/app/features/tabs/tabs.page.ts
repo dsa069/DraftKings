@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   IonTabs,
   IonTabBar,
@@ -25,9 +25,10 @@ import { AuthService } from '../../core/services/abstract/auth.service';
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
 })
 export class TabsPage {
-  public environmentInjector = inject(EnvironmentInjector);
   public authService = inject(AuthService); // <-- 3. Inyectamos AuthService
   private toastCtrl = inject(ToastController); // <-- 4. Inyectamos ToastController
+
+  public readonly isAuthenticated = this.authService.isAuthenticated; // <-- 5. Creamos una propiedad para el estado de autenticación
 
   constructor() {
     addIcons({
@@ -40,7 +41,7 @@ export class TabsPage {
 
   // 5. Método que llamaremos desde el HTML
   async showAuthToast() {
-    await this.showToast('Please log in or register to build your squad.');
+    await this.showToast('Please log in or register to access this feature.');
   }
 
   // 6. Tu método KISS
