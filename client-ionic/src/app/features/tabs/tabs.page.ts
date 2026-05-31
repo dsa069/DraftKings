@@ -12,6 +12,7 @@ import {
   shieldHalfOutline,
   peopleOutline,
   settingsOutline,
+  newspaperOutline,
 } from 'ionicons/icons';
 
 // <-- 2. Importamos el AuthService (ajusta la ruta si es distinta)
@@ -29,7 +30,12 @@ export class TabsPage {
   private toastCtrl = inject(ToastController); // <-- 4. Inyectamos ToastController
 
   constructor() {
-    addIcons({ shieldHalfOutline, peopleOutline, settingsOutline });
+    addIcons({
+      shieldHalfOutline,
+      peopleOutline,
+      settingsOutline,
+      newspaperOutline,
+    });
   }
 
   // 5. Método que llamaremos desde el HTML

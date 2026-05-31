@@ -17,6 +17,10 @@ export const routes: Routes = [
           import('./players/players.page').then((m) => m.PlayersPage),
       },
       {
+        path: 'news',
+        loadComponent: () => import('./news/news.page').then((m) => m.NewsPage),
+      },
+      {
         path: 'settings',
         loadComponent: () =>
           import('./settings/settings.page').then((m) => m.SettingsPage),
@@ -32,5 +36,9 @@ export const routes: Routes = [
     path: '',
     redirectTo: '/tabs/players',
     pathMatch: 'full',
+  },
+  {
+    path: 'news',
+    loadComponent: () => import('./news/news.page').then((m) => m.NewsPage),
   },
 ];
