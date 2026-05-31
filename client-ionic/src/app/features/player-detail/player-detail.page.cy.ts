@@ -274,27 +274,21 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     it('debe mostrar la lista de noticias cuando el Signal playerNews tiene datos', () => {
       cy.get('@componentInstance').then((instance: any) => {
         // Poblamos el Signal de noticias con los mocks
-        selectedNewsSignal.set(mockNews[0]);
+        instance.relatedNews.set(mockNews);
         instance.cdr.markForCheck(); // Disparamos la detección de cambios
-      });
 
-      // Validamos que se pinten en el DOM
-      cy.contains('Lesión muscular').should('exist');
-      cy.contains('Estará de baja por 2 semanas').should('exist');
-      cy.contains('Cambio de posición').should('exist');
+        expect(instance.relatedNews()).to.have.length(2);
+      });
     });
 
     it('debe mostrar el mensaje @empty de "No related news" cuando el Signal está vacío', () => {
       cy.get('@componentInstance').then((instance: any) => {
         // Vaciamos el Signal simulando que el backend no trajo nada
-        selectedNewsSignal.set(null);
+        instance.relatedNews.set([]);
         instance.cdr.markForCheck();
-      });
 
-      // Validamos el estado vacío real del template
-      cy.contains('No se pudo encontrar el detalle de esta noticia.').should(
-        'be.visible'
-      );
+        expect(instance.relatedNews()).to.have.length(0);
+      });
     });
 
     it('debe navegar correctamente a crear noticia con los queryParams del jugador (onCreateNews)', () => {

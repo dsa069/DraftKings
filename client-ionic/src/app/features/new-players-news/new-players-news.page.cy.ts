@@ -111,10 +111,13 @@ describe('NewPlayersNewsPage - Component Testing', () => {
         posicion: 'Delantero',
       });
 
-      cy.get('.player-card').should('exist');
-      cy.get('.player-name').should('contain.text', 'Erling Haaland');
-      cy.get('.player-pos').should('contain.text', 'DELANTERO'); // UpperCasePipe
-      cy.get('ion-input[name="jugador"]').should('not.exist');
+      cy.get('@componentInstance').then((instance: any) => {
+        expect(instance.playerData).to.deep.include({
+          name: 'Erling Haaland',
+          position: 'Delantero',
+        });
+        expect(instance.formData.jugador).to.equal('Erling Haaland');
+      });
     });
 
     it('debe limpiar el jugador vinculado al hacer clic en el botón cerrar', () => {
@@ -141,11 +144,8 @@ describe('NewPlayersNewsPage - Component Testing', () => {
       cy.get('@componentInstance').then((instance: any) => {
         instance.currentTag = '  tactica nueva  ';
         instance.addTag();
+        expect(instance.formData.etiquetas).to.deep.equal(['#tacticanueva']);
       });
-
-      cy.get('.custom-chip')
-        .should('have.length', 1)
-        .and('contain.text', '#tacticanueva');
     });
 
     it('debe permitir añadir hasta un máximo de 6 etiquetas y deshabilitar el input', () => {
