@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gestorNoticias xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="noticias.xsd">
+    <noticia>
+        <fecha>25/12/2025</fecha>
+        <interes>alta</interes>
+        <titulo>Nuevo festival en Almería</titulo>
+        <descripcion>
+            El próximo verano se celebrará un evento musical sin precedentes en la 
+            costa de Almería, reuniendo a los mejores artistas de la escena actual.
+        </descripcion>
+        <etiquetas>
+            <etiqueta>#camel</etiqueta>
+            <etiqueta>#noticia</etiqueta>
+            <etiqueta>#xml</etiqueta>
+        </etiquetas>
+    </noticia>
+</gestorNoticias>
