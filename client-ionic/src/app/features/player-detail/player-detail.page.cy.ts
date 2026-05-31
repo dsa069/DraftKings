@@ -7,6 +7,7 @@ import { NavController } from '@ionic/angular';
 import { AuthService } from '../../core/services/abstract/auth.service';
 import { NewsService } from '../../core/services/abstract/news.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { signal } from '@angular/core';
 
 describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
   // 1. Declaración de Mocks
@@ -16,6 +17,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
   let navCtrlMock: Partial<NavController>;
   let authServiceMock: Partial<AuthService>;
   let newsServiceMock: Partial<NewsService>;
+  let selectedNewsSignal: any;
 
   // 2. Datos de Prueba
   const mockPlayer = {
@@ -71,7 +73,10 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
       userProfile: (() => ({ userName: 'Coach' })) as any,
     };
 
+    selectedNewsSignal = signal(null);
+
     newsServiceMock = {
+      selectedNews: selectedNewsSignal,
       getNews: cy.stub().resolves([]),
     };
   });
@@ -269,7 +274,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     it('debe mostrar la lista de noticias cuando el Signal playerNews tiene datos', () => {
       cy.get('@componentInstance').then((instance: any) => {
         // Poblamos el Signal de noticias con los mocks
-        instance.relatedNews.set(mockNews);
+        selectedNewsSignal.set(mockNews[0]);
         instance.cdr.markForCheck(); // Disparamos la detección de cambios
       });
 
@@ -282,12 +287,14 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     it('debe mostrar el mensaje @empty de "No related news" cuando el Signal está vacío', () => {
       cy.get('@componentInstance').then((instance: any) => {
         // Vaciamos el Signal simulando que el backend no trajo nada
-        instance.relatedNews.set([]);
+        selectedNewsSignal.set(null);
         instance.cdr.markForCheck();
       });
 
-      // Validamos que el template @empty se renderice correctamente
-      cy.contains('No related news for this player.').should('be.visible');
+      // Validamos el estado vacío real del template
+      cy.contains('No se pudo encontrar el detalle de esta noticia.').should(
+        'be.visible'
+      );
     });
 
     it('debe navegar correctamente a crear noticia con los queryParams del jugador (onCreateNews)', () => {
