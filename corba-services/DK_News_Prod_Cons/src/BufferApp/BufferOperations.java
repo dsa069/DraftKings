@@ -12,15 +12,9 @@ public interface BufferOperations {
 
   boolean put(String elemento);
 
-  boolean get(org.omg.CORBA.StringHolder elemento);
-
-  boolean read(org.omg.CORBA.StringHolder elemento);
-
   String[] obtener_todas();
 
   boolean read_en(int indice, org.omg.CORBA.StringHolder elemento);
-
-  boolean fijarLimiteNoticias(int numero_maximo);
 
   void shutdown();
 } // interface BufferOperations

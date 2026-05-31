@@ -215,8 +215,6 @@
 
                <div class='actions'>
                   <input value='Enviar' alt='Press button to export' type='submit' name='action'>
-                  <input value='Recibir' alt='Press button to export' type='submit' name='action'>
-                  <input value='Leer' alt='Press button to export' type='submit' name='action'>
                   <input value='Obtener todas' alt='Press button to export' type='submit' name='action'>
                   <input value='Leer en' alt='Press button to export' type='submit' name='action'>
                   <input value=' Reset ' type='reset' name='action'>

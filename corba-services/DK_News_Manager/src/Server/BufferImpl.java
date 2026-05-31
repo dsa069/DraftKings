@@ -49,26 +49,6 @@ class BufferImpl extends _BufferImplBase {
 		return true;
 	}
 
-	// implementa el metodo get()
-	public synchronized boolean get(StringHolder elemento) {
-		if (buf.isEmpty()) {
-			elemento.value = "";
-			return false;
-		}
-		elemento.value = buf.remove(0);
-		return true;
-	}
-
-	// implementa el metodo read()
-	public synchronized boolean read(StringHolder elemento) {
-		if (buf.isEmpty()) {
-			elemento.value = "";
-			return false;
-		}
-		elemento.value = buf.get(0);
-		return true;
-	}
-
 	public synchronized String[] obtener_todas() {
 		String[] resultado = new String[buf.size()];
 		for (int i = 0; i < buf.size(); i++) {
@@ -93,10 +73,6 @@ class BufferImpl extends _BufferImplBase {
 	 */
 	public synchronized int num_elementos() {
 		return buf.size();
-	}
-
-	public synchronized boolean fijarLimiteNoticias(int numero_maximo) {
-		return false;
 	}
 
 	/*

@@ -46,44 +46,6 @@ public class _BufferStub extends org.omg.CORBA.portable.ObjectImpl implements Bu
         }
     } // put
 
-    public boolean get(org.omg.CORBA.StringHolder elemento) {
-        org.omg.CORBA.portable.InputStream $in = null;
-        try {
-            org.omg.CORBA.portable.OutputStream $out = _request("get", true);
-            $in = _invoke($out);
-            boolean $result = $in.read_boolean();
-            elemento.value = $in.read_string();
-            return $result;
-        } catch (org.omg.CORBA.portable.ApplicationException $ex) {
-            $in = $ex.getInputStream();
-            String _id = $ex.getId();
-            throw new org.omg.CORBA.MARSHAL(_id);
-        } catch (org.omg.CORBA.portable.RemarshalException $rm) {
-            return get(elemento);
-        } finally {
-            _releaseReply($in);
-        }
-    } // get
-
-    public boolean read(org.omg.CORBA.StringHolder elemento) {
-        org.omg.CORBA.portable.InputStream $in = null;
-        try {
-            org.omg.CORBA.portable.OutputStream $out = _request("read", true);
-            $in = _invoke($out);
-            boolean $result = $in.read_boolean();
-            elemento.value = $in.read_string();
-            return $result;
-        } catch (org.omg.CORBA.portable.ApplicationException $ex) {
-            $in = $ex.getInputStream();
-            String _id = $ex.getId();
-            throw new org.omg.CORBA.MARSHAL(_id);
-        } catch (org.omg.CORBA.portable.RemarshalException $rm) {
-            return read(elemento);
-        } finally {
-            _releaseReply($in);
-        }
-    } // read
-
     public String[] obtener_todas() {
         org.omg.CORBA.portable.InputStream $in = null;
         try {
@@ -125,25 +87,6 @@ public class _BufferStub extends org.omg.CORBA.portable.ObjectImpl implements Bu
             _releaseReply($in);
         }
     } // read_en
-
-    public boolean fijarLimiteNoticias(int numero_maximo) {
-        org.omg.CORBA.portable.InputStream $in = null;
-        try {
-            org.omg.CORBA.portable.OutputStream $out = _request("fijarLimiteNoticias", true);
-            $out.write_long(numero_maximo);
-            $in = _invoke($out);
-            boolean $result = $in.read_boolean();
-            return $result;
-        } catch (org.omg.CORBA.portable.ApplicationException $ex) {
-            $in = $ex.getInputStream();
-            String _id = $ex.getId();
-            throw new org.omg.CORBA.MARSHAL(_id);
-        } catch (org.omg.CORBA.portable.RemarshalException $rm) {
-            return fijarLimiteNoticias(numero_maximo);
-        } finally {
-            _releaseReply($in);
-        }
-    } // fijarLimiteNoticias
 
     public void shutdown() {
         org.omg.CORBA.portable.InputStream $in = null;

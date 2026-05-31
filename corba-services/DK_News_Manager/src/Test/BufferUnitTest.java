@@ -36,26 +36,6 @@ public class BufferUnitTest {
 		}
 
 		@Override
-		public synchronized boolean get(StringHolder elemento) {
-			if (datos.isEmpty()) {
-				elemento.value = "";
-				return false;
-			}
-			elemento.value = datos.remove(0);
-			return true;
-		}
-
-		@Override
-		public synchronized boolean read(StringHolder elemento) {
-			if (datos.isEmpty()) {
-				elemento.value = "";
-				return false;
-			}
-			elemento.value = datos.get(0);
-			return true;
-		}
-
-		@Override
 		public synchronized String[] obtener_todas() {
 			String[] resultado = new String[datos.size()];
 			for (int i = 0; i < datos.size(); i++) {
@@ -72,11 +52,6 @@ public class BufferUnitTest {
 			}
 			elemento.value = datos.get(indice);
 			return true;
-		}
-
-		@Override
-		public synchronized boolean fijarLimiteNoticias(int numero_maximo) {
-			return false;
 		}
 
 		@Override
@@ -112,21 +87,6 @@ public class BufferUnitTest {
 	}
 
 	@Test
-	public void readNoDestructivoYGetFIFO() {
-		buffer.put(noticia("n1", "#uno"));
-		buffer.put(noticia("n2", "#dos"));
-
-		assertTrue(buffer.read(holder));
-		assertTrue(holder.value.contains("<titulo>n1</titulo>"));
-		assertEquals(2, buffer.num_elementos());
-
-		assertTrue(buffer.get(holder));
-		assertTrue(holder.value.contains("<titulo>n1</titulo>"));
-		assertTrue(buffer.get(holder));
-		assertTrue(holder.value.contains("<titulo>n2</titulo>"));
-	}
-
-	@Test
 	public void obtenerTodasYReadEn() {
 		buffer.put(noticia("n1", "#uno"));
 		buffer.put(noticia("n2", "#dos"));
@@ -147,20 +107,7 @@ public class BufferUnitTest {
 	}
 
 	@Test
-	public void operacionesEnVacio() {
-		assertFalse(buffer.read(holder));
-		assertFalse(buffer.get(holder));
-		assertEquals("", holder.value);
-	}
-
-	@Test
-	public void limiteNoCambiaYShutdown() {
-		buffer.put(noticia("a", "#a"));
-		buffer.put(noticia("b", "#b"));
-		assertFalse(buffer.fijarLimiteNoticias(1));
-		assertEquals(2, buffer.num_elementos());
-		assertTrue(buffer.read(holder));
-		assertTrue(holder.value.contains("<titulo>a</titulo>"));
+	public void shutdown() {
 		buffer.shutdown();
 		assertTrue(buffer.isApagado());
 	}
