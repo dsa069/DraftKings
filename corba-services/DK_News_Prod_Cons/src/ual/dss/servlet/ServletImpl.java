@@ -75,6 +75,59 @@ public class ServletImpl extends HttpServlet {
 		actionObtenerNoticia(out, true);
 	}
 
+	protected void actionObtenerTodas(PrintWriter out) {
+		try {
+			getreference();
+			String[] noticias = bufferImpl.obtener_todas();
+			if (noticias == null || noticias.length == 0) {
+				printResultado(out, "<font color='#DF0101'>El buffer esta vacio.</font>");
+				return;
+			}
+
+			StringBuilder html = new StringBuilder();
+			html.append("<font color='#2EFE64'>Noticias en el buffer: ").append(noticias.length).append("</font>");
+			html.append("<ol class='news-list'>");
+			for (String noticiaConIndice : noticias) {
+				int separador = noticiaConIndice.indexOf('|');
+				String indiceTexto = separador >= 0 ? noticiaConIndice.substring(0, separador) : "?";
+				String noticiaXML = separador >= 0 ? noticiaConIndice.substring(separador + 1) : noticiaConIndice;
+				List<Noticia> noticiasLeidas = XMLDecoder.decodeXML(noticiaXML, 1);
+				if (noticiasLeidas.isEmpty()) {
+					html.append("<li>[").append(indiceTexto).append("] No se ha podido decodificar una noticia.</li>");
+					continue;
+				}
+				html.append("<li>[").append(indiceTexto).append("] ")
+						.append(formatNoticia(noticiasLeidas.get(0))).append("</li>");
+			}
+			html.append("</ol>");
+			printResultado(out, html.toString());
+		} catch (Exception e) {
+			printResultado(out, "<font color='#DF0101'>" + getErrorMessage(e) + "</font>");
+		}
+	}
+
+	protected void actionLeerEn(PrintWriter out, int indice) {
+		try {
+			getreference();
+			StringHolder aux = new StringHolder();
+			if (!bufferImpl.read_en(indice, aux)) {
+				printResultado(out,
+						"<font color='#DF0101'>Indice invalido o buffer vacio.</font>");
+				return;
+			}
+
+			List<Noticia> noticiasLeidas = XMLDecoder.decodeXML(aux.value, 1);
+			if (noticiasLeidas.isEmpty()) {
+				throw new IllegalStateException("No se ha podido decodificar la noticia seleccionada.");
+			}
+
+			printResultado(out, "<font color='#2EFE64'>Noticia en el indice " + indice + ": "
+					+ formatNoticia(noticiasLeidas.get(0)) + "</font>");
+		} catch (Exception e) {
+			printResultado(out, "<font color='#DF0101'>" + getErrorMessage(e) + "</font>");
+		}
+	}
+
 	private void actionObtenerNoticia(PrintWriter out, boolean consumir) {
 		try {
 			getreference();
@@ -130,6 +183,16 @@ public class ServletImpl extends HttpServlet {
 			actionRecibir(out);
 		} else if ("Leer".equals(action)) {
 			actionLeer(out);
+		} else if ("Obtener todas".equals(action)) {
+			actionObtenerTodas(out);
+		} else if ("Leer en".equals(action)) {
+			String indiceRaw = req.getParameter("indice");
+			try {
+				int indice = Integer.parseInt(indiceRaw == null ? "" : indiceRaw.trim());
+				actionLeerEn(out, indice);
+			} catch (NumberFormatException e) {
+				printResultado(out, "<font color='#DF0101'>Debes indicar un indice numerico valido.</font>");
+			}
 		} else {
 			printResultado(out, "<font color='#DF0101'>Accion '" + action + "' no reconocida.</font>");
 		}
@@ -371,6 +434,8 @@ public class ServletImpl extends HttpServlet {
 				+ "<input value='Enviar' type='submit' name='action'>"
 				+ "<input value='Recibir' type='submit' name='action'>"
 				+ "<input value='Leer' type='submit' name='action'>"
+				+ "<input value='Obtener todas' type='submit' name='action'>"
+				+ "<input value='Leer en' type='submit' name='action'>"
 				+ "<input value='Reset' type='reset' name='resetAction'>"
 				+ "</div>");
 	}
@@ -393,6 +458,8 @@ public class ServletImpl extends HttpServlet {
 		out.println("<textarea id='descripcion' name='descripcion' rows='8' cols='70'></textarea></div>");
 		out.println("<div class='field'><label for='etiquetas'>Etiquetas (ej: #musica #festival):</label>"
 				+ "<input id='etiquetas' name='etiquetas' size='60'></div>");
+		out.println("<div class='field'><label for='indice'>Indice para leer en:</label>"
+				+ "<input id='indice' name='indice' type='number' min='0' size='10'></div>");
 		out.println("<div class='field'><label>Límite máximo fijo:</label>"
 				+ "<div class='buffer-count'>" + MAX_NOTICIAS + " noticias</div></div>");
 		out.println("<p class='buffer-count'><strong>Numero de noticias en el Buffer:</strong> " + nelementos + "</p>");
@@ -425,6 +492,8 @@ public class ServletImpl extends HttpServlet {
 				+ ".actions input[type='submit']{background:var(--brand);color:#fff;}"
 				+ ".actions input[type='submit']:hover{background:var(--brand-strong);}"
 				+ ".actions input[type='reset']{background:#dbeafe;color:#1e3a8a;}"
+				+ ".news-list{margin:14px 0 0;padding-left:20px;}"
+				+ ".news-list li{margin-bottom:10px;line-height:1.45;}"
 				+ ".result{margin-top:18px;border-radius:10px;padding:12px 14px;background:#f8fafc;border:1px solid var(--line);}"
 				+ "@media (max-width:720px){.header{padding:20px 18px 16px;}form{padding:18px;}.actions input{flex:1 1 140px;text-align:center;}}"
 				+ "</style></head>");
