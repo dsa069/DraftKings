@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import {
   IonGrid,
   IonRow,
@@ -8,11 +9,12 @@ import {
   IonBadge,
   IonCard,
   IonContent,
+  IonSpinner,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, personOutline } from 'ionicons/icons';
 import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/header-submenu.component';
-
+import { NewsService } from '../../core/services/abstract/news.service';
 @Component({
   selector: 'app-players-news',
   templateUrl: './players-news.page.html',
@@ -25,18 +27,37 @@ import { HeaderSubmenuComponent } from '../../shared/components/header-submenu/h
     IonIcon,
     IonBadge,
     IonContent,
-    FormsModule,
     IonCard,
+    IonSpinner,
+    FormsModule,
     HeaderSubmenuComponent,
   ],
 })
 export class PlayersNewsPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private newsService = inject(NewsService);
+
+  // Enlazamos directamente con las señales reactivas del servicio centralizado
+  public selectedNews = this.newsService.selectedNews;
+  public isLoading = this.newsService.loading;
+
   constructor() {
-    // Registramos los iconos localmente (Buena práctica en Standalone)
+    // Registramos los iconos localmente
     addIcons({ calendarOutline, personOutline });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     console.log('PlayersNewsPage inicializado');
+
+    // Capturamos el parámetro 'id' enviado desde la lista de noticias
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      try {
+        // Ejecutamos la petición al endpoint correspondiente (Node o Spring automáticamente)
+        await this.newsService.getNewsById(id);
+      } catch (error) {
+        console.error('Error al obtener el detalle de la noticia:', error);
+      }
+    }
   }
 }
