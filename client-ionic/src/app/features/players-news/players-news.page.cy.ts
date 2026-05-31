@@ -68,9 +68,6 @@ describe('PlayersNewsPage - Component Testing', () => {
     // Cambiamos el estado de autenticación a falso
     mockIsAuthenticated.set(false);
 
-    // Forzamos un ciclo de detección de cambios de Angular en Cypress
-    cy.tick(0); // Opcional si la vista reacciona instantáneamente a la señal
-
     // Verificamos que no exista el spinner, ni la tarjeta, ni el mensaje de error
     cy.get('ion-spinner').should('not.exist');
     cy.get('ion-card.news-content').should('not.exist');

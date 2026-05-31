@@ -3,6 +3,7 @@ import { NavController } from '@ionic/angular';
 import { NewsPage } from './news.page';
 import { NewsService } from '../../../core/services/abstract/news.service';
 import { AuthService } from '../../../core/services/abstract/auth.service';
+import { TeamService } from '../../../core/services/abstract/team.service';
 
 describe('NewsPage - Component Testing', () => {
   // --- 1. SEÑALES REACTIVAS ---
@@ -12,6 +13,7 @@ describe('NewsPage - Component Testing', () => {
   // --- 2. STUBS ---
   let getNewsStub: sinon.SinonStub;
   let navNavigateForwardStub: sinon.SinonStub;
+  let clearTeamStub: sinon.SinonStub;
 
   // Datos de prueba simulados
   const mockNewsData = [
@@ -49,6 +51,7 @@ describe('NewsPage - Component Testing', () => {
     // Crear y registrar stubs
     getNewsStub = cy.stub().resolves([]); // Por defecto resolvemos un array vacío
     navNavigateForwardStub = cy.stub();
+    clearTeamStub = cy.stub().resolves();
 
     cy.wrap(getNewsStub).as('getNews');
     cy.wrap(navNavigateForwardStub).as('navigateForward');
@@ -71,12 +74,17 @@ describe('NewsPage - Component Testing', () => {
       navigateBack: cy.stub(),
     };
 
+    const mockTeamService = {
+      clearTeam: clearTeamStub,
+    };
+
     // Montar el componente
     cy.mount(NewsPage, {
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: NewsService, useValue: mockNewsService },
         { provide: NavController, useValue: mockNavController },
+        { provide: TeamService, useValue: mockTeamService },
       ],
     });
   });
@@ -92,7 +100,6 @@ describe('NewsPage - Component Testing', () => {
 
     it('no debe mostrar el bloque principal si el usuario NO está autenticado', () => {
       mockIsAuthenticated.set(false);
-      cy.tick(0); // Forzar ciclo de detección
 
       // La tarjeta que envuelve la lista y el título no debe existir
       cy.get('.news-card-content').should('not.exist');
@@ -105,7 +112,6 @@ describe('NewsPage - Component Testing', () => {
   describe('Estados de vista (Loading y Empty)', () => {
     it('debe mostrar el ion-spinner y ocultar la lista si isLoading() es true', () => {
       mockIsLoading.set(true);
-      cy.tick(0);
 
       cy.get('ion-spinner')
         .should('be.visible')
@@ -116,7 +122,6 @@ describe('NewsPage - Component Testing', () => {
     it('debe mostrar mensaje de "lista vacía" si el backend no devuelve noticias', () => {
       // Como el stub devuelve [] por defecto, probamos el bloque @empty
       mockIsLoading.set(false);
-      cy.tick(0);
 
       cy.get('ion-list.news-list').should('exist');
       cy.get('ion-card.news-card').should('not.exist'); // Cero tarjetas
@@ -149,6 +154,10 @@ describe('NewsPage - Component Testing', () => {
           {
             provide: NavController,
             useValue: { navigateForward: navNavigateForwardStub },
+          },
+          {
+            provide: TeamService,
+            useValue: { clearTeam: clearTeamStub },
           },
         ],
       });
@@ -208,6 +217,10 @@ describe('NewsPage - Component Testing', () => {
           {
             provide: NavController,
             useValue: { navigateForward: navNavigateForwardStub },
+          },
+          {
+            provide: TeamService,
+            useValue: { clearTeam: clearTeamStub },
           },
         ],
       });

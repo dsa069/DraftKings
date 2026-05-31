@@ -140,7 +140,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
 
       // Verifica la renderización del jugador (bloque @else if (player()))
       cy.get('.hero-card').should('exist');
-      cy.get('.badge-position').should('contain.text', 'Forward');
+      cy.get('.badge-position').should('contain.text', 'FORWARD');
       // Verificamos el texto exacto que tienes en tu HTML actual: '4,5 STARTS'
       cy.get('.badge-rating').should('contain.text', '4,5 STARTS');
     });
@@ -243,6 +243,8 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
   // SECCIÓN: NOTICIAS (PLAYER INTEL)
   // =========================================================================
   describe('Sección de Noticias (Player Intel)', () => {
+    beforeEach(() => mountComponent('1'));
+
     const mockNews = [
       {
         id: 'n1',
@@ -267,7 +269,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     it('debe mostrar la lista de noticias cuando el Signal playerNews tiene datos', () => {
       cy.get('@componentInstance').then((instance: any) => {
         // Poblamos el Signal de noticias con los mocks
-        instance.playerNews.set(mockNews);
+        instance.relatedNews.set(mockNews);
         instance.cdr.markForCheck(); // Disparamos la detección de cambios
       });
 
@@ -280,7 +282,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     it('debe mostrar el mensaje @empty de "No related news" cuando el Signal está vacío', () => {
       cy.get('@componentInstance').then((instance: any) => {
         // Vaciamos el Signal simulando que el backend no trajo nada
-        instance.playerNews.set([]);
+        instance.relatedNews.set([]);
         instance.cdr.markForCheck();
       });
 
