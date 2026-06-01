@@ -168,7 +168,7 @@
                <p>Formulario Productor-Consumidor</p>
             </header>
 
-            <form action='<%= request.getContextPath() %>/servlet' method='post'>
+            <form action='servlet' method='post'>
                <div class='field'>
                   <label for='fecha'>Fecha (dd/mm/aaaa):</label>
                   <input id='fecha' name='fecha' size='20'>
