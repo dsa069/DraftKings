@@ -16,18 +16,19 @@ public class ValidatorTest {
 	private String xsd;
 	private String xmlOk;
 	private String xmlRoto;
-	
+
 	@Before
 	public void setUp() throws Exception {
-		this.xsd="noticias.xsd";
-		this.xmlOk="noticias_ej.xml";
-		this.xmlRoto="noticias_ejRoto.xml";
+		this.xsd = "noticias.xsd";
+		this.xmlOk = "noticias_ej.xml";
+		this.xmlRoto = "noticias_ejRoto.xml";
 	}
 
 	@Test
 	public void test() {
 		assertTrue(Validator.validate(xmlOk, xsd));
 	}
+
 	@Test
 	public void testRoto() {
 		assertTrue(!Validator.validate(xmlRoto, xsd));
@@ -38,6 +39,7 @@ public class ValidatorTest {
 		String xml = "<gestorNoticias>"
 				+ "<noticia>"
 				+ "<fecha>20/03/2026</fecha>"
+				+ "<jugador>Nombre del Jugador</jugador>"
 				+ "<interes>media</interes>"
 				+ "<titulo>Titulo valido</titulo>"
 				+ "<descripcion>Descripcion valida con contenido suficiente para validar por XSD correctamente.</descripcion>"
@@ -52,6 +54,7 @@ public class ValidatorTest {
 		String xml = "<gestorNoticias>"
 				+ "<noticia>"
 				+ "<fecha>20/03/2026</fecha>"
+				+ "<jugador>Otro Jugador Valido</jugador>"
 				+ "<interes>baja</interes>"
 				+ "<titulo>Otro titulo</titulo>"
 				+ "<descripcion>Descripcion valida con contenido suficiente para validar por XSD mediante stream.</descripcion>"
