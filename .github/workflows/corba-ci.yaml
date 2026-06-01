@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         if: success() || failure()
         with:
-          name: test-results
+          name: test-results-server
           path: corba-services/DK_News_Manager/target/surefire-reports/*.xml
 
       - name: Add coverage to PR
@@ -90,7 +90,7 @@ jobs:
       - name: Publish Test Results
         uses: dorny/test-reporter@v3.0.0
         with:
-          artifact: test-results
+          artifact: test-results-server
           name: JUnit Tests
           path: '*.xml'
           reporter: java-junit
@@ -156,6 +156,13 @@ jobs:
       - name: Run Tests
         run: bash run_tests.sh
 
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v7.0.1
+        if: success() || failure()
+        with:
+          name: test-results-client
+          path: corba-services/DK_News_Prod_Cons/target/site/jacoco/
+
       - name: Add JaCoCo Coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
@@ -203,6 +210,7 @@ jobs:
           </testsuites>
           EOF
 
+      # Coge los test del local no del artifact
       - name: Publish Test Results
         uses: dorny/test-reporter@v3.0.0
         if: success() || failure()
