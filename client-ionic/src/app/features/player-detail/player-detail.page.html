@@ -47,7 +47,7 @@
     </ion-card-content>
   </ion-card>
 
-  @if (authService.isAuthenticated() && authService.isAdmin()) {
+  @if (isAuthenticated() && isAdmin()) {
   <ion-grid class="action-grid ion-no-padding">
     <ion-row class="buttons-row">
       <ion-col class="ion-no-padding">
@@ -251,7 +251,7 @@
                 </ion-col>
 
                 <ion-col size="4" class="ion-no-padding action-buttons-col">
-                  @if ( authService.isAuthenticated() && authService.isAdmin()
+                  @if ( isAuthenticated() && isAdmin()
                   && !comment.isEditing ) {
                   <ion-button
                     fill="clear"
@@ -413,7 +413,7 @@
       </ng-template>
     </ion-modal>
 
-    @if (authService.isAuthenticated()) {
+    @if (isAuthenticated()) {
     <ion-accordion value="news" class="comments-accordion news-accordion">
       <ion-item slot="header" class="comments-header" lines="none">
         <ion-icon
@@ -428,7 +428,7 @@
       </ion-item>
 
       <ion-list slot="content" class="news-list">
-        @if (authService.isAdmin()) {
+        @if (isAdmin()) {
         <ion-item class="comment-form-item" lines="none">
           <ion-grid class="ion-no-padding">
             <ion-row>

@@ -18,7 +18,10 @@ export abstract class TeamService {
   private readonly TEAM_KEY = 'my_starting_xi';
 
   // Notifica a componentes que el equipo fue limpiado
-  teamCleared$ = new Subject<void>();
+  readonly teamCleared$ = new Subject<void>();
+
+  // Notifica a componentes que el equipo fue guardado/modificado
+  readonly teamSaved$ = new Subject<Record<string, Player>>();
 
   // MÉTODOS COMUNES (Se ejecutan localmente a través de Capacitor)
   async getTeam(): Promise<Record<string, Player>> {
@@ -31,6 +34,7 @@ export abstract class TeamService {
       key: this.TEAM_KEY,
       value: JSON.stringify(team),
     });
+    this.teamSaved$.next(team);
   }
 
   async clearTeam(): Promise<void> {

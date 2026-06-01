@@ -49,8 +49,10 @@ import { AuthService } from '../../../core/services/abstract/auth.service';
 export class PlayersPage implements OnInit {
   private readonly navCtrl = inject(NavController);
   private readonly playerService = inject(PlayerService);
-  public readonly authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
+
+  public readonly isAuthenticated = this.authService.isAuthenticated;
 
   allPlayers = signal<Player[]>([]);
   isLoading = signal<boolean>(false);

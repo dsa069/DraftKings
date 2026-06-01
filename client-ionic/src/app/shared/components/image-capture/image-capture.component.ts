@@ -30,7 +30,10 @@ import { PhotoService } from '../../../core/services/photo.service';
   styleUrls: ['./image-capture.component.scss'],
 })
 export class ImageCaptureComponent {
-  public photoService = inject(PhotoService);
+  private photoService = inject(PhotoService);
+
+  public readonly currentPhotoPreview = this.photoService.currentPhotoPreview;
+  public readonly urlInputValue = this.photoService.urlInputValue;
 
   // Mantenemos este estado local ya que el fallo de renderizado de la etiqueta HTML es una preocupación puramente visual
   public errorState: boolean = false;

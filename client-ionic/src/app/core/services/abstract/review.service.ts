@@ -12,9 +12,9 @@ export abstract class ReviewService {
   protected authService = inject(AuthService);
 
   // Subjects reactivos para mantener la interfaz actualizada en tiempo real
-  reviewCreated$ = new Subject<Review>();
-  reviewUpdated$ = new Subject<Review>();
-  reviewDeleted$ = new Subject<string | number>();
+  readonly reviewCreated$ = new Subject<Review>();
+  readonly reviewUpdated$ = new Subject<Review>();
+  readonly reviewDeleted$ = new Subject<string | number>();
 
   // 10) Obtener comentarios de un jugador
   abstract getReviewsByPlayer(playerId: string | number): Promise<Review[]>;

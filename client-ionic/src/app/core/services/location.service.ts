@@ -10,15 +10,19 @@ export interface AppLocation {
   providedIn: 'root',
 })
 export class LocationService {
-  // Signals para manejar el estado de forma reactiva en toda la app
-  public selectedLocation = signal<AppLocation | null>(null);
-  public deviceLocation = signal<AppLocation | null>(null);
+  // Signals privados para manejar el estado de forma reactiva
+  private readonly _selectedLocation = signal<AppLocation | null>(null);
+  private readonly _deviceLocation = signal<AppLocation | null>(null);
+
+  // Vistas públicas de solo lectura
+  public readonly selectedLocation = this._selectedLocation.asReadonly();
+  public readonly deviceLocation = this._deviceLocation.asReadonly();
 
   /**
    * Actualiza la variable de negocio con las coordenadas seleccionadas en el mapa
    */
   public updateSelectedLocation(lat: number, lng: number): void {
-    this.selectedLocation.set({ lat, lng });
+    this._selectedLocation.set({ lat, lng });
   }
 
   /**
@@ -42,7 +46,7 @@ export class LocationService {
         lng: position.coords.longitude,
       };
 
-      this.deviceLocation.set(coords);
+      this._deviceLocation.set(coords);
       return coords;
     } catch (error) {
       console.error('Error obteniendo la ubicación nativa:', error);

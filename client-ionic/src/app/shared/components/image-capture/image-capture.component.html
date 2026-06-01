@@ -1,13 +1,13 @@
 <ion-grid class="capture-container ion-no-padding">
   <ion-row class="main-capture-area">
-    @if (!photoService.currentPhotoPreview() || errorState) {
+    @if (!currentPhotoPreview() || errorState) {
     <ion-row class="capture-placeholder">
       <ion-icon name="image-outline" class="capture-icon"></ion-icon>
       <ion-text class="capture-text">Invalid Photo or URL</ion-text>
     </ion-row>
     } @else {
     <ion-img
-      [src]="photoService.currentPhotoPreview()"
+      [src]="currentPhotoPreview()"
       class="capture-image"
       alt="Evidencia visual"
       (ionError)="onImageError()"
@@ -51,7 +51,7 @@
     <ion-row class="url-input-wrapper">
       <ion-input
         placeholder="Or enter an image URL..."
-        [value]="photoService.urlInputValue()"
+        [value]="urlInputValue()"
         (ionInput)="onUrlInput($event)"
         clearInput="true"
         class="url-input"

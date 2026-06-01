@@ -11,9 +11,9 @@ export abstract class PlayerService {
   protected authService = inject(AuthService);
 
   // Subjects para notificar cambios en jugadores
-  playerCreated$ = new Subject<Player>();
-  playerUpdated$ = new Subject<Player>();
-  playerDeleted$ = new Subject<string | number>();
+  readonly playerCreated$ = new Subject<Player>();
+  readonly playerUpdated$ = new Subject<Player>();
+  readonly playerDeleted$ = new Subject<string | number>();
 
   abstract getPlayers(filters?: {
     search?: string;

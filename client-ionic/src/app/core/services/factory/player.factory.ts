@@ -2,16 +2,18 @@ import { ConfigService } from '../config.service';
 import { PlayerSpringService } from '../implementations/player-spring.service';
 import { PlayerNodeService } from '../implementations/player-node.service';
 
-export function playerFactory(config: ConfigService) {
-  // CORRECCIÓN: Usar la señal pública
+export function playerFactory(
+  config: ConfigService,
+  springService: PlayerSpringService,
+  nodeService: PlayerNodeService
+) {
   const selected = config.selectedBackend();
 
   switch (selected) {
-    case 'springboot': // Asegúrate de que coincida con tu BackendType
-      return new PlayerSpringService();
-    // case 'firebase': // Si en el futuro quieres agregar Firebase, aquí iría el caso
+    case 'springboot':
+      return springService;
     case 'node':
     default:
-      return new PlayerNodeService();
+      return nodeService;
   }
 }
