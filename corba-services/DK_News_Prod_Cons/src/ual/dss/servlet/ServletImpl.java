@@ -551,7 +551,7 @@ public class ServletImpl extends HttpServlet {
     }
 
     private void printForm(PrintWriter out, int nelementos) {
-        out.println("<form action='http://localhost:8070/DK_News_Prod_Cons/servlet' method='post'>");
+        out.println("<form action='servlet' method='post'>");
         out.println("<div class='field'><label for='fecha'>Fecha (dd/mm/aaaa):</label>");
         out.println("<input id='fecha' name='fecha' size='20'></div>");
         out.println("<div class='field'><label for='jugador'>Nombre del jugador (2-50 caracteres):</label>");
