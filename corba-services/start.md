@@ -142,3 +142,11 @@ El script se encargará automáticamente de:
 1. Descargarse las dependencias JUnit 4 y Hamcrest.
 2. Compilar los tests y el código.
 3. Lanzar la batería de tests `InteresTest`, `NoticiaTest`, `NoticiaValidatorTest`, `ValidatorTest` y `XMLibTest`.
+
+# Ejecutar cobertura:
+```bash
+cd DK_News_Prod_Cons
+bash -x run_tests.sh
+ls -l target/coverage/jacoco.exec
+ls -l target/site/jacoco/jacoco.xml
+```
