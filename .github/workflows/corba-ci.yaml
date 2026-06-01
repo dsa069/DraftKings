@@ -166,6 +166,7 @@ jobs:
           min-coverage-overall: 50
           min-coverage-changed-files: 50
           comment-type: both
+          debug-mode: true
 
       - name: Run Checkstyle
         uses: dbelyaev/action-checkstyle@v3.10.0
