@@ -12,16 +12,16 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     # Lanzamos orbd en segundo plano (&) y redirigimos su salida a la consola
     echo 'orbd -ORBInitialPort 3000 -ORBInitialHost localhost & ' >> /app/start.sh && \
     echo 'sleep 5' >> /app/start.sh && \
-    echo 'echo "[SISTEMA] Iniciando Buffer Server en puerto 8080..." ' >> /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Buffer Server en puerto 8090..." ' >> /app/start.sh && \
     # El servidor se conecta al ORB interno (localhost)
     echo 'exec java -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 3000 -ORBInitialHost localhost "$@"' >> /app/start.sh && \
     chmod +x /app/start.sh
 
-# Exponemos ambos puertos: 3000 (Naming) y 8080 (Servidor)
-EXPOSE 3000 8080
+# Exponemos ambos puertos: 3000 (Naming) 8090 (Servidor) y 8080 (para el cliente web)
+EXPOSE 3000 8080 8090
 
 # Comprueba cada 60 segundos si ambos puertos responden. Si uno falla, marca el contenedor como "unhealthy"
 HEALTHCHECK --interval=60s --timeout=5s --start-period=15s --retries=3 \
-  CMD bash -c '</dev/tcp/localhost/3000 && </dev/tcp/localhost/8080' || exit 1
+  CMD bash -c '</dev/tcp/localhost/3000 && </dev/tcp/localhost/8090' || exit 1
 
 ENTRYPOINT ["/app/start.sh"]

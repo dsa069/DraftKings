@@ -183,12 +183,12 @@ jobs:
 
             # 4. Ejecución del contenedor único
             # -p 3000:3000 -> Para el Naming Service
-            # -p 8080:8080 -> Para el Servidor (Acceso externo)
+            # -p 8090:8090 -> Para el Servidor (Acceso externo)
             sudo docker run -d --restart unless-stopped \
               --name corba-news-manager \
               -p 3000:3000 \
-              -p 8080:8080 \
-              -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP -Dcom.sun.corba.se.ORBServerPort=8080" \
+              -p 8090:8090 \
+              -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP -Dcom.sun.corba.se.ORBServerPort=8090" \
               "${IMAGE}"
             
             # Esperar un poco para que los logs se generen
