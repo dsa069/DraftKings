@@ -31,7 +31,7 @@ api:
   football:
     key: ${API_FOOTBALL_KEY:}
   news:
-    url: https://dk-corba.cnsa-2026-dsa069.tech/DK_News_Prod_Cons/servlet
+    url: http://dk-corba.cnsa-2026-dsa069.tech:8080/DK_News_Prod_Cons/servlet
 
 openapi:
   title: DraftKings Player Microservice API (Prod)
