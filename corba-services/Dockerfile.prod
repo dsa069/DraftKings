@@ -34,7 +34,7 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     chmod +x /app/start.sh
 
 # Solo exponemos el 8080 (Tomcat). El 1050 y 8090 lo expongo pero solo para debug desarollo 
-EXPOSE 8080 8090 1050 
+EXPOSE 8080
 
 # Monitoreo de salud: Verifica que tanto el servicio ORBD (1050) como Tomcat (8080) respondan
 HEALTHCHECK --interval=60s --timeout=5s --start-period=15s --retries=3 \
