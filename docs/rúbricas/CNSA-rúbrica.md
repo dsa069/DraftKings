@@ -24,6 +24,8 @@ on:
     branches: [main, dev]
 ```
 
+![alt text](img/actions-node.png)
+
 **Evidencia 2 — Pipeline de Spring Boot con matrix de 6 microservicios:**
 
 ```yaml
@@ -42,6 +44,8 @@ strategy:
   fail-fast: false
 ```
 
+![alt text](img/actions-spring.png)
+
 **Evidencia 3 — Pipeline de CORBA con Java 8:**
 
 ```yaml
@@ -53,6 +57,8 @@ strategy:
     distribution: "temurin"
     cache: maven
 ```
+
+![alt text](img/actions-corba.png)
 
 ### Referencias
 
@@ -105,6 +111,8 @@ on:
       --out app/build/outputs/apk/release/DraftKings.apk \
       app/build/outputs/apk/release/app-release-unsigned.apk
 ```
+
+![alt text](img/actions-ionic.png)
 
 ### Referencias
 
@@ -906,3 +914,65 @@ deploy-eureka-prod:
 | -------------------------- | :----------------: | :--------------: | :-----------: | :---: |
 | Autenticación              |        1.00        | Chrome + Firefox |     × 1.0     | 1.00  |
 | CRUD Jugadores/Comentarios |        1.00        | Chrome + Firefox |     × 1.0     | 1.00  |
+
+---
+
+## Extras
+
+### A. Proyecto Terraform para CORBA — Descripción del módulo de infraestructura
+
+El despliegue de CORBA se realiza en una VM de GCP (no Cloud Run) porque el protocolo IIOP de CORBA requiere una IP pública directa y puertos expuestos (1050, 8090, 8080). Cloud Run asigna IPs internas dinámicas que rompen el mecanismo de pasaportes IOR.
+
+Con el fin de garantizar el ciclo de vida independiente de los entornos de Desarrollo (dev) y Producción (prod), el proyecto implementa un aislamiento estricto tanto a nivel de configuración como de estado. Para ello, se definen archivos de variables específicos (dev.tfvars y prod.tfvars) que parametrizan cada despliegue de manera unívoca. Los archivos de estado de Terraform (.tfstate) se almacenan de forma remota en un bucket dedicado de Google Cloud Storage (GCS). Esta arquitectura permite reutilizar el mismo código base de infraestructura para ambos entornos sin riesgo de colisiones: las operaciones de creación, modificación o destrucción en un entorno no impactan ni son detectadas por el otro, asegurando una total autonomía operativa.
+
+**Estructura del proyecto Terraform (`terraform/`):**
+
+| Archivo | Responsabilidad |
+|---|---|
+| `provider.tf` | Provider Google 7.22.0, backend GCS para state remoto |
+| `variables.tf` | Variables reutilizables: proyecto, zona DNS, prefijo, ruta credenciales |
+| `dev.tfvars` / `prod.tfvars` | Valores por entorno (prefijos `dk-corba-dev` / `dk-corba`) |
+| `mynetwork.tf` | Red VPC, regla firewall (SSH/HTTP/8080/ICMP), módulo VM, registro DNS A |
+| `instance/main.tf` | Módulo reutilizable: IP estática, VM Ubuntu 22.04 (e2-medium, 30GB), SSH metadata |
+| `output.tf` | Salidas: hostname y IP pública de la VM |
+
+**Flujo de ejecución:**
+
+```
+terraform init -backend-config="prefix=terraform/state/dev"
+terraform workspace select dev || terraform workspace new dev
+terraform apply -auto-approve
+```
+
+Terraform crea la red VPC, la regla firewall, la VM con IP estática, configura Docker vía `remote-exec` y registra el registro DNS A apuntando a la IP fija.
+
+### B. Flujo de despliegue de SonarQube — Análisis estático en CI
+
+El workflow `sonarqube.yml` ejecuta análisis de código estático con SonarQube en cada push/PR a main y dev. Este análisis se ejecuta en una máquina virtal previamente levantada y configurada con SonarQube.
+
+![alt text](img/actions-SonarQube.png)
+
+**Flujo paso a paso:**
+
+1. **Trigger:** Se activa en push o pull_request a `main` o `dev`
+2. **Checkout:** `actions/checkout@v6.0.2` con `fetch-depth: 0` (clone completo para blame/history)
+3. **Diagnóstico de conectividad:** `curl` al endpoint `/api/system/status` de SonarQube para verificar que el servidor está accesible
+4. **Scan:** `SonarSource/sonarqube-scan-action@v7.1.0` con:
+   - `SONAR_TOKEN` desde secrets
+   - `SONAR_HOST_URL`: `http://sonarqube.cnsa-2026-dsa069.tech:9000`
+   - Proyecto: `DraftKings`, fuentes: `.`, bytecode Java: `.`
+5. **Resultado:** Métricas de calidad, bugs, vulnerabilities y code smells en el dashboard de SonarQube
+
+### C. Flujo de check-pr-main — Branch protection
+
+El workflow `check-pr-main.yml` protege la rama `main` garantizando que solo se admitan PRs origen en `dev`.
+
+**Flujo:**
+
+1. **Trigger:** `pull_request` dirigido a `main`
+2. **Verificación:** Comprueba si `github.head_ref != 'dev'`
+3. **Resultado:**
+   - Si el PR viene de `dev` → pasa (exit 0)
+   - Si el PR viene de cualquier otra rama → falla con error "Solo se permiten Merges a 'main' desde la rama 'dev'"
+
+Esto enforce el flujo GitFlow: `feature/* → dev → main`, evitando despliegues directos a producción sin pasar por el entorno de desarrollo.
