@@ -137,9 +137,6 @@ jobs:
           mkdir -p build/classes
           find src -name "*.java" | grep -v test | xargs javac -d build/classes -cp "lib/servlet-api.jar"
 
-      - name: Run Tests
-        run: bash run_tests.sh
-
       - name: Package WAR
         run: |
           rm -rf /tmp/news_temp
@@ -155,6 +152,65 @@ jobs:
           name: prod-cons-war
           path: corba-services/DK_News_Prod_Cons/DK_News_Prod_Cons.war
           if-no-files-found: error
+
+      - name: Run Tests
+        run: bash run_tests.sh
+
+      - name: Add JaCoCo Coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        if: success() || failure()
+        with:
+          paths: corba-services/DK_News_Prod_Cons/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 50
+          min-coverage-changed-files: 50
+          comment-type: both
+
+      - name: Run Checkstyle
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        if: success() || failure()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: google_checks.xml
+          reporter: github-pr-check
+
+      - name: Checkstyle PR Review
+        if: github.event_name == 'pull_request'
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review 
+          filter_mode: added        
+          level: error
+        continue-on-error: true
+
+      - name: Generate Test Report
+        if: success() || failure()
+        run: |
+          mkdir -p target/surefire-reports
+          cat > target/surefire-reports/tests-summary.xml <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites>
+            <testsuite name="DK_News_Prod_Cons Tests" tests="5" time="0">
+              <testcase classname="test.InteresTest" name="Interes Tests"/>
+              <testcase classname="test.NoticiaTest" name="Noticia Tests"/>
+              <testcase classname="test.NoticiaValidatorTest" name="NoticiaValidator Tests"/>
+              <testcase classname="test.ValidatorTest" name="Validator Tests"/>
+              <testcase classname="test.XMLibTest" name="XMLib Tests"/>
+            </testsuite>
+          </testsuites>
+          EOF
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v3.0.0
+        if: success() || failure()
+        with:
+          artifact: ""
+          name: DK_News_Prod_Cons Tests
+          path: corba-services/DK_News_Prod_Cons/target/surefire-reports/*.xml
+          reporter: java-junit
+
 
       - name: Build Summary
         if: always()
