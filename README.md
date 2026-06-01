@@ -16,6 +16,14 @@ Esta aplicación combina una interfaz moderna y fluida con varias arquitecturas 
 - **Equipo Ideal:** Herramienta interactiva para que el usuario configure su propia alineación táctica.
 - **Personalización:** Soporte multi-idioma y modo claro/oscuro.
 
+### 📚 Desglose de rúbricas por asignatura!!!!!!!!
+
+- **Rúbrica CNSA** [docs/rúbricas/CNSA-rúbrica](docs/rúbricas/CNSA-rúbrica.md)
+- **Rúbrica DAH** [docs/rúbricas/DAH-rúbrica](docs/rúbricas/DAH-rúbrica.md)
+- **Rúbrica DWSC** [docs/rúbricas/DWSC-rúbrica](docs/rúbricas/DWSC-rúbrica.md)
+- **Rúbrica TRWM** [docs/rúbricas/TRWM-rúbrica](docs/rúbricas/TRWM-rúbrica.md)
+
+
 ### 📚 Documentación de la API
 
 - **Especificación de endpoints:** [docs/EndPoints.md](docs/EndPoints.md)
