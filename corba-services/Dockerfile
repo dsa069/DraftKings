@@ -3,21 +3,37 @@ FROM eclipse-temurin:8-jdk
 
 WORKDIR /app
 
-# RUTA ACTUALIZADA: Ahora Docker busca desde la carpeta común 'corba-services'
+# 1. Instalar Tomcat 9 (El Servidor Web para el Cliente CORBA)
+ENV TOMCAT_VERSION=9.0.86
+RUN wget -q https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
+    tar xzf apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
+    mv apache-tomcat-${TOMCAT_VERSION} /usr/local/tomcat && \
+    rm apache-tomcat-${TOMCAT_VERSION}.tar.gz
+
+# 2. Copiar los artefactos (rutas basadas en tu contexto de CI)
+# Copiamos el JAR del Servidor CORBA
 COPY DK_News_Manager/target/*-jar-with-dependencies.jar /app/corba-server.jar
 
-# Creamos un script que lanza el ORB y luego el Servidor
+# Copiamos el WAR del Cliente. Lo renombramos a ROOT.war para que se despliegue en la raíz (/) del puerto 8080.
+COPY DK_News_Prod_Cons/DK_News_Prod_Cons.war /usr/local/tomcat/webapps/ROOT.war
+
+# 3. Crear el script de arranque múltiple
 RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'echo "[SISTEMA] Iniciando Naming Service (ORBD) en puerto 3000..." ' >> /app/start.sh && \
-    # Lanzamos orbd en segundo plano (&) y redirigimos su salida a la consola
+    echo 'echo "[SISTEMA] Iniciando Naming Service (ORBD) en puerto 3000..."' >> /app/start.sh && \
     echo 'orbd -ORBInitialPort 3000 -ORBInitialHost localhost & ' >> /app/start.sh && \
     echo 'sleep 5' >> /app/start.sh && \
-    echo 'echo "[SISTEMA] Iniciando Buffer Server en puerto 8090..." ' >> /app/start.sh && \
-    # El servidor se conecta al ORB interno (localhost)
-    echo 'exec java -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 3000 -ORBInitialHost localhost "$@"' >> /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Buffer Server en puerto 8090..."' >> /app/start.sh && \
+    # El servidor se conecta al ORB interno
+    echo 'java -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 3000 -ORBInitialHost localhost & ' >> /app/start.sh && \
+    echo 'sleep 5' >> /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Tomcat (Cliente Web) en puerto 8080..."' >> /app/start.sh && \
+    # Inyectamos las propiedades CORBA a Tomcat para que el Servlet sepa dónde está el ORB
+    echo 'export CATALINA_OPTS="-Dcom.sun.corba.se.ORBInitialPort=3000 -Dcom.sun.corba.se.ORBInitialHost=localhost"' >> /app/start.sh && \
+    # Arrancamos Tomcat en primer plano (exec) para mantener el contenedor vivo
+    echo 'exec /usr/local/tomcat/bin/catalina.sh run' >> /app/start.sh && \
     chmod +x /app/start.sh
 
-# Exponemos ambos puertos: 3000 (Naming), 8090 (Servidor) y 8080 (futuro cliente web)
-EXPOSE 3000 8080 8090
+# Solo exponemos el 8080 (Tomcat). El 3000 y 8090 lo expongo pero solo para debug desarollo 
+EXPOSE 8080 8090 3000 
 
-ENTRYPOINT ["/app/start.sh"]
+CMD ["/app/start.sh"]
