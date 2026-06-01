@@ -3,8 +3,8 @@ FROM eclipse-temurin:8-jdk
 
 WORKDIR /app
 
-# Copiamos el JAR
-COPY target/*-jar-with-dependencies.jar /app/corba-server.jar
+# RUTA ACTUALIZADA: Ahora Docker busca desde la carpeta común 'corba-services'
+COPY DK_News_Manager/target/*-jar-with-dependencies.jar /app/corba-server.jar
 
 # Creamos un script que lanza el ORB y luego el Servidor
 RUN echo '#!/bin/sh' > /app/start.sh && \
@@ -17,7 +17,7 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'exec java -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 3000 -ORBInitialHost localhost "$@"' >> /app/start.sh && \
     chmod +x /app/start.sh
 
-# Exponemos ambos puertos: 3000 (Naming), 8090 (Servidor) y 8080 (para el cliente web)
+# Exponemos ambos puertos: 3000 (Naming), 8090 (Servidor) y 8080 (futuro cliente web)
 EXPOSE 3000 8080 8090
 
 ENTRYPOINT ["/app/start.sh"]
