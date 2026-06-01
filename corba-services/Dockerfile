@@ -15,7 +15,7 @@ RUN wget -q https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/b
 COPY DK_News_Manager/target/*-jar-with-dependencies.jar /app/corba-server.jar
 
 # Copiamos el WAR del Cliente. Lo renombramos a ROOT.war para que se despliegue en la raíz (/) del puerto 8080.
-COPY DK_News_Prod_Cons/DK_News_Prod_Cons.war /usr/local/tomcat/webapps/ROOT.war
+COPY DK_News_Prod_Cons/DK_News_Prod_Cons.war /usr/local/tomcat/webapps/DK_News_Prod_Cons.war
 
 # 3. Crear el script de arranque múltiple
 RUN echo '#!/bin/sh' > /app/start.sh && \
