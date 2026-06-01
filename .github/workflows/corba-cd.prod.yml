@@ -17,11 +17,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
 
-      - name: Download Build Artifacts
+      - name: Download Server Build Artifacts
         uses: actions/download-artifact@v8.0.1
         with:
           name: corba-jar
           path: corba-services/DK_News_Manager/target
+
+      - name: Download Client Build Artifacts
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: prod-cons-war
+          path: corba-services/DK_News_Prod_Cons
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
@@ -37,7 +43,9 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:0.0.1 .
+          # -f apunta al Dockerfile un nivel arriba
+          # El '.' final se cambia por '..' para que el contexto sea ./corba-services
+          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest -f ../Dockerfile ..
 
       - name: Push Docker image to Artifact Registry
         run: |
@@ -162,7 +170,7 @@ jobs:
       - name: Deploy to VM
         env:
           VM_USER: ubuntu
-          IMAGE: us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:0.0.1
+          IMAGE: us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           ssh "${VM_USER}@${{ env.dns_name }}" 'bash -se' <<EOF
@@ -180,24 +188,26 @@ jobs:
             sudo docker stop corba-news-manager || true
             sudo docker rm corba-news-manager || true
 
-            # 4. Ejecución del contenedor único
-            # -p 3000:3000 -> Para el Naming Service
-            # -p 8080:8080 -> Para el Servidor (Acceso externo)
+            # 4. Ejecución del contenedor único con todos los puertos expuestos para Debug
+            # -p 1050:1050 -> Naming Service (ORBD)
+            # -p 8090:8090 -> Servidor CORBA
+            # -p 8080:8080 -> Cliente Web (Tomcat) -> ¡AÑADIDO!
             sudo docker run -d --restart unless-stopped \
               --name corba-news-manager \
-              -p 3000:3000 \
+              -p 1050:1050 \
+              -p 8090:8090 \
               -p 8080:8080 \
-              -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP -Dcom.sun.corba.se.ORBServerPort=8080" \
+              -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP -Dcom.sun.corba.se.ORBServerPort=8090" \
               "${IMAGE}"
             
             # Esperar un poco para que los logs se generen
             sleep 8
           EOF
 
-      - name: Display Combined Logs (ORBD + Server)
+      - name: Display Combined Logs (ORBD + Server + Client)
         if: always()
         run: |
-          echo "### LOGS COMBINADOS (ORBD y Servidor)" >> "$GITHUB_STEP_SUMMARY"
+          echo "### LOGS COMBINADOS (ORBD, Servidor y Cliente Tomcat)" >> "$GITHUB_STEP_SUMMARY"
           echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
           ssh ubuntu@${{ env.dns_name }} "sudo docker logs corba-news-manager" >> "$GITHUB_STEP_SUMMARY"
           echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"

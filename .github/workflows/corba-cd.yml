@@ -17,13 +17,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
 
-      - name: Download Build Artifacts
+      - name: Download Server Build Artifacts
         uses: actions/download-artifact@v8.0.1
         with:
           name: corba-jar
           path: corba-services/DK_News_Manager/target
 
-      - name: Download Build Artifacts
+      - name: Download Client Build Artifacts
         uses: actions/download-artifact@v8.0.1
         with:
           name: prod-cons-war
