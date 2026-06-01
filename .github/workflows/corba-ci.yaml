@@ -173,7 +173,6 @@ jobs:
           min-coverage-overall: 50
           min-coverage-changed-files: 50
           comment-type: both
-          debug-mode: true
 
       - name: Run Checkstyle
         uses: dbelyaev/action-checkstyle@v3.10.0
@@ -228,7 +227,6 @@ jobs:
           echo "- **Status**: $([ $? -eq 0 ] && echo 'Success' || echo 'Failed')" >> $GITHUB_STEP_SUMMARY
 
   deploy-dev:
-    if: false # Me quedo sin dinero
     needs: 
       - build-server
       - build-client
