@@ -241,7 +241,7 @@ jobs:
     needs: 
       - build-server
       - build-client
-    if: github.ref == 'refs/heads/main'
+    #if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
       checks: write
