@@ -114,13 +114,14 @@ export class PlayerDetailPage implements OnInit {
   private readonly playerService = inject(PlayerService);
   private readonly reviewService = inject(ReviewService);
   private readonly locationService = inject(LocationService);
-  // --- INYECTAR EL SERVICIO DE NOTICIAS ---
   private readonly newsService = inject(NewsService);
-  // ----------------------------------------
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly ngZone = inject(NgZone);
   private readonly navCtrl = inject(NavController);
-  public readonly authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
+
+  public readonly isAuthenticated = this.authService.isAuthenticated;
+  public readonly isAdmin = this.authService.isAdmin;
 
   player = signal<Player | null>(null);
   isLoading = signal<boolean>(false);

@@ -34,6 +34,17 @@ import { TeamService } from './app/core/services/abstract/team.service';
 import { NewsService } from './app/core/services/abstract/news.service';
 import { NewsFactory } from './app/core/services/factory/news.factory';
 
+import { AuthSpringService } from './app/core/services/implementations/auth-spring.service';
+import { AuthNodeService } from './app/core/services/implementations/auth-node.service';
+import { PlayerSpringService } from './app/core/services/implementations/player-spring.service';
+import { PlayerNodeService } from './app/core/services/implementations/player-node.service';
+import { ReviewSpringService } from './app/core/services/implementations/review-spring.service';
+import { ReviewNodeService } from './app/core/services/implementations/review-node.service';
+import { TeamSpringService } from './app/core/services/implementations/team-spring.service';
+import { TeamNodeService } from './app/core/services/implementations/team-node.service';
+import { NewsSpringService } from './app/core/services/implementations/news-spring.service';
+import { NewsNodeService } from './app/core/services/implementations/news-node.service';
+
 console.log('🚀 Configuración cargada:', {
   produccion: environment.production,
   proyectoId: environment.firebaseConfig?.projectId,
@@ -59,20 +70,43 @@ bootstrapApplication(AppComponent, {
     provideStorage(() => getStorage()),
     // 2. Registrar el Interceptor
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    // 3. Tus Factories actuales
-    { provide: AuthService, useFactory: authFactory, deps: [ConfigService] },
-    // REGISTRO DEL PATRÓN FACTORY/STRATEGY
+    // 3. Servicios concretos registrados en el DI (Strategy Pattern)
+    AuthSpringService,
+    AuthNodeService,
+    PlayerSpringService,
+    PlayerNodeService,
+    ReviewSpringService,
+    ReviewNodeService,
+    TeamSpringService,
+    TeamNodeService,
+    NewsSpringService,
+    NewsNodeService,
+
+    // 4. Factories que resuelven la implementación según el backend seleccionado
     {
-      provide: PlayerService, // Cuando un componente pida la clase abstracta...
-      useFactory: playerFactory, // ...Angular ejecutará esta función...
-      deps: [ConfigService], // ...pasándole lo que necesita.
+      provide: AuthService,
+      useFactory: authFactory,
+      deps: [ConfigService, AuthSpringService, AuthNodeService],
+    },
+    {
+      provide: PlayerService,
+      useFactory: playerFactory,
+      deps: [ConfigService, PlayerSpringService, PlayerNodeService],
     },
     {
       provide: ReviewService,
       useFactory: reviewFactory,
-      deps: [ConfigService],
+      deps: [ConfigService, ReviewSpringService, ReviewNodeService],
     },
-    { provide: TeamService, useFactory: teamFactory, deps: [ConfigService] },
-    { provide: NewsService, useFactory: NewsFactory, deps: [ConfigService] },
+    {
+      provide: TeamService,
+      useFactory: teamFactory,
+      deps: [ConfigService, TeamSpringService, TeamNodeService],
+    },
+    {
+      provide: NewsService,
+      useFactory: NewsFactory,
+      deps: [ConfigService, NewsSpringService, NewsNodeService],
+    },
   ],
 });

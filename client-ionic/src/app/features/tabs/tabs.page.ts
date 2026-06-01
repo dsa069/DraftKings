@@ -25,10 +25,10 @@ import { AuthService } from '../../core/services/abstract/auth.service';
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
 })
 export class TabsPage {
-  public authService = inject(AuthService); // <-- 3. Inyectamos AuthService
-  private toastCtrl = inject(ToastController); // <-- 4. Inyectamos ToastController
+  private authService = inject(AuthService);
+  private toastCtrl = inject(ToastController);
 
-  public readonly isAuthenticated = this.authService.isAuthenticated; // <-- 5. Creamos una propiedad para el estado de autenticación
+  public readonly isAuthenticated = this.authService.isAuthenticated;
 
   constructor() {
     addIcons({
