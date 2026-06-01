@@ -190,12 +190,12 @@ jobs:
             sudo docker rm corba-news-manager || true
 
             # 4. Ejecución del contenedor único con todos los puertos expuestos para Debug
-            # -p 3000:3000 -> Naming Service (ORBD)
+            # -p 1050:1050 -> Naming Service (ORBD)
             # -p 8090:8090 -> Servidor CORBA
             # -p 8080:8080 -> Cliente Web (Tomcat) -> ¡AÑADIDO!
             sudo docker run -d --restart unless-stopped \
               --name corba-news-manager \
-              -p 3000:3000 \
+              -p 1050:1050 \
               -p 8090:8090 \
               -p 8080:8080 \
               -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP -Dcom.sun.corba.se.ORBServerPort=8090" \
