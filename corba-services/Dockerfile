@@ -19,21 +19,21 @@ COPY DK_News_Prod_Cons/DK_News_Prod_Cons.war /usr/local/tomcat/webapps/DK_News_P
 
 # 3. Crear el script de arranque múltiple
 RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'echo "[SISTEMA] Iniciando Naming Service (ORBD) en puerto 3000..."' >> /app/start.sh && \
-    echo 'orbd -ORBInitialPort 3000 -ORBInitialHost localhost & ' >> /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Naming Service (ORBD) en puerto 1050..."' >> /app/start.sh && \
+    echo 'orbd -ORBInitialPort 1050 -ORBInitialHost localhost & ' >> /app/start.sh && \
     echo 'sleep 5' >> /app/start.sh && \
     echo 'echo "[SISTEMA] Iniciando Buffer Server en puerto 8090..."' >> /app/start.sh && \
     # El servidor se conecta al ORB interno
-    echo 'java -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 3000 -ORBInitialHost localhost & ' >> /app/start.sh && \
+    echo 'java -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 1050 -ORBInitialHost localhost & ' >> /app/start.sh && \
     echo 'sleep 5' >> /app/start.sh && \
     echo 'echo "[SISTEMA] Iniciando Tomcat (Cliente Web) en puerto 8080..."' >> /app/start.sh && \
     # Inyectamos las propiedades CORBA a Tomcat para que el Servlet sepa dónde está el ORB
-    echo 'export CATALINA_OPTS="-Dcom.sun.corba.se.ORBInitialPort=3000 -Dcom.sun.corba.se.ORBInitialHost=localhost"' >> /app/start.sh && \
+    echo 'export CATALINA_OPTS="-Dcom.sun.corba.se.ORBInitialPort=1050 -Dcom.sun.corba.se.ORBInitialHost=localhost"' >> /app/start.sh && \
     # Arrancamos Tomcat en primer plano (exec) para mantener el contenedor vivo
     echo 'exec /usr/local/tomcat/bin/catalina.sh run' >> /app/start.sh && \
     chmod +x /app/start.sh
 
-# Solo exponemos el 8080 (Tomcat). El 3000 y 8090 lo expongo pero solo para debug desarollo 
-EXPOSE 8080 8090 3000 
+# Solo exponemos el 8080 (Tomcat). El 1050 y 8090 lo expongo pero solo para debug desarollo 
+EXPOSE 8080 8090 1050 
 
 CMD ["/app/start.sh"]
