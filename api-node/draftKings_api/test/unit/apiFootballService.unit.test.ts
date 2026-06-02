@@ -7,7 +7,6 @@ import {
   searchApiFootballResponse,
   teamsByPlayerResponse,
   leaguesByTeamResponse,
-  transformedExternalPlayers,
   transformedExternalPlayersWithExternalId,
 } from "../utils/data/apiFootball.test.data";
 
