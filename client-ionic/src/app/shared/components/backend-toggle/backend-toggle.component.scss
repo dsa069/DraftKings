@@ -7,13 +7,12 @@
   --padding-end: 0;
   --padding-top: 0;
   --padding-bottom: 0;
+  --background: var(--ion-color-surface-container-low);
   margin: 0;
   width: 100%;
   aspect-ratio: 1 / 1;
   height: auto;
 
-  // Contenedor visual (simulando la card de antes)
-  background: var(--ion-color-surface-container-low);
   border: 2px solid var(--ion-color-outline);
   border-radius: var(--border-radius-lg);
   transition: all 0.2s ease-in-out;
@@ -53,7 +52,7 @@
   /* Estado Activo */
   &.active {
     border-color: var(--ion-color-pitch-green);
-    background: rgba(var(--ion-color-pitch-green-rgb, 77, 253, 133), 0.05);
+    --background: rgba(var(--ion-color-primary-rgb), 0.1);
     box-shadow: 0 0 0 1px var(--ion-color-pitch-green);
 
     .option-icon,
