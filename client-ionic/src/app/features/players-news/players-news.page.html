@@ -1,0 +1,73 @@
+<app-header-submenu
+  title="Player Detail"
+  href="/tabs/players"
+></app-header-submenu>
+
+<ion-content class="bg-content">
+  @if (isAuthenticated()) { @if (isLoading()) {
+  <div
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 50px 0;
+    "
+  >
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
+  } @else if (selectedNews(); as noticia) {
+  <ion-card class="news-content">
+    <ion-grid class="news-container ion-no-padding">
+      <ion-row>
+        <ion-text class="headline"> {{ noticia.titulo }} </ion-text>
+      </ion-row>
+
+      <ion-row class="metadata-row">
+        <ion-text class="meta-item">
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ noticia.fecha }}
+        </ion-text>
+
+        <ion-text class="dot-separator"></ion-text>
+
+        <ion-text class="interest-badge">
+          <ion-text class="warning-dot"></ion-text>
+          {{ noticia.interes === 'alta' ? 'High Interest' : noticia.interes ===
+          'media' ? 'Medium Interest' : 'Low Interest' }}
+        </ion-text>
+
+        <ion-text class="dot-separator"></ion-text>
+
+        <ion-text class="meta-item">
+          <ion-icon name="person-outline"></ion-icon>
+          Related to: {{ noticia.jugador }}
+        </ion-text>
+      </ion-row>
+
+      <ion-row class="tags-row">
+        @for (tag of noticia.etiquetas; track tag) {
+        <ion-badge class="tag-badge">{{ tag }}</ion-badge>
+        }
+      </ion-row>
+    </ion-grid>
+
+    <ion-row class="custom-divider"></ion-row>
+
+    <ion-grid class="content-container ion-no-padding">
+      <ion-row>
+        <ion-text class="article-content"> {{ noticia.descripcion }} </ion-text>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+  } @else {
+  <div
+    style="
+      text-align: center;
+      padding: 30px;
+      color: var(--ion-color-on-surface-variant);
+    "
+  >
+    <ion-text>No se pudo encontrar el detalle de esta noticia.</ion-text>
+  </div>
+  } }
+</ion-content>

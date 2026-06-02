@@ -1,0 +1,737 @@
+ion-content.custom-content {
+  --background: var(--ion-color-background);
+  --padding-top: var(--spacing-margin-mobile);
+  --padding-bottom: var(--spacing-margin-mobile);
+  --padding-start: var(--spacing-margin-mobile);
+  --padding-end: var(--spacing-margin-mobile);
+}
+
+// -------------------------
+// Hero Section
+// -------------------------
+.hero-card {
+  position: relative;
+  height: 16rem;
+  border-radius: var(--border-radius-xl);
+  background-color: var(--ion-color-surface-container);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  margin-bottom: var(--spacing-stack-md);
+  overflow: hidden;
+
+  // Gradient overlay
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      var(--ion-color-surface) 0%,
+      rgba(13, 21, 14, 0.6) 50%,
+      transparent 100%
+    );
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: var(--spacing-stack-md);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    text-align: left;
+
+    ion-grid,
+    ion-row,
+    ion-col {
+      width: 100%;
+    }
+  }
+
+  .badges-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .badge-position {
+    background: var(--ion-color-surface-container-highest);
+    color: var(--ion-color-secondary);
+    border: 1px solid var(--ion-color-outline-variant);
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    font-weight: var(--font-weight-label-bold);
+    padding: 4px 8px;
+    border-radius: var(--border-radius-full);
+  }
+
+  .badge-rating {
+    background: var(--ion-color-pitch-green);
+    color: var(--ion-color-surface-container-lowest);
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-full);
+  }
+
+  .player-name {
+    display: block;
+    font-family: var(--font-family-display-lg);
+    font-size: var(--font-size-display-lg);
+    font-weight: var(--font-weight-display-lg);
+    line-height: var(--font-line-height-display-lg);
+    color: var(--ion-color-chalk-white);
+    filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.07));
+  }
+
+  .player-team {
+    display: block;
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    color: var(--ion-color-on-surface-variant);
+  }
+}
+
+// -------------------------
+// Edit Button
+// -------------------------
+.action-grid {
+  margin-bottom: var(--spacing-stack-md);
+
+  .buttons-row {
+    // Esto añade la separación perfecta en medio de las dos columnas
+    gap: var(--spacing-gutter, 12px);
+  }
+}
+
+.edit-btn {
+  --background: var(--ion-color-pitch-green);
+  --color: var(--ion-color-surface-container-lowest);
+  --border-radius: var(--border-radius-xl);
+  --box-shadow: 0px 4px 12px rgba(30, 224, 108, 0.25);
+  font-family: var(
+    --font-family-display-lg
+  ); // Usado en el original para el boton
+  font-size: 16px;
+  font-weight: bold;
+  height: 48px;
+  margin: 0;
+  text-transform: none;
+
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+// -------------------------
+// Edit & Delete Buttons
+// -------------------------
+.edit-btn {
+  --background: var(--ion-color-pitch-green);
+  --color: var(--ion-color-surface-container-lowest);
+  --border-radius: var(--border-radius-xl);
+  --box-shadow: 0px 4px 12px rgba(30, 224, 108, 0.25);
+  font-family: var(--font-family-display-lg);
+  font-size: 16px;
+  font-weight: bold;
+  height: 48px;
+  margin: 0;
+  text-transform: none;
+
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+.delete-btn {
+  --background: var(--ion-color-danger);
+  --color: var(--ion-color-surface-container-lowest);
+  --border-radius: var(--border-radius-xl);
+  --box-shadow: 0px 4px 12px rgba(235, 68, 68, 0.25);
+  font-family: var(--font-family-display-lg);
+  font-size: 16px;
+  font-weight: bold;
+  height: 48px;
+  margin: 0;
+  text-transform: none;
+
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+// -------------------------
+// Player Details
+// -------------------------
+.details-card {
+  background: var(--ion-color-surface-container);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-stack-md);
+  box-shadow: none;
+  margin-bottom: var(--spacing-stack-md);
+
+  .details-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: var(--spacing-stack-md);
+
+    .info-icon {
+      color: var(--ion-color-pitch-green);
+      font-size: 24px;
+    }
+
+    .section-title {
+      font-family: var(--font-family-headline-sm);
+      font-size: var(--font-size-headline-sm);
+      font-weight: var(--font-weight-headline-sm);
+      color: var(--ion-color-chalk-white);
+    }
+  }
+
+  .details-row {
+    row-gap: var(--spacing-stack-md);
+    column-gap: 0;
+  }
+
+  .detail-col {
+    display: flex;
+    flex-direction: column;
+    padding-right: var(--spacing-gutter);
+  }
+
+  .detail-label {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    color: var(--ion-color-on-surface-variant);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .detail-value {
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    color: var(--ion-color-chalk-white);
+  }
+}
+
+// -------------------------
+// Map Card
+// -------------------------
+.map-card {
+  background: var(--ion-color-surface-container);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-xl);
+  box-shadow: none;
+  margin-bottom: var(--spacing-stack-md);
+  overflow: hidden;
+
+  .map-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: var(--spacing-stack-md);
+
+    .location-icon {
+      color: var(--ion-color-pitch-green);
+      font-size: 24px;
+    }
+
+    .section-title {
+      font-family: var(--font-family-headline-sm);
+      font-size: var(--font-size-headline-sm);
+      font-weight: var(--font-weight-headline-sm);
+      color: var(--ion-color-chalk-white);
+    }
+  }
+
+  .map-content {
+    height: 350px;
+    overflow: hidden;
+  }
+}
+
+// -------------------------
+// Comments Accordion
+// -------------------------
+.comments-accordion {
+  margin: 0;
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-xl);
+  overflow: hidden;
+  background: var(--ion-color-stadium-grey);
+
+  ion-accordion {
+    background: transparent;
+  }
+
+  .comments-header {
+    --background: var(--ion-color-surface-container);
+    --background-hover: var(--ion-color-surface-container-highest);
+    --padding-start: var(--spacing-stack-md);
+    --padding-end: var(--spacing-stack-md);
+    --padding-top: var(--spacing-stack-md);
+    --padding-bottom: var(--spacing-stack-md);
+
+    .comments-icon {
+      color: var(--ion-color-pitch-green);
+      margin-right: 8px;
+    }
+
+    .comments-title {
+      font-family: var(--font-family-headline-sm);
+      font-size: var(--font-size-headline-sm);
+      font-weight: var(--font-weight-headline-sm);
+      color: var(--ion-color-chalk-white);
+    }
+
+    .comments-count {
+      background: var(--ion-color-surface-container-lowest);
+      color: var(--ion-color-on-surface-variant);
+      font-family: var(--font-family-label-bold);
+      font-size: var(--font-size-label-bold);
+      padding: 2px 8px;
+      border-radius: var(--border-radius-full);
+      margin-left: 8px;
+    }
+  }
+
+  .comments-list {
+    background: var(--ion-color-stadium-grey);
+    border-top: 1px solid var(--ion-color-outline-variant);
+    padding: var(--spacing-stack-md);
+  }
+
+  .comment-item {
+    --background: transparent;
+    --border-color: var(--ion-color-outline-variant);
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --inner-padding-bottom: 16px !important;
+    margin-bottom: var(--spacing-stack-md);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .comment-avatar {
+      width: 40px;
+      height: 40px;
+      background: var(--ion-color-surface-container-high);
+      border: 1px solid var(--ion-color-outline-variant);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: var(--spacing-gutter);
+      align-self: flex-start;
+      margin-top: 0;
+
+      ion-icon {
+        color: var(--ion-color-on-surface-variant);
+        font-size: 20px;
+      }
+    }
+
+    .comment-label {
+      margin: 0;
+    }
+
+    .comment-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .comment-author {
+      font-family: var(--font-family-label-bold);
+      font-size: var(--font-size-label-bold);
+      font-weight: var(--font-weight-label-bold);
+      color: var(--ion-color-chalk-white);
+    }
+
+    .stars-container {
+      display: flex;
+      color: var(--ion-color-stat-gold);
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+
+    .comment-text {
+      display: block !important;
+      font-family: var(--font-family-body-md);
+      font-size: var(--font-size-body-md);
+      color: var(--ion-color-on-surface-variant);
+      white-space: normal;
+
+      margin-bottom: 12px !important;
+    }
+    .comment-location-row {
+      margin-top: 4px;
+      margin-bottom: 12px;
+      align-items: center; // Vertically centers the icon with the text
+
+      .location-micro-icon {
+        color: var(--ion-color-pitch-green);
+        font-size: 14px;
+        margin-right: 6px;
+      }
+
+      .location-coords {
+        font-family: var(--font-family-body-md);
+        font-size: 12px; // Slightly smaller to look like subtle metadata
+        color: var(--ion-color-on-surface-variant);
+      }
+    }
+  }
+}
+// -------------------------
+// New Comment Input
+// -------------------------
+.new-comment-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: var(--spacing-stack-md);
+}
+
+.new-comment-input {
+  --background: var(--ion-color-surface-container-high);
+  --color: var(--ion-color-chalk-white);
+  --border-color: var(--ion-color-outline-variant);
+  --border-radius: var(--border-radius-lg);
+  --border-width: 1px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  flex: 1;
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  margin: 0;
+  min-height: 44px;
+
+  &.ion-focused {
+    --border-color: var(--ion-color-pitch-green);
+    box-shadow: 0 0 0 1px var(--ion-color-pitch-green);
+  }
+}
+
+.new-comment-btn {
+  --background: var(--ion-color-pitch-green);
+  --color: var(--ion-color-surface-container-lowest);
+  --border-radius: var(--border-radius-lg);
+  width: 44px;
+  height: 44px;
+  margin: 0;
+
+  &:active {
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+// -------------------------
+// Related News (Accordion Override)
+// -------------------------
+.news-accordion {
+  margin-top: var(--spacing-stack-md) !important;
+}
+
+.news-list {
+  background: var(--ion-color-stadium-grey);
+  border-top: 1px solid var(--ion-color-outline-variant);
+  padding: var(--spacing-stack-md);
+}
+
+.news-item {
+  --background: transparent;
+  --color: var(--ion-color-on-surface);
+  --border-color: var(--ion-color-outline-variant);
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: var(--spacing-stack-md);
+
+  &:last-of-type {
+    margin-bottom: var(--spacing-stack-md);
+  }
+
+  .news-title {
+    display: block;
+    font-family: var(--font-family-body-lg);
+    font-size: var(--font-size-body-lg);
+    font-weight: bold;
+    color: var(--ion-color-chalk-white);
+    margin-bottom: 4px;
+  }
+
+  .news-date {
+    display: block;
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    color: var(--ion-color-on-surface-variant);
+  }
+}
+
+.add-news-btn {
+  --background: var(--ion-color-pitch-green);
+  --color: var(--ion-color-surface-container-lowest);
+  --border-radius: var(--border-radius-lg);
+  font-family: var(--font-family-body-lg);
+  font-size: var(--font-size-body-lg);
+  font-weight: bold;
+  height: 48px;
+  margin: 0;
+  text-transform: none;
+
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
+ion-modal.custom-modal {
+  // Forzar el centrado absoluto en la pantalla para iOS y Android
+  align-items: center;
+  justify-content: center;
+
+  // Variables nativas de Ionic para dimensionar el contenedor interno
+  --height: fit-content;
+  --width: 85%;
+  --max-width: 360px;
+  --background: var(--ion-color-surface-container);
+  --border-radius: var(--border-radius-xl);
+  --box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.2);
+
+  .modal-content {
+    padding: var(--spacing-stack-lg);
+    text-align: center;
+
+    h2 {
+      font-family: var(--font-family-headline-sm);
+      font-size: var(--font-size-headline-sm);
+      color: var(--ion-color-chalk-white);
+      margin: 0 0 var(--spacing-stack-sm) 0;
+    }
+
+    p {
+      font-family: var(--font-family-body-md);
+      font-size: var(--font-size-body-md);
+      color: var(
+        --ion-color-on-surface-variant
+      ); // Cambiado para asegurar legibilidad sobre el fondo
+      margin: 0 0 var(--spacing-stack-md) 0;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-stack-sm);
+
+      ion-button {
+        margin: 0;
+
+        &:first-child {
+          margin-bottom: var(--spacing-stack-xs);
+        }
+      }
+    }
+  }
+}
+
+// -------------------------
+// Forms & Inputs (Comments Edit/New)
+// -------------------------
+.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: var(--spacing-stack-md);
+
+  .auth-form-label {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    color: var(--ion-color-on-surface-variant);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+}
+
+.form-item {
+  --background: var(--ion-color-surface-container-high);
+  --border-radius: var(--border-radius-lg);
+  border-radius: var(--border-radius-lg);
+
+  --padding-start: 16px;
+  --padding-end: 16px;
+  width: 100%;
+  border: 1px solid var(--ion-color-outline-variant);
+
+  --border-color: transparent !important;
+  --border-style: none !important;
+  --border-width: 0px !important;
+  --inner-border-width: 0px !important;
+  --highlight-height: 0px !important;
+  box-shadow: none !important;
+
+  &.item-has-focus {
+    border-color: var(--ion-color-pitch-green);
+  }
+
+  // OPTIMIZACIÓN AQUÍ: Alinea el icono arriba de forma elegante si el textarea crece
+  ion-icon {
+    color: var(--ion-color-on-surface-variant);
+    margin-right: 8px;
+    align-self: flex-start;
+    margin-top: 14px; /* Centrado perfecto con la primera línea de texto */
+  }
+
+  .form-input {
+    --color: var(--ion-color-chalk-white);
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+  }
+}
+// -------------------------
+// Comments Structure Updates
+// -------------------------
+.comment-form-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: var(--spacing-stack-lg);
+  border-bottom: 1px solid var(--ion-color-outline-variant);
+  padding-bottom: var(--spacing-stack-lg);
+}
+
+.action-buttons-col {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.action-icon-btn {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  margin: 0;
+  height: 24px;
+
+  &.edit-color {
+    --color: var(--ion-color-pitch-green);
+  }
+  &.delete-color {
+    --color: var(--ion-color-danger);
+  }
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+.edit-form-item {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.rating-item {
+  --background: transparent !important;
+  --ion-item-background: transparent !important;
+  --inner-background: transparent !important;
+}
+
+.edit-actions-grid {
+  margin-bottom: 12px;
+
+  .confirm-edit-btn {
+    --background: var(--ion-color-pitch-green);
+    --color: var(--ion-color-surface-container-lowest);
+    --border-radius: var(--border-radius-lg);
+    margin: 0;
+    font-weight: bold;
+    height: 36px;
+  }
+
+  .cancel-edit-btn {
+    --color: var(--ion-color-on-surface-variant);
+    --border-radius: var(--border-radius-lg);
+    --border-color: var(--ion-color-outline-variant);
+    margin: 0;
+    font-weight: bold;
+    height: 36px;
+  }
+}
+
+// Sustitutos puros de Ionic para etiquetas de texto en el Modal
+.modal-title {
+  display: block;
+  font-family: var(--font-family-headline-sm);
+  font-size: var(--font-size-headline-sm);
+  color: var(--ion-color-chalk-white);
+  margin-bottom: var(--spacing-stack-sm);
+  font-weight: bold;
+}
+
+.modal-message {
+  display: block;
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface-variant);
+  margin-bottom: var(--spacing-stack-md);
+  line-height: 1.5;
+}
+
+.interactive-star,
+.star-icon {
+  color: #ffd700; // Amarillo / Dorado puro
+}
+
+// Mantienes tu clase de interactividad como la tenías
+.interactive-star {
+  font-size: 28px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.8);
+  }
+}

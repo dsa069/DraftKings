@@ -1,0 +1,10 @@
+module BufferApp {
+    typedef sequence<string> ListaNoticias;
+    interface Buffer {
+       long num_elementos();
+         boolean put(in string elemento);
+         ListaNoticias obtener_todas();
+         boolean read_en(in long indice, out string elemento);
+       oneway void shutdown();
+    };
+};

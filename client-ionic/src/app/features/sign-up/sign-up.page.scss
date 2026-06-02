@@ -1,0 +1,179 @@
+.sign-up-page {
+  --background: var(--ion-color-surface);
+  font-family: var(--font-family-body-md, "Inter");
+}
+
+/* 1. Hero Section */
+.hero-container {
+  position: relative;
+  height: 224px; // h-56
+  width: 100%;
+  background-color: var(--ion-color-surface-container-lowest);
+  overflow: hidden;
+  --ion-grid-padding: 0;
+  padding: 0;
+
+  @media (min-width: 768px) {
+    height: 288px; // h-72
+  }
+}
+
+.hero-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  filter: saturate(0.5);
+  margin: 0;
+  padding: 0;
+}
+
+.hero-gradient-vertical {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 10%,
+    var(--ion-color-surface) 75%,
+    var(--ion-color-surface) 100%
+  );
+  margin: 0;
+  padding: 0;
+  pointer-events: none; /* Asegura que el botón back sea clickeable */
+}
+
+.hero-gradient-horizontal {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--ion-color-surface) 50%, transparent) 0%,
+    transparent 100%
+  );
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+/* 3. Branding & Layout */
+.registration-main {
+  position: relative;
+  z-index: 10;
+  margin-top: -64px; // -mt-16
+  padding: 0 var(--spacing-margin-mobile) var(--spacing-stack-lg);
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 768px) {
+    margin-top: -96px; // -mt-24
+  }
+}
+
+.branding-col {
+  padding: 0;
+}
+
+.branding-header {
+  margin-bottom: var(--spacing-stack-lg);
+  padding: 0;
+}
+
+.badge-draft {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  margin-bottom: var(--spacing-stack-sm);
+  height: auto;
+
+  .badge-icon {
+    color: var(--ion-color-primary);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .badge-text {
+    font-family: var(--font-family-label-bold);
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--ion-color-on-surface);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+  }
+}
+
+.hero-title-container {
+  display: block;
+  margin: 0 0 4px 0;
+}
+
+.hero-title {
+  font-family: var(--font-family-display-lg);
+  font-size: var(--font-size-display-lg);
+  color: var(--ion-color-chalk-white);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+
+  &.hero-title-highlight {
+    color: var(--ion-color-primary);
+    filter: drop-shadow(0 0 12px rgba(77, 253, 133, 0.3));
+  }
+}
+
+.hero-description {
+  display: block;
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface-variant);
+  max-width: 280px;
+  margin: 0;
+}
+
+/* ==========================================================================
+   3. REQUISITOS DE CONTRASEÑA (Adaptado para iconos)
+   ========================================================================== */
+.password-requirements-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin-bottom: var(--spacing-stack-sm);
+}
+
+.requirement-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+}
+
+.requirement-dot {
+  font-size: 6px; /* Ajuste perfecto para el tamaño del icon de punto */
+  color: var(--ion-color-outline-variant, #444);
+  transition: color 0.3s ease;
+
+  &.requirement-met {
+    color: var(--ion-color-success) !important;
+  }
+}
+
+.requirement-text {
+  font-family: var(--font-family-label-bold);
+  font-size: 10px;
+  font-weight: var(--font-weight-label-bold);
+  color: var(--ion-color-outline);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

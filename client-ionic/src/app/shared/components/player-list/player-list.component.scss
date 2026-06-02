@@ -1,0 +1,374 @@
+/* Aquí va TODO el SCSS original EXCEPTO lo relacionado con la página padre, el FAB y los estados de carga */
+.main-container {
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  --ion-grid-padding: 0;
+}
+
+.search-filter-section {
+  padding: 0 var(--spacing-margin-mobile) var(--spacing-stack-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-base);
+  margin: 0;
+}
+
+.loading-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 var(--spacing-stack-md);
+  padding: 0 var(--spacing-margin-mobile);
+}
+
+.search-input-col {
+  padding: 0;
+  flex: 1;
+}
+
+.search-input-item {
+  --background: var(--ion-color-stadium-grey);
+  --border-radius: 50px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  --min-height: 44px;
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 50px;
+  margin: 0;
+  width: 100%;
+  transition: border-color 0.2s ease;
+
+  &.item-has-focus {
+    border-color: var(--ion-color-pitch-green);
+  }
+
+  .search-icon {
+    color: var(--ion-color-on-surface-variant);
+    font-size: 20px;
+    margin-right: 8px;
+  }
+
+  .search-input {
+    --color: var(--ion-color-on-surface);
+    --placeholder-color: var(--ion-color-on-surface-variant);
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+  }
+}
+
+.filter-col {
+  padding: 0;
+}
+
+.filter-button {
+  --background: var(--ion-color-surface-container-high);
+  --background-hover: var(--ion-color-surface-container-highest);
+  --background-activated: var(--ion-color-surface-container-highest);
+  --border-radius: 50px;
+  --color: var(--ion-color-on-surface);
+  margin: 0;
+  height: 44px;
+  width: 44px;
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: 50px;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  position: relative;
+
+  &::part(native) {
+    padding: 0;
+    border-radius: 50% !important;
+    overflow: hidden;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.active {
+    --background: var(--ion-color-pitch-green);
+    --color: var(--ion-color-surface-container-high);
+  }
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  .filter-notification-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--ion-color-pitch-green);
+    border: 2px solid var(--ion-color-surface-container-high);
+    border-radius: 50%;
+    z-index: 10;
+  }
+
+  &.active .filter-notification-dot {
+    background-color: var(--ion-color-surface-container-high);
+    border-color: var(--ion-color-pitch-green);
+  }
+}
+
+ion-item-group.players-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  width: 98%;
+  padding: 0 var(--spacing-margin-mobile);
+  margin: 0 auto;
+}
+
+.filters-panel {
+  background: var(--ion-color-surface-container);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-xl, 12px);
+  padding: 16px;
+  width: 100%;
+  margin: 0;
+  --ion-grid-padding: 0;
+  animation: filterFadeIn 0.25s ease-out forwards;
+}
+
+.filters-header {
+  gap: 8px;
+  color: var(--ion-color-primary);
+  margin-bottom: 16px;
+  padding: 0 4px;
+
+  .filters-header-icon {
+    font-size: 20px;
+  }
+
+  .filters-title {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold, 12px);
+    font-weight: var(--font-weight-label-bold, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.filters-row {
+  margin: 0;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px var(--spacing-base, 8px);
+}
+
+.filter-label {
+  font-family: var(--font-family-label-bold);
+  font-size: 12px;
+  font-weight: var(--font-weight-label-bold, 700);
+  color: var(--ion-color-on-surface-variant);
+  padding-left: 4px;
+}
+
+.custom-ionic-item {
+  --background: var(--ion-color-stadium-grey);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-md, 8px);
+  --min-height: 40px;
+  height: 40px;
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  transition: border-color 0.2s ease;
+  width: 100%;
+
+  &.item-has-focus {
+    border-color: var(--ion-color-pitch-green);
+  }
+
+  .custom-ionic-select {
+    width: 100%;
+    height: 100%;
+    --padding-start: 0;
+    --padding-end: 0;
+    font-family: var(--font-family-body-md);
+    color: var(--ion-color-on-surface);
+
+    &::part(icon) {
+      color: var(--ion-color-on-surface-variant);
+      opacity: 1;
+      font-size: 18px;
+    }
+  }
+}
+
+ion-popover.date-picker-popover {
+  --background: var(--ion-color-surface-container-high);
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --width: 320px;
+  ion-datetime {
+    --background: transparent;
+    --title-color: var(--ion-color-primary);
+    width: 100%;
+  }
+}
+
+.date-picker-item {
+  cursor: pointer;
+  &::part(native) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .date-content-wrapper {
+    display: flex !important;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    width: 100%;
+  }
+  .placeholder-date-text {
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    color: var(--ion-color-on-surface);
+    text-transform: none !important;
+  }
+  ion-datetime-button {
+    --background: transparent;
+    --color: var(--ion-color-on-surface);
+    font-family: var(--font-family-body-md);
+    margin: 0;
+    &::part(native) {
+      padding: 0;
+      background: transparent;
+    }
+  }
+}
+
+.filter-clear-icon-btn {
+  --padding-start: 4px;
+  --padding-end: 4px;
+  margin: 0;
+  height: 44px;
+  color: var(--ion-color-secondary);
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+ion-datetime {
+  --background: var(--ion-color-surface-container-high);
+  --title-color: var(--ion-color-primary);
+}
+
+@keyframes filterFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.player-list {
+  background: transparent;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gutter);
+  width: 100%;
+  margin: 0;
+}
+
+.player-card {
+  --background: var(--ion-color-stadium-grey);
+  --border-radius: var(--border-radius-xl, 0.75rem);
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  margin: 0;
+
+  .player-avatar {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--ion-color-outline-variant);
+    margin-right: 16px;
+    ion-img {
+      object-fit: cover;
+    }
+  }
+
+  .player-name {
+    display: block;
+    font-family: var(--font-family-headline-sm);
+    font-size: var(--font-size-headline-sm);
+    font-weight: var(--font-weight-headline-sm);
+    color: var(--ion-color-on-surface);
+    line-height: var(--font-line-height-headline-sm);
+    margin-bottom: 2px;
+  }
+
+  .player-position {
+    display: block;
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    color: var(--ion-color-on-surface-variant);
+  }
+}
+
+.player-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--ion-color-stat-gold);
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+.no-results-message {
+  display: block;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--ion-color-on-surface-variant);
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+}
+/* Agrega estos selectores al final de tu archivo player-list.component.scss actual */
+
+.import-checkbox-icon {
+  font-size: 22px;
+  margin-right: 8px;
+  transition: color 0.2s ease;
+}
+
+.player-card.is-selected {
+  --background: color-mix(
+    in srgb,
+    var(--ion-color-success) 12%,
+    var(--ion-color-stadium-grey)
+  );
+  border-color: var(--ion-color-success);
+}
+
+.import-action-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  z-index: 999;
+  animation: filterFadeIn 0.3s ease;
+}
+
+.import-submit-btn {
+  --background: var(--ion-color-success, #2dd36f);
+  --color: white;
+  font-family: var(--font-family-label-bold);
+  font-weight: bold;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}

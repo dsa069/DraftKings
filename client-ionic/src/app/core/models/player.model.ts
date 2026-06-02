@@ -1,0 +1,21 @@
+export interface Player {
+  id?: string | number;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  age?: number;
+  birthdate?: string | Date;
+  nationality?: string;
+  height?: number;
+  weight?: number;
+  number?: number;
+  team?: string;
+  league?: string;
+  position?: string;
+  photoUrl?: string;
+  latitude: number;
+  longitude: number;
+  created_at?: string | Date;
+  createdAt?: string | Date; // Para compatibilidad con diferentes APIs, pero no obligatorio
+  externalId?: string | number; // ID del jugador en la API externa (API-Football)
+}

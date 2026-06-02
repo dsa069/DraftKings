@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<gestorNoticias xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:noNamespaceSchemaLocation="noticias.xsd">
+	<noticia>
+		<fecha>31/02/2026</fecha> <!-- Fecha inválida -->
+		<interes>superalta</interes> <!-- Valor no permitido -->
+		<titulo>abc</titulo> <!-- Menos de 5 caracteres -->
+		<descripcion>Breve.</descripcion> <!-- Menos de 20 caracteres -->
+		<etiquetas>
+			<etiqueta>noticia</etiqueta> <!-- Falta # -->
+			<etiqueta>#xml</etiqueta>
+			<etiqueta>#noticia</etiqueta>
+			<etiqueta>#extra</etiqueta>
+			<etiqueta>#mas</etiqueta>
+			<etiqueta>#muchas</etiqueta>
+			<etiqueta>#demasiadas</etiqueta> <!-- Más de 6 etiquetas -->
+		</etiquetas>
+	</noticia>
+</gestorNoticias>

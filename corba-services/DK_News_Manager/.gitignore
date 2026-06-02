@@ -1,0 +1,21 @@
+# Build outputs
+/bin/
+/build/
+/target/
+
+# Generated docs and runtime data
+/doc/
+/orb.db/
+
+# Eclipse / Java IDE metadata
+/.settings/
+*.launch
+.project
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*~
+
+# Buffer files
+/src/BufferApp

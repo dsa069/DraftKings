@@ -1,0 +1,39 @@
+# Usamos JDK (no JRE) porque necesitamos el binario 'orbd'
+FROM eclipse-temurin:8-jdk
+
+WORKDIR /app
+
+# 1. Instalar Tomcat 9 (El Servidor Web para el Cliente CORBA)
+ENV TOMCAT_VERSION=9.0.86
+RUN wget -q https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
+    tar xzf apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
+    mv apache-tomcat-${TOMCAT_VERSION} /usr/local/tomcat && \
+    rm apache-tomcat-${TOMCAT_VERSION}.tar.gz
+
+# 2. Copiar los artefactos (rutas basadas en tu contexto de CI)
+# Copiamos el JAR del Servidor CORBA
+COPY DK_News_Manager/target/*-jar-with-dependencies.jar /app/corba-server.jar
+
+# Copiamos el WAR del Cliente. Lo renombramos a ROOT.war para que se despliegue en la raíz (/) del puerto 8080.
+COPY DK_News_Prod_Cons/DK_News_Prod_Cons.war /usr/local/tomcat/webapps/DK_News_Prod_Cons.war
+
+# 3. Crear el script de arranque múltiple
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Naming Service (ORBD) en puerto 1050..."' >> /app/start.sh && \
+    echo 'orbd -ORBInitialPort 1050 -ORBInitialHost localhost & ' >> /app/start.sh && \
+    echo 'sleep 5' >> /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Buffer Server en puerto 8090..."' >> /app/start.sh && \
+    # El servidor se conecta al ORB interno
+    echo 'java -cp /app/corba-server.jar Server.BufferServer -ORBInitialPort 1050 -ORBInitialHost localhost & ' >> /app/start.sh && \
+    echo 'sleep 5' >> /app/start.sh && \
+    echo 'echo "[SISTEMA] Iniciando Tomcat (Cliente Web) en puerto 8080..."' >> /app/start.sh && \
+    # Inyectamos las propiedades CORBA a Tomcat para que el Servlet sepa dónde está el ORB
+    echo 'export CATALINA_OPTS="-Dcom.sun.corba.se.ORBInitialPort=1050 -Dcom.sun.corba.se.ORBInitialHost=localhost"' >> /app/start.sh && \
+    # Arrancamos Tomcat en primer plano (exec) para mantener el contenedor vivo
+    echo 'exec /usr/local/tomcat/bin/catalina.sh run' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Solo exponemos el 8080 (Tomcat). El 1050 y 8090 lo expongo pero solo para debug desarollo 
+EXPOSE 8080 8090 1050 
+
+CMD ["/app/start.sh"]

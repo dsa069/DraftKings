@@ -1,0 +1,53 @@
+spring:
+ application:
+  name: eurekaServer
+ config:
+  import: "optional:configserver:http://localhost:8888"
+server:
+ port: ${PORT:8761}
+eureka:
+ server:
+  enable-self-preservation: false
+ client:
+  register-with-eureka: false
+  fetch-registry: false
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+info:
+  application:
+    name: ${spring.application.name}
+    description: Eureka server
+    version: '@project.version@'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings eureka server microservice in dev profile
+    
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import: "optional:configserver:https://dk-spring-config.cnsa-2026-dsa069.tech/"
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings eureka server microservice in prod profile

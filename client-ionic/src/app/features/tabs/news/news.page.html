@@ -1,0 +1,88 @@
+<app-header></app-header>
+
+<ion-content class="news-content">
+  @if (isAuthenticated()) {
+  <ion-card class="news-card-content">
+    <ion-row class="news-header-row">
+      <ion-col>
+        <ion-text class="news-title"> Player Intel </ion-text>
+        <ion-text class="news-subtitle">
+          Latest updates and injury reports.
+        </ion-text>
+      </ion-col>
+    </ion-row>
+    @if (isLoading()) {
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 0;
+      "
+    >
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+    } @else {
+    <ion-list class="news-list">
+      @for (noticia of newsList(); track noticia.id) {
+      <ion-card
+        class="news-card"
+        [ngClass]="{
+            'high-impact': noticia.interes === 'alta',
+            'medium-impact': noticia.interes === 'media',
+            'low-priority': noticia.interes === 'baja'
+          }"
+        (click)="onNewsItemClick(noticia.id)"
+      >
+        <ion-row class="card-indicator-bar"></ion-row>
+
+        <ion-row class="card-header">
+          <ion-row class="badge-group">
+            <ion-badge class="badge-date"> {{ noticia.fecha }} </ion-badge>
+
+            <ion-badge class="badge-priority">
+              <ion-row
+                class="pulse-dot"
+                [class.animate]="noticia.interes === 'alta'"
+              ></ion-row>
+              {{ noticia.interes === 'alta' ? 'High Impact' : noticia.interes
+              === 'media' ? 'Medium' : 'Low Priority' }}
+            </ion-badge>
+          </ion-row>
+        </ion-row>
+
+        <ion-text class="card-title"> {{ noticia.titulo }} </ion-text>
+
+        <ion-row class="player-meta">
+          <ion-avatar class="player-avatar">
+            <ion-icon
+              class="player-img"
+              name="person-circle-outline"
+            ></ion-icon>
+          </ion-avatar>
+          <ion-text class="player-name">{{ noticia.jugador }}</ion-text>
+        </ion-row>
+
+        <ion-row class="card-tags">
+          @for (tag of noticia.etiquetas; track tag) {
+          <ion-badge class="badge-tag"> {{ tag }} </ion-badge>
+          }
+        </ion-row>
+      </ion-card>
+      } @empty {
+      <ion-text
+        style="
+          text-align: center;
+          display: block;
+          margin-top: 20px;
+          color: var(--ion-color-on-surface-variant);
+        "
+      >
+        There are no news to display at the moment. Please check back later.
+      </ion-text>
+      }
+    </ion-list>
+    }
+  </ion-card>
+  }
+</ion-content>

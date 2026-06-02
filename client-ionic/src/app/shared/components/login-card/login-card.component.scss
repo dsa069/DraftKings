@@ -1,0 +1,230 @@
+.login-card {
+  background-color: var(--ion-color-surface-container-lowest);
+  border: 1px solid var(--ion-color-surface-container-high);
+  border-radius: var(--border-radius-xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  margin: 0;
+  padding: 0;
+}
+.login-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  padding: 24px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-sm);
+}
+.form-label {
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  color: var(--ion-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Alinea verticalmente el texto "Password" con el botón "Forgot?" */
+  margin-bottom: 4px;
+}
+.form-item {
+  --background: var(--ion-color-surface-container-low);
+  --border-color: var(--ion-color-outline);
+  --padding-start: 12px;
+  --padding-end: 12px;
+  border: 1px solid var(--ion-color-outline);
+  border-radius: var(--border-radius-lg);
+  &:focus-within {
+    border-color: var(--ion-color-pitch-green);
+    box-shadow: 0 0 0 1px var(--ion-color-pitch-green);
+  }
+}
+.form-input {
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface);
+  &::placeholder {
+    color: rgba(187, 203, 184, 0.4);
+  }
+}
+ion-icon {
+  color: var(--ion-color-on-surface-variant);
+  font-size: 20px;
+}
+.password-toggle {
+  margin: 0;
+  height: 100%;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  &:hover ion-icon {
+    color: var(--ion-color-on-surface);
+  }
+}
+.login-button {
+  --background: var(--ion-color-pitch-green);
+  --background-hover: var(--ion-color-primary);
+  --color: var(--ion-color-sideline-black);
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --border-radius: var(--border-radius-lg);
+  font-family: var(--font-family-headline-sm);
+  font-size: var(--font-size-headline-sm);
+  font-weight: var(--font-weight-headline-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-gutter);
+  margin-top: var(--spacing-stack-sm);
+  transition: all 200ms ease-in-out;
+  text-transform: none;
+  &:hover {
+    --background: var(--ion-color-primary);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ion-color-pitch-green),
+      0 0 0 4px var(--ion-color-surface);
+  }
+  ion-icon {
+    font-size: 24px;
+    color: var(--ion-color-on-primary-fixed);
+  }
+}
+
+.signup-section {
+  text-align: center;
+  margin-top: var(--spacing-stack-md);
+}
+
+.signup-text {
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface-variant);
+  margin: 0;
+  display: flex; /* Usamos flex para alinear texto y botón perfectamente */
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap; /* Por si la pantalla es muy pequeña, que baje de línea */
+}
+ion-footer.signup-section {
+  background: transparent; /* Evita que el footer tape el fondo del contenedor */
+  margin-top: var(--spacing-stack-md);
+  display: flex;
+  justify-content: center;
+}
+
+ion-text.signup-text {
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-on-surface-variant);
+  display: flex; /* Mantiene la alineación flex original */
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap; /* Mantiene el comportamiento responsive original */
+}
+
+.forgot-link,
+.signup-link {
+  /* Anulamos dimensiones de botón */
+  margin: 0 0 0 5px; /* Un pequeño margen a la izquierda del texto */
+  padding: 0;
+  height: auto;
+  min-height: 20px;
+  --border-radius: 0 !important;
+
+  /* Tipografía exacta al texto base */
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-body-md);
+  font-weight: var(--font-weight-label-bold);
+  color: var(--ion-color-primary);
+
+  /* Variables internas de Ionic para limpiar el botón */
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --margin-top: 0;
+  --margin-bottom: 0;
+  --ripple-color: transparent;
+
+  text-transform: none;
+  vertical-align: baseline;
+
+  &:hover {
+    color: var(--ion-color-pitch-green);
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form-wrapper {
+    padding: 16px;
+  }
+}
+ion-content {
+  --background: var(--ion-color-surface);
+}
+
+/* --- NUEVOS ESTILOS PARA LA SECCIÓN DEL BACKEND --- */
+.backend-switch-item {
+  --background: var(--ion-color-surface-container-low);
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  margin-top: 10px;
+  border: 1px solid var(--ion-color-outline);
+  border-radius: var(--border-radius-lg);
+  transition: all 200ms ease-in-out;
+
+  /* Aplica el border-radius también a la parte nativa interactiva de Ionic */
+  &::part(native) {
+    border-radius: var(--border-radius-lg);
+  }
+
+  &:hover {
+    border-color: var(--ion-color-pitch-green);
+    --background: var(--ion-color-surface-container-high);
+  }
+
+  .backend-icon {
+    color: var(--ion-color-primary);
+    font-size: 24px;
+    margin-right: var(--spacing-gutter);
+  }
+
+  .backend-current {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-body-md);
+    font-weight: var(--font-weight-label-bold);
+    color: var(--ion-color-on-surface); /* Color gris/blanco base de tu app */
+    text-transform: uppercase;
+    display: block; /* Obliga a saltar a la siguiente línea */
+    margin-bottom: 2px;
+
+    /* Cambia de color únicamente el valor seleccionado */
+    .backend-highlight {
+      color: var(
+        --ion-color-primary
+      ); /* El verde brillante #4dfd85 de tus variables */
+    }
+  }
+
+  .backend-hint {
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-label-bold);
+    color: var(--ion-color-on-surface-variant);
+    display: block;
+  }
+}

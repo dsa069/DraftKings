@@ -1,0 +1,184 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+// Import consolidated theme variables
+@use "./theme/variables.scss" as *;
+
+/* Google Fonts Import - Lexend & Inter */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lexend:wght@400;500;600;700&display=swap");
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+@import "@ionic/angular/css/palettes/dark.class.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+ion-content {
+  --background: var(--ion-color-background);
+}
+
+// ==========================================
+// ESTRUCTURA Y CONTENEDORES DEL HEADER
+// ==========================================
+
+.header-container {
+  width: 100%;
+  z-index: 50;
+
+  ion-toolbar {
+    --padding-start: var(--spacing-margin-mobile, 16px);
+    --padding-end: var(--spacing-margin-mobile, 16px);
+    --min-height: 3.5rem; // h-14 equivalent (56px)
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+// Distribución de espacio dentro del Toolbar de Ionic
+ion-toolbar {
+  ion-buttons {
+    flex: 0 0 auto;
+  }
+
+  ion-buttons[slot="start"] {
+    margin-inline-end: auto;
+  }
+
+  ion-buttons[slot="end"] {
+    margin-inline-start: auto;
+  }
+}
+
+// ==========================================
+// COMPONENTES INTERNOS DEL HEADER
+// ==========================================
+
+// Estilo Base del Título (Tipografía compartida)
+.header-title-base {
+  font-family: var(--font-family-display-lg, "Lexend"), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em; // tracking-tighter equivalent
+  text-align: center;
+  flex-grow: 1;
+  margin: 0;
+}
+
+// Logo compartido
+.header-logo {
+  width: 40px !important;
+  height: 40px !important;
+  max-width: 40px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+// Estilos base para elementos de navegación/iconos
+.header-nav-button {
+  width: 56px !important;
+  height: 56px !important;
+}
+
+/* ==========================================================================
+   ESTILOS COMPARTIDOS PARA FORMULARIOS DE AUTENTICACIÓN (LOGIN / REGISTRO)
+   ========================================================================== */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+}
+
+ion-row.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-sm);
+  width: 100%;
+}
+
+.auth-form-label {
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  color: var(--ion-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+ion-row.auth-form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  width: 100%;
+}
+
+/* 2. Botón Back Circular */
+.back-button-container {
+  position: absolute;
+  top: var(--spacing-margin-mobile);
+  left: var(--spacing-margin-mobile);
+  z-index: 20;
+  margin: 0;
+}
+
+.circular-back-btn {
+  --background: color-mix(
+    in srgb,
+    var(--ion-color-surface-container-high) 60%,
+    transparent
+  );
+  --color: var(--ion-color-chalk-white);
+  --border-radius: 50%;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: color-mix(
+    in srgb,
+    var(--ion-color-outline-variant) 30%,
+    transparent
+  );
+  backdrop-filter: blur(12px);
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  margin: 0;
+  transition: all 0.2s ease;
+
+  &::part(native) {
+    padding: 0;
+  }
+
+  &:hover {
+    --color: var(--ion-color-primary);
+    --background: var(--ion-color-surface-container-highest);
+  }
+}

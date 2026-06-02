@@ -1,0 +1,207 @@
+package draftkings.eureka.client.player.service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import draftkings.eureka.client.player.dto.PlayerExternalDTO;
+import draftkings.eureka.client.player.exception.ServiceUnavailableException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class ApiFootballServiceImplTest {
+
+    @Mock
+    private RestTemplateBuilder restTemplateBuilder;
+
+    @Mock
+    private RestTemplate restTemplate;
+
+    private ApiFootballServiceImpl service;
+
+    @BeforeEach
+    void setUp() {
+        when(restTemplateBuilder.build()).thenReturn(restTemplate);
+        service = new ApiFootballServiceImpl(restTemplateBuilder, new ObjectMapper());
+        ReflectionTestUtils.setField(service, "apiKey", "test-api-key");
+    }
+
+    @Test
+    void searchExternalPlayersShouldMapResponseCorrectly() {
+        String body = """
+                {
+                  "response": [
+                    {
+                      "player": {
+                        "id": 123,
+                        "name": "Kylian Mbappe",
+                        "firstname": "Kylian",
+                        "lastname": "Mbappe",
+                        "age": 26,
+                        "birth": { "date": "1998-12-20" },
+                        "nationality": "France",
+                        "position": "Attacker",
+                        "photo": "https://img/player.png",
+                        "height": "178 cm",
+                        "weight": "73 kg",
+                        "number": "10"
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok(body));
+
+        List<PlayerExternalDTO> players = service.searchExternalPlayers("mbappe");
+
+        assertEquals(1, players.size());
+        PlayerExternalDTO dto = players.get(0);
+        assertEquals("Kylian Mbappe", dto.getName());
+        assertEquals("Kylian", dto.getFirstName());
+        assertEquals("Mbappe", dto.getLastName());
+        assertEquals(26, dto.getAge());
+        assertEquals("1998-12-20", dto.getBirthdate());
+        assertEquals("France", dto.getNationality());
+        assertEquals("Attacker", dto.getPosition());
+        assertEquals("https://img/player.png", dto.getPhotoUrl());
+        assertEquals("178", dto.getHeight().toPlainString());
+        assertEquals("73", dto.getWeight().toPlainString());
+        assertEquals(10, dto.getNumber());
+        assertEquals(123L, dto.getExternalId());
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        ArgumentCaptor<HttpEntity> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
+        verify(restTemplate).exchange(uriCaptor.capture(), eq(HttpMethod.GET), entityCaptor.capture(),
+                eq(String.class));
+
+        assertTrue(uriCaptor.getValue().toString().contains("search=mbappe"));
+        assertEquals("test-api-key", entityCaptor.getValue().getHeaders().getFirst("x-apisports-key"));
+    }
+
+    @Test
+    void searchExternalPlayersShouldReturnEmptyListWhenResponseNodeMissing() {
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok("{}"));
+
+        List<PlayerExternalDTO> players = service.searchExternalPlayers("any");
+
+        assertNotNull(players);
+        assertTrue(players.isEmpty());
+    }
+
+    @Test
+    void searchExternalPlayersShouldThrowServiceUnavailableWhenExternalCallFails() {
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenThrow(new RuntimeException("timeout"));
+
+        ServiceUnavailableException ex = assertThrows(
+                ServiceUnavailableException.class,
+                () -> service.searchExternalPlayers("messi"));
+
+        assertEquals("Failed to fetch players from external API", ex.getMessage());
+    }
+
+    @Test
+    void searchExternalPlayersFallbackShouldThrowServiceUnavailable() {
+        ServiceUnavailableException ex = assertThrows(
+                ServiceUnavailableException.class,
+                () -> service.searchExternalPlayersFallback("messi", new RuntimeException("circuit open")));
+
+        assertEquals("Failed to fetch players from external API", ex.getMessage());
+        assertNotNull(ex.getCause());
+    }
+
+    @Test
+    void resolveTeamAndLeagueShouldReturnTeamAndLeagueWhenFound() {
+        String teamsJson = """
+                {
+                  "response": [
+                    {
+                      "team": { "id": 541, "name": "Real Madrid" },
+                      "seasons": [2025, 2024]
+                    }
+                  ]
+                }
+                """;
+        String leaguesJson = """
+                {
+                  "response": [
+                    {
+                      "league": { "id": 140, "name": "La Liga", "type": "League" },
+                      "country": { "name": "Spain" },
+                      "seasons": [
+                        { "year": 2025, "start": "2025-08-15", "end": "2026-05-30" },
+                        { "year": 2024, "start": "2024-08-15", "end": "2025-05-30" }
+                      ]
+                    }
+                  ]
+                }
+                """;
+
+        when(restTemplate.exchange(argThat(uri -> uri != null && uri.toString().contains("/players/teams")),
+                eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok(teamsJson));
+
+        when(restTemplate.exchange(argThat(uri -> uri != null && uri.toString().contains("/leagues")),
+                eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok(leaguesJson));
+
+        ApiFootballService.TeamLeagueInfo info = service.resolveTeamAndLeague(123L, "France");
+
+        assertEquals("Real Madrid", info.teamName());
+        assertEquals("La Liga", info.leagueName());
+    }
+
+    @Test
+    void resolveTeamAndLeagueShouldReturnNullsWhenNoTeamsFound() {
+        String teamsJson = """
+                { "response": [] }
+                """;
+
+        when(restTemplate.exchange(argThat(uri -> uri.toString().contains("/players/teams")),
+                eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok(teamsJson));
+
+        ApiFootballService.TeamLeagueInfo info = service.resolveTeamAndLeague(999L, "France");
+
+        assertNull(info.teamName());
+        assertNull(info.leagueName());
+    }
+
+    @Test
+    void resolveTeamAndLeagueShouldReturnNullLeagueWhenApiCallFails() {
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenThrow(new RuntimeException("timeout"));
+
+        ApiFootballService.TeamLeagueInfo info = service.resolveTeamAndLeague(123L, "France");
+
+        assertNull(info.teamName());
+        assertNull(info.leagueName());
+    }
+
+    @Test
+    void resolveTeamAndLeagueFallbackShouldReturnNulls() {
+        ApiFootballService.TeamLeagueInfo info = service.resolveTeamAndLeagueFallback(
+                123L, "France", new RuntimeException("circuit open"));
+
+        assertNull(info.teamName());
+        assertNull(info.leagueName());
+    }
+}

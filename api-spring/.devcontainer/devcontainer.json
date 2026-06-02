@@ -1,0 +1,74 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/java
+{
+  "name": "API-Spring",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "installMaven": "true",
+      "mavenVersion": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // Ports are already defined in docker-compose.yml
+  // "forwardPorts": [8080, 5432],
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "cd /workspace/api-spring && java -version && mvn --version && bash setup-aliases.sh",
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.java",
+        "vscjava.extension-pack-for-java",
+        "pivotal.vscode-spring-boot",
+        "vscjava.vscode-maven",
+        "github.copilot",
+        "github.copilot-chat",
+        "cweijan.vscode-postgresql-client2",
+        "echoapi.echoapi-for-vscode"
+      ],
+      "settings": {
+        "java.configuration.updateBuildConfiguration": "automatic",
+        "editor.formatOnSave": true,
+        "vscode-postgresql-client.connections": [
+          {
+            "name": "DraftKings Local",
+            "type": "PostgreSQL",
+            "host": "postgresql", // Nombre del servicio en Docker
+            "port": 5432,
+            "user": "postgres",
+            "password": "postgres",
+            "database": "draftkings",
+            "group": "DraftKings"
+          },
+          {
+            "name": "DraftKings Dev",
+            "type": "PostgreSQL",
+            "host": "aws-1-eu-central-1.pooler.supabase.com",
+            "port": 6543,
+            "user": "postgres.ixbdoxfxxlymwjuyfdiq",
+            "password": "",
+            "database": "postgres",
+            "group": "DraftKings"
+          },
+          {
+            "name": "DraftKings Prod",
+            "type": "PostgreSQL",
+            "host": "aws-0-eu-west-1.pooler.supabase.com",
+            "port": 6543,
+            "user": "postgres.vopcpjecorghtrqpvqtc",
+            "password": "",
+            "database": "postgres",
+            "group": "DraftKings"
+          }
+        ]
+      }
+    }
+  },
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  "remoteUser": "root"
+}

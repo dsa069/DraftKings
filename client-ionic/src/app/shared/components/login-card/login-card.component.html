@@ -1,0 +1,48 @@
+<ion-card class="login-card">
+  <ion-card-content class="login-form-wrapper">
+    <ng-content></ng-content>
+
+    <ion-item
+      button
+      lines="none"
+      class="backend-switch-item"
+      (click)="goToSwitchBack()"
+    >
+      <ion-icon
+        slot="start"
+        name="server-outline"
+        class="backend-icon"
+      ></ion-icon>
+      <ion-label>
+        <ion-text class="backend-current">
+          Backend actual:
+          <ion-text class="backend-highlight">{{ currentBackend }}</ion-text>
+        </ion-text>
+        @if (showBackendHint) {
+        <ion-text class="backend-hint">¿Quieres cambiarlo? Pulsa aquí</ion-text>
+        }
+      </ion-label>
+    </ion-item>
+    @if (showBackendHint) {
+    <ion-button
+      type="submit"
+      [attr.form]="formId"
+      expand="block"
+      class="login-button"
+    >
+      {{ submitText }}
+      <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+    </ion-button>
+    }
+  </ion-card-content>
+</ion-card>
+@if (showBackendHint) {
+<ion-footer class="signup-section ion-no-border">
+  <ion-text class="signup-text ion-no-margin">
+    {{ footerText }}
+    <ion-button fill="clear" class="signup-link" (click)="onFooterAction()">
+      {{ footerActionText }}
+    </ion-button>
+  </ion-text>
+</ion-footer>
+}

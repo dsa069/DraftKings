@@ -1,0 +1,119 @@
+.map-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  padding: 0;
+  width: 100%;
+}
+
+.map-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.gps-button {
+  --background: var(--ion-color-surface-variant);
+  --color: var(--ion-color-pitch-green);
+  --border-radius: var(--border-radius-lg);
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  text-transform: none;
+  margin: 0;
+}
+
+// Contenedor del lienzo del mapa
+.map-wrapper {
+  width: 100%;
+
+  // 1. SOLUCIÓN AL TAMAÑO: Alturas explícitas en lugar de solo aspect-ratio
+  min-height: 250px;
+  height: 45vh; // Toma un 40% del alto de la pantalla visual
+  max-height: 450px;
+
+  border-radius: var(--border-radius-xl);
+  overflow: hidden;
+  border: 2px solid var(--ion-color-outline-variant);
+  background: var(--ion-color-stadium-grey);
+
+  // 2. SOLUCIÓN AL SCROLL: Evita que el navegador/Ionic intercepte el gesto de arrastrar
+  touch-action: none;
+
+  @media (min-width: 992px) {
+    height: 66vh; // Sube del 40% al 55% de la altura de la pantalla
+    max-height: 700px; // Le permitimos expandirse más en monitores grandes
+  }
+}
+
+.map-element {
+  width: 100%;
+  height: 100%;
+  z-index: 1; // Necesario para que no se superponga con cabeceras de Ionic
+
+  // Aseguramos que los cursores dentro del mapa actúen correctamente
+  outline: none;
+}
+
+.coordinates-display {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-base);
+  background: var(--ion-color-surface-container-highest);
+  padding: var(--spacing-gutter) var(--spacing-stack-md);
+  border-radius: var(--border-radius-lg);
+  border: 1px dashed var(--ion-color-outline-variant);
+
+  .pin-icon {
+    color: var(--ion-color-pitch-green);
+    font-size: 20px;
+  }
+
+  .coord-text {
+    font-family: var(--font-family-stat-number);
+    font-size: var(--font-size-body-md);
+    color: var(--ion-color-on-surface);
+  }
+}
+
+// Manual coordinate input fields
+.manual-coords-input {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-stack-md);
+  background: var(--ion-color-surface-container);
+  padding: var(--spacing-gutter) var(--spacing-stack-md);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--ion-color-outline-variant);
+
+  @media (min-width: 576px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .coord-input {
+    --padding-start: var(--spacing-gutter);
+    --padding-end: var(--spacing-gutter);
+    --padding-top: var(--spacing-base);
+    --padding-bottom: var(--spacing-base);
+    --background: var(--ion-color-surface-variant);
+    --color: var(--ion-color-on-surface);
+    --border-radius: var(--border-radius-md);
+    --placeholder-color: var(--ion-color-medium);
+  }
+
+  .error-text {
+    display: block;
+    margin-top: var(--spacing-xs);
+    color: var(--ion-color-danger);
+    font-family: var(--font-family-label-regular);
+    font-size: var(--font-size-label-sm);
+  }
+
+  ion-col {
+    display: flex;
+    flex-direction: column;
+  }
+}

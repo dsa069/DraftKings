@@ -1,0 +1,59 @@
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/java:17-bullseye
+    container_name: api-spring
+    working_dir: /workspace
+    volumes:
+      - ../../:/workspace
+      - maven_cache:/root/.m2
+
+    ports:
+      - "8080:8080"
+      - "8090:8090"
+      - "8091:8091"
+      - "8092:8092"
+      - "5000:5000"
+      - "8761:8761"
+      
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/draftkings
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - postgresql
+    command: sleep infinity
+    stdin_open: true
+    tty: true
+    networks:
+      - api-network
+
+  postgresql:
+    image: postgres:15-alpine
+    container_name: DK_postgresql
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: draftkings
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - api-network
+
+volumes:
+  postgresql_data:
+  maven_cache:
+
+networks:
+  api-network:
+    driver: bridge

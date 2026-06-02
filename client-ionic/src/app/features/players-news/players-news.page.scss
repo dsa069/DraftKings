@@ -1,0 +1,155 @@
+// --------------------------------------------------
+// NEWS HEADER & CONTAINERS
+// --------------------------------------------------
+.bg-content {
+  --background: var(--ion-color-surface, var(--ion-color-background));
+  background: var(--ion-color-surface, var(--ion-color-background));
+}
+
+.news-content {
+  width: 90%;
+  margin: 0 auto;
+  display: block;
+  --background: var(--ion-color-surface, var(--ion-color-background));
+  background: var(--ion-color-surface, var(--ion-color-background));
+}
+
+.news-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  --background: var(--ion-color-surface, var(--ion-color-background));
+  background: var(--ion-color-surface, var(--ion-color-background));
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-md);
+  background: transparent;
+  --background: transparent;
+}
+
+// --------------------------------------------------
+// METADATA ROW
+// --------------------------------------------------
+.metadata-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-gutter);
+  color: var(--ion-color-on-surface-variant);
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  line-height: var(--font-line-height-body-md);
+  font-weight: var(--font-weight-body-md);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  ion-icon {
+    font-size: 16px;
+  }
+}
+
+.dot-separator {
+  width: 4px;
+  height: 4px;
+  border-radius: var(--border-radius-full);
+  background-color: var(--ion-color-outline-variant);
+  display: inline-block;
+}
+
+// Usamos ion-text como contenedor flex para la medalla
+.interest-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--ion-color-surface-container-high);
+  padding: 4px 8px;
+  border-radius: var(--border-radius-full);
+  border: 1px solid var(--ion-color-outline-variant);
+
+  color: var(--ion-color-on-surface);
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  line-height: var(--font-line-height-label-bold);
+  font-weight: var(--font-weight-label-bold);
+}
+
+.warning-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--border-radius-full);
+  background-color: var(--ion-color-warning);
+  // Sombra roja tomando los valores RGB de --ion-color-warning
+  box-shadow: 0 0 8px rgba(var(--ion-color-warning-rgb), 0.6);
+  display: inline-block;
+}
+
+// --------------------------------------------------
+// HEADLINE
+// --------------------------------------------------
+.headline {
+  display: block;
+  width: 100%;
+  font-family: var(--font-family-headline-md);
+  font-size: var(--font-size-headline-md);
+  line-height: 1.2; // equivalente a leading-tight
+  font-weight: var(--font-weight-headline-md);
+  color: var(--ion-color-chalk-white);
+}
+
+// --------------------------------------------------
+// TAGS ROW
+// --------------------------------------------------
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-base);
+  padding-top: var(--spacing-stack-sm);
+}
+
+.tag-badge {
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --background: var(--ion-color-surface-container-highest);
+  --color: var(--ion-color-on-surface-variant);
+
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-full);
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  letter-spacing: normal;
+}
+
+// --------------------------------------------------
+// DIVIDER
+// --------------------------------------------------
+.custom-divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--ion-color-outline-variant);
+  margin: var(--spacing-stack-md) 0;
+}
+
+// --------------------------------------------------
+// ARTICLE CONTENT
+// --------------------------------------------------
+.article-content {
+  display: block;
+  width: 100%;
+  font-family: var(--font-family-body-lg);
+  font-size: var(--font-size-body-lg);
+  line-height: 1.625; // equivalente a leading-relaxed
+  font-weight: var(--font-weight-body-lg);
+  color: var(--ion-color-on-surface);
+  background: transparent;
+  --background: transparent;
+}

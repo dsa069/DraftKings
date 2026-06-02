@@ -1,0 +1,160 @@
+name: CI/CD SpringBoot
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    strategy:
+      # Matrix: Aquí defines tus 6 microservicios
+      matrix:
+        service: [
+          'eureka.server',
+          'config.server',
+          'gateway',
+          'eureka.client.player',
+          'eureka.client.review',
+          'eureka.client.user'
+          ]
+      # Si un servicio falla, los demás siguen corriendo
+      fail-fast: false
+    defaults:
+      run:
+        working-directory: ./api-spring/${{ matrix.service }}
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      # Set up Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # Verify Java version
+      - name: Verify Java Version
+        run: java -version
+
+      # Build, Compile, and Test in a single Maven command
+      - name: Build ${{ matrix.service }} with Maven
+        run: mvn -B clean package
+
+      - name: Upload ${{ matrix.service }} JAR Artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: ${{ matrix.service }}-jar
+          path: ./api-spring/${{ matrix.service }}/target/${{ matrix.service }}*.jar
+          if-no-files-found: error
+
+      # Upload Test Results (for visibility in PR checks)
+      - name: Upload ${{ matrix.service }} Test Results
+        uses: actions/upload-artifact@v7.0.1
+        if: success() || failure()
+        with:
+          name: ${{ matrix.service }}-test-results
+          path: ./api-spring/${{ matrix.service }}/target/surefire-reports/*.xml
+
+      - name: Add ${{ matrix.service }} coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: ./api-spring/${{ matrix.service }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 60
+          min-coverage-changed-files: 60
+          comment-type: both
+
+      - name: Run ${{ matrix.service }} Checkstyle Full Report
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: google_checks.xml
+          reporter: github-pr-check
+          workdir: ./api-spring/${{ matrix.service }}   
+
+      - name: Checkstyle ${{ matrix.service }} PR Review
+        if: github.event_name == 'pull_request'
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review 
+          filter_mode: added        
+          level: error
+          workdir: ./api-spring/${{ matrix.service }}    
+        continue-on-error: true    
+
+
+      - name: Publish ${{ matrix.service }} Test Results
+        uses: dorny/test-reporter@v3.0.0
+        with:
+          artifact: ${{ matrix.service }}-test-results
+          name: JUnit Tests
+          path: '*.xml'
+          reporter: java-junit
+
+  deploy-eureka-dev:
+    needs: build
+    uses: ./.github/workflows/spring-cd.yml
+    with:
+      service_name: 'eureka.server'
+    secrets: inherit
+
+  deploy-config-dev:
+    needs: deploy-eureka-dev
+    uses: ./.github/workflows/spring-cd.yml
+    with:
+      service_name: 'config.server'
+    secrets: inherit
+
+  deploy-clients-dev:
+    needs: deploy-config-dev
+    strategy:
+      matrix:
+        service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.user']
+      fail-fast: false
+    uses: ./.github/workflows/spring-cd.yml
+    with:
+      service_name: ${{ matrix.service }}
+    secrets: inherit
+
+  deploy-eureka-prod:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    uses: ./.github/workflows/spring-cd.prod.yml
+    with:
+      service_name: 'eureka.server'
+    secrets: inherit
+
+  deploy-config-prod:
+    if: github.ref == 'refs/heads/main'
+    needs: deploy-eureka-prod
+    uses: ./.github/workflows/spring-cd.prod.yml
+    with:
+      service_name: 'config.server'
+    secrets: inherit
+  
+  deploy-clients-prod:
+    if: github.ref == 'refs/heads/main'
+    needs: deploy-config-prod
+    strategy:
+      matrix:
+        service: ['gateway', 'eureka.client.player', 'eureka.client.review', 'eureka.client.user']
+      fail-fast: false
+    uses: ./.github/workflows/spring-cd.prod.yml
+    with:
+      service_name: ${{ matrix.service }}
+    secrets: inherit

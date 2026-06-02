@@ -1,0 +1,37 @@
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    @if (!isAuthenticated()) {
+    <ion-tab-button class="custom-tab-button" (click)="showAuthToast()">
+      <ion-icon name="shield-half-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">My Squad</ion-label>
+    </ion-tab-button>
+    } @else {
+    <ion-tab-button tab="my-team" class="custom-tab-button">
+      <ion-icon name="shield-half-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">My Squad</ion-label>
+    </ion-tab-button>
+    }
+
+    <ion-tab-button tab="players" class="custom-tab-button">
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">Players</ion-label>
+    </ion-tab-button>
+
+    @if (!isAuthenticated()) {
+    <ion-tab-button class="custom-tab-button" (click)="showAuthToast()">
+      <ion-icon name="newspaper-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">News</ion-label>
+    </ion-tab-button>
+    } @else {
+    <ion-tab-button tab="news" class="custom-tab-button">
+      <ion-icon name="newspaper-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">News</ion-label>
+    </ion-tab-button>
+    }
+
+    <ion-tab-button tab="settings" class="custom-tab-button">
+      <ion-icon name="settings-outline"></ion-icon>
+      <ion-label class="font-label-bold text-label-bold">Settings</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

@@ -1,0 +1,58 @@
+server:
+  port: ${PORT:8080}
+eureka:
+  instance:
+    hostname: eureka-client-user-dev-223788394742.us-east1.run.app
+    prefer-ip-address: false 
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    secure-port: 443
+
+    status-page-url: https://${eureka.instance.hostname}/actuator/info
+    health-check-url: https://${eureka.instance.hostname}/actuator/health
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
+
+spring:
+  datasource:
+    url: jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
+    username: postgres.ixbdoxfxxlymwjuyfdiq
+    password: ${DB_SQL_PASS_DEV}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update # O 'none' si no quieres que toque las tablas
+    show-sql: true
+    open-in-view: false
+  mvc:
+    cors:
+      configs:
+        '[/**]':
+          allowed-origins: "https://draftkings-dev.cnsa-2026-dsa069.tech"
+          allowed-methods: "*"
+          allowed-headers: "*"
+          allow-credentials: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://securetoken.google.com/draftkings-dev-de53b
+openapi:
+  title: DraftKings User Microservice API (Dev)
+  
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env
+info:
+  application:
+    name: ${spring.application.name}
+    description: User microservice en desarrollo
+    version: '@project.version@'

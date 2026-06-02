@@ -1,0 +1,100 @@
+extends layout
+
+block content
+  .container.mt-5
+    //- Migas de pan / Navegación rápida
+    nav(aria-label="breadcrumb")
+      ol.breadcrumb.bg-transparent.p-0.mb-4
+        li.breadcrumb.item.mr-2
+          a(href="/") <i class="fas fa-home"></i> Inicio
+        li.breadcrumb.item.active(aria-current="page") &nbsp;/ Panel de Estado
+
+    //- Título principal
+    .d-flex.justify-content-between.align-items-center.mb-4
+      h2.text-dark
+        i.fas.fa-heartbeat.text-danger.mr-2
+        | #{title}
+      span.badge.badge-light.p-2.border.shadow-sm
+        i.far.fa-clock.mr-1
+        | Última actualización: #{status.timestamp}
+
+    .row
+      //- Tarjeta 1: Estado Base de Datos
+      .col-md-6.col-lg-4.mb-4
+        .card.h-100.shadow-sm
+          .card-header.bg-white.font-weight-bold.d-flex.justify-content-between.align-items-center
+            span <i class="fas fa-database text-info mr-2"></i> Base de Datos
+            span(class=`badge ${status.dbStatusClass} p-2`)= status.dbStatus
+          .card-body
+            p.card-text.text-muted Estado actual de la conexión de persistencia del ecosistema de microservicios (MongoDB/Mongoose).
+            ul.list-unstyled.mb-0
+              li.mb-2
+                strong Proveedor: 
+                | MongoDB Atlas
+              li
+                strong ORM: 
+                | Mongoose v#{status.nodeVersion ? 'Soportado' : 'Estable'}
+
+      //- Tarjeta 2: Tiempo de Actividad (Uptime)
+      .col-md-6.col-lg-4.mb-4
+        .card.h-100.shadow-sm
+          .card-header.bg-white.font-weight-bold.d-flex.justify-content-between.align-items-center
+            span <i class="fas fa-hourglass-start text-warning mr-2"></i> Tiempo Activo
+            span.badge.badge-warning.p-2 En Línea
+          .card-body.text-center.d-flex.flex-column.justify-content-center
+            h3.display-4.text-primary.my-2= status.uptime
+            p.small.text-muted.mb-0 Tiempo transcurrido desde el último reinicio del proceso de Node.js.
+
+      //- Tarjeta 3: Entorno y Configuración
+      .col-md-6.col-lg-4.mb-4
+        .card.h-100.shadow-sm
+          .card-header.bg-white.font-weight-bold
+            i.fas.fa-cogs.text-secondary.mr-2
+            | Entorno del Servidor
+          .card-body
+            table.table.table-sm.table-borderless.mb-0
+              tbody
+                tr
+                  td.font-weight-bold Entorno:
+                  td
+                    span.badge.badge-dark.text-uppercase= status.environment
+                tr
+                  td.font-weight-bold Node.js:
+                  td= status.nodeVersion
+                tr
+                  td.font-weight-bold Plataforma:
+                  td.text-capitalize= status.platform + " (" + status.arch + ")"
+
+    //- Fila de uso de Memoria y Rendimiento de Hardware
+    .card.shadow-sm.mb-5
+      .card-header.bg-light.font-weight-bold
+        i.fas.fa-microchip.text-success.mr-2
+        | Recursos de Memoria del Sistema
+      .card-body
+        .row.align-items-center
+          .col-md-4.text-center.mb-3.mb-md-0
+            h4 Uso de Memoria Heap (Node)
+            h2.text-success.display-4= status.memoryUsed
+              span.h4.text-muted  MB
+          .col-md-8
+            h5 Distribución General del Servidor
+            .progress.mb-3(style="height: 25px;")
+              - var percentUsed = Math.round((status.memoryUsed / status.memoryTotal) * 100)
+              .progress-bar.progress-bar-striped.progress-bar-animated.bg-success(role="progressbar" style=`width: ${percentUsed}%` aria-valuenow=percentUsed aria-valuemin="0" aria-valuemax="100") #{percentUsed}% Utilizado
+            
+            .row.text-center.small.text-muted
+              .col-4
+                strong Total RAM: 
+                | #{status.memoryTotal} MB
+              .col-4
+                strong RAM Libre: 
+                | #{status.memoryFree} MB
+              .col-4
+                strong Núcleos CPU: 
+                | #{status.cpuCount} vCPUs
+
+    //- Botón de acción para volver
+    .text-center.mb-5
+      a.btn.btn-outline-primary(href="/")
+        i.fas.fa-arrow-left.mr-2
+        | Volver al Panel de Control principal

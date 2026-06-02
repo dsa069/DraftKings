@@ -1,0 +1,70 @@
+ion-tab-bar {
+  // Color de fondo desde tus variables
+  --background: var(--ion-color-background-soft);
+  height: 56px;
+
+  // SEPARADOR SUPERIOR FINO: Usando tu color exacto de contornos/variantes
+  border-top: 1px solid var(--ion-color-outline-variant);
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+
+  // CURVAR LOS BORDES SUPERIORES: Usando tu variable global de radio
+  border-top-left-radius: var(--border-radius-xl);
+  border-top-right-radius: var(--border-radius-xl);
+
+  // Máscara de recorte para mantener la simetría de las esquinas
+  overflow: hidden;
+}
+
+.custom-tab-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  transition: colors 150ms ease-in-out, transform 150ms ease-in-out;
+
+  --background: transparent;
+  --background-focused: transparent;
+
+  // ESTADO INACTIVO: Usando tu color de texto variante para el contraste óptimo
+  color: var(--ion-color-on-surface-variant);
+  opacity: 0.6;
+
+  transform-origin: center center;
+
+  ion-icon {
+    font-size: 24px;
+    margin-bottom: var(--spacing-stack-sm); // Tu variable de espacio de 4px
+    transition: transform 150ms ease;
+  }
+
+  ion-label {
+    // Tipografía basada 100% en tus variables de etiquetas
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    font-weight: var(--font-weight-label-bold);
+    line-height: var(--font-line-height-label-bold);
+  }
+
+  // EFECTO DE PRESIÓN CENTRADO
+  &:active {
+    ion-icon,
+    ion-label {
+      transform: scale(0.9);
+      transform-origin: center center;
+    }
+  }
+}
+
+/* --- LÓGICA DE PESTAÑA ACTIVA --- */
+.custom-tab-button.tab-selected {
+  opacity: 1;
+  color: var(--ion-color-primary); // Tu verde brillante #4dfd85
+
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
+}

@@ -1,0 +1,57 @@
+server:
+  port: ${PORT:8080}
+eureka:
+  instance:
+    hostname: eureka-client-player-dev-223788394742.us-east1.run.app
+    # 1. Usar explícitamente el nombre de host en lugar de la IP interna de Cloud Run
+    prefer-ip-address: false 
+    
+    # 2. Desactivar el puerto HTTP no seguro y activar el puerto HTTPS seguro (443)
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    secure-port: 443
+
+    # 3. Forzar a Eureka a usar URLs con HTTPS para los botones del panel
+    status-page-url: https://${eureka.instance.hostname}/actuator/info
+    health-check-url: https://${eureka.instance.hostname}/actuator/health
+
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
+
+spring:
+  datasource:
+    url: jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
+    username: postgres.ixbdoxfxxlymwjuyfdiq
+    password: ${DB_SQL_PASS_DEV}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    hibernate:
+      ddl-auto: update # O 'none' si no quieres que toque las tablas
+    show-sql: true
+
+api:
+  football:
+    key: ${API_FOOTBALL_KEY:}
+  news:
+    url: http://dk-corba-dev.cnsa-2026-dsa069.tech:8080/DK_News_Prod_Cons/servlet
+
+openapi:
+  title: DraftKings Player Microservice API (Dev)
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+info:
+  application:
+    name: ${spring.application.name}
+    description: Player microservice en desarrollo
+    version: '@project.version@'

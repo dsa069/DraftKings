@@ -1,0 +1,38 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  sonar-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          # Disabling shallow clones is recommended for improving the relevancy of reporting
+          fetch-depth: 0
+
+      # Para un analisis mas preciso de Java hay que compilar
+
+      - name: Diagnose SonarQube connectivity
+        shell: bash
+        env:
+          SONAR_HOST_URL: http://sonarqube.cnsa-2026-dsa069.tech:9000
+        run: |
+          echo "Checking ${SONAR_HOST_URL}/api/system/status"
+          curl --fail --show-error --silent --location "${SONAR_HOST_URL}/api/system/status"
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v7.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: http://sonarqube.cnsa-2026-dsa069.tech:9000
+        with:
+          args: >
+            -Dsonar.projectKey=DraftKings
+            -Dsonar.sources=.
+            -Dsonar.java.binaries=.

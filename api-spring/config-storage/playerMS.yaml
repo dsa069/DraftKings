@@ -1,0 +1,44 @@
+server:
+  port: 8090
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+spring:
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+  ai:
+    openai:
+      base-url: https://api.groq.com/openai
+      api-key: ${GROQ_API_KEY}
+      chat:
+        options:
+          model: openai/gpt-oss-120b
+          temperature: 0.7
+api:
+  football:
+    key: ${API_FOOTBALL_KEY:}
+  news:
+    url: http://host.docker.internal:8070/DK_News_Prod_Cons/servlet
+
+openapi:
+  title: DraftKings Player Microservice API (Local)
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+info:
+  application:
+    name: ${spring.application.name}
+    description: Player microservice usando config server
+    version: '@project.version@'

@@ -1,0 +1,89 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+' --- ACTORES Y SU JERARQUÍA ---
+actor "Usuario No Registrado" as UNR
+actor "Usuario Común" as UC
+actor "Usuario Registrado" as UR
+actor "Usuario Administrador" as UA
+
+UC <|-- UNR
+UC <|-- UR
+UR <|-- UA
+
+' --- CASOS DE USO ---
+usecase "Registrarse" as UC_registrar
+usecase "Iniciar sesión" as UC_iniciar_sesion
+usecase "Cambiar backend" as UC_cambiar_backend
+
+usecase "Filtrar por fecha de alta" as UC_filtro_fecha
+usecase "Filtrar por equipo/liga" as UC_filtro_equipo
+usecase "Filtrar por nombre" as UC_filtro_nombre
+usecase "Buscar jugadores" as UC_buscar
+
+usecase "Ver listado jugadores\n--\n<b>extension points</b>\nBuscar jugadores\nVer detalles jugador" as UC_ver_listado
+usecase "Ver detalles jugador\n--\n<b>extension points</b>\nCrear comentario" as UC_ver_detalles
+
+usecase "Crear comentario" as UC_crear_comentario
+usecase "Ver comentarios" as UC_ver_comentarios
+usecase "Obtener geolocalización" as UC_obtener_geo
+
+usecase "Búsqueda jugador(es) API externa" as UC_seleccionar_api
+usecase "Añadir jugador(es) de la API" as UC_añadir_existente
+
+usecase "Generar equipo ideal" as UC_generar_equipo
+usecase "Ver noticias de jugadores" as UC_ver_noticias
+
+usecase "Añadir jugador no existente\n(formulario)\n--\n<b>extension points</b>\nEditar geolocalización" as UC_añadir_nuevo
+usecase "Añadir imagen URL/Cámara" as UC_añadir_imagen
+usecase "Editar geolocalización" as UC_editar_geo
+
+usecase "Editar jugador\n--\n<b>extension points</b>\nEditar geolocalización" as UC_editar_jugador
+usecase "Crear noticia de jugador" as UC_crear_noticia
+usecase "Eliminar comentario" as UC_eliminar_comentario
+usecase "Eliminar jugador" as UC_eliminar_jugador
+
+
+' --- RELACIONES (EXTEND e INCLUDE) ---
+
+' Bloque Búsqueda y Filtros
+UC_buscar <.. UC_filtro_fecha : <<extend>>
+UC_buscar <.. UC_filtro_equipo : <<extend>>
+UC_buscar <.. UC_filtro_nombre : <<extend>>
+UC_ver_listado <.. UC_buscar : <<extend>>
+
+' Bloque Detalles y Comentarios
+UC_ver_listado <.. UC_ver_detalles : <<extend>>
+UC_ver_detalles <.. UC_crear_comentario : <<extend>>
+UC_ver_detalles ..> UC_ver_comentarios : <<include>>
+UC_crear_comentario ..> UC_obtener_geo : <<include>>
+
+' Bloque API y Añadir Existente
+UC_añadir_existente ..> UC_seleccionar_api : <<include>>
+UC_añadir_existente ..> UC_obtener_geo : <<include>>
+
+' Bloque Añadir Nuevo / Editar
+UC_añadir_nuevo ..> UC_obtener_geo : <<include>>
+UC_añadir_nuevo ..> UC_añadir_imagen : <<include>>
+UC_añadir_nuevo <.. UC_editar_geo : <<extend>>
+UC_editar_jugador <.. UC_editar_geo : <<extend>>
+
+' --- ASOCIACIONES ACTOR -> CASO DE USO ---
+UNR --> UC_registrar
+UNR --> UC_iniciar_sesion
+UNR --> UC_cambiar_backend
+
+UC --> UC_ver_listado
+
+UR --> UC_generar_equipo
+UR --> UC_ver_noticias
+UR --> UC_añadir_existente
+UR --> UC_añadir_nuevo
+
+UA --> UC_crear_noticia
+UA --> UC_eliminar_comentario
+UA --> UC_eliminar_jugador
+UA --> UC_editar_jugador
+
+@enduml

@@ -1,0 +1,247 @@
+.main-canvas {
+  max-width: 42rem; // max-w-2xl
+  margin: 0 auto;
+  padding: var(--spacing-stack-lg) var(--spacing-margin-mobile);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-lg);
+}
+
+.header-col {
+  padding-bottom: 0;
+}
+
+.header-title {
+  font-family: var(--font-family-headline-md);
+  font-size: var(--font-size-headline-md);
+  line-height: var(--font-line-height-headline-md);
+  font-weight: var(--font-weight-headline-md);
+  color: var(--ion-color-chalk-white);
+  margin: 0 0 var(--spacing-stack-sm) 0;
+}
+
+.header-subtitle {
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  line-height: var(--font-line-height-body-md);
+  font-weight: var(--font-weight-body-md);
+  color: var(--ion-color-on-surface-variant);
+  margin: 0;
+}
+
+.form-card {
+  background: var(--ion-color-surface-container);
+  border-radius: var(--border-radius-xl);
+  margin: 0;
+  border: 1px solid rgba(60, 74, 60, 0.3); // Equivalente aprox a outline-variant/30
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack-lg);
+  padding: var(--spacing-margin-mobile);
+}
+
+.input-field-wrapper {
+  display: flex;
+  flex-direction: column; // Fuerza a que el título se posicione EN CIMA del campo
+  align-items: flex-start; // Alinea el contenido a la izquierda de forma correcta
+  width: 100%;
+  overflow: visible;
+  margin-bottom: 20px; // Espaciado vertical ordenado entre cada bloque del formulario
+}
+
+.field-label {
+  color: var(--ion-color-on-surface-variant);
+  font-family: var(--font-family-label-bold);
+  font-size: var(--font-size-label-bold);
+  font-weight: var(--font-weight-label-bold);
+  margin-bottom: 8px; // Crea la separación vertical exacta entre el título y el campo
+  text-transform: uppercase;
+}
+
+// Estilos globales de Input y Textarea
+.field-input,
+.field-textarea {
+  --background: var(--ion-color-stadium-grey);
+  --color: var(--ion-color-chalk-white);
+  --placeholder-color: rgba(255, 255, 255, 0.5);
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-lg);
+
+  font-family: var(--font-family-body-lg);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--font-line-height-body-lg);
+  transition: all 0.2s ease-in-out;
+
+  width: 100%;
+  box-sizing: border-box;
+  margin: 2px 0;
+
+  overflow: hidden; // Corta cualquier elemento interno que sobresalga del border-radius
+
+  &.has-focus {
+    border-color: var(--ion-color-pitch-green);
+    box-shadow: 0 0 0 1px var(--ion-color-pitch-green);
+  }
+}
+
+// Control segmentado
+.custom-segment {
+  // Contenedor principal de la barra
+  --background: var(--ion-color-stadium-grey);
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-lg);
+  padding: 4px;
+
+  ion-segment-button {
+    // 2. COLORES DE TEXTO: Normal y Seleccionado
+    --color: var(--ion-color-on-surface-variant);
+    --color-checked: var(--ion-color-primary);
+
+    // 3. TIPOGRAFÍA Y AJUSTES
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    font-weight: var(--font-weight-label-bold);
+    margin: 0;
+
+    // Anulamos cualquier otro indicador remanente
+    --indicator-box-shadow: none;
+    --indicator-color: transparent;
+  }
+}
+
+// Tarjeta del Jugador
+.player-card {
+  --background: var(--ion-color-surface-container-highest);
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  --min-height: 64px;
+  width: 100%;
+  border: 1px solid var(--ion-color-outline-variant);
+  border-radius: var(--border-radius-lg);
+  margin-top: 0;
+
+  .player-avatar {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--ion-color-outline-variant);
+    background: var(--ion-color-stadium-grey);
+  }
+
+  .player-name {
+    display: block; // Añadido para comportarse como un h2
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    font-weight: var(--font-weight-label-bold);
+    color: var(--ion-color-chalk-white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .player-pos {
+    display: block; // Añadido para comportarse como un p
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+    color: var(--ion-color-on-surface-variant);
+  }
+
+  .player-close-btn {
+    --color: var(--ion-color-on-surface-variant);
+    --border-radius: 50%;
+    width: 36px;
+    height: 36px;
+
+    &:hover {
+      --color: var(--ion-color-warning);
+      --background: var(--ion-color-stadium-grey);
+    }
+  }
+}
+
+// Contenedor de Tags (Flex div)
+.tags-container {
+  background: var(--ion-color-stadium-grey);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-base);
+  border: 1px solid var(--ion-color-outline-variant);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-base);
+  align-items: center;
+  transition: all 0.2s;
+  width: 100%;
+
+  &:focus-within {
+    border-color: var(--ion-color-pitch-green);
+    box-shadow: 0 0 0 1px var(--ion-color-pitch-green);
+  }
+
+  .custom-chip {
+    background: var(--ion-color-surface-container-highest);
+    border: 1px solid var(--ion-color-outline-variant);
+    border-radius: var(--border-radius-full);
+    margin: 0;
+    padding: 6px 12px;
+
+    ion-label {
+      color: var(--ion-color-chalk-white);
+      font-family: var(--font-family-label-bold);
+      font-size: var(--font-size-label-bold);
+      font-weight: var(--font-weight-label-bold);
+    }
+
+    ion-icon {
+      color: var(--ion-color-chalk-white);
+      font-size: 14px;
+      cursor: pointer;
+
+      &:hover {
+        color: var(--ion-color-warning);
+      }
+    }
+  }
+
+  .tag-input {
+    flex: 1;
+    min-width: 100px;
+    --padding-start: 4px;
+    --padding-end: 4px;
+    --background: transparent;
+    --color: var(--ion-color-chalk-white);
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+  }
+}
+
+// Botón de Enviar
+.submit-btn {
+  --background: var(--ion-color-pitch-green);
+  --color: var(--ion-color-sideline-black);
+  --border-radius: var(--border-radius-lg);
+  --box-shadow: 0 0 15px rgba(30, 224, 108, 0.2);
+  margin-top: var(--spacing-stack-sm);
+  height: 56px;
+
+  ion-label {
+    font-family: var(--font-family-label-bold);
+    font-size: var(--font-size-label-bold);
+    font-weight: var(--font-weight-label-bold);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}

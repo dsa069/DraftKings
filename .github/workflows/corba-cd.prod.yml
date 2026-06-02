@@ -1,0 +1,213 @@
+name: CD Corba Production
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      prefix_name: "dk-corba"
+      dns_name: "dk-corba.cnsa-2026-dsa069.tech"
+    defaults:
+      run:
+        working-directory: ./corba-services/DK_News_Manager
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      - name: Download Server Build Artifacts
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: corba-jar
+          path: corba-services/DK_News_Manager/target
+
+      - name: Download Client Build Artifacts
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: prod-cons-war
+          path: corba-services/DK_News_Prod_Cons
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Docker login to Artifact Registry
+        uses: docker/login-action@v4.1.0
+        with:
+          registry: us-east1-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Build Docker image
+        run: |
+          # -f apunta al Dockerfile un nivel arriba
+          # El '.' final se cambia por '..' para que el contexto sea ./corba-services
+          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:1.0.0 -f ../Dockerfile ..
+
+      - name: Push Docker image to Artifact Registry
+        run: |
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:1.0.0
+
+      # 1. Instalar la llave ANTES de comprobar la conexión
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2.8.1
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: 'placeholder'
+
+      # =================================================================
+      # INICIO DEL BLOQUE DE RESILIENCIA Y TERRAFORM
+      # =================================================================
+      # 2. Comprobar estado y encender o marcar para creación
+      - name: Ensure VM is Running
+        id: vm_status
+        run: |
+          # Capturamos el error de gcloud redirigiéndolo y usando '|| true' para que no rompa el script
+          STATUS=$(gcloud compute instances describe ${{ env.prefix_name }}-vm-tf --zone=us-east1-c --format='get(status)' 2>/dev/null || echo "NOT_FOUND")
+          echo "La instancia está en estado: $STATUS"
+          
+          if [ "$STATUS" = "TERMINATED" ]; then
+            echo "Encendiendo la máquina..."
+            gcloud compute instances start ${{ env.prefix_name }}-vm-tf --zone=us-east1-c
+            
+            echo "Esperando a que el puerto SSH (22) responda..."
+            for i in {1..24}; do
+              if nc -z ${{ env.dns_name }} 22; then
+                echo "¡SSH disponible!"
+                break
+              fi
+              echo "Aún no responde... (intento $i)"
+              sleep 5
+            done
+            echo "MACHINE_EXISTS=true" >> $GITHUB_OUTPUT
+          
+          elif [ "$STATUS" = "RUNNING" ]; then
+            echo "La máquina ya está encendida."
+            echo "MACHINE_EXISTS=true" >> $GITHUB_OUTPUT
+          
+          else
+            echo "La máquina no existe (o no se pudo encontrar)."
+            echo "MACHINE_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 3. Configurar Terraform SOLO si la conexión falló
+      - name: Setup Terraform
+        if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
+        uses: hashicorp/setup-terraform@v4
+
+      # 4. Crear el archivo de credenciales y las llaves SSH SOLO si la conexión falló (Terraform las necesita para crear la MV)
+      - name: Create Credentials and SSH Files
+        if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
+        working-directory: ./terraform
+        run: |
+          # 1. Crear el JSON de GCP
+          mkdir -p credentials
+          echo '${{ secrets.GCP_SA_KEY }}' > ./credentials/gc-dk.json
+
+          # 2. Crear las llaves SSH (Privada y Pública)
+          mkdir -p credentials/ssh
+          echo '${{ secrets.SSH_PRIVATE_KEY }}' > ./credentials/ssh/id_ed25519
+          echo '${{ secrets.SSH_PUBLIC_KEY }}' > ./credentials/ssh/id_ed25519.pub
+          
+          # 3. Dar permisos correctos a la llave privada (importante para SSH)
+          chmod 600 ./credentials/ssh/id_ed25519
+
+      # 5. Lanzar Terraform SOLO si la conexión falló
+      - name: Deploy Infrastructure with Terraform
+        if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
+        working-directory: ./terraform 
+        env:
+          ENTORNO: "prod"
+          TF_VAR_gcp_project: "cnsa-2026"
+          TF_VAR_dns_managed_zone: "cnsa-2026-dsa069-dns"
+          TF_VAR_prefix_name: ${{ env.prefix_name }}
+          TF_VAR_dns_name: ${{ env.dns_name }}.
+        run: |
+          terraform init -backend-config="prefix=terraform/state/$ENTORNO"  
+          terraform workspace select $ENTORNO || terraform workspace new $ENTORNO
+          terraform apply -auto-approve
+
+      # 6. Esperar a que la MV levante el servicio SSH (Si se ejecutó Terraform)
+      - name: Wait for VM and SSH to be ready
+        if: steps.vm_status.outputs.MACHINE_EXISTS == 'false'
+        env:
+          VM_USER: ubuntu
+        run: |
+          echo "Esperando a que la MV inicie y acepte conexiones SSH..."
+          MAX_RETRIES=15
+          RETRY_COUNT=0
+          
+          # Bucle que intenta conectar cada 10 segundos
+          until ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no "${VM_USER}@${{ env.dns_name }}" 'echo "SSH Listo"'; do
+            RETRY_COUNT=$((RETRY_COUNT+1))
+            if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+              echo "ERROR CRÍTICO: La máquina se creó en Terraform pero no responde por SSH tras varios intentos."
+              exit 1
+            fi
+            echo "Intento $RETRY_COUNT fallido. Esperando 10 segundos..."
+            sleep 10
+          done
+          echo "¡Máquina virtual lista y operativa!"
+
+      # 7. Escanear la huella (Siempre se ejecuta, haya habido Terraform o no)
+      - name: Refresh SSH Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          # Eliminar el archivo si existe para empezar de cero y evitar el error "invalid line"
+          rm -f ~/.ssh/known_hosts
+          # Escanear la IP/Host de la nueva máquina
+          ssh-keyscan -H ${{ env.dns_name }} >> ~/.ssh/known_hosts
+
+      # =================================================================
+      # FIN DEL BLOQUE DE RESILIENCIA Y TERRAFORM
+      # =================================================================
+
+      # REEMPLAZAR CLOUD RUN POR MV: Cuando un servidor CORBA se registra, genera un "pasaporte" llamado IOR. Este archivo contiene la IP y el puerto exactos donde el servidor está escuchando.
+      # En Cloud Run: El servidor está detrás de un Proxy Inverso. El IOR que genera el servidor CORBA suele contener una IP interna de la red de Google (tipo 10.x.x.x). Cuando el cliente recibe ese IOR e intenta conectar a esa IP 10.x.x.x, falla, porque esa IP no existe fuera de Google.
+      - name: Deploy to VM
+        env:
+          VM_USER: ubuntu
+          IMAGE: us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:latest
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          ssh "${VM_USER}@${{ env.dns_name }}" 'bash -se' <<EOF
+            set -euo pipefail
+
+            # 1. Obtener la IP pública actual
+            PUBLIC_IP=\$(curl -s https://api.ipify.org)
+            echo "Desplegando en IP: \$PUBLIC_IP"
+
+            # 2. Login y actualización de imagen
+            printf '%s' '${GCP_SA_KEY}' | sudo docker login -u _json_key --password-stdin https://us-east1-docker.pkg.dev
+            sudo docker pull "${IMAGE}"
+
+            # 3. Limpieza total de contenedores previos
+            sudo docker stop corba-news-manager || true
+            sudo docker rm corba-news-manager || true
+
+            # 4. Ejecución del contenedor único con todos los puertos expuestos para Debug
+            # -p 1050:1050 -> Naming Service (ORBD)
+            # -p 8090:8090 -> Servidor CORBA
+            # -p 8080:8080 -> Cliente Web (Tomcat) -> ¡AÑADIDO!
+            sudo docker run -d --restart unless-stopped \
+              --name corba-news-manager \
+              -p 1050:1050 \
+              -p 8090:8090 \
+              -p 8080:8080 \
+              -e JAVA_TOOL_OPTIONS="-Dcom.sun.corba.se.ORBServerHost=\$PUBLIC_IP -Dcom.sun.corba.se.ORBServerPort=8090" \
+              "${IMAGE}"
+            
+            # Esperar un poco para que los logs se generen
+            sleep 8
+          EOF
+
+      - name: Display Combined Logs (ORBD + Server + Client)
+        if: always()
+        run: |
+          echo "### LOGS COMBINADOS (ORBD, Servidor y Cliente Tomcat)" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
+          ssh ubuntu@${{ env.dns_name }} "sudo docker logs corba-news-manager" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"

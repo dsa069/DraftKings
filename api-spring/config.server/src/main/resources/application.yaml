@@ -1,0 +1,90 @@
+server:
+  port: ${PORT:8888}
+spring:
+  application:
+    name: configServer
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/dsa069/DraftKings.git
+          searchPaths: /api-spring/config-storage
+          default-label: dev
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+info:
+  application:
+    name: ${spring.application.name}
+    description: Config Server for DraftKings microservices
+    version: '@project.version@'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+eureka:
+  instance:
+    hostname: dk-spring-config-dev.cnsa-2026-dsa069.tech
+    prefer-ip-address: false 
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    secure-port: 443
+
+    status-page-url: https://${eureka.instance.hostname}/actuator/info
+    health-check-url: https://${eureka.instance.hostname}/actuator/health
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech/eureka/
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: Config Server for DraftKings microservices in dev profile
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  cloud:
+    config:
+      server:
+        git:
+          default-label: main
+eureka:
+  instance:
+    hostname: dk-spring-config.cnsa-2026-dsa069.tech
+    prefer-ip-address: false 
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    secure-port: 443
+
+    status-page-url: https://${eureka.instance.hostname}/actuator/info
+    health-check-url: https://${eureka.instance.hostname}/actuator/health
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: https://dk-spring-eureka.cnsa-2026-dsa069.tech/eureka/
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: Config Server for DraftKings microservices in prod profile

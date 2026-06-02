@@ -1,0 +1,61 @@
+<ion-grid class="capture-container ion-no-padding">
+  <ion-row class="main-capture-area">
+    @if (!currentPhotoPreview() || errorState) {
+    <ion-row class="capture-placeholder">
+      <ion-icon name="image-outline" class="capture-icon"></ion-icon>
+      <ion-text class="capture-text">Invalid Photo or URL</ion-text>
+    </ion-row>
+    } @else {
+    <ion-img
+      [src]="currentPhotoPreview()"
+      class="capture-image"
+      alt="Evidencia visual"
+      (ionError)="onImageError()"
+      (ionImgDidLoad)="onImageLoad()"
+    ></ion-img>
+    }
+  </ion-row>
+
+  <ion-row class="capture-controls">
+    <ion-row class="buttons-row">
+      <ion-button
+        class="take-photo-button"
+        (click)="takePhoto()"
+        fill="solid"
+        expand="block"
+      >
+        <ion-icon name="camera" class="button-icon"></ion-icon>
+        <ion-label>Take Photo</ion-label>
+      </ion-button>
+
+      <ion-button
+        class="take-photo-button"
+        fill="outline"
+        expand="block"
+        (click)="openFileInput()"
+        type="button"
+      >
+        <ion-icon name="image-outline" class="button-icon"></ion-icon>
+        <ion-label>Upload Image</ion-label>
+      </ion-button>
+    </ion-row>
+
+    <ion-input
+      #fileInput
+      type="file"
+      accept="image/*"
+      class="hidden-file-input"
+      (change)="onLocalImageSelected($event)"
+    ></ion-input>
+
+    <ion-row class="url-input-wrapper">
+      <ion-input
+        placeholder="Or enter an image URL..."
+        [value]="urlInputValue()"
+        (ionInput)="onUrlInput($event)"
+        clearInput="true"
+        class="url-input"
+      ></ion-input>
+    </ion-row>
+  </ion-row>
+</ion-grid>

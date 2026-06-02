@@ -1,0 +1,67 @@
+@startuml
+skinparam linestyle orthopedic
+hide circle
+
+entity "users" as users {
+    * **id** : INT AUTOINCREMENT <<PK>>
+    --
+    * email : VARCHAR(255) <<U>>
+    * userName : VARCHAR(100)
+    * password : VARCHAR(128)
+    * role : VARCHAR(20)
+    --
+    *created_at : TIMESTAMP
+    ..
+    CHECK (length(password) >= 8)
+    CHECK (role IN (USER, ADMIN))
+}
+
+entity "player" as player {
+    * **id** : INT AUTOINCREMENT <<PK>>
+    --
+    * name : VARCHAR(100)
+    firstName : VARCHAR(100)
+    lastName : VARCHAR(100)
+    age : TINYINT
+    birthdate : DATE
+    nationality : VARCHAR(100)
+    height : DECIMAL(3, 2)
+    weight : DECIMAL(5, 2)
+    number : TINYINT
+    team : VARCHAR(150)
+    league : VARCHAR(150)
+    position : VARCHAR(50)
+    photoUrl : VARCHAR(255)
+    * latitude : DECIMAL(10, 8)
+    * longitude : DECIMAL(11, 8)
+    --
+    *created_at : TIMESTAMP
+    ..
+    CHECK (age BETWEEN 0 AND 99)
+    CHECK (latitude BETWEEN -90 AND 90)
+    CHECK (longitude BETWEEN -180 AND 180)
+}
+
+entity "review" as comment {
+    * **id** : INT AUTOINCREMENT <<PK>>
+    --
+    * user_id : INT <<FK>>
+    * player_id : INT <<FK>>
+    * author : VARCHAR(100)
+    * text : VARCHAR(1000)
+    * rating : TINYINT
+    * latitude : DECIMAL(10, 8)
+    * longitude : DECIMAL(11, 8)
+    --
+    *created_at : TIMESTAMP
+    ..
+    CHECK (rating BETWEEN 0 AND 5)
+    CHECK (latitude BETWEEN -90 AND 90)
+    CHECK (longitude BETWEEN -180 AND 180)
+}
+
+' Relaciones
+users ||--o{ comment : "writes"
+player ||--o{ comment : "has"
+
+@enduml

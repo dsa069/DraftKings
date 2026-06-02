@@ -1,0 +1,537 @@
+<app-header-submenu
+  title="Player Detail"
+  href="/tabs/players"
+></app-header-submenu>
+<ion-content class="custom-content">
+  @if (isLoading()) {
+  <ion-grid class="loading-container ion-no-padding">
+    <ion-row class="ion-justify-content-center">
+      <ion-col class="ion-text-center ion-no-padding">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p><ion-text>Loading Player Details...</ion-text></p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  } @else if (errorMessage()) {
+  <ion-note color="danger" class="error-message">
+    {{ errorMessage() }}
+  </ion-note>
+  } @else if (player()) {
+  <ion-card
+    class="hero-card ion-no-margin"
+    [ngStyle]="{'background-image': 'url(' + (player()?.photoUrl || 'https://ionicframework.com/docs/img/demos/avatar.svg') + ')'}"
+  >
+    <ion-card-content class="hero-content">
+      <ion-grid class="ion-no-padding">
+        <ion-row class="badges-row">
+          <ion-badge class="badge-position"
+            >{{ player()!.position | uppercase }}</ion-badge
+          >
+          <ion-badge class="badge-rating">4,5 STARTS</ion-badge>
+        </ion-row>
+
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <ion-text class="player-name">{{ player()!.name }}</ion-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <ion-text class="player-team">
+              {{ player()!.team }} • {{ player()!.nationality }}
+            </ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  @if (isAuthenticated() && isAdmin()) {
+  <ion-grid class="action-grid ion-no-padding">
+    <ion-row class="buttons-row">
+      <ion-col class="ion-no-padding">
+        <ion-button expand="block" class="edit-btn" (click)="onEditPlayer()">
+          <ion-icon name="pencil" slot="start"></ion-icon>
+          Edit Player
+        </ion-button>
+      </ion-col>
+      <ion-col class="ion-no-padding">
+        <ion-button
+          expand="block"
+          class="delete-btn"
+          (click)="onDeletePlayer()"
+        >
+          <ion-icon name="trash" slot="start"></ion-icon>
+          Delete Player
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  }
+
+  <ion-card class="details-card ion-no-margin">
+    <ion-card-header class="details-header ion-no-padding">
+      <ion-icon name="information-circle" class="info-icon"></ion-icon>
+      <ion-text class="section-title">Player Details</ion-text>
+    </ion-card-header>
+
+    <ion-card-content class="details-content ion-no-padding">
+      <ion-grid class="ion-no-padding">
+        <ion-row class="details-row">
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Full Name</ion-text>
+            <ion-text class="detail-value">{{ player()!.name }}</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">First Name</ion-text>
+            <ion-text class="detail-value">{{ player()!.firstName }}</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Last Name</ion-text>
+            <ion-text class="detail-value">{{ player()!.lastName }}</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Age</ion-text>
+            <ion-text class="detail-value">{{ player()!.age }}</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Birthdate</ion-text>
+            <ion-text class="detail-value"
+              >{{ (player()!.birthdate | date: 'mediumDate') ?? 'N/A'
+              }}</ion-text
+            >
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Nationality</ion-text>
+            <ion-text class="detail-value"
+              >{{ player()!.nationality }}</ion-text
+            >
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Height</ion-text>
+            <ion-text class="detail-value">{{ player()!.height }} cm</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Weight</ion-text>
+            <ion-text class="detail-value">{{ player()!.weight }} kg</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Number</ion-text>
+            <ion-text class="detail-value">{{ player()!.number }}</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Team</ion-text>
+            <ion-text class="detail-value">{{ player()!.team }}</ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">League</ion-text>
+            <ion-text class="detail-value">{{ player()!.league }}</ion-text>
+          </ion-col>
+          <ion-col size="6" class="detail-col">
+            <ion-text class="detail-label">Position</ion-text>
+            <ion-text class="detail-value">{{ player()!.position }}</ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  @if (player()?.latitude && player()?.longitude) {
+  <ion-card class="map-card ion-no-margin">
+    <ion-card-header class="map-header ion-no-padding">
+      <ion-icon name="location-outline" class="location-icon"></ion-icon>
+      <ion-text class="section-title">Player Location</ion-text>
+    </ion-card-header>
+
+    <ion-card-content class="map-content ion-no-padding">
+      <app-map-capture
+        [initialLocation]="{
+          lat: player()!.latitude,
+          lng: player()!.longitude
+        }"
+        [isReadOnly]="true"
+      ></app-map-capture>
+    </ion-card-content>
+  </ion-card>
+  }
+
+  <ion-accordion-group
+    class="custom-accordions ion-no-margin"
+    expand="inset"
+    [multiple]="true"
+  >
+    <ion-accordion value="comments" class="comments-accordion">
+      <ion-item slot="header" class="comments-header" lines="none">
+        <ion-icon name="chatbox" slot="start" class="comments-icon"></ion-icon>
+        <ion-text class="comments-title">Manager Comments</ion-text>
+        <ion-badge slot="end" class="comments-count"
+          >{{ comments().length }}</ion-badge
+        >
+      </ion-item>
+
+      <ion-list slot="content" class="comments-list">
+        <ion-item class="comment-form-item" lines="none">
+          <ion-grid class="ion-no-padding">
+            <ion-row class="auth-form-group">
+              <ion-label class="auth-form-label">Manager Name</ion-label>
+              <ion-item class="form-item" lines="none">
+                <ion-icon slot="start" name="person-outline"></ion-icon>
+                <ion-input
+                  placeholder="TacticalGenius99"
+                  [(ngModel)]="newCommentAuthor"
+                  class="form-input"
+                ></ion-input>
+              </ion-item>
+            </ion-row>
+            <ion-row class="auth-form-group">
+              <ion-label class="auth-form-label">Rating</ion-label>
+              <ion-item lines="none" class="rating-item">
+                @for (starNum of [1, 2, 3, 4, 5]; track starNum) {
+                <ion-icon
+                  [name]="starNum <= newCommentRating() ? 'star' : 'star-outline'"
+                  class="interactive-star"
+                  (click)="updateNewRating($event, starNum)"
+                ></ion-icon>
+                }
+              </ion-item>
+            </ion-row>
+            <ion-row class="auth-form-group">
+              <ion-label class="auth-form-label">Comment</ion-label>
+              <ion-item class="form-item" lines="none">
+                <ion-icon slot="start" name="chatbox-outline"></ion-icon>
+                <ion-textarea
+                  placeholder="Write your analysis..."
+                  [(ngModel)]="newCommentText"
+                  class="form-input"
+                  [autoGrow]="true"
+                  rows="3"
+                ></ion-textarea>
+              </ion-item>
+            </ion-row>
+            <ion-row>
+              <ion-col class="ion-no-padding">
+                <ion-button
+                  expand="block"
+                  class="add-news-btn"
+                  (click)="addComment()"
+                >
+                  <ion-icon name="send" slot="start"></ion-icon>
+                  Post Comment
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        @for (comment of comments(); track comment.id) {
+        <ion-item class="comment-item" lines="full">
+          <ion-avatar slot="start" class="comment-avatar">
+            <ion-icon name="person"></ion-icon>
+          </ion-avatar>
+          <ion-label class="ion-text-wrap comment-label">
+            <ion-grid class="ion-no-padding">
+              <ion-row class="comment-top-row">
+                <ion-col size="8" class="ion-no-padding">
+                  <ion-text class="comment-author"
+                    >{{ comment.author }}</ion-text
+                  >
+                  <ion-text class="stars-container">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <ion-icon
+                      [name]="star <= comment.rating ? 'star' : 'star-outline'"
+                    ></ion-icon>
+                    }
+                  </ion-text>
+                </ion-col>
+
+                <ion-col size="4" class="ion-no-padding action-buttons-col">
+                  @if ( isAuthenticated() && isAdmin()
+                  && !comment.isEditing ) {
+                  <ion-button
+                    fill="clear"
+                    class="action-icon-btn edit-color"
+                    (click)="editComment(comment)"
+                  >
+                    <ion-icon name="pencil" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button
+                    fill="clear"
+                    class="action-icon-btn delete-color"
+                    (click)="promptDeleteComment(comment.id!)"
+                  >
+                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  }
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="ion-no-padding">
+                  @if (comment.isEditing) {
+                  <ion-grid class="ion-no-padding">
+                    <ion-row>
+                      <ion-col class="ion-no-padding">
+                        <ion-item
+                          class="rating-item"
+                          lines="none"
+                          style="margin-bottom: 8px"
+                        >
+                          @for (starNum of [1, 2, 3, 4, 5]; track starNum) {
+                          <ion-icon
+                            [name]="starNum <= editTempRating() ? 'star' : 'star-outline'"
+                            class="interactive-star"
+                            (click)="updateEditRating($event, starNum)"
+                          ></ion-icon>
+                          }
+                        </ion-item>
+
+                        <ion-item class="form-item edit-form-item" lines="none">
+                          <ion-textarea
+                            class="form-input"
+                            [autoGrow]="true"
+                            [value]="editTempText()"
+                            (ionInput)="editTempText.set($event.detail.value ?? '')"
+                            rows="2"
+                          ></ion-textarea>
+                        </ion-item>
+
+                        <ion-grid class="ion-no-padding edit-actions-grid">
+                          <ion-row>
+                            <ion-col class="ion-padding-end">
+                              <ion-button
+                                expand="block"
+                                class="confirm-edit-btn"
+                                (click)="saveComment(comment)"
+                              >
+                                <ion-icon
+                                  name="checkmark"
+                                  slot="start"
+                                ></ion-icon>
+                                Save
+                              </ion-button>
+                            </ion-col>
+                            <ion-col class="ion-padding-start">
+                              <ion-button
+                                expand="block"
+                                fill="outline"
+                                class="cancel-edit-btn"
+                                (click)="cancelEditComment(comment)"
+                              >
+                                <ion-icon name="close" slot="start"></ion-icon>
+                                Cancel
+                              </ion-button>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                  } @else {
+                  <ion-text class="comment-text">{{ comment.text }}</ion-text>
+                  @if (comment.latitude && comment.longitude) {
+                  <ion-grid class="ion-no-padding location-grid">
+                    <ion-row class="comment-location-row">
+                      <ion-icon
+                        name="location-outline"
+                        class="location-micro-icon"
+                      ></ion-icon>
+                      <ion-text class="location-coords">
+                        {{ comment.latitude }}, {{ comment.longitude }}
+                      </ion-text>
+                    </ion-row>
+                  </ion-grid>
+                  } }
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
+        </ion-item>
+        } @if (comments().length === 0) {
+        <ion-item class="comment-item no-comments" lines="full">
+          <ion-avatar slot="start" class="comment-avatar">
+            <ion-icon name="chatbox-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label class="ion-text-wrap comment-label">
+            <ion-grid class="ion-no-padding">
+              <ion-row>
+                <ion-col>
+                  <ion-text class="comment-author">No comments yet</ion-text>
+                  <ion-text class="comment-text" style="margin-top: 6px"
+                    >Be the first to leave a manager note about this
+                    player.</ion-text
+                  >
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
+        </ion-item>
+        }
+      </ion-list>
+    </ion-accordion>
+
+    <ion-modal
+      class="custom-modal"
+      [isOpen]="showDeleteCommentModal()"
+      (willDismiss)="showDeleteCommentModal.set(false)"
+    >
+      <ng-template>
+        <ion-grid class="modal-content ion-no-padding">
+          <ion-row>
+            <ion-col class="ion-no-padding">
+              <ion-text class="modal-title">Delete Comment?</ion-text>
+              <ion-text class="modal-message">
+                This action will permanently delete this comment. Do you want to
+                continue?
+              </ion-text>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col class="modal-actions ion-no-padding">
+              <ion-button
+                color="danger"
+                expand="block"
+                (click)="confirmDeleteComment()"
+              >
+                Delete
+              </ion-button>
+              <ion-button
+                fill="clear"
+                expand="block"
+                (click)="showDeleteCommentModal.set(false)"
+              >
+                Cancel
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ng-template>
+    </ion-modal>
+
+    @if (isAuthenticated()) {
+    <ion-accordion value="news" class="comments-accordion news-accordion">
+      <ion-item slot="header" class="comments-header" lines="none">
+        <ion-icon
+          name="document-text"
+          slot="start"
+          class="comments-icon"
+        ></ion-icon>
+        <ion-text class="comments-title">Related News</ion-text>
+        <ion-badge slot="end" class="comments-count"
+          >{{ relatedNews().length }}</ion-badge
+        >
+      </ion-item>
+
+      <ion-list slot="content" class="news-list">
+        @if (isAdmin()) {
+        <ion-item class="comment-form-item" lines="none">
+          <ion-grid class="ion-no-padding">
+            <ion-row>
+              <ion-col class="ion-no-padding">
+                <ion-button
+                  expand="block"
+                  class="add-news-btn"
+                  routerLink="/create-news"
+                  (click)="onCreateNews()"
+                >
+                  <ion-icon name="add" slot="start"></ion-icon>
+                  Create News
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        } @for (news of relatedNews(); track news.id) {
+        <ion-item
+          class="news-item"
+          lines="full"
+          button="true"
+          (click)="onViewNews(news)"
+        >
+          <ion-label class="ion-text-wrap">
+            <ion-grid class="ion-no-padding">
+              <ion-row>
+                <ion-col class="ion-no-padding">
+                  <ion-text class="news-title">{{ news.titulo }}</ion-text>
+                  <ion-text class="news-date">
+                    {{ news.fecha }} @if (news.etiquetas.length) { • {{
+                    news.etiquetas.join(', ') }} }
+                  </ion-text>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="ion-no-padding">
+                  <ion-text class="comment-text" style="margin-top: 8px">
+                    {{ news.descripcion }}
+                  </ion-text>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
+        </ion-item>
+        } @empty {
+        <ion-item class="news-item no-comments" lines="full">
+          <ion-label class="ion-text-wrap">
+            <ion-grid class="ion-no-padding">
+              <ion-row>
+                <ion-col>
+                  <ion-text class="comment-text"
+                    >No related news for this player.</ion-text
+                  >
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
+        </ion-item>
+        }
+      </ion-list>
+    </ion-accordion>
+    }
+  </ion-accordion-group>
+  }
+
+  <!-- Confirmation Modal for Delete Player -->
+  <ion-modal
+    class="custom-modal"
+    [isOpen]="showConfirmModal()"
+    (willDismiss)="onModalDismiss($event)"
+  >
+    <ng-template>
+      <ion-grid class="modal-content ion-no-padding">
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <h2>Delete Player?</h2>
+            <p>
+              This action will permanently delete "{{ player()?.name }}" from
+              the database. Do you want to continue?
+            </p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col class="modal-actions ion-no-padding">
+            <ion-button
+              color="danger"
+              expand="block"
+              (click)="confirmDeletePlayer()"
+            >
+              Delete
+            </ion-button>
+            <ion-button
+              fill="clear"
+              expand="block"
+              (click)="cancelDeletePlayer()"
+            >
+              Cancel
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -1,0 +1,114 @@
+name: CD SpringBoot Production
+
+on:
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./api-spring/${{ inputs.service_name }}
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: ${{ inputs.service_name }}-jar
+          path: api-spring/${{ inputs.service_name }}/target
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      - name: Docker login to Artifact Registry
+        uses: docker/login-action@v4.1.0
+        with:
+          registry: us-east1-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_SA_KEY }}
+
+      # TRANSFORMACIÓN: eureka.client.player -> eureka-client-player
+      - name: Create Service Slugs
+        id: slug
+        run: |
+          CLEAN_NAME=$(echo "${{ inputs.service_name }}" | sed 's/\./-/g')
+          echo "service_slug=$CLEAN_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create or Update Secret in GCP
+        if: ${{ inputs.service_name == 'eureka.client.player' || inputs.service_name == 'eureka.client.review' || inputs.service_name == 'eureka.client.user' }}
+        run: |
+          if gcloud secrets describe DB_SQL_PASS_PROD > /dev/null 2>&1; then
+            printf %s "${{ secrets.DB_SQL_PASS_PROD }}" | gcloud secrets versions add DB_SQL_PASS_PROD --data-file=-
+          else
+            printf %s "${{ secrets.DB_SQL_PASS_PROD }}" | gcloud secrets create DB_SQL_PASS_PROD --replication-policy="automatic" --data-file=-
+          fi
+
+          # API_FOOTBALL_KEY
+          if [[ "${{ inputs.service_name }}" == "eureka.client.player" ]]; then
+            if gcloud secrets describe API_FOOTBALL_KEY > /dev/null 2>&1; then
+              printf %s "${{ secrets.API_FOOTBALL_KEY }}" | gcloud secrets versions add API_FOOTBALL_KEY --data-file=-
+            else
+              printf %s "${{ secrets.API_FOOTBALL_KEY }}" | gcloud secrets create API_FOOTBALL_KEY --replication-policy="automatic" --data-file=-
+            fi
+            if gcloud secrets describe GROQ_API_KEY > /dev/null 2>&1; then
+              printf %s "${{ secrets.GROQ_API_KEY }}" | gcloud secrets versions add GROQ_API_KEY --data-file=-
+            else
+              printf %s "${{ secrets.GROQ_API_KEY }}" | gcloud secrets create GROQ_API_KEY --replication-policy="automatic" --data-file=-
+            fi
+          fi
+
+      - name: Build Docker image
+        run: |
+          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:1.0.0 .
+
+      - name: Push Docker image to Artifact Registry
+        run: |
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:1.0.0
+
+      - name: Set Secret Placeholder
+        id: secret
+        run: |
+          SERVICE="${{ inputs.service_name }}"
+
+          if [[ "$SERVICE" == "eureka.client.player" || "$SERVICE" == "eureka.client.review" || "$SERVICE" == "eureka.client.user" ]]; then
+            echo "✅ INFO: El servicio '$SERVICE' requiere base de datos. Configurando secreto..."
+            echo "db_secret=DB_SQL_PASS_PROD=DB_SQL_PASS_PROD:latest" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️ INFO: El servicio '$SERVICE' no requiere secretos de DB. Saltando..."
+            echo "db_secret=" >> $GITHUB_OUTPUT
+          fi
+
+           # API_FOOTBALL_KEY Y GROQ_API_KEY solo para player
+          if [[ "$SERVICE" == "eureka.client.player" ]]; then
+            echo "✅ INFO: El servicio '$SERVICE' requiere API key. Configurando secreto..."
+            echo "football_api_key=API_FOOTBALL_KEY=API_FOOTBALL_KEY:latest" >> $GITHUB_OUTPUT
+            echo "groq_api_key=GROQ_API_KEY=GROQ_API_KEY:latest" >> $GITHUB_OUTPUT          
+          else
+            echo "ℹ️ INFO: El servicio '$SERVICE' no requiere API key. Saltando..."
+            echo "football_api_key=" >> $GITHUB_OUTPUT
+            echo "groq_api_key=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: "${{ steps.slug.outputs.service_slug }}"
+          region: "us-east1"
+          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:1.0.0"
+          flags: |
+            --allow-unauthenticated
+            --ingress=all
+            --service-account=draftkings@cnsa-2026.iam.gserviceaccount.com
+          secrets: |
+            ${{ steps.secret.outputs.db_secret }}
+            ${{ steps.secret.outputs.football_api_key }}
+            ${{ steps.secret.outputs.groq_api_key }}

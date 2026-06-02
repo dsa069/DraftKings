@@ -1,0 +1,48 @@
+<app-header></app-header>
+
+<ion-content class="players-page-content">
+  @if (isLoading()) {
+  <ion-card class="loading-container ion-no-margin">
+    <ion-card-content>
+      <ion-spinner name="crescent"></ion-spinner>
+      <ion-text>Loading Players...</ion-text>
+    </ion-card-content>
+  </ion-card>
+  } @else if (errorMessage()) {
+  <ion-note color="danger" class="error-message">
+    {{ errorMessage() }}
+  </ion-note>
+  } @else {
+
+  <app-player-list
+    [players]="allPlayers()"
+    (playerClick)="goToPlayerDetail($event)"
+  >
+  </app-player-list>
+
+  } @if (isAuthenticated()) {
+  <ion-fab
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+    class="custom-extended-fab"
+  >
+    <ion-button
+      class="extended-fab-btn"
+      shape="round"
+      (click)="goToAddPlayer()"
+    >
+      <ion-icon slot="start" name="add"></ion-icon>
+      <ion-text class="fab-text">Add Player</ion-text>
+    </ion-button>
+    <ion-button
+      class="extended-fab-btn import-btn"
+      shape="round"
+      (click)="goToImportPlayers()"
+    >
+      <ion-icon slot="start" name="cloud-download-outline"></ion-icon>
+      <ion-text class="fab-text">Import Players</ion-text>
+    </ion-button>
+  </ion-fab>
+  }
+</ion-content>

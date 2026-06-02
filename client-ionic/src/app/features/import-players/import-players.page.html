@@ -1,0 +1,27 @@
+<app-header-submenu title="Import Players"></app-header-submenu>
+
+<ion-content class="ion-padding">
+  @if (isAuthenticated()) { @if (errorMessage()) {
+  <ion-note color="danger" class="error-box"> {{ errorMessage() }} </ion-note>
+  } @else {
+
+  <app-player-list
+    [mode]="'import'"
+    [players]="externalPlayers()"
+    [loading]="isLoading()"
+    (importSelected)="handleImport($event)"
+    (searchChange)="onSearchChange($event)"
+  >
+  </app-player-list>
+
+  }
+
+  <ion-toast
+    [isOpen]="showToast()"
+    [message]="toastMessage()"
+    [duration]="2000"
+    (didDismiss)="showToast.set(false)"
+  >
+  </ion-toast>
+  }
+</ion-content>

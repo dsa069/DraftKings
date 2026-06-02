@@ -1,0 +1,61 @@
+{
+  "name": "api-node",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node --transpile-only ./bin/www.ts",
+    "start:prod": "NODE_ENV=prod ts-node --transpile-only ./bin/www.ts",
+    "build": "tsc",
+    "test": "jest",
+    "coverage": "jest --reporters=default --reporters=jest-junit --coverage --coverageReporters=text --coverageReporters=html --coverageDirectory=./coverage/",
+    "lint": "eslint . --ext .ts -f checkstyle -o coverage/eslint-result.xml",
+    "lint:json": "mkdir -p coverage && eslint . --ext .ts --format json -o coverage/eslint-result.json"
+  },
+  "dependencies": {
+    "@langchain/core": "^1.1.48",
+    "@langchain/groq": "^1.2.1",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.6.0",
+    "axios": "^1.16.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "debug": "^4.4.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.10.0",
+    "http-errors": "^2.0.1",
+    "mongodb": "^7.2.0",
+    "mongodb-memory-server": "^11.2.0",
+    "mongoose": "^9.6.1",
+    "morgan": "^1.10.1",
+    "pug": "^3.0.4",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/debug": "^4.1.13",
+    "@types/dotenv": "^8.2.3",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^7.2.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.3.0",
+    "jest": "^30.4.2",
+    "jest-environment-node": "^30.3.0",
+    "jest-junit": "^17.0.0",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11",
+    "typescript-eslint": "^8.59.2"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

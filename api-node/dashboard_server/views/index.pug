@@ -1,0 +1,69 @@
+extends layout
+
+block content
+  .container.mt-5
+    
+    //- Cabecera tipo Jumbotron / Hero
+    .jumbotron.bg-primary.text-white.text-center.rounded.shadow-sm.p-5.mb-5
+      h1.display-4 ⚽ #{title}
+      p.lead Bienvenido a la API REST central de DraftKings
+      
+      if welcomeMessage
+        .alert.alert-light.d-inline-block.mt-3.shadow-sm
+          strong#greeting-box.text-primary <i class="fas fa-hand-sparkles"></i> #{welcomeMessage}
+          
+      hr.my-4.bg-light
+      
+      p.mb-4 Administra el ecosistema: explora la documentación interactiva de los endpoints o comprueba las métricas de rendimiento del sistema en tiempo real.
+      
+      //- Grupo de botones de acción principales
+      .d-flex.flex-wrap.justify-content-center.gap-3
+        a.btn.btn-light.btn-lg.font-weight-bold.text-primary.mx-2.mb-2(href='/api-docs/' target='_blank') 
+          i.fas.fa-book.mr-2
+          | Ver Swagger Docs
+        
+        a.btn.btn-outline-light.btn-lg.font-weight-bold.mx-2.mb-2(href='/status') 
+          i.fas.fa-heartbeat.mr-2
+          | Ver Estado del Servidor
+
+    //- Sección de características de la API
+    h3.text-center.text-secondary.mb-4 <i class="fas fa-server"></i> Recursos de la API
+    
+    .row
+      //- Tarjeta: Usuarios & Autenticación
+      .col-md-6.col-lg-3.mb-4
+        .card.h-100.shadow-sm.border-info
+          .card-body.text-center
+            i.fas.fa-users-cog.fa-3x.text-info.mb-3
+            h5.card-title Autenticación
+            p.card-text.text-muted Sincronización de usuarios con JWT, roles (User/Admin) y perfiles seguros.
+            
+      //- Tarjeta: Jugadores
+      .col-md-6.col-lg-3.mb-4
+        .card.h-100.shadow-sm.border-success
+          .card-body.text-center
+            i.fas.fa-running.fa-3x.text-success.mb-3
+            h5.card-title Jugadores
+            p.card-text.text-muted CRUD completo, geolocalización e integración con APIs externas de fútbol.
+
+      //- Tarjeta: Reseñas
+      .col-md-6.col-lg-3.mb-4
+        .card.h-100.shadow-sm.border-warning
+          .card-body.text-center
+            i.fas.fa-comments.fa-3x.text-warning.mb-3
+            h5.card-title Reseñas
+            p.card-text.text-muted Sistema de comentarios y puntuaciones para el rendimiento de los jugadores.
+
+      //- Tarjeta: Tácticas (IA)
+      .col-md-6.col-lg-3.mb-4
+        .card.h-100.shadow-sm.border-danger
+          .card-body.text-center
+            i.fas.fa-brain.fa-3x.text-danger.mb-3
+            h5.card-title Tácticas IA
+            p.card-text.text-muted Motor de recomendaciones basado en IA para optimizar la alineación de tu equipo.
+
+  script.
+    const messageFromServer = "#{welcomeMessage}";
+    if(messageFromServer) {
+      console.log("Mensaje recibido en el cliente:", messageFromServer);
+    }

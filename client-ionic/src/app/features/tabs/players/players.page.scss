@@ -1,0 +1,105 @@
+/* Mantenemos estrictamente lo que controla el contenedor principal, botón flotante y estados de error/carga */
+.players-page-content {
+  --background: var(--ion-color-surface);
+}
+
+.custom-extended-fab {
+  bottom: var(
+    --spacing-margin-mobile,
+    20px
+  ); /* Asegúrate de que esta variable exista o dale un valor por defecto */
+  right: var(--spacing-margin-mobile, 20px);
+
+  /* NUEVO: Apila los botones verticalmente */
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espacio entre los botones */
+  align-items: flex-end; /* Alinea los botones a la derecha */
+}
+
+.extended-fab-btn {
+  --background: var(--ion-color-pitch-green);
+  --background-hover: color-mix(
+    in srgb,
+    var(--ion-color-pitch-green) 90%,
+    black
+  );
+  --color: var(--ion-color-sideline-black);
+  --border-radius: 50px;
+  --box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  height: auto;
+  margin: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  ion-icon {
+    margin-right: 8px;
+    font-size: 24px;
+  }
+
+  .fab-text {
+    font-family: var(--font-family-label-bold);
+    font-size: var(
+      --font-size-label-bold
+    ); /* Ojo aquí, el snippet se cortó, asegúrate de tener el valor correcto */
+    font-weight: bold; /* O el valor de tu variable */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Clase específica para el botón de importar */
+.import-btn {
+  --background: var(
+    --ion-color-primary-variant
+  ); /* Color lima de tu variables.scss */
+  --background-hover: color-mix(
+    in srgb,
+    var(--ion-color-primary-variant) 90%,
+    black
+  );
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 16px;
+
+  ion-spinner {
+    color: var(--ion-color-pitch-green);
+    --color: var(--ion-color-pitch-green);
+  }
+
+  ion-text {
+    color: var(--ion-color-on-surface-variant);
+    font-family: var(--font-family-body-md);
+    font-size: var(--font-size-body-md);
+  }
+}
+
+.error-message {
+  display: block;
+  padding: 16px;
+  margin: 16px;
+  border-radius: 8px;
+  background: rgba(255, 107, 107, 0.1);
+  border-left: 4px solid var(--ion-color-danger);
+  font-family: var(--font-family-body-md);
+  font-size: var(--font-size-body-md);
+  color: var(--ion-color-danger);
+  text-align: left;
+}

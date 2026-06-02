@@ -1,0 +1,23 @@
+// Fondo específico para este toolbar
+ion-toolbar {
+  --background: var(--ion-color-surface, var(--ion-color-background));
+  background: var(--ion-color-surface, var(--ion-color-background));
+}
+
+// Subtítulo
+.app-subtitle {
+  font-size: var(--font-line-height-body-lg);
+}
+
+// Back Button específico de este header (AQUÍ SE APLICA EL CAMBIO)
+ion-back-button {
+  --color: var(--ion-color-primary-variant-dark) !important;
+  --icon-font-size: 34px !important; /* <--- Esto solo afectará a este componente */
+}
+
+// Nota: Se corrigió el selector del media query para que afecte a .app-subtitle en vez de .app-title
+@media (max-width: 480px) {
+  .app-subtitle {
+    font-size: clamp(24px, 5vw, 32px);
+  }
+}

@@ -1,0 +1,114 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: playerMS
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  datasource:
+    url: jdbc:postgresql://postgresql/draftkings
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update # O 'none' si no quieres que toque las tablas
+    show-sql: true
+    open-in-view: false
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+  ai:
+    openai:
+      base-url: https://api.groq.com/openai
+      api-key: ${GROQ_API_KEY}
+      chat:
+        options:
+          model: openai/gpt-oss-120b
+          temperature: 0.7
+api:
+  football:
+    key: ${API_FOOTBALL_KEY:}
+  news:
+    url: http://host.docker.internal:8070/DK_News_Prod_Cons/servlet
+    
+eureka:
+  instance:
+    hostname: localhost
+    # Ayuda a distinguir instancias si hay varias corriendo del mismo microservicio en el mismo host
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+openapi:
+  title: DraftKings Player Microservice API
+  description: API documentation for Player Microservice API that is part of the DraftKings application. This microservice manages player-related operations such as creating, retrieving, updating, and deleting player information. It also provides endpoints for managing player reviews and ratings. The API is designed to be RESTful and follows best practices for API design.
+  version: '@project.version@'
+  contact:
+    name: Daniel Salas Alonso
+    email: dsa069@inlumine.ual.es
+    url: https://github.com/dsa069/DraftKings.git
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+info:
+  application:
+    name: ${spring.application.name}
+    description: Player microservice
+    version: '@project.version@'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings player microservice in dev profile
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import: "optional:configserver:https://dk-spring-config.cnsa-2026-dsa069.tech/"
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings player microservice in prod profile
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+    
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings player microservice in test profile

@@ -1,0 +1,67 @@
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<ion-grid class="map-container ion-no-padding">
+  <ion-row class="map-controls">
+    <ion-text></ion-text>
+    @if (!isReadOnly) {
+    <ion-button
+      fill="solid"
+      size="small"
+      class="gps-button"
+      (click)="centerOnDevice()"
+    >
+      <ion-icon name="locate-outline" slot="start"></ion-icon>
+      Use My Location
+    </ion-button>
+    }
+  </ion-row>
+
+  <ion-row class="map-wrapper">
+    <ion-col [id]="mapId" class="map-element ion-no-padding"></ion-col>
+  </ion-row>
+
+  <!-- Manual coordinate input fields (only in edit mode) -->
+  @if (!isReadOnly) {
+  <ion-row class="manual-coords-input">
+    <ion-col size="12" sizeSm="6">
+      <ion-input
+        label="Latitude"
+        type="number"
+        step="0.00001"
+        placeholder="e.g., 40.4168"
+        [value]="manualLatitude"
+        (ionChange)="onLatitudeChange($event)"
+        class="coord-input"
+      ></ion-input>
+      @if (latitudeError) {
+      <ion-text class="error-text">{{ latitudeError }}</ion-text>
+      }
+    </ion-col>
+    <ion-col size="12" sizeSm="6">
+      <ion-input
+        label="Longitude"
+        type="number"
+        step="0.00001"
+        placeholder="e.g., -3.7038"
+        [value]="manualLongitude"
+        (ionChange)="onLongitudeChange($event)"
+        class="coord-input"
+      ></ion-input>
+      @if (longitudeError) {
+      <ion-text class="error-text">{{ longitudeError }}</ion-text>
+      }
+    </ion-col>
+  </ion-row>
+  }
+
+  <ion-row class="coordinates-display" *ngIf="currentLocation as loc">
+    <ion-icon name="pin" class="pin-icon"></ion-icon>
+    <ion-text class="coord-text">
+      <strong>Lat:</strong> {{ loc.lat | number : "1.5-5" }} |
+      <strong>Lng:</strong> {{ loc.lng | number : "1.5-5" }}
+    </ion-text>
+  </ion-row>
+</ion-grid>

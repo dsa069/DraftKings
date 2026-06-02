@@ -1,0 +1,63 @@
+.selector-grid {
+  margin: 16px 0;
+}
+
+.option-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --background: var(--ion-color-surface-container-low);
+  margin: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+
+  border: 2px solid var(--ion-color-outline);
+  border-radius: var(--border-radius-lg);
+  transition: all 0.2s ease-in-out;
+
+  .button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .option-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    color: var(--ion-color-on-surface-variant);
+  }
+
+  .option-title {
+    display: block;
+    font-family: var(--font-family-label-bold);
+    font-size: 14px;
+    color: var(--ion-color-on-surface);
+    margin-bottom: 2px;
+  }
+
+  .option-description {
+    display: block;
+    font-size: 9px;
+    font-family: var(--font-family-body-md);
+    color: var(--ion-color-on-surface-variant);
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  /* Estado Activo */
+  &.active {
+    border-color: var(--ion-color-pitch-green);
+    --background: rgba(var(--ion-color-primary-rgb), 0.1);
+    box-shadow: 0 0 0 1px var(--ion-color-pitch-green);
+
+    .option-icon,
+    .option-title {
+      color: var(--ion-color-pitch-green);
+    }
+  }
+}

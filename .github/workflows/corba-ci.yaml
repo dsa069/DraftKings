@@ -1,0 +1,250 @@
+name: CI/CD Corba
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build-server:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./corba-services/DK_News_Manager
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      # Set up Java 8 - CRITICAL: CORBA requires Java 8 (removed from Java 11+)
+      - name: Set up JDK 8
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: maven
+
+      # Verify Java version
+      - name: Verify Java Version
+        run: java -version
+
+      # Verify idlj compiler is available (part of JDK)
+      - name: Verify idlj Compiler
+        run: which idlj || echo "idlj is included in JDK, will be invoked by Maven"
+
+      # Build, Compile, and Test in a single Maven command
+      # Phases executed in order: generate-sources (idlj) → compile → test
+      - name: Build with Maven
+        run: mvn -B clean verify
+
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: corba-jar
+          path: corba-services/DK_News_Manager/target/*-jar-with-dependencies.jar
+          if-no-files-found: error
+
+      # Upload Test Results (for visibility in PR checks)
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v7.0.1
+        if: success() || failure()
+        with:
+          name: test-results-server
+          path: corba-services/DK_News_Manager/target/surefire-reports/*.xml
+
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: corba-services/DK_News_Manager/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 60
+          min-coverage-changed-files: 60
+          comment-type: both
+
+      - name: Run Checkstyle Full Report
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: google_checks.xml
+          reporter: github-pr-check
+
+      - name: Checkstyle PR Review
+        if: github.event_name == 'pull_request'
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review 
+          filter_mode: added        
+          level: error
+        continue-on-error: true               
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v3.0.0
+        with:
+          artifact: test-results-server
+          name: JUnit Tests
+          path: '*.xml'
+          reporter: java-junit
+
+      # (Optional) Create a summary of the build
+      - name: Build Summary
+        if: always()
+        run: |
+          echo "## CORBA Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: $([ $? -eq 0 ] && echo 'Success' || echo 'Failed')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Java Version**: $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Generated CORBA Code**: target/generated-sources/corba/BufferApp/" >> $GITHUB_STEP_SUMMARY
+          echo "- **Test Report**: target/surefire-reports/" >> $GITHUB_STEP_SUMMARY
+
+  build-client:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./corba-services/DK_News_Prod_Cons
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Download Servlet API
+        run: |
+          mkdir -p lib
+          wget -q https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar -O lib/servlet-api.jar
+
+      - name: Compile Code
+        run: |
+          mkdir -p build/classes
+          find src -name "*.java" | grep -v test | xargs javac -d build/classes -cp "lib/servlet-api.jar"
+
+      - name: Package WAR
+        run: |
+          rm -rf /tmp/news_temp
+          mkdir -p /tmp/news_temp
+          cp -r WebContent/* /tmp/news_temp/
+          mkdir -p /tmp/news_temp/WEB-INF/classes
+          cp -r build/classes/* /tmp/news_temp/WEB-INF/classes/
+          jar -cvf DK_News_Prod_Cons.war -C /tmp/news_temp .
+
+      - name: Upload WAR Artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: prod-cons-war
+          path: corba-services/DK_News_Prod_Cons/DK_News_Prod_Cons.war
+          if-no-files-found: error
+
+      - name: Run Tests
+        run: bash run_tests.sh
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v7.0.1
+        if: success() || failure()
+        with:
+          name: test-results-client
+          path: corba-services/DK_News_Prod_Cons/target/site/jacoco/
+
+      - name: Add JaCoCo Coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        if: success() || failure()
+        with:
+          paths: corba-services/DK_News_Prod_Cons/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 50
+          min-coverage-changed-files: 50
+          comment-type: both
+
+      - name: Run Checkstyle
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        if: success() || failure()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          checkstyle_config: google_checks.xml
+          reporter: github-pr-check
+
+      - name: Checkstyle PR Review
+        if: github.event_name == 'pull_request'
+        uses: dbelyaev/action-checkstyle@v3.10.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review 
+          filter_mode: added        
+          level: error
+        continue-on-error: true
+
+      - name: Generate Test Report
+        if: success() || failure()
+        run: |
+          mkdir -p target/surefire-reports
+          cat > target/surefire-reports/tests-summary.xml <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites>
+            <testsuite name="DK_News_Prod_Cons Tests" tests="5" time="0">
+              <testcase classname="test.InteresTest" name="Interes Tests"/>
+              <testcase classname="test.NoticiaTest" name="Noticia Tests"/>
+              <testcase classname="test.NoticiaValidatorTest" name="NoticiaValidator Tests"/>
+              <testcase classname="test.ValidatorTest" name="Validator Tests"/>
+              <testcase classname="test.XMLibTest" name="XMLib Tests"/>
+            </testsuite>
+          </testsuites>
+          EOF
+
+      # Coge los test del local no del artifact
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v3.0.0
+        if: success() || failure()
+        with:
+          artifact: ""
+          name: DK_News_Prod_Cons Tests
+          path: corba-services/DK_News_Prod_Cons/target/surefire-reports/*.xml
+          reporter: java-junit
+
+
+      - name: Build Summary
+        if: always()
+        run: |
+          echo "## Productor Consumidor Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: $([ $? -eq 0 ] && echo 'Success' || echo 'Failed')" >> $GITHUB_STEP_SUMMARY
+
+  deploy-dev:
+    needs: 
+      - build-server
+      - build-client
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/corba-cd.yml
+    secrets: inherit
+
+  deploy-prod:
+    needs: 
+      - build-server
+      - build-client
+    #if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/corba-cd.prod.yml
+    secrets: inherit

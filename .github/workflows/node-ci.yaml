@@ -1,0 +1,105 @@
+name: CI/CD Node
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./api-node
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: api-node/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload Artifacts (Build)
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: dist
+          path: |
+            api-node/dist/
+            api-node/public/
+            api-node/dashboard_server/views/
+
+      - name: Save Code Linting Report JSON
+        run: npm run lint:json
+        continue-on-error: true
+
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v4
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          report-json: "./api-node/coverage/eslint-result.json"
+
+      - name: Prepare development environment for tests
+        env:
+          NODE_ENV_DEV: ${{ secrets.NODE_ENV_DEV }}
+        run: |
+          mkdir -p enviroments
+          # Simplemente volcamos el contenido tal cual al archivo
+          echo "$NODE_ENV_DEV" > enviroments/env
+
+      - name: Test
+        uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          test-command: "npm run coverage"
+          working-directory: "api-node"
+
+      - name: Upload Test Results and Coverage
+        if: success() || failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: test-results
+          path: |
+            ./api-node/junit.xml
+            ./api-node/coverage/
+
+      - name: Test Report
+        uses: dorny/test-reporter@v3.0.0
+        with:
+          artifact: test-results
+          name: JEST Tests
+          path: "junit.xml"
+          reporter: jest-junit
+
+  deploy-dev:
+    needs: build
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/node-cd.yaml
+    secrets: inherit
+
+  deploy-prod:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+    uses: ./.github/workflows/node-cd.prod.yml
+    secrets: inherit

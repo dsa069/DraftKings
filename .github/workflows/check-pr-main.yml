@@ -1,0 +1,15 @@
+name: Check Main Source Branch
+on:
+  pull_request:
+    branches:
+      - main  # Solo se activa cuando apuntan a main
+
+jobs:
+  main_check_source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify that branch is 'dev'
+        if: github.head_ref != 'dev'
+        run: |
+          echo "ERROR: Solo se permiten Merges a 'main' desde la rama 'dev'."
+          exit 1

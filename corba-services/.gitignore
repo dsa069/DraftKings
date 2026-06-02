@@ -1,17 +1,3 @@
-# Build outputs
-/bin/
-/build/
-/target/
-
-# Generated docs and runtime data
-/doc/
-/orb.db/
-
-# Eclipse / Java IDE metadata
-/.settings/
-*.launch
-
-# OS / editor noise
-.DS_Store
-Thumbs.db
-*~
+# ORB
+/orb.db
+/apache-tomcat-*

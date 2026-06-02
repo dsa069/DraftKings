@@ -1,0 +1,302 @@
+<app-header-submenu
+  [title]="isEditMode ? 'Edit Player' : 'Add Player'"
+></app-header-submenu>
+
+@if (isAuthenticated()) {
+<ion-content class="custom-content">
+  <form [formGroup]="playerForm" (ngSubmit)="onSavePlayer()">
+    <ion-grid class="form-section ion-no-padding">
+      <ion-row>
+        <ion-col class="ion-no-padding">
+          <ion-label class="custom-label">Display Name</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="displayName"
+            placeholder="e.g. Mbappé"
+            type="text"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('displayName')?.invalid &&
+          playerForm.get('displayName')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required. Min 3 characters.
+          </ion-note>
+          }
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="gap-gutter">
+        <ion-col class="ion-no-padding col-50">
+          <ion-label class="custom-label">First Name</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="firstName"
+            placeholder="e.g. Kylian"
+            type="text"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('firstName')?.invalid &&
+          playerForm.get('firstName')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required. Min 2 characters.
+          </ion-note>
+          }
+        </ion-col>
+        <ion-col class="ion-no-padding col-50">
+          <ion-label class="custom-label">Last Name</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="lastName"
+            placeholder="e.g. Mbappé"
+            type="text"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('lastName')?.invalid &&
+          playerForm.get('lastName')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required. Min 2 characters.
+          </ion-note>
+          }
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="gap-gutter">
+        <ion-col class="ion-no-padding col-33">
+          <ion-label class="custom-label">Age</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="age"
+            placeholder="25"
+            type="number"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('age')?.invalid && playerForm.get('age')?.touched)
+          {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required (15-50).
+          </ion-note>
+          }
+        </ion-col>
+        <ion-col class="ion-no-padding col-flex">
+          <ion-label class="custom-label">Birthdate</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="birthdate"
+            type="date"
+            fill="outline"
+          >
+          </ion-input>
+          @if (playerForm.get('birthdate')?.invalid &&
+          playerForm.get('birthdate')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required.
+          </ion-note>
+          }
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col class="ion-no-padding">
+          <ion-label class="custom-label">Nationality</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="nationality"
+            placeholder="e.g. France"
+            type="text"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('nationality')?.invalid &&
+          playerForm.get('nationality')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required.
+          </ion-note>
+          }
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="gap-gutter">
+        <ion-col class="ion-no-padding col-50">
+          <ion-label class="custom-label">Height (cm)</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="height"
+            placeholder="178"
+            type="number"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('height')?.invalid &&
+          playerForm.get('height')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required (140-230).
+          </ion-note>
+          }
+        </ion-col>
+        <ion-col class="ion-no-padding col-50">
+          <ion-label class="custom-label">Weight (kg)</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="weight"
+            placeholder="73"
+            type="number"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('weight')?.invalid &&
+          playerForm.get('weight')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required (40-130).
+          </ion-note>
+          }
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="gap-gutter">
+        <ion-col class="ion-no-padding col-50">
+          <ion-label class="custom-label">Team</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="team"
+            placeholder="e.g. PSG"
+            type="text"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('team')?.invalid &&
+          playerForm.get('team')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required.
+          </ion-note>
+          }
+        </ion-col>
+        <ion-col class="ion-no-padding col-50">
+          <ion-label class="custom-label">League</ion-label>
+          <ion-input
+            class="custom-input"
+            formControlName="league"
+            placeholder="e.g. Ligue 1"
+            type="text"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('league')?.invalid &&
+          playerForm.get('league')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required.
+          </ion-note>
+          }
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="gap-gutter">
+        <ion-col class="ion-no-padding col-flex">
+          <ion-label class="custom-label">Position</ion-label>
+          <ion-select
+            class="custom-input custom-select"
+            formControlName="position"
+            placeholder="Select Position"
+            interface="popover"
+            fill="outline"
+          >
+            <ion-select-option value="fw">Forward</ion-select-option>
+            <ion-select-option value="mf">Midfielder</ion-select-option>
+            <ion-select-option value="df">Defender</ion-select-option>
+            <ion-select-option value="gk">Goalkeeper</ion-select-option>
+          </ion-select>
+          @if (playerForm.get('position')?.invalid &&
+          playerForm.get('position')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required.
+          </ion-note>
+          }
+        </ion-col>
+        <ion-col class="ion-no-padding col-33">
+          <ion-label class="custom-label">Number</ion-label>
+          <ion-input
+            class="custom-input text-center text-stat"
+            formControlName="number"
+            placeholder="10"
+            type="number"
+            fill="outline"
+          ></ion-input>
+          @if (playerForm.get('number')?.invalid &&
+          playerForm.get('number')?.touched) {
+          <ion-note
+            color="danger"
+            style="font-size: 12px; margin-top: 4px; display: block"
+          >
+            Required (1-99).
+          </ion-note>
+          }
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-grid class="media-section ion-no-padding">
+      <ion-row>
+        <ion-col class="ion-no-padding">
+          <ion-text class="section-title">Player Photo</ion-text>
+          <app-image-capture></app-image-capture>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-grid class="map-section ion-no-padding">
+      <ion-row>
+        <ion-col class="ion-no-padding">
+          <ion-text class="section-title">Hometown / Origin</ion-text>
+          <app-map-capture
+            [initialLocation]="initialLocation"
+            (locationSelected)="onLocationSelected($event)"
+            (requestCenter)="onCenterRequested()"
+          >
+          </app-map-capture>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
+
+<ion-footer class="ion-no-border bottom-action-footer">
+  <ion-toolbar class="transparent-toolbar">
+    <ion-button
+      expand="block"
+      class="save-btn"
+      (click)="onSavePlayer()"
+      [disabled]="playerForm.invalid"
+    >
+      <ion-icon slot="start" name="save-outline"></ion-icon>
+      Save Player
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
+}

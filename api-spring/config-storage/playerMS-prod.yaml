@@ -1,0 +1,51 @@
+server:
+  port: ${PORT:8080}
+eureka:
+  instance:
+    hostname: eureka-client-player-223788394742.us-east1.run.app
+    prefer-ip-address: false 
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    secure-port: 443
+
+    status-page-url: https://${eureka.instance.hostname}/actuator/info
+    health-check-url: https://${eureka.instance.hostname}/actuator/health
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: https://dk-spring-eureka.cnsa-2026-dsa069.tech/eureka/
+
+spring:
+  datasource:
+    url: jdbc:postgresql://aws-0-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
+    username: postgres.vopcpjecorghtrqpvqtc
+    password: ${DB_SQL_PASS_PROD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update # O 'none' si no quieres que toque las tablas
+    show-sql: true
+    open-in-view: false
+api:
+  football:
+    key: ${API_FOOTBALL_KEY:}
+  news:
+    url: http://dk-corba.cnsa-2026-dsa069.tech:8080/DK_News_Prod_Cons/servlet
+
+openapi:
+  title: DraftKings Player Microservice API (Prod)
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+info:
+  application:
+    name: ${spring.application.name}
+    description: Player microservice en produccion
+    version: '@project.version@'

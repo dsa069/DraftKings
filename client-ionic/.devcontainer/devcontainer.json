@@ -1,0 +1,51 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+  "name": "Client-Ionic",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:4-24-trixie",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/npm-package:1": {
+      "package": "typescript",
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
+      "packages": "chromium,chromium-driver"
+    },
+    "ghcr.io/devcontainers-extra/features/angular-cli:2": {},
+    "ghcr.io/devcontainers-extra/features/ionic-cli:2": {}
+  },
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [4200, 8100],
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "npm i && npx cypress install",
+
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "github.copilot",
+        "github.copilot-chat",
+        "echoapi.echoapi-for-vscode"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "js/ts.preferences.importModuleSpecifier": "relative",
+        "js/ts.tsdk": "node_modules/typescript/lib",
+        "js/ts.preferences.autoImportFileExcludePatterns": [
+          "@ionic/angular/common",
+          "@ionic/angular"
+        ]
+      }
+    }
+  },
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  "remoteUser": "root"
+}

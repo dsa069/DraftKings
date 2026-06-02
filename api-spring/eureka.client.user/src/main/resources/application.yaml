@@ -1,0 +1,118 @@
+server:
+  port: 8092
+spring:
+  application:
+    name: userMS
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  datasource:
+    url: jdbc:postgresql://postgresql/draftkings
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update # O 'none' si no quieres que toque las tablas
+    show-sql: true
+    open-in-view: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://securetoken.google.com/draftkings-local
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+  mvc:
+    cors:
+      configs:
+        '[/**]':
+          allowed-origins: "http://localhost:8100"
+          allowed-methods: "*"
+          allowed-headers: "*"
+          allow-credentials: true
+eureka:
+  instance:
+    hostname: localhost
+    # Ayuda a distinguir instancias si hay varias corriendo del mismo microservicio en el mismo host
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+openapi:
+  title: DraftKings User Microservice API
+  description: API documentation for User Microservice API that is part of the DraftKings application. This microservice manages user-related operations such as registration, authentication, and profile management.
+  version: '@project.version@'
+  contact:
+    name: Daniel Salas Alonso
+    email: dsa069@inlumine.ual.es
+    url: https://github.com/dsa069/DraftKings.git
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+info:
+  application:
+    name: ${spring.application.name}
+    description: User microservice
+    version: '@project.version@'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import: "optional:configserver:https://dk-spring-config-dev.cnsa-2026-dsa069.tech/"
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings user microservice in dev profile
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import: "optional:configserver:https://dk-spring-config.cnsa-2026-dsa069.tech/"
+
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings user microservice in prod profile
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    
+server:
+  port: ${PORT:8080}
+info:
+  application:
+    description: DraftKings user microservice in test profile

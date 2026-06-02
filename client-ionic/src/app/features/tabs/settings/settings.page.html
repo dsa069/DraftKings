@@ -1,0 +1,142 @@
+<app-header></app-header>
+
+<ion-content class="settings-content">
+  <ion-grid class="main-grid">
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" class="content-wrapper">
+        <ion-card class="profile-card">
+          <ion-text class="ambient-glow"></ion-text>
+
+          <ion-card-content class="profile-card-content">
+            <ion-avatar class="profile-avatar">
+              <ion-img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuANaBxk5OEPxAUnBCdgYaIE6yODsc7JTgydpaGPtsY7Wyoog3opWuKH2IW9jzvtelU4OR1GNg_yWb6GB2ANFVRDqRnAWUTQLnTMwCuOtTh7ys353srUtxUJ0vv6DjUA0sHKYumwJF1I7XsaChGKpXkGoGhYQk_Y_dgWU7hZybiXYqZuRA9__Ov8oCtDLmzTjPmItsHVl0d1DWXlMUJ8zn3PPqDIlxRYOGdBpvxeIokxny0Io-MsuUvJEmvyfJcnICC96yY-Z2JnDQI"
+                alt="User Profile"
+              ></ion-img>
+              <ion-button class="edit-btn" fill="clear" shape="round">
+                <ion-icon name="pencil" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-avatar>
+
+            <ion-col class="profile-info">
+              <ion-text class="profile-name">
+                {{ userProfile()?.userName || 'Anonymus' }}
+              </ion-text>
+
+              @if (userProfile(); as user) {
+              <ion-text class="profile-email">
+                {{ userProfile()?.email || 'email@draftkings.com' }}
+              </ion-text>
+              }
+
+              <ion-chip class="pro-badge">
+                <ion-icon name="star"></ion-icon>
+                <ion-label>
+                  {{ userProfile()?.role || 'Unregistered' }}
+                </ion-label>
+              </ion-chip>
+            </ion-col>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-row class="bento-row">
+          <ion-col size="6" class="bento-col-left">
+            <ion-card class="action-card square-card">
+              <ion-card-content class="square-card-content">
+                <ion-row class="card-header-row">
+                  <ion-text class="icon-circle">
+                    <ion-icon name="moon"></ion-icon>
+                  </ion-text>
+                  <ion-icon
+                    class="icon-arrow"
+                    name="arrow-forward-outline"
+                  ></ion-icon>
+                </ion-row>
+
+                <ion-col class="card-footer-col">
+                  <ion-text class="card-subtitle">Appearance</ion-text>
+                  <ion-row class="card-footer-bottom">
+                    <ion-text class="card-title">{{ isDark() ? 'Dark' : 'Light' }} Mode</ion-text>
+                    <ion-toggle
+                      class="custom-toggle"
+                      mode="ios"
+                      [checked]="isDark()"
+                      (ionChange)="onToggleDarkMode()"
+                    ></ion-toggle>
+                  </ion-row>
+                </ion-col>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <ion-col size="6" class="bento-col-right">
+            <ion-card class="action-card square-card">
+              <ion-card-content class="square-card-content">
+                <ion-row class="card-header-row">
+                  <ion-text class="icon-circle">
+                    <ion-icon name="globe"></ion-icon>
+                  </ion-text>
+                  <ion-icon
+                    class="icon-arrow"
+                    name="arrow-forward-outline"
+                  ></ion-icon>
+                </ion-row>
+
+                <ion-col class="card-footer-col">
+                  <ion-text class="card-subtitle">Language</ion-text>
+                  <ion-row class="card-footer-bottom">
+                    <ion-text class="card-title">English</ion-text>
+                    <ion-icon
+                      class="dropdown-icon"
+                      name="chevron-down"
+                    ></ion-icon>
+                  </ion-row>
+                </ion-col>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+
+        @if (userProfile()) {
+        <ion-item-group class="section-container">
+          <ion-text class="section-title">Account</ion-text>
+          <ion-list lines="none" class="custom-list">
+            <ion-item button detail="true" class="custom-item">
+              <ion-text class="icon-circle" slot="start">
+                <ion-icon name="lock-closed"></ion-icon>
+              </ion-text>
+              <ion-label>
+                <ion-text class="item-title">Reset Password</ion-text>
+                <ion-text class="item-subtitle"
+                  >Update your security credentials</ion-text
+                >
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-item-group>
+        }
+
+        <ion-item-group class="section-container">
+          <ion-text class="section-title">System</ion-text>
+          <ion-list lines="none" class="custom-list">
+            <ion-item button class="custom-item hide-detail-icon">
+              <ion-text class="icon-circle" slot="start">
+                <ion-icon name="server"></ion-icon>
+              </ion-text>
+              <ion-label>
+                <ion-text class="item-title">Backend Service</ion-text>
+                <ion-text class="item-subtitle"
+                  >Environment and runtime info</ion-text
+                >
+              </ion-label>
+              <ion-chip slot="end" class="tech-chip">
+                <ion-icon [icon]="currentBackendIcon()"></ion-icon>
+                <ion-label>{{ currentBackendLabel() || 'Bun' }}</ion-label>
+              </ion-chip>
+            </ion-item>
+          </ion-list>
+        </ion-item-group>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

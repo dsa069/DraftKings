@@ -1,0 +1,387 @@
+<app-header></app-header>
+
+<ion-content class="main-content" scroll-y="true">
+  @if (isAuthenticated()) {
+  <ion-grid class="content-grid">
+    <ion-row class="strategy-header">
+      <ion-col class="title-col">
+        <ion-text class="headline">Starting XI</ion-text>
+        <ion-text class="subtitle">
+          <ion-icon name="git-network-outline"></ion-icon> Tactical Setup
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="auto" class="ovr-col">
+        <ion-chip class="ovr-chip">
+          <ion-label class="ovr-number">4.5</ion-label>
+          <ion-label class="ovr-text">STARTS</ion-label>
+        </ion-chip>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="filters-row">
+      <ion-col size="auto">
+        <ion-button class="filter-btn active" shape="round">
+          4-3-3 Offensive
+        </ion-button>
+      </ion-col>
+      <ion-col size="auto">
+        <ion-button class="filter-btn" shape="round" fill="outline">
+          Balanced
+        </ion-button>
+      </ion-col>
+      <ion-col size="auto">
+        <ion-button class="filter-btn" shape="round" fill="outline">
+          <ion-icon slot="start" name="options-outline"></ion-icon>
+          Tactics
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="pitch-row">
+      <ion-col>
+        <ion-card class="tactical-pitch">
+          <ion-card-content class="pitch-background"></ion-card-content>
+          <ion-card-content class="pitch-lines-1"></ion-card-content>
+
+          <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
+            <ng-template>
+              <ion-header>
+                <ion-toolbar color="surface" class="modal-toolbar">
+                  <ion-title class="header-title-base modal-subtitle"
+                    >Choose {{ currentEditingPosition() }}</ion-title
+                  >
+                  <ion-buttons slot="end">
+                    <ion-button
+                      fill="clear"
+                      class="modal-close-button"
+                      aria-label="Close modal"
+                      (click)="closeModal()"
+                    >
+                      <ion-icon
+                        slot="icon-only"
+                        name="arrow-undo-outline"
+                      ></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+
+              <ion-content>
+                <app-player-list
+                  [players]="availablePlayers()"
+                  [loading]="isLoadingPlayers()"
+                  (playerClick)="onPlayerSelected($event)"
+                >
+                </app-player-list>
+              </ion-content>
+            </ng-template>
+          </ion-modal>
+
+          <ion-grid class="players-grid">
+            <ion-row class="forward-row">
+              <ion-col
+                class="player-col col-mt-4"
+                (click)="openPlayerSelection('LW')"
+              >
+                <ion-avatar
+                  class="player-avatar"
+                  [class.has-player]="teamPositions()['LW']"
+                  [class.placeholder-avatar]="!teamPositions()['LW']"
+                >
+                  @if (teamPositions()['LW']) {
+                  <ion-img [src]="teamPositions()['LW']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge">LW</ion-badge>
+                  @if (teamPositions()['LW']) {
+                  <ion-badge class="ovr-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name">
+                  {{ (teamPositions()['LW']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+              <ion-col class="player-col" (click)="openPlayerSelection('ST')">
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['ST']"
+                  [class.placeholder-avatar]="!teamPositions()['ST']"
+                >
+                  @if (teamPositions()['ST']) {
+                  <ion-img [src]="teamPositions()['ST']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge large-badge">ST</ion-badge>
+                  @if (teamPositions()['ST']) {
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name large-name">
+                  {{ (teamPositions()['ST']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+              <ion-col
+                class="player-col col-mt-4"
+                (click)="openPlayerSelection('RW')"
+              >
+                <ion-avatar
+                  class="player-avatar"
+                  [class.has-player]="teamPositions()['RW']"
+                  [class.placeholder-avatar]="!teamPositions()['RW']"
+                >
+                  @if (teamPositions()['RW']) {
+                  <ion-img [src]="teamPositions()['RW']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge">RW</ion-badge>
+                  @if (teamPositions()['RW']) {
+                  <ion-badge class="ovr-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name">
+                  {{ (teamPositions()['RW']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="midfield-row">
+              <ion-col class="player-col" (click)="openPlayerSelection('LCM')">
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['LCM']"
+                  [class.placeholder-avatar]="!teamPositions()['LCM']"
+                >
+                  @if (teamPositions()['LCM']) {
+                  <ion-img [src]="teamPositions()['LCM']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge large-badge">CM</ion-badge>
+                  @if (teamPositions()['LCM']) {
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name large-name">
+                  {{ (teamPositions()['LCM']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+              <ion-col
+                class="player-col col-mt-4"
+                (click)="openPlayerSelection('CDM')"
+              >
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['CDM']"
+                  [class.placeholder-avatar]="!teamPositions()['CDM']"
+                >
+                  @if (teamPositions()['CDM']) {
+                  <ion-img [src]="teamPositions()['CDM']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge large-badge">CDM</ion-badge>
+                  @if (teamPositions()['CDM']) {
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name large-name">
+                  {{ (teamPositions()['CDM']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+              <ion-col class="player-col" (click)="openPlayerSelection('RCM')">
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['RCM']"
+                  [class.placeholder-avatar]="!teamPositions()['RCM']"
+                >
+                  @if (teamPositions()['RCM']) {
+                  <ion-img [src]="teamPositions()['RCM']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge large-badge">CM</ion-badge>
+                  @if (teamPositions()['RCM']) {
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name large-name">
+                  {{ (teamPositions()['RCM']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="defense-row">
+              <ion-col
+                class="player-col col-mt-2"
+                (click)="openPlayerSelection('LB')"
+              >
+                <ion-avatar
+                  class="player-avatar"
+                  [class.has-player]="teamPositions()['LB']"
+                  [class.placeholder-avatar]="!teamPositions()['LB']"
+                >
+                  @if (teamPositions()['LB']) {
+                  <ion-img [src]="teamPositions()['LB']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge">LB</ion-badge>
+                  @if (teamPositions()['LB']) {
+                  <ion-badge class="ovr-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name">
+                  {{ (teamPositions()['LB']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+              <ion-col class="player-col" (click)="openPlayerSelection('LCB')">
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['LCB']"
+                  [class.placeholder-avatar]="!teamPositions()['LCB']"
+                >
+                  @if (teamPositions()['LCB']) {
+                  <ion-img [src]="teamPositions()['LCB']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge large-badge">CB</ion-badge>
+                  @if (teamPositions()['LCB']) {
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name large-name">
+                  {{ (teamPositions()['LCB']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+              <ion-col class="player-col" (click)="openPlayerSelection('RCB')">
+                <ion-avatar
+                  class="player-avatar large-avatar border-standard"
+                  [class.has-player]="teamPositions()['RCB']"
+                  [class.placeholder-avatar]="!teamPositions()['RCB']"
+                >
+                  @if (teamPositions()['RCB']) {
+                  <ion-img [src]="teamPositions()['RCB']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge large-badge">CB</ion-badge>
+                  @if (teamPositions()['RCB']) {
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name large-name">
+                  {{ (teamPositions()['RCB']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+              <ion-col
+                class="player-col col-mt-2"
+                (click)="openPlayerSelection('RB')"
+              >
+                <ion-avatar
+                  class="player-avatar"
+                  [class.has-player]="teamPositions()['RB']"
+                  [class.placeholder-avatar]="!teamPositions()['RB']"
+                >
+                  @if (teamPositions()['RB']) {
+                  <ion-img [src]="teamPositions()['RB']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge">RB</ion-badge>
+                  @if (teamPositions()['RB']) {
+                  <ion-badge class="ovr-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name">
+                  {{ (teamPositions()['RB']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="gk-row">
+              <ion-col class="player-col" (click)="openPlayerSelection('GK')">
+                <ion-avatar
+                  class="player-avatar large-avatar gk-avatar"
+                  [class.has-player]="teamPositions()['GK']"
+                  [class.placeholder-avatar]="!teamPositions()['GK']"
+                >
+                  @if (teamPositions()['GK']) {
+                  <ion-img [src]="teamPositions()['GK']?.photoUrl"></ion-img>
+                  }
+                  <ion-badge class="pos-badge gk-pos">GK</ion-badge>
+                  @if (teamPositions()['GK']) {
+                  <ion-badge class="ovr-badge large-badge">4.5</ion-badge>
+                  }
+                </ion-avatar>
+                <ion-text class="player-name large-name">
+                  {{ (teamPositions()['GK']?.lastName || 'ADD') | uppercase }}
+                </ion-text>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ai-advice-row">
+      <ion-col>
+        <ion-card class="ai-advice-card">
+          <ion-card-content class="ai-advice-content">
+            <ion-button
+              class="ai-btn"
+              expand="block"
+              (click)="requestAiAdvice()"
+              [disabled]="isAiLoading()"
+            >
+              @if (isAiLoading()) {
+              <ion-spinner
+                name="crescent"
+                slot="start"
+                color="light"
+              ></ion-spinner>
+              } @else {
+              <ion-icon slot="start" name="sparkles"></ion-icon>
+              } AI Advice
+            </ion-button>
+
+            @if (!hasAiResponse()) {
+            <ion-card class="ai-tip-box">
+              <ion-card-content class="ai-tip-content">
+                <ion-icon class="ai-tip-icon" name="bulb"></ion-icon>
+                <ion-text class="ai-tip-text">
+                  Tap to get AI recommendations for your squad.
+                </ion-text>
+              </ion-card-content>
+            </ion-card>
+            } @else {
+
+            <ion-card class="ai-response-container">
+              <ion-card-content class="ai-response-content">
+                <ion-item lines="none" class="ai-message-item">
+                  <ion-icon
+                    name="chatbubbles-outline"
+                    slot="start"
+                    class="ai-message-icon"
+                  ></ion-icon>
+                  <ion-text class="ai-response-text">
+                    {{ aiNarrative() }}
+                  </ion-text>
+                </ion-item>
+
+                <ion-list class="ai-recs-list">
+                  <ion-list-header class="ai-list-header">
+                    <ion-label class="ai-list-title"
+                      >SUGGESTED SIGNINGS</ion-label
+                    >
+                  </ion-list-header>
+
+                  @for (rec of aiRecommendationsArray(); track rec.position) {
+                  <ion-item lines="none" class="ai-rec-item">
+                    <ion-badge slot="start" class="ai-pos-badge"
+                      >{{ rec.position }}</ion-badge
+                    >
+                    <ion-label class="ai-player-label"
+                      >{{ rec.playerName }}</ion-label
+                    >
+                    <ion-icon
+                      name="sparkles"
+                      slot="end"
+                      class="ai-item-sparkle"
+                    ></ion-icon>
+                  </ion-item>
+                  }
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+            }
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  }
+</ion-content>

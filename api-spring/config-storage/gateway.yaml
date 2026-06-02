@@ -1,0 +1,31 @@
+server:
+  port: 8080             
+
+eureka:
+  instance:
+    hostname: localhost
+  # Rutas microservicios: http://localhost:8080/<microservice-name>/actuator/info
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+app:
+  cors:
+    allowed-origins:
+      - "http://localhost:8100"
+      - "http://localhost:3333"
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+
+info:
+  application:
+    name: ${spring.application.name}
+    description: This is the API Gateway that centralizes access to all microservices usando config server
+    version: '@project.version@'
