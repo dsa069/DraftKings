@@ -2,6 +2,7 @@ package draftkings.eureka.client.review.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import draftkings.eureka.client.review.domain.Review;
 
@@ -11,4 +12,7 @@ public interface ReviewRepository extends CrudRepository<Review, Long> {
     // java.util.List<Review> findByUserId(Long userId);
 
     java.util.List<Review> findByPlayerId(Long playerId);
+
+    @Transactional
+    void deleteByPlayerId(Long playerId);
 }
