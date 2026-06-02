@@ -67,6 +67,7 @@ import {
   documentTextOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../core/services/abstract/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export interface ReviewUI extends Review {
   isEditing?: boolean;
@@ -174,6 +175,22 @@ export class PlayerDetailPage implements OnInit {
         this.loadReviews(currentPlayer.id);
       }
     });
+
+    const routeId = this.route.snapshot.paramMap.get('id');
+    this.playerService.playerUpdated$
+      .pipe(takeUntilDestroyed())
+      .subscribe((updatedPlayer) => {
+        const currentPlayer = this.player();
+        if (
+          currentPlayer &&
+          String(updatedPlayer.id) === String(currentPlayer.id)
+        ) {
+          this.ngZone.run(() => {
+            this.player.set(updatedPlayer);
+            this.cdr.markForCheck();
+          });
+        }
+      });
   }
 
   ngOnInit(): void {
