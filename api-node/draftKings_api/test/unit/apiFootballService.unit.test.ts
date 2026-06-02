@@ -146,6 +146,8 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
             type: "Point",
             coordinates: [2.2, 41.1],
           },
+          team: null,
+          league: null,
         },
       ]);
     });
