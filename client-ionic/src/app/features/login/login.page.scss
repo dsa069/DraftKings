@@ -56,7 +56,7 @@ ion-text.login-subtitle {
 // Estilos para el botón de retroceso circular personalizado
 ion-button.circular-back-btn {
   // 1. Fondo gris (adaptado al tono oscuro de tu paleta "stadium")
-  --background: #222a24;
+  --background: var(--ion-color-surface-container-high);
 
   // 2. Flecha totalmente blanca
   --color: var(--ion-color-chalk-white, #ffffff);

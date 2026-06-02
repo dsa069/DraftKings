@@ -56,11 +56,12 @@
                 <ion-col class="card-footer-col">
                   <ion-text class="card-subtitle">Appearance</ion-text>
                   <ion-row class="card-footer-bottom">
-                    <ion-text class="card-title">Dark Mode</ion-text>
+                    <ion-text class="card-title">{{ isDark() ? 'Dark' : 'Light' }} Mode</ion-text>
                     <ion-toggle
                       class="custom-toggle"
                       mode="ios"
-                      checked="true"
+                      [checked]="isDark()"
+                      (ionChange)="onToggleDarkMode()"
                     ></ion-toggle>
                   </ion-row>
                 </ion-col>

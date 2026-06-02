@@ -34,12 +34,14 @@ import {
   logOut,
   logoNodejs,
   leafOutline,
+  sunny,
 } from 'ionicons/icons';
 
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { User } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/abstract/auth.service';
 import { ConfigService } from '../../../core/services/config.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-settings',
@@ -70,8 +72,11 @@ import { ConfigService } from '../../../core/services/config.service';
 export class SettingsPage implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly configService = inject(ConfigService);
+  private readonly themeService = inject(ThemeService);
   public readonly nodeBackendIcon = logoNodejs;
   public readonly springBackendIcon = leafOutline;
+
+  public readonly isDark = this.themeService.isDark;
 
   readonly _userProfile = signal<User | null>(null);
   public readonly userProfile = this._userProfile.asReadonly();
@@ -104,7 +109,12 @@ export class SettingsPage implements OnInit {
       logOut,
       logoNodejs,
       leafOutline,
+      sunny,
     });
+  }
+
+  onToggleDarkMode(): void {
+    this.themeService.toggle();
   }
 
   ngOnInit(): void {

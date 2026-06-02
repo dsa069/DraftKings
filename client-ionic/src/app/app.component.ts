@@ -2,6 +2,7 @@
 import { Component, effect, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { NavController, ToastController } from '@ionic/angular';
+import { ThemeService } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ import { NavController, ToastController } from '@ionic/angular';
 export class AppComponent {
   private navCtrl = inject(NavController);
   private toastCtrl = inject(ToastController);
+  private readonly themeService = inject(ThemeService);
 
   constructor() {
     effect(async () => {

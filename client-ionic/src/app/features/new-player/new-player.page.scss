@@ -151,7 +151,7 @@ ion-content.custom-content {
 
 // Footer y Botón Flotante
 .bottom-action-footer {
-  background: rgba(13, 21, 14, 0.9); /* #0d150e a 90% */
+  background: var(--ion-color-surface-container);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--ion-color-outline-variant);
   padding-bottom: 10px;
