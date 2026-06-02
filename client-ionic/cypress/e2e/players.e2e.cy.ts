@@ -54,6 +54,14 @@ describe('Jugadores E2E', () => {
         authService.isUser = () => false;
         authService.userProfile = () => adminProfile;
 
+        // Update the component's captured signal references
+        if ('isAuthenticated' in playersCmp) {
+          playersCmp.isAuthenticated = () => true;
+        }
+        if ('isAdmin' in playersCmp) {
+          playersCmp.isAdmin = () => true;
+        }
+
         if ((win as any).ng?.applyChanges) {
           (win as any).ng.applyChanges(playersCmp);
         }
@@ -86,6 +94,14 @@ describe('Jugadores E2E', () => {
         authService.isAdmin = () => authState.isAdmin;
         authService.isUser = () => authState.isUser;
         authService.userProfile = () => authState.profile;
+
+        // Update the component's captured signal references
+        if ('isAuthenticated' in cmp) {
+          cmp.isAuthenticated = () => authState.isAuthenticated;
+        }
+        if ('isAdmin' in cmp) {
+          cmp.isAdmin = () => authState.isAdmin;
+        }
 
         if ((win as any).ng?.applyChanges) {
           (win as any).ng.applyChanges(cmp);
@@ -620,6 +636,8 @@ describe('Jugadores E2E', () => {
           newPlayerCmp.playerService.updatePlayer = updateStub;
           newPlayerCmp.photoService.currentPhotoPreview = () => null;
           newPlayerCmp.photoService.rollbackLastUpload = updateRollbackStub;
+          newPlayerCmp.isEditMode = true;
+          newPlayerCmp.editingPlayerId = '1';
           newPlayerCmp.playerForm.patchValue({
             displayName: 'Lionel Messi Updated',
             firstName: 'Lionel',

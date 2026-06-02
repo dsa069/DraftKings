@@ -199,7 +199,7 @@ describe('SettingsPage Component', () => {
 
       cy.get('ion-toggle.custom-toggle')
         .should('exist')
-        .should('have.attr', 'checked');
+        .and('have.prop', 'checked', true);
       cy.get('ion-toggle.custom-toggle').should('have.attr', 'mode', 'ios');
     });
 

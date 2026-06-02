@@ -8,6 +8,7 @@ import { AuthService } from '../../core/services/abstract/auth.service';
 import { NewsService } from '../../core/services/abstract/news.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
+import { Subject } from 'rxjs';
 
 describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
   // 1. Declaración de Mocks
@@ -56,6 +57,7 @@ describe('PlayerDetailPage Component - Test Suite Exhaustivo', () => {
     playerServiceMock = {
       getPlayerById: cy.stub().resolves(mockPlayer),
       deletePlayer: cy.stub().resolves(),
+      playerUpdated$: new Subject(),
     };
 
     // Mock del Servicio de Reseñas
