@@ -32,6 +32,33 @@ Esta aplicación combina una interfaz moderna y fluida con varias arquitecturas 
 
 ![Diagrama de Casos de Uso](./docs/diagrams/out/UCD.svg)
 
+### 🔗 URLS Despliegue(Pueden no estar levantadas):
+#### Utilis:
+- SonarQube: [http://sonarqube.cnsa-2026-dsa069.tech](http://sonarqube.cnsa-2026-dsa069.tech)
+
+#### Desarrollo:
+- Front Ionic-Angular: [https://draftkings-dev.cnsa-2026-dsa069.tech](https://draftkings-dev.cnsa-2026-dsa069.tech)
+- Back Node: [https://dk-node-dev.cnsa-2026-dsa069.tech](https://dk-node-dev.cnsa-2026-dsa069.tech)
+- Corba: [http://dk-corba-dev.cnsa-2026-dsa069.tech:8080/DK_News_Prod_Cons/servlet](http://dk-corba-dev.cnsa-2026-dsa069.tech:8080/DK_News_Prod_Cons/servlet)
+- Back SpringBoot
+    1. Gateway: [https://dk-spring-dev.cnsa-2026-dsa069.tech](https://dk-spring-dev.cnsa-2026-dsa069.tech)
+    2. Config: [https://dk-spring-config-dev.cnsa-2026-dsa069.tech](https://dk-spring-config-dev.cnsa-2026-dsa069.tech)
+    3. Eureka: [https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech](https://dk-spring-eureka-dev.cnsa-2026-dsa069.tech)
+    4. User Client: [https://eureka-client-user-dev-223788394742.us-east1.run.app](https://eureka-client-user-dev-223788394742.us-east1.run.app)
+    5. Player Client: [https://eureka-client-player-dev-223788394742.us-east1.run.app](https://eureka-client-player-dev-223788394742.us-east1.run.app)
+    6. Review Client: [https://eureka-client-review-dev-223788394742.us-east1.run.app](https://eureka-client-review-dev-223788394742.us-east1.run.app)
+
+#### Producción:
+- Front Ionic-Angular: [https://draftkings.cnsa-2026-dsa069.tech](https://draftkings.cnsa-2026-dsa069.tech)
+- Back Node: [https://dk-node.cnsa-2026-dsa069.tech](https://dk-node.cnsa-2026-dsa069.tech)
+- Corba: [http://dk-corba.cnsa-2026-dsa069.tech:8080/DK_News_Prod_Cons/servlet](http://dk-corba.cnsa-2026-dsa069.tech:8080/DK_News_Prod_Cons/servlet)
+- Back SpringBoot
+    1. Gateway: [https://dk-spring.cnsa-2026-dsa069.tech](https://dk-spring.cnsa-2026-dsa069.tech)
+    2. Config: [https://dk-spring-config.cnsa-2026-dsa069.tech](https://dk-spring-config.cnsa-2026-dsa069.tech)
+    3. Eureka: [https://dk-spring-eureka.cnsa-2026-dsa069.tech](https://dk-spring-eureka.cnsa-2026-dsa069.tech)
+    4. User Client: [https://eureka-client-user-223788394742.us-east1.run.app](https://eureka-client-user-223788394742.us-east1.run.app)
+    5. Player Client: [https://eureka-client-player-223788394742.us-east1.run.app](https://eureka-client-player-223788394742.us-east1.run.app)
+    6. Review Client: [https://eureka-client-review-223788394742.us-east1.run.app](https://eureka-client-review-223788394742.us-east1.run.app)
 ---
 
 ## 🛠️ Tecnologías Utilizadas
