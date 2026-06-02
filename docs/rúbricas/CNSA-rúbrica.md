@@ -150,7 +150,7 @@ Los 4 componentes construyen y publican imágenes Docker en GCP Artifact Registr
 - **Back-end (Node):** 0,25 puntos ✅ — Imagen publicada en `us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:latest`
 - **Back-end (Spring):** 0,25 puntos ✅ — 6 microservicios, cada uno con su imagen (e.g. `eureka-client-player:latest`)
 - **Back-end (CORBA):** 0,25 puntos ✅ — Imagen `corba-news-manager:latest` con ORBD + servidor + Tomcat
-- **Front-end (Ionic):** 0,25 puntos ✅ — Imagen `client-ionic:latest` (dev) y `client-ionic:0.0.1` (prod)
+- **Front-end (Ionic):** 0,25 puntos ✅ — Imagen `client-ionic:latest` (dev) y `client-ionic:1.0.0` (prod)
 
 ### Fragmentos de Código (Evidencias)
 
@@ -819,7 +819,7 @@ El proyecto mantiene separación completa entre dev y prod:
 
 - **Pipelines separados:** `ionic-ci-cd.yaml` (dev) vs `ionic-ci-cd.prod.yml` (prod)
 - **Cloud Run services:** `draftkings-dev` vs `draftkings` (prod)
-- **Docker tags:** `:latest` (dev) vs `:0.0.1` (prod)
+- **Docker tags:** `:latest` (dev) vs `:1.0.0` (prod)
 - **Secrets separados:** `FIREBASE_CONFIG_DEV` vs `FIREBASE_CONFIG_PROD`
 - **Branch protection:** Solo `dev` puede hacer PR a `main` (`check-pr-main.yml`)
 - **Bases de datos:** Usamos Saas para los despliegues: Mongo Atlas (Node) y Supabase (Postgres)

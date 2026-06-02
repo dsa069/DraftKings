@@ -298,7 +298,7 @@ La arquitectura de integración y despliegue continuo está diseñada para garan
 **Deployment a Prod** (`node-cd.prod.yml`):
 - Trigger: Se ejecuta si CI es exitoso en rama `main`
 - Steps: Similares a Dev, con diferencias:
-  - Build Docker con tag versionado: `:0.0.1`
+  - Build Docker con tag versionado: `:1.0.0`
   - Usa `Dockerfile.prod` optimizado
   - Service: `dk-node` (sin sufijo -dev)
   - Secret: `NODE_ENV_PROD`
@@ -385,7 +385,7 @@ on:
 
 **Diferencias Dev/Prod:**
 - **Dev:** Tag `:latest`, secret `_DEV`
-- **Prod:** Tag `:0.0.1`, secret `_PROD`, Dockerfile.prod
+- **Prod:** Tag `:1.0.0`, secret `_PROD`, Dockerfile.prod
 
 ---
 
@@ -473,7 +473,7 @@ El deployment de CORBA es **más complejo** que otros servicios debido a infraes
 **Deployment a Prod** (`corba-cd.prod.yml`):
 - VM: `dk-corba` (sin sufijo -dev)
 - DNS: `dk-corba.cnsa-2026-dsa069.tech`
-- Imagen: Tag `:0.0.1`
+- Imagen: Tag `:1.0.0`
 - Usa `Dockerfile.prod`
 
 ---

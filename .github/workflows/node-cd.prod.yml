@@ -41,16 +41,16 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:0.0.1 .
+          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:1.0.0 .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:0.0.1
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:1.0.0
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: "dk-node"
           region: "us-east1"
-          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:0.0.1"
+          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/api-node:1.0.0"
           flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated --ingress=all --set-secrets=/app/enviroments/env=NODE_ENV_PROD:latest"

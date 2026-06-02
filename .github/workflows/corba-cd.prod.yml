@@ -45,11 +45,11 @@ jobs:
         run: |
           # -f apunta al Dockerfile un nivel arriba
           # El '.' final se cambia por '..' para que el contexto sea ./corba-services
-          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:0.0.1 -f ../Dockerfile ..
+          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:1.0.0 -f ../Dockerfile ..
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:0.0.1
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/corba-news-manager:1.0.0
 
       # 1. Instalar la llave ANTES de comprobar la conexión
       - name: Install SSH Key

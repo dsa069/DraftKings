@@ -68,11 +68,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:0.0.1 .
+          docker build -f Dockerfile.prod -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:1.0.0 .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:0.0.1
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:1.0.0
 
       - name: Set Secret Placeholder
         id: secret
@@ -103,7 +103,7 @@ jobs:
         with:
           service: "${{ steps.slug.outputs.service_slug }}"
           region: "us-east1"
-          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:0.0.1"
+          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/${{ steps.slug.outputs.service_slug }}:1.0.0"
           flags: |
             --allow-unauthenticated
             --ingress=all
