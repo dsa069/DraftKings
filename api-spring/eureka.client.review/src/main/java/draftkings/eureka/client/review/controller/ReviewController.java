@@ -163,4 +163,33 @@ public class ReviewController {
             throw new InternalServerErrorException("Error deleting review", ex);
         }
     }
+
+    // 14) Eliminar todos los comentarios de un jugador
+    @DeleteMapping(value = "/api/players/{player_id}/reviews")
+    @Operation(summary = "Eliminar comentarios de un jugador", description = "Elimina todas las reseñas asociadas a un jugador. Usado para cascade delete.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Comentarios eliminados correctamente"),
+            @ApiResponse(responseCode = "400", description = "Identificador de jugador inválido", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":400,\"error\":\"Player id must be greater than zero\",\"path\":\"/api/players/1/reviews\"}"))),
+            @ApiResponse(responseCode = "404", description = "No se encontraron reseñas para el jugador", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":404,\"error\":\"No reviews found for player: 1\",\"path\":\"/api/players/1/reviews\"}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno inesperado", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-05-28T23:57:00Z\",\"status\":500,\"error\":\"Error deleting reviews\",\"path\":\"/api/players/1/reviews\"}")))
+    })
+    public ResponseEntity<Void> deleteReviewsByPlayerId(
+            @Parameter(description = "ID del jugador cuyas reseñas se quieren eliminar", required = true) @PathVariable("player_id") Long playerId) {
+
+        if (playerId == null || playerId <= 0) {
+            throw new BadRequestException("Player id must be greater than zero");
+        }
+        try {
+            List<Review> reviews = reviewRepository.findByPlayerId(playerId);
+            if (reviews == null || reviews.isEmpty()) {
+                throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "No reviews found for player: " + playerId);
+            }
+            reviewRepository.deleteByPlayerId(playerId);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new InternalServerErrorException("Error deleting reviews", ex);
+        }
+    }
 }

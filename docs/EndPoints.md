@@ -479,11 +479,28 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
   - `404 Not Found` — Comentario no existe.
   - `500 Internal Server Error` — Error interno inesperado.
 
+### 14) Eliminar todos los comentarios de un jugador (SOLO SPRING)
+
+- **Caso de uso:** `UC_eliminar_comentarios_jugador`
+- **Descripción:** Elimina todas las reseñas asociadas a un jugador. Empleado en el cascade delete al borrar un jugador.
+- **Método:** `DELETE`
+- **URL:**
+  - Spring: `http://localhost:8080/reviewms/api/players/{player_id}/reviews`
+- **Headers:**
+  - `Authorization: Bearer {tu_token_JWT}` (Exclusivo de Usuario Administrador)
+- **Respuestas:**
+  - `204 No Content` — Comentarios eliminados correctamente.
+  - `400 Bad Request` — Identificador de jugador inválido.
+  - `401 Unauthorized` — El token JWT falta o no es válido.
+  - `403 Forbidden` — El usuario autenticado no tiene permisos de administrador.
+  - `404 Not Found` — No se encontraron reseñas para el jugador.
+  - `500 Internal Server Error` — Error interno inesperado.
+
 ---
 
 ## 📰 Noticias (News System)
 
-### 14) Obtener noticias de jugadores
+### 15) Obtener noticias de jugadores
 
 - **Caso de uso:** `UC_ver_noticias`
 
@@ -520,7 +537,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 ---
 
-### 15) Ver noticia en detalle
+### 16) Ver noticia en detalle
 
 - **Caso de uso:** `UC_ver_noticia`
 
@@ -557,7 +574,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 ---
 
-### 16) Publicar una noticia
+### 17) Publicar una noticia
 
 - **Caso de uso:** `UC_crear_noticia`
 
@@ -596,7 +613,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 
 ## 🏆 Tácticas (Equipo Ideal)
 
-### 16) Obtener recomendaciones de la IA para completar alineación
+### 18) Obtener recomendaciones de la IA para completar alineación
 
 - **Caso de uso:** `UC_recomendar_jugadores_ia`
 - **Descripción:** Procesa las posiciones actuales mediante una IA para sugerir jugadores para las posiciones vacías.

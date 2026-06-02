@@ -149,6 +149,7 @@ public class PlayerController {
             throw new BadRequestException("Player id must be greater than zero");
         }
         if (playerRepository.existsById(id)) {
+            reviewClient.deleteReviewsByPlayerId(id);
             playerRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }

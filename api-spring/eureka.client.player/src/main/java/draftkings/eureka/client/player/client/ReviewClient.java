@@ -24,6 +24,9 @@ public interface ReviewClient {
     @DeleteMapping("/api/reviews/{id}")
     void deleteReview(@PathVariable("id") Long id);
 
+    @DeleteMapping("/api/players/{playerId}/reviews")
+    void deleteReviewsByPlayerId(@PathVariable("playerId") Long playerId);
+
     @Component
     class ReviewFallback implements ReviewClient {
         @Override
@@ -44,6 +47,11 @@ public interface ReviewClient {
 
         @Override
         public void deleteReview(Long id) {
+            // No hacemos nada, el fallo silencioso previene caídas en cadena
+        }
+
+        @Override
+        public void deleteReviewsByPlayerId(Long playerId) {
             // No hacemos nada, el fallo silencioso previene caídas en cadena
         }
     }
