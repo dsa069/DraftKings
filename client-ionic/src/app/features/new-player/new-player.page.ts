@@ -153,10 +153,12 @@ export class NewPlayerPage implements OnInit {
       await this.photoService.clearPreviewCache();
     }
 
-    // Solicitamos la posición inicial real del dispositivo antes de mostrar el mapa.
-    const coords = await this.locationService.requestDeviceCurrentPosition();
-    this.initialLocation = coords ?? this.fallbackLocation;
-    this.selectedLocation = this.initialLocation;
+    // Solo obtener posición del dispositivo para jugadores NUEVOS, no en modo edición
+    if (!this.isEditMode) {
+      const coords = await this.locationService.requestDeviceCurrentPosition();
+      this.initialLocation = coords ?? this.fallbackLocation;
+      this.selectedLocation = this.initialLocation;
+    }
   }
 
   private async loadPlayerData(playerId: string | number) {
