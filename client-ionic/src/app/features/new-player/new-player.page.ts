@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   AppLocation,
@@ -65,7 +65,7 @@ import { MapCaptureComponent } from '../../shared/components/map-capture/map-cap
     MapCaptureComponent,
   ],
 })
-export class NewPlayerPage implements OnInit {
+export class NewPlayerPage {
   private readonly fallbackLocation: AppLocation = {
     lat: 40.4168,
     lng: -3.7038,
@@ -100,8 +100,8 @@ export class NewPlayerPage implements OnInit {
     this.initForm();
   }
 
-  async ngOnInit() {
-    console.log('NewPlayerPage inicializado');
+  async ionViewWillEnter() {
+    console.log('NewPlayerPage ionViewWillEnter');
 
     // Detectar si estamos en modo edición
     const playerId = this.route.snapshot.queryParamMap.get('id');
@@ -112,7 +112,7 @@ export class NewPlayerPage implements OnInit {
         : Number(playerId);
       this.isEditMode = true;
       console.log(
-        `[ngOnInit] Modo edición detectado. ID: ${this.editingPlayerId}`
+        `[ionViewWillEnter] Modo edición detectado. ID: ${this.editingPlayerId}`
       );
 
       // IMPORTANTE: Limpiar el PhotoService antes de cargar datos del jugador anterior
@@ -150,6 +150,8 @@ export class NewPlayerPage implements OnInit {
       }
     } else {
       // Nuevo jugador: limpiar el PhotoService también
+      this.isEditMode = false;
+      this.editingPlayerId = null;
       await this.photoService.clearPreviewCache();
     }
 
