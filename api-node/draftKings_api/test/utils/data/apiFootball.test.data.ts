@@ -12,6 +12,7 @@ export const searchApiFootballResponse = {
     response: [
       {
         player: {
+          id: 123,
           name: "Lamine Yamal",
           firstname: "Lamine",
           lastname: "Yamal",
@@ -29,8 +30,58 @@ export const searchApiFootballResponse = {
   },
 } satisfies ExternalApiPlayerResponse;
 
+export const teamsByPlayerResponse = {
+  data: {
+    response: [
+      {
+        team: { id: 541, name: "Real Madrid" },
+        seasons: [2025, 2024],
+      },
+    ],
+  },
+};
+
+const currentYear = new Date().getFullYear();
+
+export const leaguesByTeamResponse = {
+  data: {
+    response: [
+      {
+        league: { id: 140, name: "La Liga", type: "League" },
+        country: { name: "Spain" },
+        seasons: [
+          { year: currentYear, start: `${currentYear}-08-15`, end: `${currentYear + 1}-05-30` },
+          { year: currentYear - 1, start: `${currentYear - 1}-08-15`, end: `${currentYear}-05-30` },
+        ],
+      },
+    ],
+  },
+};
+
+export const transformedExternalPlayersWithExternalId = [
+  {
+    externalId: 123,
+    name: "Lamine Yamal",
+    firstName: "Lamine",
+    lastName: "Yamal",
+    age: 17,
+    birthdate: "2007-07-13",
+    nationality: "Spain",
+    position: "Attacker",
+    photoUrl: "https://example.com/photo.jpg",
+    team: "API Football",
+    league: "External",
+    latitude: 0,
+    longitude: 0,
+    height: "180 cm",
+    weight: "72 kg",
+    number: 19,
+  },
+];
+
 export const transformedExternalPlayers = [
   {
+    externalId: 123,
     name: "Lamine Yamal",
     firstName: "Lamine",
     lastName: "Yamal",
