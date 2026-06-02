@@ -3,6 +3,7 @@ package draftkings.eureka.client.player.dto;
 import java.math.BigDecimal;
 
 public class PlayerExternalDTO {
+    private Long externalId;
     private String name;
     private String firstName;
     private String lastName;
@@ -18,6 +19,14 @@ public class PlayerExternalDTO {
     private BigDecimal height;
     private BigDecimal weight;
     private Integer number;
+
+    public Long getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Long externalId) {
+        this.externalId = externalId;
+    }
 
     public String getName() {
         return name;

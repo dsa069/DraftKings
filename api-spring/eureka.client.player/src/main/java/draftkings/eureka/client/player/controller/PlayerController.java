@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -173,25 +174,59 @@ public class PlayerController {
     // 7) Importar jugadores desde la API externa -> DIRECTO A REPOSITORY (El
     // servicio ya hace la orquestación y transformación)
     @PostMapping("/import")
-    @Operation(summary = "Importar jugadores desde la API externa", description = "Recibe una lista de jugadores y los persiste en la BD")
+    @Operation(summary = "Importar jugadores desde la API externa", description = "Recibe una lista de jugadores externos y los persiste en la BD con team/league enriquecido")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Jugadores importados correctamente"),
             @ApiResponse(responseCode = "400", description = "El body es inválido o está vacío", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":400,\"error\":\"El body no contiene jugadores para importar\",\"path\":\"/api/players/import\"}"))),
             @ApiResponse(responseCode = "500", description = "Error al insertar en base de datos", content = @Content(schema = @Schema(implementation = CustomResponse.class), examples = @ExampleObject(value = "{\"timestamp\":\"2026-04-10T12:00:00Z\",\"status\":500,\"error\":\"Error importing players\",\"path\":\"/api/players/import\"}"))) })
-    public ResponseEntity<Void> importPlayers(@RequestBody List<Player> playersToImport) {
+    public ResponseEntity<Void> importPlayers(@RequestBody List<PlayerExternalDTO> playersToImport) {
         if (playersToImport == null || playersToImport.isEmpty()) {
             throw new BadRequestException("El body no contiene jugadores para importar");
         }
 
-        // Aseguramos que la fecha de creación se asigne si es necesario
-        for (Player p : playersToImport) {
-            if (p.getCreatedAt() == null) {
-                p.setCreatedAt(new Date());
+        List<Player> players = new java.util.ArrayList<>();
+
+        for (PlayerExternalDTO dto : playersToImport) {
+            String teamName = null;
+            String leagueName = null;
+
+            if (dto.getExternalId() != null) {
+                ApiFootballService.TeamLeagueInfo info = apiFootballService.resolveTeamAndLeague(
+                        dto.getExternalId(), dto.getNationality());
+                teamName = info.teamName();
+                leagueName = info.leagueName();
             }
+
+            Player player = new Player();
+            player.setName(dto.getName());
+            player.setFirstName(dto.getFirstName());
+            player.setLastName(dto.getLastName());
+            player.setAge(dto.getAge());
+
+            if (dto.getBirthdate() != null && !dto.getBirthdate().isEmpty()) {
+                try {
+                    LocalDate ld = LocalDate.parse(dto.getBirthdate());
+                    player.setBirthdate(Date.from(ld.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                } catch (Exception ignored) {
+                }
+            }
+
+            player.setNationality(dto.getNationality());
+            player.setHeight(dto.getHeight());
+            player.setWeight(dto.getWeight());
+            player.setNumber(dto.getNumber());
+            player.setPosition(dto.getPosition());
+            player.setPhotoUrl(dto.getPhotoUrl());
+            player.setTeam(teamName);
+            player.setLeague(leagueName);
+            player.setLatitude(dto.getLatitude() != null ? dto.getLatitude() : java.math.BigDecimal.ZERO);
+            player.setLongitude(dto.getLongitude() != null ? dto.getLongitude() : java.math.BigDecimal.ZERO);
+            player.setCreatedAt(new Date());
+
+            players.add(player);
         }
 
-        // El repositorio guarda toda la lista en una sola transacción eficiente
-        playerRepository.saveAll(playersToImport);
+        playerRepository.saveAll(players);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
