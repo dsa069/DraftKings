@@ -213,7 +213,7 @@
           <ion-text class="player-name">{{ player.name }}</ion-text>
           <ion-text class="player-position">
             {{ (player.position | uppercase) || "Unknown Position" }} •
-            {{ player.team }}
+            {{ mode === 'import' ? (player.number || player.nationality || player.team) : player.team }}
           </ion-text>
         </ion-label>
 
