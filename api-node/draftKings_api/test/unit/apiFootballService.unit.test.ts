@@ -5,7 +5,10 @@ import {
   emptyApiFootballResponse,
   importPlayersApiPayload,
   searchApiFootballResponse,
+  teamsByPlayerResponse,
+  leaguesByTeamResponse,
   transformedExternalPlayers,
+  transformedExternalPlayersWithExternalId,
 } from "../utils/data/apiFootball.test.data";
 
 jest.mock("axios");
@@ -44,7 +47,7 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
           params: { search: "Lamine" },
         }),
       );
-      expect(result).toEqual(transformedExternalPlayers);
+      expect(result).toEqual(transformedExternalPlayersWithExternalId);
     });
 
     it("Debería devolver un array vacío si la respuesta no tiene formato válido", async () => {
@@ -59,6 +62,54 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
       await expect(apiFootballService.searchPlayers()).rejects.toThrow(
         "Failed to fetch players from external API",
       );
+    });
+  });
+
+  describe("resolveTeamAndLeague()", () => {
+    it("Debería devolver team y league cuando se encuentran", async () => {
+      (axios.get as jest.Mock)
+        .mockResolvedValueOnce(teamsByPlayerResponse)
+        .mockResolvedValueOnce(leaguesByTeamResponse);
+
+      const result = await apiFootballService.resolveTeamAndLeague(
+        123,
+        "Spain",
+      );
+
+      expect(result.teamName).toBe("Real Madrid");
+      expect(result.leagueName).toBe("La Liga");
+      expect(axios.get).toHaveBeenCalledWith(
+        "https://v3.football.api-sports.io/players/teams",
+        expect.objectContaining({ params: { player: 123 } }),
+      );
+      expect(axios.get).toHaveBeenCalledWith(
+        "https://v3.football.api-sports.io/leagues",
+        expect.objectContaining({ params: { team: 541 } }),
+      );
+    });
+
+    it("Debería devolver nulls si no hay equipos", async () => {
+      (axios.get as jest.Mock).mockResolvedValue({ data: { response: [] } });
+
+      const result = await apiFootballService.resolveTeamAndLeague(
+        999,
+        "Spain",
+      );
+
+      expect(result.teamName).toBeNull();
+      expect(result.leagueName).toBeNull();
+    });
+
+    it("Debería devolver nulls si falla la llamada a la API", async () => {
+      (axios.get as jest.Mock).mockRejectedValue(new Error("timeout"));
+
+      const result = await apiFootballService.resolveTeamAndLeague(
+        123,
+        "Spain",
+      );
+
+      expect(result.teamName).toBeNull();
+      expect(result.leagueName).toBeNull();
     });
   });
 
@@ -98,6 +149,37 @@ describe("ApiFootballService (Pruebas Unitarias)", () => {
           },
         },
       ]);
+    });
+
+    it("Debería enriquecer con team/league si el jugador tiene externalId", async () => {
+      (Player.insertMany as jest.Mock).mockResolvedValue(true);
+      (axios.get as jest.Mock)
+        .mockResolvedValueOnce(teamsByPlayerResponse)
+        .mockResolvedValueOnce(leaguesByTeamResponse);
+
+      const players = [
+        {
+          externalId: 123,
+          name: "Lamine Yamal",
+          nationality: "Spain",
+          team: "API Football",
+          league: "External",
+          latitude: 41.1,
+          longitude: 2.2,
+        },
+      ];
+
+      await apiFootballService.importPlayers(players);
+
+      expect(Player.insertMany).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: "Lamine Yamal",
+            team: "Real Madrid",
+            league: "La Liga",
+          }),
+        ]),
+      );
     });
   });
 });

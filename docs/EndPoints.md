@@ -223,7 +223,7 @@
 ### 6) Obtener jugadores desde la API externa
 
 - **Caso de uso:** `UC_buscar_externo`
-- **Descripción:** Consulta la API de API-Football y devuelve una lista normalizada de jugadores según el texto de búsqueda.
+- **Descripción:** Consulta la API de API-Football y devuelve una lista normalizada de jugadores según el texto de búsqueda. Inuye `externalId` necesario para el endpoint de importación.
 - **Método:** `GET`
 - **URL:**
   - Spring: `http://localhost:8080/playerms/api/players/external`
@@ -246,6 +246,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 ```json
 [
   {
+    "externalId": 874,
     "name": "Cristiano Ronaldo",
     "firstName": "Cristiano",
     "lastName": "Ronaldo",
@@ -272,7 +273,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 ### 7) Importar jugadores desde la API externa
 
 - **Caso de uso:** `UC_importar_externo`
-- **Descripción:** Recibe un array de jugadores ya normalizados y los inserta en MongoDB.
+- **Descripción:** Recibe un array de jugadores ya normalizados y los inserta en la base de datos. Para jugadores con `externalId` que tengan team="API Football" y league="External", el backend automáticamente consulta la API externa para obtener el equipo y liga reales antes de guardar.
 - **Método:** `POST`
 - **URL:**
   - Spring: `http://localhost:8080/playerms/api/players/import`
@@ -286,6 +287,7 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 ```json
 [
   {
+    "externalId": 874,
     "name": "Cristiano Ronaldo",
     "firstName": "Cristiano",
     "lastName": "Ronaldo",
@@ -308,7 +310,15 @@ GET http://localhost:8080/playerms/api/players/external?search=ronaldo
 - **Notas del body:**
   - El body debe ser un array JSON, no un objeto suelto.
   - Cada elemento debe incluir al menos `name`, `latitude` y `longitude`.
+  - `externalId` — ID del jugador en API-Football. Si se provee y team="API Football", el backend resuelve automáticamente el equipo y liga reales llamando a `/players/teams` y `/leagues`.
   - `createdAt` se asigna automáticamente si no viene informado.
+
+- **Proceso de enriquecimiento (solo si `externalId` está presente):**
+  1. Se llama a `GET /players/teams?player={externalId}` para obtener los equipos del jugador.
+  2. Se selecciona el equipo más reciente que no coincida con la nacionalidad del jugador.
+  3. Se llama a `GET /leagues?team={teamId}` para obtener las ligas del equipo.
+  4. Se selecciona la liga de tipo "League" con la temporada más larga (excluyendo "World").
+  5. Se guarda el jugador con team y league reales.
 
 - **Respuestas:**
   - `201 Created` — Jugadores importados correctamente.

@@ -35,6 +35,7 @@ export interface PlayerUpdateBody {
 }
 
 export interface PlayerImportBody {
+  externalId?: number;
   name: string;
   birthdate?: string;
   latitude: number;
@@ -56,6 +57,7 @@ export interface ExternalApiPlayerResponse {
   data: {
     response: Array<{
       player: {
+        id?: number;
         name: string;
         firstname?: string;
         lastname?: string;
@@ -307,6 +309,7 @@ export const externalPlayerApiResponse = {
     response: [
       {
         player: {
+          id: 123,
           name: "Lamine Yamal",
           firstname: "Lamine",
           lastname: "Yamal",
@@ -334,6 +337,7 @@ export const invalidExternalPlayerApiResponse = {
 
 export const transformedExternalPlayers = [
   {
+    externalId: 123,
     name: "Lamine Yamal",
     firstName: "Lamine",
     lastName: "Yamal",
