@@ -61,6 +61,7 @@ export class MapCaptureComponent
   private resizeObserver!: ResizeObserver;
   private readonly cdr = inject(ChangeDetectorRef);
   private mapInitialized: boolean = false;
+  public readonly mapId = `leaflet-map-${Math.random().toString(36).substring(2, 9)}`;
 
   constructor() {
     addIcons({ locateOutline, pin });
@@ -101,7 +102,7 @@ export class MapCaptureComponent
       this.initialLocation
     );
 
-    const mapElement = document.getElementById('leaflet-map');
+    const mapElement = document.getElementById(this.mapId);
 
     // Destruir cualquier mapa anterior que pueda existir
     if (this.map) {
@@ -123,7 +124,7 @@ export class MapCaptureComponent
     console.log(
       `[MapCaptureComponent] Creando mapa con lat=${lat}, lng=${lng}`
     );
-    this.map = L.map('leaflet-map').setView([lat, lng], 15);
+    this.map = L.map(this.mapId).setView([lat, lng], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -160,6 +161,12 @@ export class MapCaptureComponent
 
     // Marcar que el mapa ha sido inicializado
     this.mapInitialized = true;
+
+    // Forzar recálculo de tamaño después de la transición de navegación de Ionic
+    setTimeout(() => {
+      if (this.map) this.map.invalidateSize();
+    }, 300);
+
     console.log('[MapCaptureComponent] Mapa inicializado correctamente');
   }
 
@@ -169,8 +176,7 @@ export class MapCaptureComponent
       this.map.remove();
       this.map = null as any;
     }
-    // Limpiar el elemento del DOM por si acaso
-    const mapContainer = document.getElementById('leaflet-map');
+    const mapContainer = document.getElementById(this.mapId);
     if (mapContainer) {
       (mapContainer as any)._leaflet_id = null;
     }
