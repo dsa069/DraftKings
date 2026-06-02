@@ -9,6 +9,7 @@ import {
   playersImport,
 } from "../../controllers/playerController";
 import Player from "../../models/player";
+import Review from "../../models/review";
 import { PlayerService } from "../../services/playerService";
 import { ApiFootballService } from "../../services/apiFootballService";
 import {
@@ -27,6 +28,7 @@ import {
 
 // 1. Mockeamos las dependencias del controlador
 jest.mock("../../models/player");
+jest.mock("../../models/review");
 jest.mock("../../services/playerService");
 jest.mock("../../services/apiFootballService");
 
@@ -255,6 +257,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     it("Debería retornar 404 si no encuentra el jugador", async () => {
       mockRequest.params = { id: "507f1f77bcf86cd799439011" };
 
+      (Review.deleteMany as jest.Mock).mockResolvedValue(undefined);
       (Player.findByIdAndDelete as jest.Mock).mockReturnValue(
         mockExecResolved(null),
       );
@@ -268,6 +271,7 @@ describe("PlayerController (Pruebas Unitarias)", () => {
     it("Debería borrar el jugador y retornar 204", async () => {
       mockRequest.params = { id: "507f1f77bcf86cd799439011" };
 
+      (Review.deleteMany as jest.Mock).mockResolvedValue(undefined);
       (Player.findByIdAndDelete as jest.Mock).mockReturnValue(
         mockExecResolved({ _id: "507f1f77bcf86cd799439011" }),
       );
