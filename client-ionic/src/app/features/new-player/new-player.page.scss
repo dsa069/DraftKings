@@ -95,9 +95,17 @@ ion-content.custom-content {
 }
 
 // Ajustes del Select
-.custom-select::part(icon) {
-  color: var(--ion-color-on-surface-variant);
-  opacity: 1;
+.custom-select {
+  --color: var(--ion-color-on-surface);
+
+  &::part(text) {
+    color: var(--ion-color-on-surface);
+  }
+
+  &::part(icon) {
+    color: var(--ion-color-on-surface-variant);
+    opacity: 1;
+  }
 }
 
 // Mapa

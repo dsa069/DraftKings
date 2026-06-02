@@ -479,6 +479,7 @@ ion-content.custom-content {
 
 .news-item {
   --background: transparent;
+  --color: var(--ion-color-on-surface);
   --border-color: var(--ion-color-outline-variant);
   --padding-start: 0;
   --inner-padding-end: 0;
