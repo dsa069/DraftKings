@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Player from "../models/player";
+import Review from "../models/review";
 import { PlayerService } from "../services/playerService";
 import { ApiFootballService } from "../services/apiFootballService";
 
@@ -118,6 +119,8 @@ export const playersDelete = async (req: Request, res: Response) => {
     let id = req.params.id as string | string[] | undefined;
     if (Array.isArray(id)) id = id[0];
     if (!id) return res.status(400).json({ message: "Bad Request" });
+
+    await Review.deleteMany({ player: id });
 
     const deletedPlayer = await Player.findByIdAndDelete(id).exec();
     if (!deletedPlayer) return res.status(404).json({ message: "not found" });
