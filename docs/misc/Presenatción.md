@@ -357,8 +357,8 @@ Eureka Server → Config Server → [Gateway, PlayerMS, ReviewMS, UserMS]
   (deploy)        (deploy)             (deploy en paralelo)
 Docker images en GCP Artifact Registry:
 us-east1-docker.pkg.dev/cnsa-2026/draftkings/
-├── api-node:latest / :0.0.1
-├── client-ionic:latest / :0.0.1
+├── api-node:latest / :1.0.0
+├── client-ionic:latest / :1.0.0
 ├── eureka-server:latest
 ├── config-server:latest
 ├── gateway:latest

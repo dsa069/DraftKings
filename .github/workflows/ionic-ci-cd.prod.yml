@@ -357,18 +357,18 @@ jobs:
       # Que la imagen se suba con el tag actual cuando se etnga el actions del tag
       - name: Build Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:0.0.1 .
+          docker build -t us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:1.0.0 .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:0.0.1
+          docker push us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:1.0.0
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: "draftkings"
           region: "us-east1"
-          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:0.0.1"
+          image: "us-east1-docker.pkg.dev/cnsa-2026/draftkings/client-ionic:1.0.0"
           flags: "--service-account=draftkings@cnsa-2026.iam.gserviceaccount.com --allow-unauthenticated --ingress=all"
           secrets: |
             FIREBASE_CONFIG_PROD=FIREBASE_CONFIG_PROD:latest

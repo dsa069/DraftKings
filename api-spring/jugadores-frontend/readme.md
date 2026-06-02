@@ -65,7 +65,7 @@ For example, given your Stencil project namespace is called `my-design-system`, 
 <script type="module" src="https://unpkg.com/my-design-system"></script>
 <!--
 To avoid unpkg.com redirects to the actual file, you can also directly import:
-https://unpkg.com/foobar-design-system@0.0.1/dist/foobar-design-system/foobar-design-system.esm.js
+https://unpkg.com/foobar-design-system@1.0.0/dist/foobar-design-system/foobar-design-system.esm.js
 -->
 <my-component first="Stencil" middle="'Don't call me a framework'" last="JS"></my-component>
 ```
