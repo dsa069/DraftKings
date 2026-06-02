@@ -51,8 +51,8 @@ public class Player {
     @Size(max = 50)
     private String position;
 
-    @Size(max = 255)
-    @Column(name = "photo_url")
+    @Size(max = 2048)
+    @Column(name = "photo_url", length = 2048)
     private String photoUrl;
 
     @NotNull
