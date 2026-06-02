@@ -57,7 +57,7 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
       cy.get('ion-grid.map-container').should('exist');
 
       // Verificamos que Leaflet inyectó su estructura en el DOM
-      cy.get('#leaflet-map.leaflet-container').should('exist');
+      cy.get('[id^="leaflet-map-"].leaflet-container').should('exist');
       cy.get('.leaflet-control-zoom').should('exist');
 
       // Botón "Use My Location" debe estar visible
@@ -72,7 +72,7 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
       mountComponent({ isReadOnly: true });
 
       // El mapa sigue existiendo
-      cy.get('#leaflet-map.leaflet-container').should('exist');
+      cy.get('[id^="leaflet-map-"].leaflet-container').should('exist');
 
       // Botón de GPS e inputs manuales NO deben existir
       cy.get('.gps-button').should('not.exist');
@@ -167,7 +167,7 @@ describe('MapCaptureComponent - Test Suite Exhaustivo', () => {
       const targetLat = 35.6895; // Tokio
       const targetLng = 139.6917;
 
-      cy.get('#leaflet-map.leaflet-container').should('exist');
+      cy.get('[id^="leaflet-map-"].leaflet-container').should('exist');
 
       cy.get('@componentInstance').then((instance: any) => {
         // Simulamos que el componente padre invoca el método expuesto

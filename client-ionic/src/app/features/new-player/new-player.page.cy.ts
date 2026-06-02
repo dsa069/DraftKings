@@ -167,6 +167,10 @@ describe('NewPlayerPage Component - Test Suite Exhaustivo (Crear y Editar)', () 
     beforeEach(() => mountComponent('99'));
 
     it('debe cargar los datos del jugador desde el servicio e inyectarlos en el formulario', () => {
+      cy.get('@componentInstance').then(async (instance: any) => {
+        await instance.ionViewWillEnter();
+      });
+
       cy.get('@componentInstance').its('isEditMode').should('be.true');
       cy.wrap(playerServiceMock.getPlayerById).should('have.been.called');
       cy.get('@componentInstance').then((instance: any) => {
