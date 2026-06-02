@@ -17,5 +17,5 @@ export interface Player {
   longitude: number;
   created_at?: string | Date;
   createdAt?: string | Date; // Para compatibilidad con diferentes APIs, pero no obligatorio
-  //externalId?: string | number; // Para almacenar el ID de API-Football si es necesario
+  externalId?: string | number; // ID del jugador en la API externa (API-Football)
 }

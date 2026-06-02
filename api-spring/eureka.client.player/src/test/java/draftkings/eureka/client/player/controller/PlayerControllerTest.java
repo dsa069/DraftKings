@@ -177,11 +177,12 @@ class PlayerControllerTest {
 
     @Test
     void importPlayersShouldSetCreatedAtAndPersistList() {
-        Player p1 = validPlayer();
-        p1.setCreatedAt(null);
-        Player p2 = validPlayer();
+        PlayerExternalDTO p1 = validExternalPlayer();
+        PlayerExternalDTO p2 = validExternalPlayer();
         p2.setName("Vinicius");
 
+        when(apiFootballService.resolveTeamAndLeague(anyLong(), anyString()))
+                .thenReturn(new ApiFootballService.TeamLeagueInfo("Santos", "Brasileirao"));
         when(playerRepository.saveAll(anyIterable())).thenAnswer(invocation -> invocation.getArgument(0));
 
         ResponseEntity<Void> response = controller.importPlayers(List.of(p1, p2));
@@ -263,5 +264,18 @@ class PlayerControllerTest {
         player.setLongitude(new BigDecimal("-46.6333"));
         player.setCreatedAt(new Date());
         return player;
+    }
+
+    private PlayerExternalDTO validExternalPlayer() {
+        PlayerExternalDTO dto = new PlayerExternalDTO();
+        dto.setExternalId(1L);
+        dto.setName("Neymar");
+        dto.setFirstName("Neymar");
+        dto.setLastName("da Silva");
+        dto.setNationality("Brazil");
+        dto.setPosition("Attacker");
+        dto.setLatitude(new BigDecimal("-23.5505"));
+        dto.setLongitude(new BigDecimal("-46.6333"));
+        return dto;
     }
 }

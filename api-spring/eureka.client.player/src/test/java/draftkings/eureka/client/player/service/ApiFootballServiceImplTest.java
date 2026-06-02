@@ -48,6 +48,7 @@ class ApiFootballServiceImplTest {
                   "response": [
                     {
                       "player": {
+                        "id": 123,
                         "name": "Kylian Mbappe",
                         "firstname": "Kylian",
                         "lastname": "Mbappe",
@@ -83,6 +84,7 @@ class ApiFootballServiceImplTest {
         assertEquals("178", dto.getHeight().toPlainString());
         assertEquals("73", dto.getWeight().toPlainString());
         assertEquals(10, dto.getNumber());
+        assertEquals(123L, dto.getExternalId());
 
         ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
         ArgumentCaptor<HttpEntity> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
@@ -124,5 +126,82 @@ class ApiFootballServiceImplTest {
 
         assertEquals("Failed to fetch players from external API", ex.getMessage());
         assertNotNull(ex.getCause());
+    }
+
+    @Test
+    void resolveTeamAndLeagueShouldReturnTeamAndLeagueWhenFound() {
+        String teamsJson = """
+                {
+                  "response": [
+                    {
+                      "team": { "id": 541, "name": "Real Madrid" },
+                      "seasons": [2025, 2024]
+                    }
+                  ]
+                }
+                """;
+        String leaguesJson = """
+                {
+                  "response": [
+                    {
+                      "league": { "id": 140, "name": "La Liga", "type": "League" },
+                      "country": { "name": "Spain" },
+                      "seasons": [
+                        { "year": 2025, "start": "2025-08-15", "end": "2026-05-30" },
+                        { "year": 2024, "start": "2024-08-15", "end": "2025-05-30" }
+                      ]
+                    }
+                  ]
+                }
+                """;
+
+        when(restTemplate.exchange(argThat(uri -> uri != null && uri.toString().contains("/players/teams")),
+                eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok(teamsJson));
+
+        when(restTemplate.exchange(argThat(uri -> uri != null && uri.toString().contains("/leagues")),
+                eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok(leaguesJson));
+
+        ApiFootballService.TeamLeagueInfo info = service.resolveTeamAndLeague(123L, "France");
+
+        assertEquals("Real Madrid", info.teamName());
+        assertEquals("La Liga", info.leagueName());
+    }
+
+    @Test
+    void resolveTeamAndLeagueShouldReturnNullsWhenNoTeamsFound() {
+        String teamsJson = """
+                { "response": [] }
+                """;
+
+        when(restTemplate.exchange(argThat(uri -> uri.toString().contains("/players/teams")),
+                eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok(teamsJson));
+
+        ApiFootballService.TeamLeagueInfo info = service.resolveTeamAndLeague(999L, "France");
+
+        assertNull(info.teamName());
+        assertNull(info.leagueName());
+    }
+
+    @Test
+    void resolveTeamAndLeagueShouldReturnNullLeagueWhenApiCallFails() {
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenThrow(new RuntimeException("timeout"));
+
+        ApiFootballService.TeamLeagueInfo info = service.resolveTeamAndLeague(123L, "France");
+
+        assertNull(info.teamName());
+        assertNull(info.leagueName());
+    }
+
+    @Test
+    void resolveTeamAndLeagueFallbackShouldReturnNulls() {
+        ApiFootballService.TeamLeagueInfo info = service.resolveTeamAndLeagueFallback(
+                123L, "France", new RuntimeException("circuit open"));
+
+        assertNull(info.teamName());
+        assertNull(info.leagueName());
     }
 }
